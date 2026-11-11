@@ -1638,4 +1638,3 @@ window.submitReview = async (e) => {
     window.showNotify("Ошибка сети", "error");
   }
 };
-¡
