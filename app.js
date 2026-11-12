@@ -1,12 +1,11 @@
 /* ============================================================================
-   CYBER 6 ESPORTS [C6E] — PRO APPLICATION LOGIC + ZERO-SCROLL ROSTER + C6E SHIELD
-   Токен бота скрыт от GitHub, встроена защита IP / Device ID, Бан-система и перехват матов/спама!
+   CYBER 6 ESPORTS [C6E] — PRO APPLICATION LOGIC + ПАНТЕОН (900 GOLD) + C6E SHIELD
    ============================================================================ */
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
 import { getFirestore, doc, onSnapshot, getDoc, setDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
-// Встраиваем стили Двойного Таба Standoff 2 + Карусели Состава + Экрана Блокировки C6E Shield
+// Встраиваем стили Двойного Таба + Карусели Состава + ПАНТЕОНА [C6E] + C6E Shield
 const c6eProStyles = document.createElement('style');
 c6eProStyles.innerHTML = `
   /* Двойной Таб Standoff 2 */
@@ -31,7 +30,78 @@ c6eProStyles.innerHTML = `
   .chip-btn:hover { background: var(--accent); color: #fff; border-color: var(--silver); }
 
   /* =========================================================
-     НОВАЯ ВИТРИНА СОСТАВА НА 1 ЭКРАН (БЕЗ СКРОЛЛА ВВЕРХ-ВНИЗ!)
+     ПАНТЕОН [C6E] — ЕЖЕНЕДЕЛЬНАЯ ГОНКА ЗА 900 ГОЛДЫ ОТ ОСНОВАТЕЛЯ
+     ========================================================= */
+  .pantheon-hero {
+    background: linear-gradient(145deg, rgba(34, 24, 12, 0.94) 0%, rgba(16, 17, 22, 0.98) 55%, rgba(158, 27, 40, 0.22) 100%);
+    border: 1px solid rgba(255, 179, 0, 0.4);
+    border-top: 3px solid #ffb300;
+    border-radius: 18px; padding: 22px 18px; margin-bottom: 18px;
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.8), 0 0 25px rgba(255, 179, 0, 0.12);
+    position: relative; overflow: hidden; text-align: center;
+  }
+  .pantheon-badge-top {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(255, 179, 0, 0.14); border: 1px solid rgba(255, 179, 0, 0.45);
+    color: #ffb300; font-family: var(--font-tech); font-size: 9px; font-weight: 800;
+    padding: 4px 12px; border-radius: 20px; letter-spacing: 1.5px; margin-bottom: 8px;
+  }
+  .pantheon-title {
+    font-family: var(--font-tech); font-size: clamp(24px, 6vw, 34px); font-weight: 900;
+    color: #fff; letter-spacing: 3px; margin: 0 0 6px 0;
+    text-shadow: 0 0 18px rgba(255, 179, 0, 0.35);
+  }
+  .pantheon-title span { color: #ffb300; }
+  .pantheon-prize-strip {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+    max-width: 560px; margin: 14px auto 12px auto;
+  }
+  .prize-tier-box {
+    background: rgba(0, 0, 0, 0.55); border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px; padding: 10px 6px; position: relative;
+  }
+  .prize-tier-box.gold { border-color: #ffb300; background: linear-gradient(180deg, rgba(255, 179, 0, 0.18), rgba(0,0,0,0.65)); box-shadow: 0 0 16px rgba(255, 179, 0, 0.2); }
+  .prize-tier-box.silver { border-color: #e4e4e2; background: linear-gradient(180deg, rgba(228, 228, 226, 0.12), rgba(0,0,0,0.65)); }
+  .prize-tier-box.bronze { border-color: #cd7f32; background: linear-gradient(180deg, rgba(205, 127, 50, 0.14), rgba(0,0,0,0.65)); }
+  .prize-gold-amount { font-family: var(--font-tech); font-size: 15px; font-weight: 900; color: #fff; }
+  .prize-gold-lbl { font-size: 8px; font-weight: 700; text-transform: uppercase; color: var(--silver-muted); margin-top: 2px; }
+
+  .podium-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 14px; margin-bottom: 18px;
+  }
+  .podium-card {
+    background: linear-gradient(165deg, rgba(24, 25, 32, 0.96) 0%, rgba(10, 11, 15, 0.99) 100%);
+    border: 1px solid var(--glass-border); border-radius: 16px; padding: 16px;
+    position: relative; overflow: hidden; box-shadow: 0 14px 32px rgba(0,0,0,0.75);
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .podium-card.rank-1 { border: 2px solid #ffb300; box-shadow: 0 0 28px rgba(255, 179, 0, 0.25); }
+  .podium-card.rank-2 { border: 1.5px solid #e4e4e2; }
+  .podium-card.rank-3 { border: 1.5px solid #cd7f32; }
+
+  .pts-bar-bg {
+    width: 100%; height: 7px; background: rgba(255,255,255,0.07);
+    border-radius: 10px; overflow: hidden; margin: 8px 0;
+  }
+  .pts-bar-fill {
+    height: 100%; border-radius: 10px;
+    background: linear-gradient(90deg, var(--accent-light), #ffb300);
+    transition: width 0.5s ease;
+  }
+  .boost-btn {
+    width: 100%; padding: 9px 12px; border-radius: 9px;
+    background: linear-gradient(135deg, rgba(255, 179, 0, 0.18), rgba(158, 27, 40, 0.35));
+    border: 1px solid #ffb300; color: #fff;
+    font-family: var(--font-tech); font-size: 10px; font-weight: 800;
+    cursor: pointer; transition: 0.25s; display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .boost-btn:hover, .boost-btn:active {
+    background: linear-gradient(135deg, #ffb300, #d42638);
+    color: #000; box-shadow: 0 0 16px rgba(255, 179, 0, 0.5);
+  }
+
+  /* =========================================================
+     ВИТРИНА СОСТАВА НА 1 ЭКРАН (БЕЗ СКРОЛЛА ВВЕРХ-ВНИЗ!)
      ========================================================= */
   .roster-hub-controls {
     display: flex; justify-content: space-between; align-items: center;
@@ -412,7 +482,6 @@ onSnapshot(doc(db, DB_COLLECTION, "security_logs"), (snap) => {
   checkIfCurrentUserBanned();
 });
 
-// Записываем каждое действие (включая заблокированный спам и мат!) в журнал безопасности админки
 async function logSecurityEvent(actionName, actorName, detailsText, isAlert = false) {
   await resolveClientIp();
   try {
@@ -442,7 +511,6 @@ async function logSecurityEvent(actionName, actorName, detailsText, isAlert = fa
   }
 }
 
-// Подгружаем защищённый токен из Firebase
 onSnapshot(doc(db, DB_COLLECTION, "bot_config"), (snap) => {
   if (snap.exists() && snap.data().encToken) {
     TG_CONFIG.token = decodeBotToken(snap.data().encToken);
@@ -455,6 +523,7 @@ let allScheduleData = [];
 let currentScheduleFilter = 'all';
 let mainRosterData = [];
 let reserveRosterData = [];
+let pantheonMeta = { boosts: {}, bonusPts: {} }; // Данные активности и бустов Пантеона в Firebase
 
 let activeRosterTab = 'main';
 let activePlayerIdx = 0;
@@ -513,7 +582,7 @@ function formatPlayerNickHTML(rawNick, isOurTeam = false) {
 }
 
 // =========================================================================
-// ЯДРО СИНХРОНИЗАЦИИ K/D ПО ИСТОРИИ МАТЧЕЙ
+// ЯДРО СИНХРОНИЗАЦИИ K/D + ИННОВАЦИОННЫЙ РЕЙТИНГ «ПАНТЕОН [C6E]» (PTS)
 // =========================================================================
 
 function normalizeNickKey(nick) {
@@ -625,8 +694,20 @@ function computePlayerLiveAnalytics(playerObj) {
     formClass = 'form-cold';
   }
 
+  // ФОРМУЛА ОЧКОВ ПАНТЕОНА (PTS = Скилл K/D + Прогресс K/D + Боевая активность в Табе + Активность на сайте)
+  const fanBoosts = (pantheonMeta.boosts && pantheonMeta.boosts[pKey]) ? parseInt(pantheonMeta.boosts[pKey], 10) : 0;
+  const founderBonus = (pantheonMeta.bonusPts && pantheonMeta.bonusPts[pKey]) ? parseInt(pantheonMeta.bonusPts[pKey], 10) : 0;
+
+  const kdPts = Math.round(liveKd * 450); // Базовый вес скилла K/D
+  const growthPts = Math.round(delta * 1200); // Огромный бонус за рост K/D за неделю!
+  const matchActivityPts = (matchesPlayed * 85) + (matchesWon * 95) + (mvpCount * 160) + (totalKills * 3); // Активность в матчах
+  const siteActivityPts = (fanBoosts * 25) + founderBonus; // Активность на сайте (бусты + бонус Основателя)
+
+  const totalPantheonPts = Math.max(100, kdPts + growthPts + matchActivityPts + siteActivityPts);
+
   return {
     nick: playerObj.nick,
+    pKey,
     role: playerObj.role || 'Player',
     img: playerObj.img || 'logo.png',
     baseKd: baseKd.toFixed(2),
@@ -651,8 +732,262 @@ function computePlayerLiveAnalytics(playerObj) {
     weekDeltaFormatted: (weekDelta >= 0 ? `+${weekDelta.toFixed(2)}` : weekDelta.toFixed(2)),
     formLabel,
     formClass,
-    recentMatches: matchLogs.slice(-5)
+    recentMatches: matchLogs.slice(-5),
+    // Показатели для ПАНТЕОНА
+    fanBoosts,
+    founderBonus,
+    kdPts,
+    growthPts,
+    matchActivityPts,
+    siteActivityPts,
+    totalPantheonPts
   };
+}
+
+// Подписка на данные Пантеона (бусты активности на сайте и бонусы Основателя)
+onSnapshot(doc(db, DB_COLLECTION, "pantheon"), (snap) => {
+  if (snap.exists()) {
+    pantheonMeta = {
+      boosts: snap.data().boosts || {},
+      bonusPts: snap.data().bonusPts || {}
+    };
+  } else {
+    pantheonMeta = { boosts: {}, bonusPts: {} };
+  }
+  renderPantheonSection();
+});
+
+// Функция «🔥 БУСТ БОЙЦА (+25 PTS)» на сайте (раз в 12 часов с одного устройства)
+window.boostPantheonPlayer = async (nick) => {
+  if (checkIfCurrentUserBanned()) return;
+  const pKey = normalizeNickKey(nick);
+  if (!pKey) return;
+
+  const cooldownKey = `c6e_boost_${pKey}`;
+  if (!checkCooldown(cooldownKey, 360)) {
+    return window.showNotify("Вы уже заряжали этого бойца сегодня! Следующий буст через 6 часов.", "error");
+  }
+
+  try {
+    const ref = doc(db, DB_COLLECTION, "pantheon");
+    const snap = await getDoc(ref);
+    let boosts = (snap.exists() && snap.data().boosts) ? { ...snap.data().boosts } : {};
+    boosts[pKey] = (parseInt(boosts[pKey], 10) || 0) + 1;
+
+    await setDoc(ref, { boosts }, { merge: true });
+    setCooldown(cooldownKey);
+    window.showNotify(`🔥 Вы дали +25 PTS активности бойцу ${nick} в гонке за Голду!`, "success");
+  } catch (e) {
+    window.showNotify("Ошибка начисления буста", "error");
+  }
+};
+
+// Таймер до конца недели (Воскресенье 23:59:59 МСК) для выдачи 500 / 250 / 150 Голды
+function getWeeklyResetCountdownText() {
+  const now = new Date();
+  const day = now.getDay(); // 0 = Воскресенье
+  const daysUntilSunday = day === 0 ? 0 : (7 - day);
+  const endOfSunday = new Date(now);
+  endOfSunday.setDate(now.getDate() + daysUntilSunday);
+  endOfSunday.setHours(23, 59, 59, 999);
+
+  const diff = Math.max(0, endOfSunday.getTime() - now.getTime());
+  const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  return `${d}д : ${h}ч : ${m}м`;
+}
+
+// Рендер инновационного раздела «ПАНТЕОН [C6E]»
+function renderPantheonSection() {
+  const root = document.getElementById('pantheon-root');
+  if (!root) return;
+
+  const allPlayers = [...mainRosterData, ...reserveRosterData];
+  if (allPlayers.length === 0) {
+    root.innerHTML = `
+      <div class="pantheon-hero">
+        <div class="pantheon-badge-top"><i class="fas fa-crown"></i> C6E WEEKLY GOLD RACE</div>
+        <h2 class="pantheon-title">ПАНТЕОН <span>[C6E]</span></h2>
+        <p style="font-size:12px; color:var(--silver-muted);">Бойцы состава скоро вступят в еженедельную гонку за 900 Голды от Основателя!</p>
+      </div>
+    `;
+    return;
+  }
+
+  const ranked = allPlayers.map(p => computePlayerLiveAnalytics(p));
+  ranked.sort((a, b) => b.totalPantheonPts - a.totalPantheonPts);
+
+  const maxPts = ranked[0] ? ranked[0].totalPantheonPts : 1000;
+  const top3 = ranked.slice(0, 3);
+  const chasers = ranked.slice(3);
+
+  const prizes = [
+    { rank: 1, gold: '500 GOLD', medal: '🥇 1 МЕСТО', cls: 'rank-1', color: '#ffb300' },
+    { rank: 2, gold: '250 GOLD', medal: '🥈 2 МЕСТО', cls: 'rank-2', color: '#e4e4e2' },
+    { rank: 3, gold: '150 GOLD', medal: '🥉 3 МЕСТО', cls: 'rank-3', color: '#cd7f32' }
+  ];
+
+  const podiumHtml = top3.map((st, idx) => {
+    const pr = prizes[idx];
+    const safeNick = escapeHTML(st.nick).replace(/'/g, "\\'");
+    const pct = Math.min(100, Math.round((st.totalPantheonPts / Math.max(1, maxPts)) * 100));
+    const gapToFirst = idx === 0 ? '👑 ЛИДЕР ГОНКИ ЗА 500 GOLD' : `До 1 места: ${maxPts - st.totalPantheonPts} PTS`;
+
+    return `
+      <div class="podium-card ${pr.cls}">
+        <div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <span style="font-family:var(--font-tech); font-size:10px; font-weight:900; color:${pr.color}; background:rgba(255,255,255,0.06); padding:4px 9px; border-radius:6px; border:1px solid ${pr.color};">
+              ${pr.medal}
+            </span>
+            <span style="font-family:var(--font-tech); font-size:11px; font-weight:900; color:#000; background:${pr.color}; padding:4px 10px; border-radius:6px;">
+              🎁 ${pr.gold}
+            </span>
+          </div>
+
+          <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+            <img src="${escapeHTML(st.img)}" onerror="this.src='logo.png'" style="width:62px; height:62px; border-radius:14px; object-fit:cover; border:2px solid ${pr.color};">
+            <div style="min-width:0; flex:1;">
+              <div style="font-family:var(--font-tech); font-size:16px; font-weight:900; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                ${formatPlayerNickHTML(st.nick, true)}
+              </div>
+              <div style="font-size:10px; color:var(--silver-muted); margin-top:2px;">${escapeHTML(st.role)} • <span class="${st.formClass}" style="padding:1px 5px; border-radius:4px; font-size:8px;">${st.formLabel}</span></div>
+              <div style="font-family:var(--font-tech); font-size:18px; font-weight:900; color:${pr.color}; margin-top:4px;">
+                ${st.totalPantheonPts} <span style="font-size:10px; color:var(--silver);">PTS</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="pts-bar-bg">
+            <div class="pts-bar-fill" style="width:${pct}%;"></div>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-size:9px; color:var(--silver-muted); margin-bottom:10px;">
+            <span>${gapToFirst}</span>
+            <span>LIVE K/D: <b style="color:#fff;">${st.liveKd}</b> (${st.deltaFormatted})</span>
+          </div>
+
+          <!-- Прозрачная расшифровка инновационного индекса PTS -->
+          <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:5px; background:rgba(0,0,0,0.45); padding:8px 6px; border-radius:8px; text-align:center; margin-bottom:12px; border:1px solid rgba(255,255,255,0.05);">
+            <div>
+              <div style="font-family:var(--font-tech); font-size:11px; font-weight:800; color:#fff;">${st.kdPts + st.growthPts}</div>
+              <div style="font-size:7px; color:var(--silver-muted); text-transform:uppercase;">СКИЛЛ & РОСТ K/D</div>
+            </div>
+            <div style="border-left:1px solid rgba(255,255,255,0.06); border-right:1px solid rgba(255,255,255,0.06);">
+              <div style="font-family:var(--font-tech); font-size:11px; font-weight:800; color:var(--success);">+${st.matchActivityPts}</div>
+              <div style="font-size:7px; color:var(--silver-muted); text-transform:uppercase;">ИГРЫ В ТАБЕ (${st.matchesPlayed})</div>
+            </div>
+            <div>
+              <div style="font-family:var(--font-tech); font-size:11px; font-weight:800; color:#ffb300;">+${st.siteActivityPts}</div>
+              <div style="font-size:7px; color:var(--silver-muted); text-transform:uppercase;">АКТИВ САЙТА (🔥${st.fanBoosts})</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:6px;">
+          <button type="button" class="boost-btn" onclick="window.boostPantheonPlayer('${safeNick}')">
+            <i class="fas fa-fire"></i> БУСТ БОЙЦА (+25 PTS)
+          </button>
+          <button type="button" class="chip-btn" style="padding:9px 12px;" onclick="window.openPlayerDossier('${safeNick}')" title="Открыть досье">
+            📊
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  const chasersHtml = chasers.length > 0 ? `
+    <div class="so2-team-panel" style="margin-top:8px;">
+      <div class="so2-team-header c6e-head">
+        <span>⚔️ ПРЕТЕНДЕНТЫ В ГОНКЕ ЗА ПРИЗОВУЮ ТРОЙКУ ПАНТЕОНА</span>
+        <span>ДО ТОП-3</span>
+      </div>
+      <div class="so2-table-wrap">
+        <table class="so2-table">
+          <thead>
+            <tr>
+              <th>Место</th>
+              <th class="col-name">Боец [C6E]</th>
+              <th>LIVE K/D (Сдвиг)</th>
+              <th>Матчей</th>
+              <th>Актив (🔥)</th>
+              <th>Очки PTS</th>
+              <th>Поддержать</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${chasers.map((st, i) => {
+              const rankNum = i + 4;
+              const safeNick = escapeHTML(st.nick).replace(/'/g, "\\'");
+              const thirdPts = top3[2] ? top3[2].totalPantheonPts : st.totalPantheonPts;
+              const diffToPrize = Math.max(0, thirdPts - st.totalPantheonPts + 1);
+              return `
+                <tr>
+                  <td style="font-family:var(--font-tech); font-weight:800; color:var(--silver-muted);">#${rankNum}</td>
+                  <td class="col-name">${formatPlayerNickHTML(st.nick, true)}</td>
+                  <td>
+                    <b style="color:#fff; font-family:var(--font-tech);">${st.liveKd}</b>
+                    <span class="kd-delta ${st.delta > 0.004 ? 'delta-up' : (st.delta < -0.004 ? 'delta-down' : 'delta-neutral')}">${st.deltaFormatted}</span>
+                  </td>
+                  <td>${st.matchesPlayed}</td>
+                  <td style="color:#ffb300; font-weight:700;">🔥 ${st.fanBoosts}</td>
+                  <td>
+                    <b style="font-family:var(--font-tech); color:#fff;">${st.totalPantheonPts} PTS</b>
+                    <div style="font-size:8px; color:var(--silver-muted);">до 150 Gold: -${diffToPrize} PTS</div>
+                  </td>
+                  <td>
+                    <button type="button" class="chip-btn" style="border-color:#ffb300; color:#ffb300;" onclick="window.boostPantheonPlayer('${safeNick}')">
+                      🔥 +25 PTS
+                    </button>
+                  </td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  ` : '';
+
+  root.innerHTML = `
+    <div class="pantheon-hero">
+      <div class="pantheon-badge-top">
+        <i class="fas fa-crown"></i> ЕЖЕНЕДЕЛЬНАЯ ПРЕМИЯ ОТ ОСНОВАТЕЛЯ KAS • ВЫПЛАТА КАЖДОЕ ВОСКРЕСЕНЬЕ
+      </div>
+      <h2 class="pantheon-title">ПАНТЕОН <span>[C6E]</span></h2>
+      <p style="font-size:11px; color:var(--silver); max-width:640px; margin:0 auto; line-height:1.5;">
+        Инновационный живой рейтинг бойцов организации <b>CYBER 6 ESPORTS</b>. Очки <b>PTS</b> начисляются автоматически за <b>рост K/D в Табах</b>, сыгранные матчи, титулы <b>MVP</b> и <b>активность на сайте</b>!
+      </p>
+
+      <div class="pantheon-prize-strip">
+        <div class="prize-tier-box gold">
+          <div style="font-size:16px; margin-bottom:2px;">🥇</div>
+          <div class="prize-gold-amount" style="color:#ffb300;">500 GOLD</div>
+          <div class="prize-gold-lbl">1 МЕСТО НЕДЕЛИ</div>
+        </div>
+        <div class="prize-tier-box silver">
+          <div style="font-size:16px; margin-bottom:2px;">🥈</div>
+          <div class="prize-gold-amount" style="color:#e4e4e2;">250 GOLD</div>
+          <div class="prize-gold-lbl">2 МЕСТО НЕДЕЛИ</div>
+        </div>
+        <div class="prize-tier-box bronze">
+          <div style="font-size:16px; margin-bottom:2px;">🥉</div>
+          <div class="prize-gold-amount" style="color:#ffb070;">150 GOLD</div>
+          <div class="prize-gold-lbl">3 МЕСТО НЕДЕЛИ</div>
+        </div>
+      </div>
+
+      <div style="display:inline-flex; align-items:center; gap:8px; background:rgba(0,0,0,0.6); border:1px solid rgba(255,255,255,0.12); padding:6px 14px; border-radius:20px; font-family:var(--font-tech); font-size:10px; color:var(--silver);">
+        <i class="far fa-clock" style="color:#ffb300;"></i> ДО РАЗДАЧИ ГОЛДЫ ОСТАЛОСЬ: <b style="color:#ffb300;">${getWeeklyResetCountdownText()}</b>
+      </div>
+    </div>
+
+    <div class="podium-grid">
+      ${podiumHtml}
+    </div>
+
+    ${chasersHtml}
+  `;
 }
 
 window.showNotify = (text, type) => {
@@ -771,7 +1106,7 @@ function renderAllRosters() {
                 <th>Роль</th>
                 <th>LIVE K/D</th>
                 <th>Сдвиг</th>
-                <th>У / С</th>
+                <th>PTS Пантеона</th>
                 <th>Досье</th>
               </tr>
             </thead>
@@ -785,7 +1120,7 @@ function renderAllRosters() {
                     <td style="font-size:10px; color:var(--silver-muted);">${escapeHTML(p.role)}</td>
                     <td style="font-family:var(--font-tech); font-weight:800; color:#fff;">${st.liveKd}</td>
                     <td><span class="kd-delta ${st.delta > 0.004 ? 'delta-up' : (st.delta < -0.004 ? 'delta-down' : 'delta-neutral')}">${st.deltaFormatted}</span></td>
-                    <td>${st.totalKills}/${st.totalDeaths}</td>
+                    <td style="color:#ffb300; font-family:var(--font-tech); font-weight:800;">${st.totalPantheonPts} PTS</td>
                     <td><button class="chip-btn" onclick="window.openPlayerDossier('${safeNick}')">📊</button></td>
                   </tr>
                 `;
@@ -839,7 +1174,7 @@ function renderAllRosters() {
             <div class="pro-identity">
               <h3 class="pro-nick">
                 ${formatPlayerNickHTML(p.nick, true)}
-                ${st.mvpCount > 0 ? `<span style="font-size:9px; background:rgba(255,179,0,0.2); border:1px solid var(--warning); color:var(--warning); padding:2px 6px; border-radius:4px;">⭐ MVP x${st.mvpCount}</span>` : ''}
+                <span style="font-size:9px; background:rgba(255,179,0,0.2); border:1px solid #ffb300; color:#ffb300; padding:2px 6px; border-radius:4px;">👑 ${st.totalPantheonPts} PTS</span>
               </h3>
               <div class="pro-quote">"${escapeHTML(p.quote || 'Cyber 6 Esports')}"</div>
             </div>
@@ -886,9 +1221,14 @@ function renderAllRosters() {
               </div>
             </div>
 
-            <button type="button" class="btn-glitch" style="padding:10px; font-size:10px;" onclick="window.openPlayerDossier('${safeNickArg}')">
-              <i class="fas fa-chart-bar" style="margin-right:6px;"></i> ОТКРЫТЬ ЛИЧНОЕ ДОСЬЕ И ПРОГРЕСС
-            </button>
+            <div style="display:flex; gap:6px;">
+              <button type="button" class="btn-glitch" style="padding:10px; font-size:10px; flex:1;" onclick="window.openPlayerDossier('${safeNickArg}')">
+                <i class="fas fa-chart-bar" style="margin-right:6px;"></i> ДОСЬЕ И ПРОГРЕСС
+              </button>
+              <button type="button" class="boost-btn" style="width:auto; padding:10px 12px;" onclick="window.boostPantheonPlayer('${safeNickArg}')" title="Поддержать бойца в Пантеоне (+25 PTS)">
+                🔥 +25 PTS
+              </button>
+            </div>
           </div>
         </div>
       `;
@@ -922,8 +1262,8 @@ function renderAllRosters() {
           <i class="fas fa-list"></i> СПИСКОМ
         </button>
       </div>
-      <button type="button" class="report-mini-btn" onclick="window.openWeeklyTeamReport()">
-        <i class="fas fa-chart-line"></i> ОТЧЁТ НЕДЕЛИ
+      <button type="button" class="report-mini-btn" style="border-color:#ffb300; color:#ffb300;" onclick="selectTab('pantheon', document.getElementById('btn-pantheon'))">
+        <i class="fas fa-crown"></i> ПАНТЕОН (900G)
       </button>
     </div>
 
@@ -987,7 +1327,7 @@ window.openPlayerDossier = (nick) => {
         <img src="${escapeHTML(p.img || 'logo.png')}" onerror="this.src='logo.png'" style="width:52px; height:52px; border-radius:10px; object-fit:cover; border:1px solid var(--accent-light);">
         <div>
           <div style="font-family:var(--font-tech); font-size:17px; font-weight:900; color:#fff;">${formatPlayerNickHTML(p.nick, true)}</div>
-          <div style="font-size:10px; color:var(--silver-muted);">${escapeHTML(p.role || 'Боец')} • Базовый K/D: ${st.baseKd}</div>
+          <div style="font-size:10px; color:var(--silver-muted);">${escapeHTML(p.role || 'Боец')} • Базовый K/D: ${st.baseKd} • <b style="color:#ffb300;">${st.totalPantheonPts} PTS</b></div>
         </div>
       </div>
       <button class="btn-glitch" style="width:auto; padding:7px 14px; font-size:10px;" onclick="closeAnalyticsModal()">ЗАКРЫТЬ ✕</button>
@@ -1003,11 +1343,11 @@ window.openPlayerDossier = (nick) => {
         </div>
       </div>
 
-      <div class="mvp-card" style="border-left:3px solid var(--silver);">
+      <div class="mvp-card" style="border-left:3px solid #ffb300;">
         <div>
-          <div style="font-size:9px; color:var(--silver-muted); font-weight:700;">ПРОГРЕСС ЗА 7 ДНЕЙ (НЕДЕЛЯ)</div>
-          <div style="font-family:var(--font-tech); font-size:15px; font-weight:800; color:var(--silver); margin-top:3px;">
-            Матчей: ${st.weekMatches} • У/С: ${st.weekKills}/${st.weekDeaths} (${st.weekKd} K/D)
+          <div style="font-size:9px; color:var(--silver-muted); font-weight:700;">РЕЙТИНГ В ПАНТЕОНЕ (ГОНКА ЗА 900 GOLD)</div>
+          <div style="font-family:var(--font-tech); font-size:15px; font-weight:800; color:#ffb300; margin-top:3px;">
+            ${st.totalPantheonPts} PTS • Бустов на сайте: 🔥 ${st.fanBoosts}
           </div>
         </div>
       </div>
@@ -1023,98 +1363,19 @@ window.openPlayerDossier = (nick) => {
 };
 
 window.openWeeklyTeamReport = () => {
-  const allPlayers = [...mainRosterData, ...reserveRosterData];
-  const content = document.getElementById('c6e-analytics-content');
-
-  if (allPlayers.length === 0) {
-    content.innerHTML = `<div style="text-align:center; padding:25px;">Сначала добавьте игроков в раздел «Состав» в Админке! <br><br><button class="btn-glitch" style="width:auto;" onclick="closeAnalyticsModal()">ЗАКРЫТЬ</button></div>`;
-    document.getElementById('c6e-analytics-modal').classList.add('active');
-    return;
-  }
-
-  const statsList = allPlayers.map(p => computePlayerLiveAnalytics(p));
-  statsList.sort((a, b) => parseFloat(b.liveKd) - parseFloat(a.liveKd));
-
-  const topPlayer = statsList[0];
-  const mostImproved = [...statsList].sort((a, b) => b.delta - a.delta)[0];
-
-  content.innerHTML = `
-    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--glass-border); padding-bottom:12px; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
-      <div>
-        <div style="font-family:var(--font-tech); font-size:16px; font-weight:900; color:#fff;">
-          <i class="fas fa-chart-pie text-accent"></i> ЕЖЕНЕДЕЛЬНЫЙ ОТЧЁТ ПРОГРЕССА [C6E]
-        </div>
-        <div style="font-size:10px; color:var(--silver-muted); margin-top:2px;">
-          Автоматическая сводка K/D, формы и импакта всех бойцов на основе сыгранных матчей
-        </div>
-      </div>
-      <button class="btn-glitch" style="width:auto; padding:7px 14px; font-size:10px;" onclick="closeAnalyticsModal()">ЗАКРЫТЬ ✕</button>
-    </div>
-
-    <div class="mvp-compare-bar" style="margin-top:0; margin-bottom:16px;">
-      <div class="mvp-card" style="border-left:3px solid var(--warning);">
-        <i class="fas fa-trophy" style="color:var(--warning); font-size:18px;"></i>
-        <div>
-          <div style="font-size:9px; color:var(--silver-muted); font-weight:700;">ЛИДЕР РЕЙТИНГА НЕДЕЛИ</div>
-          <div style="font-weight:800; color:#fff; font-family:var(--font-tech);">${escapeHTML(topPlayer.nick)} — ${topPlayer.liveKd} K/D</div>
-        </div>
-      </div>
-      <div class="mvp-card" style="border-left:3px solid var(--success);">
-        <i class="fas fa-arrow-trend-up" style="color:var(--success); font-size:18px;"></i>
-        <div>
-          <div style="font-size:9px; color:var(--silver-muted); font-weight:700;">ГЛАВНЫЙ ПРОГРЕСС (В ПЛЮС)</div>
-          <div style="font-weight:800; color:#fff; font-family:var(--font-tech);">${escapeHTML(mostImproved.nick)} (${mostImproved.deltaFormatted})</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="so2-table-wrap">
-      <table class="so2-table">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th class="col-name">Боец [C6E]</th>
-            <th>Игр (7 дн.)</th>
-            <th>У / П / С</th>
-            <th>База K/D</th>
-            <th>LIVE K/D</th>
-            <th>Сдвиг (+/-)</th>
-            <th>Статус формы</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${statsList.map((st, idx) => `
-            <tr>
-              <td style="color:#777;">${idx + 1}</td>
-              <td class="col-name">${formatPlayerNickHTML(st.nick, true)}</td>
-              <td>${st.weekMatches} <span style="color:#666; font-size:9px;">(всего ${st.matchesPlayed})</span></td>
-              <td>${st.totalKills} / ${st.totalAssists} / ${st.totalDeaths}</td>
-              <td style="color:var(--silver-muted);">${st.baseKd}</td>
-              <td style="font-family:var(--font-tech); font-weight:900; color:#fff;">${st.liveKd}</td>
-              <td>
-                <span class="kd-delta ${st.delta > 0.004 ? 'delta-up' : (st.delta < -0.004 ? 'delta-down' : 'delta-neutral')}">
-                  ${st.delta > 0.004 ? '▲ ' : (st.delta < -0.004 ? '▼ ' : '')}${st.deltaFormatted}
-                </span>
-              </td>
-              <td><span class="pro-form-badge ${st.formClass}" style="font-size:8px;">${st.formLabel}</span></td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-    </div>
-  `;
-
-  document.getElementById('c6e-analytics-modal').classList.add('active');
+  selectTab('pantheon', document.getElementById('btn-pantheon'));
 };
 
 onSnapshot(doc(db, DB_COLLECTION, "roster_main"), (s) => {
   mainRosterData = (s.exists() && s.data().list) ? s.data().list : [];
   renderAllRosters();
+  renderPantheonSection();
 });
 
 onSnapshot(doc(db, DB_COLLECTION, "roster_reserve"), (s) => {
   reserveRosterData = (s.exists() && s.data().list) ? s.data().list : [];
   renderAllRosters();
+  renderPantheonSection();
 });
 
 // =========================================================
@@ -1383,7 +1644,7 @@ onSnapshot(doc(db, DB_COLLECTION, "schedule"), (snap) => {
 });
 
 // =========================================================
-// 6. ИСТОРИЯ МАТЧЕЙ + ПЕРЕСЧЕТ РОСТЕРА
+// 6. ИСТОРИЯ МАТЧЕЙ + ПЕРЕСЧЕТ РОСТЕРА И ПАНТЕОНА
 // =========================================================
 
 window.filterHistory = (mode, btn) => {
@@ -1614,6 +1875,7 @@ onSnapshot(doc(db, DB_COLLECTION, "history"), (snap) => {
 
   renderHistoryList();
   renderAllRosters();
+  renderPantheonSection();
 });
 
 // --- ROADMAP, МЕДИА, ОТЗЫВЫ ---
