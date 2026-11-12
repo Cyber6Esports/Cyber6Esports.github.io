@@ -590,7 +590,6 @@
       </div>
 
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 18px;">
-        <!-- ЛЕВАЯ КОЛОНКА: ЖУРНАЛ ВСЕХ ОТПРАВИТЕЛЕЙ И ТРЕВОГ -->
         <div style="background: rgba(0,0,0,0.4); padding: 16px; border-radius: 12px; border: 1px solid var(--glass-border);">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
             <h3 style="font-size: 12px; color: var(--silver); margin:0;"><i class="fas fa-satellite-dish text-accent"></i> ЖУРНАЛ АКТИВНОСТИ И ПОПЫТОК ВЗЛОМА / МАТОВ</h3>
@@ -601,7 +600,6 @@
           </div>
         </div>
 
-        <!-- ПРАВАЯ КОЛОНКА: РУЧНОЙ БАН И ЧЁРНЫЙ СПИСОК -->
         <div style="background: rgba(158, 27, 40, 0.08); padding: 16px; border-radius: 12px; border: 1px solid rgba(212, 38, 56, 0.3);">
           <h3 style="font-size: 12px; color: var(--accent-light); margin-bottom:8px;"><i class="fas fa-ban"></i> ЧЁРНЫЙ СПИСОК (БАН ПО IP ИЛИ DEVICE ID)</h3>
           <div class="row-inputs">
@@ -626,11 +624,11 @@
     </div>
 
     <!-- =========================================================================
-         1. ИСТОРИЯ МАТЧЕЙ + ДВОЙНОЙ ТАБ STANDOFF 2 + АВТО-ПОСТ В ТГК СО СКРИНОМ
+         1. ИСТОРИЯ МАТЧЕЙ + ULTRA-HD ИИ-СКАНЕР ТАБА STANDOFF 2 + ПОСТ В ТГК
          ========================================================================= -->
     <div class="panel full-width cat-matches">
       <div class="panel-header">
-        <h2><span class="panel-icon"><i class="fas fa-trophy"></i></span> ДОБАВИТЬ МАТЧ (ДВОЙНОЙ ТАБ STANDOFF 2 + ПОСТ В ТГК)</h2>
+        <h2><span class="panel-icon"><i class="fas fa-trophy"></i></span> ДОБАВИТЬ МАТЧ (PRO ULTRA-HD СКАНЕР ТАБА STANDOFF 2 + ПОСТ В ТГК)</h2>
         <span style="font-size:10px; color:var(--tg-blue); font-family:var(--font-tech);"><i class="fab fa-telegram"></i> AUTO-POST TO TG CHANNEL</span>
       </div>
 
@@ -638,14 +636,14 @@
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
           <div>
             <label style="margin:0; color:var(--accent-light); font-size:11px;"><i class="fas fa-camera-retro"></i> 1. ЗАГРУЗИ СКРИНШОТ «СТАТИСТИКА» ИЗ STANDOFF 2</label>
-            <p style="font-size:11px; color:var(--silver-muted); margin:4px 0 0 0;">Скриншот автоматически сканируется ИИ, прикрепляется на сайт как доказательство и улетает в ТГК вместе с полным Табом игроков!</p>
+            <p style="font-size:11px; color:var(--silver-muted); margin:4px 0 0 0;">Сканер раздельно читает колонку Ников (в Full HD без сжатия) и колонку Цифр (строго числа), исправляет клан-теги и сверяет ники с твоим Ростером `[C6E]`!</p>
           </div>
           <div style="display:flex; gap:8px; flex-wrap:wrap;">
             <button type="button" class="action-btn" style="margin:0; width:auto; padding:11px 18px;" onclick="document.getElementById('proofImageInput').click()">
               <i class="fas fa-mobile-alt"></i> ВЫБРАТЬ СКРИН ТАБА С ТЕЛЕФОНА
             </button>
             <button type="button" class="action-btn secondary" id="btnRunOcr" style="margin:0; width:auto; padding:11px 16px; display:none;" onclick="scanStandoffScoreboard()">
-              <i class="fas fa-sync-alt"></i> ПЕРЕСКАНИРОВАТЬ ТАБ
+              <i class="fas fa-sync-alt"></i> ПЕРЕСКАНИРОВАТЬ В ULTRA-HD
             </button>
           </div>
         </div>
@@ -653,7 +651,7 @@
         <input type="text" id="hProofUrl" placeholder="Или вставь прямую ссылку на скриншот Таба..." style="margin-top:10px;" oninput="updateProofPreview(this.value)">
 
         <div id="ocrStatusBox" class="ocr-status">
-          <i class="fas fa-circle-notch fa-spin"></i> <span id="ocrStatusText">Зональный сканер читает Левую и Правую команды со скрина...</span>
+          <i class="fas fa-circle-notch fa-spin"></i> <span id="ocrStatusText">Ultra-HD сканер читает ники и цифры по отдельным колонкам...</span>
         </div>
 
         <div id="proofPreviewWrap" class="proof-preview-wrap">
@@ -719,6 +717,16 @@
           <button type="button" class="chip-btn" onclick="applyC6ETagToOurTeam()"><i class="fas fa-tag"></i> Проставить тег [C6E] нашим бойцам</button>
           <button type="button" class="chip-btn" onclick="fillOurTeamFromRoster()"><i class="fas fa-users"></i> Заполнить ники из состава [C6E]</button>
           <button type="button" class="chip-btn" onclick="loadSampleFromScreenshot()"><i class="fas fa-bolt"></i> Загрузить данные со скрина Dune (13:11)</button>
+        </div>
+      </div>
+
+      <!-- БЫСТРАЯ ВСТАВКА БОЙЦОВ ИЗ ТВОЕГО РОСТЕРА В 1 ТАП -->
+      <div style="margin-top:10px; padding:10px 12px; background:rgba(255,255,255,0.03); border:1px solid var(--glass-border); border-radius:8px;">
+        <div style="font-size:9px; font-family:var(--font-tech); color:var(--silver-muted); margin-bottom:6px;">
+          <i class="fas fa-hand-pointer text-accent"></i> БЫСТРАЯ ПОДСТАНОВКА БОЙЦОВ ИЗ БАЗЫ РОСТЕРА (НАЖМИ НА НИК, ЧТОБЫ ВСТАВИТЬ В ВЫБРАННУЮ СТРОКУ ТАБА):
+        </div>
+        <div id="quickRosterChipsBar" class="chips-row" style="margin:0;">
+          <span style="font-size:10px; color:#666;">Загрузка бойцов...</span>
         </div>
       </div>
 
@@ -1151,7 +1159,6 @@
   const auth = getAuth(app);
   const DB_COLLECTION = "siteData";
 
-  // Определение отпечатка устройства и IP для фиксации попыток взлома админки
   function getOrCreateAdminDeviceId() {
     let devId = localStorage.getItem('c6e_shield_device_id');
     if (!devId) {
@@ -1240,11 +1247,14 @@
 
   let cachedNews = [];
   let cachedRoster = [];
+  let allKnownRosterPlayers = []; // Все бойцы из Основы + Резерва для 100% точной сверки ников в Табе!
   let cachedPracs = [];
   let cachedSchedule = [];
   let cachedHistory = [];
   let cachedSecurityLogs = [];
   let cachedBannedUsers = [];
+  let lastFocusedNameInput = null;
+  let rawFullResProofDataUrl = null; // Оригинальный скриншот без сжатия для Ultra-HD OCR!
 
   function showToast(msg, isError = false) {
     const container = document.getElementById('toast-container');
@@ -1306,7 +1316,7 @@
   };
 
   // =========================================================================
-  // ФУНКЦИИ УПРАВЛЕНИЯ БЕЗОПАСНОСТЬЮ C6E SHIELD (БАН / РАЗБАН / ОЧИСТКА ЛОГОВ)
+  // ФУНКЦИИ УПРАВЛЕНИЯ БЕЗОПАСНОСТЬЮ C6E SHIELD
   // =========================================================================
 
   window.banUserQuick = async (ip, deviceId, actorName) => {
@@ -1876,7 +1886,7 @@
   }
 
   // =========================================================================
-  // ЗАГРУЗКА ФОТО И ЗОНАЛЬНЫЙ ИИ-СКАНЕР ТАБА STANDOFF 2
+  // PRO ULTRA-HD ИИ-СКАНЕР ТАБА STANDOFF 2 (РАЗДЕЛЬНОЕ ЧТЕНИЕ НИКОВ И ЦИФР)
   // =========================================================================
 
   let imageTargetCallback = null;
@@ -1910,6 +1920,15 @@
     });
   }
 
+  function readFileAsRawDataUrl(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => resolve(e.target.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
   phoneInput.addEventListener('change', async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -1934,11 +1953,14 @@
   proofInput.addEventListener('change', async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    showToast("Загружаю скриншот Таба Standoff 2...");
+    showToast("Загружаю скриншот Таба в Ultra-HD...");
     try {
-      const dataUrl = await compressImageFile(file, 1100, 0.84);
-      document.getElementById('hProofUrl').value = dataUrl;
-      updateProofPreview(dataUrl);
+      // 1. Сохраняем полный оригинал 100% качества для идеально чёткого чтения ников!
+      rawFullResProofDataUrl = await readFileAsRawDataUrl(file);
+      // 2. Сжатую копию кладем в поле для сохранения в базу Firebase
+      const compressedUrl = await compressImageFile(file, 1180, 0.85);
+      document.getElementById('hProofUrl').value = compressedUrl;
+      updateProofPreview(compressedUrl);
       await scanStandoffScoreboard();
     } catch (err) {
       showToast("Не удалось обработать скриншот", true);
@@ -1960,106 +1982,231 @@
     }
   };
 
-  function cropZoneFromImage(imgEl, rx, ry, rw, rh, maskRankStart = null, maskRankEnd = null) {
+  // Мягкое 3-кратное увеличение + адаптивный контраст (сохраняет сглаживание букв @, [, ], 1, l)
+  function cropSmoothContrastZone(imgEl, rx, ry, rw, rh, scale = 3.0) {
     const canvas = document.createElement('canvas');
     const sx = Math.round(imgEl.naturalWidth * rx);
     const sy = Math.round(imgEl.naturalHeight * ry);
-    const sw = Math.round(imgEl.naturalWidth * rw);
-    const sh = Math.round(imgEl.naturalHeight * rh);
-    canvas.width = sw * 2;
-    canvas.height = sh * 2;
+    const sw = Math.max(10, Math.round(imgEl.naturalWidth * rw));
+    const sh = Math.max(10, Math.round(imgEl.naturalHeight * rh));
+    canvas.width = Math.round(sw * scale);
+    canvas.height = Math.round(sh * scale);
     const ctx = canvas.getContext('2d');
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
     ctx.drawImage(imgEl, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
-
-    if (maskRankStart !== null && maskRankEnd !== null) {
-      ctx.fillStyle = '#2b221e';
-      const mx = Math.round(canvas.width * maskRankStart);
-      const mw = Math.round(canvas.width * (maskRankEnd - maskRankStart));
-      ctx.fillRect(mx, 0, mw, canvas.height);
-    }
 
     const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const d = imgData.data;
+
     for (let i = 0; i < d.length; i += 4) {
-      const lum = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
-      const val = lum > 105 ? 0 : 255;
-      d[i] = val; d[i + 1] = val; d[i + 2] = val;
+      const r = d[i], g = d[i + 1], b = d[i + 2];
+      const maxCh = Math.max(r, g, b);
+      const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+      const brightness = Math.max(lum, maxCh * 0.88);
+
+      // Мягкая кривая контраста: светлый текст на темном фоне превращается в четкие темные буквы на белом листе
+      let out = 255;
+      if (brightness > 145) {
+        out = 0;
+      } else if (brightness > 78) {
+        out = Math.round(255 - ((brightness - 78) / (145 - 78)) * 255);
+      } else {
+        out = 255;
+      }
+      d[i] = out;
+      d[i + 1] = out;
+      d[i + 2] = out;
     }
     ctx.putImageData(imgData, 0, 0);
     return canvas.toDataURL('image/png');
   }
 
-  function parseHalfTabText(rawText, defaultPrefix = '') {
-    const lines = rawText.split('\n').map(l => l.trim()).filter(l => l.length > 2);
-    const players = [];
-
-    for (const line of lines) {
-      const nums = line.match(/\b\d{1,3}\b/g);
-      if (!nums || nums.length < 2) continue;
-
-      let rawName = line.replace(/\s+\d{1,3}(\s+\d{1,3}){1,5}.*$/, '').trim();
-      rawName = rawName.replace(/^[0-9#|\s]+/, '').trim();
-
-      if (/\[?[cс]6[eе]\]?/i.test(rawName)) {
-        rawName = rawName.replace(/^.*?\[?[cс]6[eе]\]?\s*/i, '[C6E] ');
-      } else if (defaultPrefix && !rawName.startsWith('[')) {
-        rawName = defaultPrefix + rawName;
+  // Вычисление расстояния Левенштейна для точной сверки отсканированного ника с твоей базой игроков [C6E]
+  function levenshteinSimilarity(a, b) {
+    const s1 = String(a || '').toLowerCase().trim();
+    const s2 = String(b || '').toLowerCase().trim();
+    if (!s1 || !s2) return 0;
+    if (s1 === s2) return 1;
+    const len1 = s1.length, len2 = s2.length;
+    const dp = Array.from({ length: len1 + 1 }, () => Array(len2 + 1).fill(0));
+    for (let i = 0; i <= len1; i++) dp[i][0] = i;
+    for (let j = 0; j <= len2; j++) dp[0][j] = j;
+    for (let i = 1; i <= len1; i++) {
+      for (let j = 1; j <= len2; j++) {
+        const cost = s1[i - 1] === s2[j - 1] ? 0 : 1;
+        dp[i][j] = Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost);
       }
+    }
+    return 1 - dp[len1][len2] / Math.max(len1, len2);
+  }
 
-      if (cachedRoster.length > 0 && rawName.includes('[C6E]')) {
-        const cleanPart = rawName.replace('[C6E]', '').trim().toLowerCase();
-        const foundRoster = cachedRoster.find(rp => {
-          const rClean = rp.nick.replace('[C6E]', '').trim().toLowerCase();
-          return rClean.slice(0, 3) === cleanPart.slice(0, 3);
-        });
-        if (foundRoster) {
-          rawName = foundRoster.nick.includes('[C6E]') ? foundRoster.nick : `[C6E] ${foundRoster.nick}`;
+  // Умная очистка и восстановление любого ника Standoff 2 (как нашего, так и противника!)
+  function cleanSo2Nickname(rawLine, isOurTeam = false) {
+    if (!rawLine) return "";
+    let s = String(rawLine)
+      .replace(/[\r\n]+/g, ' ')
+      .replace(/[|¦«»"“”„~`^]/g, '')
+      .replace(/^[0-9#.\-—_+\s]{1,3}(?=[A-Za-zА-Яа-яЁё\[({])/, '')
+      .trim();
+
+    // 1. Восстанавливаем сломанные скобки клан-тега в начале строки: (AB88), IAB88I, [AB881 -> [AB88]
+    s = s.replace(/^[\[(I1l|]([A-Za-zА-Яа-я0-9_]{2,5})[\])I1l|]\s*/i, '[$1] ');
+    s = s.replace(/^\[([A-Za-zА-Яа-я0-9_]{2,5})\s+(?=[A-Za-zА-Яа-я0-9@])/, '[$1] ');
+
+    // 2. Распознаём наш тег [C6E], даже если OCR прочитал его как [С6Е], [C6F], [G6E], IC6EI, C6E
+    if (/^\[?[cсg6][6бb][eеf]\]?\s+/i.test(s)) {
+      s = s.replace(/^\[?[cсg6][6бb][eеf]\]?\s+/i, '[C6E] ');
+    }
+
+    // Отделяем клан-тег (если есть) от самого ника
+    let tagPart = '';
+    let namePart = s;
+    const tagMatch = s.match(/^(\[[^\]]{1,6}\])\s*(.*)$/);
+    if (tagMatch) {
+      tagPart = tagMatch[1];
+      namePart = tagMatch[2].trim();
+      // Внутри клан-тега [AB88] / [PkS] / [YB] переводим похожие русские буквы в английские
+      const cyrToLatTag = { 'А':'A','В':'B','С':'C','Е':'E','Н':'H','К':'K','М':'M','О':'O','Р':'P','Т':'T','Х':'X','У':'Y','а':'a','в':'b','с':'c','е':'e','о':'o','р':'p','х':'x','у':'y' };
+      tagPart = tagPart.replace(/[АВСЕКМОРТХУавсеорху]/g, ch => cyrToLatTag[ch] || ch);
+    }
+
+    // Убираем случайные одиночные символы мусора в конце (от значка ранга, если задел край)
+    namePart = namePart.replace(/\s+[0-9@©®§*+=\-—_]{1,2}$/, '').trim();
+
+    // 3. Определяем язык ника: если большинство букв — латиница, исправляем русские двойники на латиницу (и наоборот)
+    const latCount = (namePart.match(/[A-Za-z]/g) || []).length;
+    const cyrCount = (namePart.match(/[А-Яа-яЁё]/g) || []).length;
+
+    if (latCount >= cyrCount && latCount > 0) {
+      const cyrToLat = {
+        'А':'A','В':'B','С':'C','Е':'E','Н':'H','К':'K','М':'M','О':'O','Р':'P','Т':'T','Х':'X','У':'Y','З':'3',
+        'а':'a','с':'c','е':'e','о':'o','р':'p','х':'x','у':'y','к':'k','н':'n','м':'m','т':'t','в':'b','ш':'w','и':'u'
+      };
+      namePart = namePart.replace(/[А-Яа-яЁё]/g, ch => cyrToLat[ch] || ch);
+    } else if (cyrCount > latCount) {
+      const latToCyr = {
+        'A':'А','B':'В','C':'С','E':'Е','H':'Н','K':'К','M':'М','O':'О','P':'Р','T':'Т','X':'Х','Y':'У',
+        'a':'а','c':'с','e':'е','o':'о','p':'р','x':'х','y':'у','k':'к','m':'м','t':'т','n':'п'
+      };
+      namePart = namePart.replace(/[A-Za-z]/g, ch => latToCyr[ch] || ch);
+    }
+
+    // 4. Сверяемся со всеми твоими реальными игроками из базы Ростера (Основа + Резерв)!
+    const cleanCandidate = namePart.replace(/[^a-zA-Zа-яА-ЯёЁ0-9@]/g, '').toLowerCase();
+    if (cleanCandidate.length >= 2 && allKnownRosterPlayers.length > 0) {
+      let bestRosterNick = null;
+      let bestSim = 0;
+
+      for (const rp of allKnownRosterPlayers) {
+        const rBase = rp.nick.replace(/^\[?[cс]6[eе]\]?\s*\|?\s*/i, '').trim();
+        const rClean = rBase.replace(/[^a-zA-Zа-яА-ЯёЁ0-9@]/g, '').toLowerCase();
+        if (!rClean) continue;
+
+        const sim = levenshteinSimilarity(cleanCandidate, rClean);
+        const subMatch = cleanCandidate.length >= 3 && rClean.length >= 3 && (rClean.includes(cleanCandidate) || cleanCandidate.includes(rClean));
+
+        if (sim > bestSim) {
+          bestSim = sim;
+          bestRosterNick = rp.nick;
+        } else if (subMatch && bestSim < 0.65) {
+          bestSim = 0.65;
+          bestRosterNick = rp.nick;
         }
       }
 
-      const n = nums.map(x => parseInt(x, 10));
-      let kills = n[0] || 0;
-      let assists = n.length >= 3 ? n[1] : 0;
-      let deaths = n.length >= 3 ? n[2] : (n[1] || 1);
-      let score = n.length >= 4 ? n[3] : (kills * 2 + assists);
-      let ping = n.length >= 5 ? n[4] : 40;
-
-      if (kills > 50) kills = Math.floor(kills / 10);
-      if (deaths > 30) deaths = 15;
-
-      if (rawName.length >= 2 && players.length < 5) {
-        players.push({ nick: rawName, kills, assists, deaths, score, ping });
+      const threshold = (isOurTeam || /c6e/i.test(tagPart)) ? 0.45 : 0.68;
+      if (bestRosterNick && bestSim >= threshold) {
+        return bestRosterNick.includes('[C6E]') ? bestRosterNick : `[C6E] ${bestRosterNick}`;
       }
+    }
+
+    if (isOurTeam && !tagPart) {
+      tagPart = '[C6E]';
+    }
+    return tagPart ? `${tagPart} ${namePart}`.trim() : namePart.trim();
+  }
+
+  // Чтение 5 строк ников и 5 строк цифр по отдельным чистым колонкам!
+  function combineNamesAndStats(namesRawText, statsRawText, isOurTeam = false) {
+    const rawNameLines = String(namesRawText || '')
+      .split('\n')
+      .map(l => cleanSo2Nickname(l, isOurTeam))
+      .filter(l => l.replace(/^\[[^\]]+\]\s*/, '').length >= 2);
+
+    const rawStatLines = String(statsRawText || '')
+      .split('\n')
+      .map(l => (l.match(/\b\d{1,3}\b/g) || []).map(n => parseInt(n, 10)))
+      .filter(nums => nums.length >= 2);
+
+    const rowCount = Math.min(5, Math.max(rawNameLines.length, rawStatLines.length));
+    const players = [];
+
+    for (let i = 0; i < rowCount; i++) {
+      const nick = rawNameLines[i] || (isOurTeam ? `[C6E] Player ${i + 1}` : `Enemy ${i + 1}`);
+      const n = rawStatLines[i] || [15, 3, 15, 33, 45];
+
+      let kills = n[0] !== undefined ? n[0] : 15;
+      let assists = n.length >= 3 ? n[1] : 2;
+      let deaths = n.length >= 3 ? n[2] : (n[1] !== undefined ? n[1] : 15);
+      let score = n.length >= 4 ? n[3] : (kills * 2 + assists);
+      let ping = n.length >= 5 ? n[4] : 45;
+
+      // Защита от склеивания двух цифр (например, если киллы > 45 в обычном матче)
+      if (kills > 48 && kills < 100) kills = Math.floor(kills / 10);
+      if (assists > 30) assists = Math.floor(assists / 10);
+      if (deaths > 35) deaths = 18;
+      if (ping > 350) ping = Math.floor(ping / 10);
+
+      players.push({ nick, kills, assists, deaths, score, ping });
     }
     return players;
   }
 
   window.scanStandoffScoreboard = async () => {
-    const src = document.getElementById('hProofUrl').value.trim();
+    const src = rawFullResProofDataUrl || document.getElementById('hProofUrl').value.trim();
     if (!src) return showToast("Сначала выберите скриншот Таба!", true);
 
     const statusBox = document.getElementById('ocrStatusBox');
     const statusText = document.getElementById('ocrStatusText');
     statusBox.style.display = 'flex';
-    statusText.innerText = "Зональное сканирование: читаю Левую (СТ) и Правую (Т) команды...";
+    statusText.innerText = "Шаг 1/3: Читаю счёт матча, карту и сервер в Ultra-HD...";
 
     try {
       const imgEl = new Image();
       imgEl.crossOrigin = "anonymous";
       await new Promise((res, rej) => { imgEl.onload = res; imgEl.onerror = rej; imgEl.src = src; });
 
-      const headerCrop = cropZoneFromImage(imgEl, 0.40, 0.10, 0.20, 0.09);
-      const footerCrop = cropZoneFromImage(imgEl, 0.01, 0.92, 0.55, 0.08);
-      const leftTeamCrop = cropZoneFromImage(imgEl, 0.105, 0.22, 0.39, 0.45, 0.23, 0.36);
-      const rightTeamCrop = cropZoneFromImage(imgEl, 0.585, 0.22, 0.40, 0.45, 0.23, 0.36);
+      // 1. Зоны шапки (счёт) и подвала (Режим / Карта / Сервер)
+      const headerCrop = cropSmoothContrastZone(imgEl, 0.40, 0.095, 0.20, 0.095, 2.5);
+      const footerCrop = cropSmoothContrastZone(imgEl, 0.01, 0.915, 0.56, 0.08, 2.5);
 
-      const [headerRes, footerRes, leftRes, rightRes] = await Promise.all([
-        Tesseract.recognize(headerCrop, 'eng'),
-        Tesseract.recognize(footerCrop, 'rus+eng'),
-        Tesseract.recognize(leftTeamCrop, 'rus+eng'),
-        Tesseract.recognize(rightTeamCrop, 'rus+eng')
+      // 2. ОТДЕЛЬНЫЕ ЧИСТЫЕ КОЛОНКИ НИКОВ (без аватарок слева и без значков рангов справа!)
+      const leftNamesCrop = cropSmoothContrastZone(imgEl, 0.106, 0.245, 0.135, 0.355, 3.2);
+      const rightNamesCrop = cropSmoothContrastZone(imgEl, 0.586, 0.245, 0.135, 0.355, 3.2);
+
+      // 3. ОТДЕЛЬНЫЕ ЧИСТЫЕ КОЛОНКИ ЦИФР (У, П, С, Счёт, Пинг — строго правее значка ранга!)
+      const leftStatsCrop = cropSmoothContrastZone(imgEl, 0.292, 0.245, 0.198, 0.355, 3.0);
+      const rightStatsCrop = cropSmoothContrastZone(imgEl, 0.772, 0.245, 0.198, 0.355, 3.0);
+
+      const [headerRes, footerRes] = await Promise.all([
+        Tesseract.recognize(headerCrop, 'eng', { tessedit_char_whitelist: '0123456789: \n' }),
+        Tesseract.recognize(footerCrop, 'rus+eng')
       ]);
 
+      statusText.innerText = "Шаг 2/3: Читаю ники обеих команд и сверяю с базой [C6E]...";
+      const [leftNamesRes, rightNamesRes] = await Promise.all([
+        Tesseract.recognize(leftNamesCrop, 'rus+eng'),
+        Tesseract.recognize(rightNamesCrop, 'rus+eng')
+      ]);
+
+      statusText.innerText = "Шаг 3/3: Точное сканирование колонок У / П / С / Счёт / Пинг...";
+      const [leftStatsRes, rightStatsRes] = await Promise.all([
+        Tesseract.recognize(leftStatsCrop, 'eng', { tessedit_char_whitelist: '0123456789 \n' }),
+        Tesseract.recognize(rightStatsCrop, 'eng', { tessedit_char_whitelist: '0123456789 \n' })
+      ]);
+
+      // Разбираем карту и сервер из нижней полосы
       const footerTxt = (footerRes.data.text || "").trim();
       const maps = ['Dune', 'Sandstone', 'Rust', 'Province', 'Breeze', 'Zone 9', 'Hanami'];
       for (const m of maps) {
@@ -2074,6 +2221,7 @@
         if (parts[2] && parts[2].length > 2) document.getElementById('hServer').value = parts[2];
       }
 
+      // Разбираем раунды
       const scoreNums = (headerRes.data.text || "").match(/\b(1[0-3]|[0-9])\b/g);
       let leftScore = 13, rightScore = 11;
       if (scoreNums && scoreNums.length >= 2) {
@@ -2081,11 +2229,13 @@
         rightScore = parseInt(scoreNums[1], 10);
       }
 
-      const leftRaw = leftRes.data.text || "";
-      const rightRaw = rightRes.data.text || "";
+      const leftNamesText = leftNamesRes.data.text || "";
+      const rightNamesText = rightNamesRes.data.text || "";
 
-      const c6eInRight = /c6e|с6е|z@ir|w1ns|непп|kroz|mart/i.test(rightRaw);
-      const c6eInLeft = /c6e|с6е|z@ir|w1ns|непп|kroz|mart/i.test(leftRaw);
+      // Определяем, с какой стороны наша команда [C6E]
+      const c6eRegex = /c6e|с6е|kas|z@ir|w1ns|непп|kroz|mart|tr1l|tril/i;
+      const c6eInRight = c6eRegex.test(rightNamesText);
+      const c6eInLeft = c6eRegex.test(leftNamesText);
 
       let ourPlayers = [];
       let enemyPlayers = [];
@@ -2095,27 +2245,29 @@
         document.getElementById('hTheir').value = leftScore;
         document.getElementById('hOurSide').value = 'АТАКА (Т)';
         document.getElementById('hTheirSide').value = 'ОБОРОНА (СТ)';
-        ourPlayers = parseHalfTabText(rightRaw, '[C6E] ');
-        enemyPlayers = parseHalfTabText(leftRaw, '');
+        ourPlayers = combineNamesAndStats(rightNamesText, rightStatsRes.data.text || "", true);
+        enemyPlayers = combineNamesAndStats(leftNamesText, leftStatsRes.data.text || "", false);
       } else {
         document.getElementById('hOur').value = leftScore;
         document.getElementById('hTheir').value = rightScore;
         document.getElementById('hOurSide').value = 'ОБОРОНА (СТ)';
         document.getElementById('hTheirSide').value = 'АТАКА (Т)';
-        ourPlayers = parseHalfTabText(leftRaw, '[C6E] ');
-        enemyPlayers = parseHalfTabText(rightRaw, '');
+        ourPlayers = combineNamesAndStats(leftNamesText, leftStatsRes.data.text || "", true);
+        enemyPlayers = combineNamesAndStats(rightNamesText, rightStatsRes.data.text || "", false);
       }
 
       if (ourPlayers.length > 0) renderTeamTable('ourPlayersTbody', ourPlayers);
       if (enemyPlayers.length > 0) {
         renderTeamTable('enemyPlayersTbody', enemyPlayers);
         const tagMatch = enemyPlayers[0].nick.match(/^(\[[^\]]+\])/);
-        if (tagMatch && !document.getElementById('hEnemy').value) {
+        if (tagMatch) {
           document.getElementById('hEnemy').value = `${tagMatch[1]} Stack`;
+        } else if (!document.getElementById('hEnemy').value) {
+          document.getElementById('hEnemy').value = enemyPlayers[0].nick;
         }
       }
 
-      showToast("Таб отсканирован! Проверь ники и цифры.");
+      showToast("✅ Ultra-HD сканирование завершено! Ники сверены с базой.");
     } catch (err) {
       console.warn("OCR error:", err);
       showToast("Скрин прикреплен! Проверь таблицы игроков.");
@@ -2123,6 +2275,38 @@
       statusBox.style.display = 'none';
     }
   };
+
+  // Быстрая подстановка бойца из базы ростера в выбранную (или первую свободную) строку Таба в 1 тап!
+  window.insertRosterNickIntoTab = (nick) => {
+    const fullNick = nick.includes('[C6E]') ? nick : `[C6E] ${nick}`;
+    if (lastFocusedNameInput && document.body.contains(lastFocusedNameInput)) {
+      lastFocusedNameInput.value = fullNick;
+      recalcAllTabsKd();
+      showToast(`Вставлен ник: ${fullNick}`);
+      return;
+    }
+    const inputs = Array.from(document.querySelectorAll('#ourPlayersTbody .p-name-inp'));
+    const emptyOrGeneric = inputs.find(inp => !inp.value.trim() || /Player/i.test(inp.value));
+    const targetInp = emptyOrGeneric || inputs[0];
+    if (targetInp) {
+      targetInp.value = fullNick;
+      recalcAllTabsKd();
+      showToast(`Вставлен ник: ${fullNick}`);
+    }
+  };
+
+  function renderQuickRosterChips() {
+    const bar = document.getElementById('quickRosterChipsBar');
+    if (!bar) return;
+    if (allKnownRosterPlayers.length === 0) {
+      bar.innerHTML = `<span style="font-size:10px; color:#666;">Добавьте бойцов в раздел «Состав», и они появятся здесь для вставки в 1 касание</span>`;
+      return;
+    }
+    bar.innerHTML = allKnownRosterPlayers.map(p => {
+      const safe = p.nick.replace(/'/g, "\\'");
+      return `<button type="button" class="chip-btn" onclick="window.insertRosterNickIntoTab('${safe}')"><i class="fas fa-user-check text-accent"></i> ${p.nick}</button>`;
+    }).join('');
+  }
 
   window.loadSampleFromScreenshot = () => {
     document.getElementById('hEnemy').value = '[AB88] / Mix Stack';
@@ -2176,6 +2360,10 @@
       <td><input type="number" class="p-pg-inp" value="${ping}" min="0"></td>
       <td><button type="button" class="btn-icon del" style="width:24px; height:24px;" onclick="this.closest('tr').remove(); recalcAllTabsKd();"><i class="fas fa-times"></i></button></td>
     `;
+    const nameInp = tr.querySelector('.p-name-inp');
+    if (nameInp) {
+      nameInp.addEventListener('focus', () => { lastFocusedNameInput = nameInp; });
+    }
     tbody.appendChild(tr);
     recalcAllTabsKd();
   };
@@ -2243,11 +2431,12 @@
   };
 
   window.fillOurTeamFromRoster = () => {
-    if (cachedRoster.length === 0) {
+    const sourceList = allKnownRosterPlayers.length > 0 ? allKnownRosterPlayers : cachedRoster;
+    if (sourceList.length === 0) {
       loadSampleFromScreenshot();
       return;
     }
-    const rows = cachedRoster.slice(0, 5).map(p => {
+    const rows = sourceList.slice(0, 5).map(p => {
       const cleanNick = p.nick.replace(/^\[?C6E\]?\s*\|?\s*/i, '');
       return { nick: `[C6E] ${cleanNick}`, kills: 18, assists: 4, deaths: 14, score: 44, ping: 45 };
     });
@@ -2278,7 +2467,6 @@
       btn.disabled = true; btn.innerText = "ПРОВЕРКА ДОСТУПА...";
       await resolveVisitorIp();
 
-      // Проверяем, не забанен ли уже этот посетитель
       const secSnap = await getDoc(doc(db, DB_COLLECTION, "security_logs"));
       if (secSnap.exists()) {
         const bannedList = secSnap.data().banned || [];
@@ -2326,7 +2514,28 @@
     });
   }
 
+  let knownMainList = [];
+  let knownReserveList = [];
+  function syncAllKnownRoster() {
+    const map = new Map();
+    [...knownMainList, ...knownReserveList].forEach(p => {
+      if (p && p.nick) map.set(p.nick.toLowerCase(), p);
+    });
+    allKnownRosterPlayers = Array.from(map.values());
+    renderQuickRosterChips();
+  }
+
   function initAdminListeners() {
+    // Загружаем и Основу, и Резерв для 100% распознавания ников в сканере Таба
+    listenToDoc(DB_COLLECTION, "roster_main", (data) => {
+      knownMainList = data.list || [];
+      syncAllKnownRoster();
+    });
+    listenToDoc(DB_COLLECTION, "roster_reserve", (data) => {
+      knownReserveList = data.list || [];
+      syncAllKnownRoster();
+    });
+
     listenToDoc(DB_COLLECTION, "bot_config", (data) => {
       const badge = document.getElementById('tgTokenStatusBadge');
       const inp = document.getElementById('secretBotTokenInput');
@@ -2348,7 +2557,6 @@
       }
     });
 
-    // Слушаем журнал безопасности C6E Shield и чёрный список банов
     listenToDoc(DB_COLLECTION, "security_logs", (data) => {
       const logs = data.logs || [];
       const banned = data.banned || [];
@@ -2686,6 +2894,7 @@
         await sendMatchObjectToTG(item);
       }
       document.getElementById('hProofUrl').value = '';
+      rawFullResProofDataUrl = null;
       updateProofPreview('');
     }
   };
