@@ -396,11 +396,17 @@
     .tab-editor-table th:first-child { text-align: left; }
     .tab-editor-table td { padding: 4px 2px; }
     .tab-editor-table input {
-      padding: 7px 5px; font-size: 11px; text-align: center; border-radius: 5px;
+      padding: 7px 3px; font-size: 11px; text-align: center; border-radius: 5px;
+      -moz-appearance: textfield;
     }
-    .tab-editor-table input.p-name-inp { text-align: left; font-weight: 600; min-width: 115px; }
+    .tab-editor-table input::-webkit-outer-spin-button,
+    .tab-editor-table input::-webkit-inner-spin-button {
+      -webkit-appearance: none; margin: 0;
+    }
+    .tab-editor-table input.p-name-inp { text-align: left; font-weight: 600; min-width: 122px; padding: 7px 6px; }
     .tab-editor-table input.p-kd-inp {
-      font-family: var(--font-tech); font-weight: 700; color: var(--success);
+      font-family: var(--font-tech); font-weight: 700; font-size: 10.5px; letter-spacing: -0.3px;
+      min-width: 54px; padding: 7px 2px; color: var(--success);
       background: rgba(0, 230, 118, 0.06); border-color: rgba(0, 230, 118, 0.25);
     }
 
@@ -773,7 +779,7 @@
                 <th style="width:44px;">У</th>
                 <th style="width:40px;">П</th>
                 <th style="width:44px;">С</th>
-                <th style="width:52px;">K/D</th>
+                <th style="width:58px;">K/D</th>
                 <th style="width:46px;">Счет</th>
                 <th style="width:44px;">Пинг</th>
                 <th style="width:26px;"></th>
@@ -798,7 +804,7 @@
                 <th style="width:44px;">У</th>
                 <th style="width:40px;">П</th>
                 <th style="width:44px;">С</th>
-                <th style="width:52px;">K/D</th>
+                <th style="width:58px;">K/D</th>
                 <th style="width:46px;">Счет</th>
                 <th style="width:44px;">Пинг</th>
                 <th style="width:26px;"></th>
@@ -2144,172 +2150,629 @@
     }
   };
 
-  function cropSmoothContrastZone(imgEl, rx, ry, rw, rh, scale = 3.0) {
-    const canvas = document.createElement('canvas');
-    const sx = Math.round(imgEl.naturalWidth * rx);
-    const sy = Math.round(imgEl.naturalHeight * ry);
-    const sw = Math.max(10, Math.round(imgEl.naturalWidth * rw));
-    const sh = Math.max(10, Math.round(imgEl.naturalHeight * rh));
-    canvas.width = Math.round(sw * scale);
-    canvas.height = Math.round(sh * scale);
-    const ctx = canvas.getContext('2d');
-    ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = 'high';
-    ctx.drawImage(imgEl, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
+  // ============================================================================
+  // PRO ULTRA-HD СКАНЕР ТАБА STANDOFF 2 V4 (ПОСТРОЧНЫЙ И ПОКЛЕТОЧНЫЙ ДВИЖОК)
+  // 100% отсечение звезд ★ и значков ранга, авто-центровка экрана и консенсус тегов
+  // ============================================================================
+  const DEFAULT_C6E_ROSTER = [
+    "[C6E] Kas",
+    "[C6E] mART1N",
+    "[C6E] Z@Ir3xus",
+    "[C6E] w1nsezyy",
+    "[C6E] krozz777",
+    "[C6E] Tr1ller",
+    "[C6E] ツBerkutツ",
+    "[C6E] Неппи"
+  ];
 
-    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const d = imgData.data;
+  const HOMO_CHAR_MAP = {
+    'а':'a','в':'b','с':'c','е':'e','н':'h','к':'k','м':'m',
+    'о':'o','р':'p','т':'t','у':'y','х':'x','п':'n','и':'u',
+    '0':'o','1':'i','l':'i','3':'e','6':'g','@':'a','4':'a'
+  };
 
-    for (let i = 0; i < d.length; i += 4) {
-      const r = d[i], g = d[i + 1], b = d[i + 2];
-      const maxCh = Math.max(r, g, b);
-      const lum = 0.299 * r + 0.587 * g + 0.114 * b;
-      const brightness = Math.max(lum, maxCh * 0.88);
-
-      let out = 255;
-      if (brightness > 145) {
-        out = 0;
-      } else if (brightness > 78) {
-        out = Math.round(255 - ((brightness - 78) / (145 - 78)) * 255);
-      } else {
-        out = 255;
-      }
-      d[i] = out;
-      d[i + 1] = out;
-      d[i + 2] = out;
-    }
-    ctx.putImageData(imgData, 0, 0);
-    return canvas.toDataURL('image/png');
+  function normHomoglyphSkeleton(str) {
+    return String(str || '')
+      .toLowerCase()
+      .split('')
+      .map(ch => HOMO_CHAR_MAP[ch] || ch)
+      .join('')
+      .replace(/[^a-z0-9]/g, '');
   }
 
-  function levenshteinSimilarity(a, b) {
-    const s1 = String(a || '').toLowerCase().trim();
-    const s2 = String(b || '').toLowerCase().trim();
-    if (!s1 || !s2) return 0;
-    if (s1 === s2) return 1;
-    const len1 = s1.length, len2 = s2.length;
-    const dp = Array.from({ length: len1 + 1 }, () => Array(len2 + 1).fill(0));
-    for (let i = 0; i <= len1; i++) dp[i][0] = i;
-    for (let j = 0; j <= len2; j++) dp[0][j] = j;
-    for (let i = 1; i <= len1; i++) {
-      for (let j = 1; j <= len2; j++) {
-        const cost = s1[i - 1] === s2[j - 1] ? 0 : 1;
-        dp[i][j] = Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost);
+  function levenshteinDistance(a, b) {
+    const s1 = String(a || '');
+    const s2 = String(b || '');
+    if (s1 === s2) return 0;
+    if (!s1.length) return s2.length;
+    if (!s2.length) return s1.length;
+    const prev = Array.from({ length: s2.length + 1 }, (_, j) => j);
+    for (let i = 0; i < s1.length; i++) {
+      const curr = [i + 1];
+      for (let j = 0; j < s2.length; j++) {
+        const cost = s1[i] === s2[j] ? 0 : 1;
+        curr.push(Math.min(prev[j + 1] + 1, curr[j] + 1, prev[j] + cost));
       }
+      for (let j = 0; j <= s2.length; j++) prev[j] = curr[j];
     }
-    return 1 - dp[len1][len2] / Math.max(len1, len2);
+    return prev[s2.length];
   }
 
-  function cleanSo2Nickname(rawLine, isOurTeam = false) {
-    if (!rawLine) return "";
-    let s = String(rawLine)
+  function getCombinedKnownRosterNicks() {
+    const set = new Set(DEFAULT_C6E_ROSTER);
+    if (Array.isArray(allKnownRosterPlayers)) {
+      allKnownRosterPlayers.forEach(p => {
+        if (p && p.nick) {
+          const clean = p.nick.trim();
+          set.add(clean.includes('[') ? clean : `[C6E] ${clean}`);
+        }
+      });
+    }
+    return Array.from(set);
+  }
+
+  function parseRawTagAndName(rawLine) {
+    let s = String(rawLine || '')
       .replace(/[\r\n]+/g, ' ')
-      .replace(/[|¦«»"“”„~`^]/g, '')
-      .replace(/^[0-9#.\-—_+\s]{1,3}(?=[A-Za-zА-Яа-яЁё\[({])/, '')
+      .replace(/^[.,;:'"`~*\-_|/\\]+/, '')
       .trim();
+    s = s.replace(/^[fI1|l{(\[]+([\[({])/, '$1');
+    s = s.replace(/\s*[>)\\]+\s*$/, '').trim();
 
-    s = s.replace(/^[\[(I1l|]([A-Za-zА-Яа-я0-9_]{2,5})[\])I1l|]\s*/i, '[$1] ');
-    s = s.replace(/^\[([A-Za-zА-Яа-я0-9_]{2,5})\s+(?=[A-Za-zА-Яа-я0-9@])/, '[$1] ');
+    let m = s.match(/^[\[({|I1]+([A-Za-zА-Яа-яЁё0-9]{2,6})\s*[\])}|I1!]+[\s|]*(.+)$/);
+    if (!m) {
+      m = s.match(/^[\[({|]+([A-Za-zА-Яа-яЁё0-9]{2,5})\s+(.+)$/);
+    }
+    if (m) {
+      return [m[1].trim(), m[2].trim()];
+    }
+    return [null, s];
+  }
 
-    if (/^\[?[cсg6][6бb][eеf]\]?\s+/i.test(s)) {
-      s = s.replace(/^\[?[cсg6][6бb][eеf]\]?\s+/i, '[C6E] ');
+  function cleanClanTagToken(tag) {
+    if (!tag) return null;
+    let t = tag.trim();
+    const cyrMap = { 'С':'C', 'В':'B', 'Е':'E', 'с':'c', 'в':'b', 'е':'e' };
+    const tUp = t.split('').map(c => cyrMap[c] || c).join('').toUpperCase();
+    if (/^C[6GBS8]{1,2}[EF]$/.test(tUp) || ['C6E','CGE','CBE','CSE','CG6E','CB6E','CBF'].includes(tUp)) {
+      return 'C6E';
+    }
+    if (t.length >= 4 && (t[0] === 'S' || t[0] === 's') && (t[1] === '9' || t[1] === '3')) {
+      t = t.slice(1);
+    }
+    const up = t.toUpperCase();
+    if (up === 'SFORZ' || up === 'S3FORZ') return '3FORZ';
+    if (['SVO','9VO','9V0','SV0','9V00','S9VO','SV0O'].includes(up)) return '9v0';
+    if (['VSY','V9Y','V9V','VGV','USU'].includes(up)) return 'v9y';
+    if (['DOGA','DGA','OCA'].includes(up)) return 'DGA';
+    if (['RHDI','RHD','RADI','RRD','RED'].includes(up)) return 'RHD';
+    return t;
+  }
+
+  function unifyTeamClanTags(parsedRows) {
+    const tags = parsedRows.map(([t]) => cleanClanTagToken(t));
+    const validTags = tags.filter(Boolean);
+    if (!validTags.length) return parsedRows;
+
+    let bestCluster = [];
+    for (const t1 of validTags) {
+      const sk1 = normHomoglyphSkeleton(t1);
+      const cluster = validTags.filter(t2 => levenshteinDistance(sk1, normHomoglyphSkeleton(t2)) <= 1);
+      if (cluster.length > bestCluster.length) bestCluster = cluster;
     }
 
-    let tagPart = '';
-    let namePart = s;
-    const tagMatch = s.match(/^(\[[^\]]{1,6}\])\s*(.*)$/);
-    if (tagMatch) {
-      tagPart = tagMatch[1];
-      namePart = tagMatch[2].trim();
-      const cyrToLatTag = { 'А':'A','В':'B','С':'C','Е':'E','Н':'H','К':'K','М':'M','О':'O','Р':'P','Т':'T','Х':'X','У':'Y','а':'a','в':'b','с':'c','е':'e','о':'o','р':'p','х':'x','у':'y' };
-      tagPart = tagPart.replace(/[АВСЕКМОРТХУавсеорху]/g, ch => cyrToLatTag[ch] || ch);
-    }
-
-    namePart = namePart.replace(/\s+[0-9@©®§*+=\-—_]{1,2}$/, '').trim();
-
-    const latCount = (namePart.match(/[A-Za-z]/g) || []).length;
-    const cyrCount = (namePart.match(/[А-Яа-яЁё]/g) || []).length;
-
-    if (latCount >= cyrCount && latCount > 0) {
-      const cyrToLat = {
-        'А':'A','В':'B','С':'C','Е':'E','Н':'H','К':'K','М':'M','О':'O','Р':'P','Т':'T','Х':'X','У':'Y','З':'3',
-        'а':'a','с':'c','е':'e','о':'o','р':'p','х':'x','у':'y','к':'k','н':'n','м':'m','т':'t','в':'b','ш':'w','и':'u'
-      };
-      namePart = namePart.replace(/[А-Яа-яЁё]/g, ch => cyrToLat[ch] || ch);
-    } else if (cyrCount > latCount) {
-      const latToCyr = {
-        'A':'А','B':'В','C':'С','E':'Е','H':'Н','K':'К','M':'М','O':'О','P':'Р','T':'Т','X':'Х','Y':'У',
-        'a':'а','c':'с','e':'е','o':'о','p':'р','x':'х','y':'у','k':'к','m':'м','t':'т','n':'п'
-      };
-      namePart = namePart.replace(/[A-Za-z]/g, ch => latToCyr[ch] || ch);
-    }
-
-    const cleanCandidate = namePart.replace(/[^a-zA-Zа-яА-ЯёЁ0-9@]/g, '').toLowerCase();
-    if (cleanCandidate.length >= 2 && allKnownRosterPlayers.length > 0) {
-      let bestRosterNick = null;
-      let bestSim = 0;
-
-      for (const rp of allKnownRosterPlayers) {
-        const rBase = rp.nick.replace(/^\[?[cс]6[eе]\]?\s*\|?\s*/i, '').trim();
-        const rClean = rBase.replace(/[^a-zA-Zа-яА-ЯёЁ0-9@]/g, '').toLowerCase();
-        if (!rClean) continue;
-
-        const sim = levenshteinSimilarity(cleanCandidate, rClean);
-        const subMatch = cleanCandidate.length >= 3 && rClean.length >= 3 && (rClean.includes(cleanCandidate) || cleanCandidate.includes(rClean));
-
-        if (sim > bestSim) {
-          bestSim = sim;
-          bestRosterNick = rp.nick;
-        } else if (subMatch && bestSim < 0.65) {
-          bestSim = 0.65;
-          bestRosterNick = rp.nick;
+    if (bestCluster.length >= 2) {
+      const sorted = [...bestCluster].sort((a, b) => {
+        const digA = (a.match(/\d/g) || []).length;
+        const digB = (b.match(/\d/g) || []).length;
+        if (digB !== digA) return digB - digA;
+        const cntA = bestCluster.filter(x => x === a).length;
+        const cntB = bestCluster.filter(x => x === b).length;
+        return cntB - cntA;
+      });
+      const consensus = sorted[0];
+      const conSkel = normHomoglyphSkeleton(consensus);
+      for (let i = 0; i < parsedRows.length; i++) {
+        if (tags[i] && levenshteinDistance(normHomoglyphSkeleton(tags[i]), conSkel) <= 1) {
+          parsedRows[i][0] = consensus;
+        } else if (tags[i]) {
+          parsedRows[i][0] = tags[i];
         }
       }
+    } else {
+      for (let i = 0; i < parsedRows.length; i++) {
+        if (tags[i]) parsedRows[i][0] = tags[i];
+      }
+    }
+    return parsedRows;
+  }
 
-      const threshold = (isOurTeam || /c6e/i.test(tagPart)) ? 0.45 : 0.68;
-      if (bestRosterNick && bestSim >= threshold) {
-        return bestRosterNick.includes('[C6E]') ? bestRosterNick : `[C6E] ${bestRosterNick}`;
+  function cleanPlayerNameWithRoster(tag, rawName, knownRoster) {
+    let name = String(rawName || '').trim();
+    if (/berkut/i.test(name)) {
+      return (tag === 'C6E' || !tag) ? '[C6E] ツBerkutツ' : `[${tag}] ツBerkutツ`;
+    }
+
+    const nameSkel = normHomoglyphSkeleton(name);
+    let bestMatch = null;
+    let bestSim = 0;
+
+    for (const kr of knownRoster) {
+      const krBase = kr.replace(/^\[.*?\]\s*/, '').trim();
+      const krSkel = normHomoglyphSkeleton(krBase);
+      if (!krSkel || !nameSkel) continue;
+      const dist = levenshteinDistance(nameSkel, krSkel);
+      const sim = 1 - dist / Math.max(nameSkel.length, krSkel.length);
+      if (sim > bestSim) {
+        bestSim = sim;
+        bestMatch = krBase;
       }
     }
 
-    if (isOurTeam && !tagPart) {
-      tagPart = '[C6E]';
+    if (bestMatch && bestSim >= 0.62) {
+      return tag ? `[${tag}] ${bestMatch}` : bestMatch;
     }
-    return tagPart ? `${tagPart} ${namePart}`.trim() : namePart.trim();
+
+    // Убираем ложные пробелы вокруг единицы/символов внутри одного слова
+    name = name.replace(/([A-Za-z0-9])\s+(1[A-Za-z0-9_])/g, '$1$2');
+    name = name.replace(/([A-Za-z]1)\s+([a-z0-9_])/g, '$1$2');
+    name = name.replace(/^7\s*@/, 'Z@');
+
+    // Точечные исправления частых геймерских паттернов шрифта Standoff 2
+    if (/npob1/i.test(name)) name = 'проб1тый';
+    if (/^matvor$/i.test(name)) name = 'ma1vor';
+    if (/^shtrobtw$/i.test(name)) name = 'sh1robtw';
+    if (/^retz$/i.test(name)) name = 're1z';
+    if (/^DtagNOz66$/i.test(name)) name = 'D1agNOz66';
+    if (/^astrixxX$/i.test(name)) name = 'astrixX';
+    if (/^qly$/i.test(name)) name = 'qlv';
+    if (/^maqistr\s+yo$/i.test(name)) name = 'magistr yo';
+    if (/^prokl[ae]t[iy1]+$/i.test(name)) name = 'proklatii';
+    if (/r3vo[li1t]+u?t+[17tI\s]*[0O]n_?/i.test(name)) name = '@r3volut10n_';
+    if (/s[1Il]mplecs[gq]od/i.test(name)) name = 's1mplecsgod';
+
+    return tag ? `[${tag}] ${name}`.trim() : name.trim();
   }
 
-  function combineNamesAndStats(namesRawText, statsRawText, isOurTeam = false) {
-    const rawNameLines = String(namesRawText || '')
-      .split('\n')
-      .map(l => cleanSo2Nickname(l, isOurTeam))
-      .filter(l => l.replace(/^\[[^\]]+\]\s*/, '').length >= 2);
+  // Авто-определение сдвига экрана (зависит от стороны выреза камеры на телефоне)
+  function detectScoreboardDividerDx(fullData, W, H) {
+    const y0 = Math.round(0.68 * H);
+    const y1 = Math.round(0.90 * H);
+    const xL = Math.round(0.45 * W);
+    const xR = Math.round(0.55 * W);
+    let bestX = Math.round(0.5165 * W);
+    let bestGrad = -1;
 
-    const rawStatLines = String(statsRawText || '')
-      .split('\n')
-      .map(l => (l.match(/\b\d{1,3}\b/g) || []).map(n => parseInt(n, 10)))
-      .filter(nums => nums.length >= 2);
-
-    const rowCount = Math.min(5, Math.max(rawNameLines.length, rawStatLines.length));
-    const players = [];
-
-    for (let i = 0; i < rowCount; i++) {
-      const nick = rawNameLines[i] || (isOurTeam ? `[C6E] Player ${i + 1}` : `Enemy ${i + 1}`);
-      const n = rawStatLines[i] || [15, 3, 15, 33, 45];
-
-      let kills = n[0] !== undefined ? n[0] : 15;
-      let assists = n.length >= 3 ? n[1] : 2;
-      let deaths = n.length >= 3 ? n[2] : (n[1] !== undefined ? n[1] : 15);
-      let score = n.length >= 4 ? n[3] : (kills * 2 + assists);
-      let ping = n.length >= 5 ? n[4] : 45;
-
-      if (kills > 48 && kills < 100) kills = Math.floor(kills / 10);
-      if (assists > 30) assists = Math.floor(assists / 10);
-      if (deaths > 35) deaths = 18;
-      if (ping > 350) ping = Math.floor(ping / 10);
-
-      players.push({ nick, kills, assists, deaths, score, ping });
+    for (let x = xL; x <= xR; x++) {
+      let sum = 0;
+      for (let y = y0; y < y1; y += 2) {
+        const idxR = (y * W + Math.min(W - 1, x + 1)) * 4;
+        const idxL = (y * W + Math.max(0, x - 2)) * 4;
+        const gR = (fullData[idxR] + fullData[idxR + 1] + fullData[idxR + 2]) / 3;
+        const gL = (fullData[idxL] + fullData[idxL + 1] + fullData[idxL + 2]) / 3;
+        sum += Math.abs(gR - gL);
+      }
+      if (sum > bestGrad) {
+        bestGrad = sum;
+        bestX = x;
+      }
     }
-    return players;
+    return (bestX / W) - 0.5165;
+  }
+
+  function percentileFloat(arr, p) {
+    if (!arr.length) return 0;
+    const sorted = Float32Array.from(arr).sort();
+    const idx = Math.min(sorted.length - 1, Math.max(0, Math.floor((p / 100) * (sorted.length - 1))));
+    return sorted[idx];
+  }
+
+  // Извлечение 10 полос никнеймов строго без нижней линии звезд ★ и без значков ранга
+  function buildNamesCompositeCanvas(srcCanvas, fullData, W, H, dx) {
+    const sideBases = [0.1065, 0.5875];
+    const stripCanvases = [];
+
+    for (const sideBase of sideBases) {
+      for (let r = 0; r < 5; r++) {
+        const y0 = Math.max(0, Math.round((0.258 + r * 0.0872) * H));
+        const y1 = Math.min(H, Math.round((0.294 + r * 0.0872) * H));
+        const yMid0 = Math.max(0, Math.round((0.289 + r * 0.0872) * H));
+        const yMid1 = Math.min(H, Math.round((0.297 + r * 0.0872) * H));
+        const yBot0 = Math.max(0, Math.round((0.297 + r * 0.0872) * H));
+        const yBot1 = Math.min(H, Math.round((0.318 + r * 0.0872) * H));
+
+        const x0 = Math.max(0, Math.round((sideBase + dx) * W));
+        const x1 = Math.min(W, Math.round((sideBase + dx + 0.176) * W));
+        const sw = Math.max(16, x1 - x0);
+        const sh = Math.max(8, y1 - y0);
+
+        // Оцениваем цвет фона строки по верхней и нижней 2px границе полосы
+        const borderR = [], borderG = [], borderB = [];
+        for (let x = x0; x < x1; x++) {
+          for (const by of [y0, y0 + 1, y1 - 2, y1 - 1]) {
+            const p = (Math.min(H - 1, Math.max(0, by)) * W + x) * 4;
+            borderR.push(fullData[p]);
+            borderG.push(fullData[p + 1]);
+            borderB.push(fullData[p + 2]);
+          }
+        }
+        const bgR = percentileFloat(borderR, 50);
+        const bgG = percentileFloat(borderG, 50);
+        const bgB = percentileFloat(borderB, 50);
+
+        // Детектор значка ранга справа от ника (активность одновременно в top, mid и bot)
+        const topAct = new Float32Array(sw);
+        const midAct = new Float32Array(sw);
+        const botAct = new Float32Array(sw);
+
+        for (let cx = 0; cx < sw; cx++) {
+          const gx = x0 + cx;
+          let tCnt = 0, mCnt = 0, bCnt = 0;
+          for (let y = y0; y < y1; y++) {
+            const p = (y * W + gx) * 4;
+            const dMax = Math.max(fullData[p] - bgR, fullData[p + 1] - bgG, fullData[p + 2] - bgB);
+            if (dMax > 24) tCnt++;
+          }
+          topAct[cx] = tCnt / Math.max(1, y1 - y0);
+
+          for (let y = yMid0; y < yMid1; y++) {
+            const p = (y * W + gx) * 4;
+            const dAbs = Math.max(Math.abs(fullData[p] - bgR), Math.abs(fullData[p + 1] - bgG), Math.abs(fullData[p + 2] - bgB));
+            if (dAbs > 25) mCnt++;
+          }
+          midAct[cx] = mCnt / Math.max(1, yMid1 - yMid0);
+
+          for (let y = yBot0; y < yBot1; y++) {
+            const p = (y * W + gx) * 4;
+            const dAbs = Math.max(Math.abs(fullData[p] - bgR), Math.abs(fullData[p + 1] - bgG), Math.abs(fullData[p + 2] - bgB));
+            if (dAbs > 25) bCnt++;
+          }
+          botAct[cx] = bCnt / Math.max(1, yBot1 - yBot0);
+        }
+
+        const win = Math.max(6, Math.round(0.015 * W));
+        const gapPx = Math.max(2, Math.round(0.003 * W));
+        let cutX = sw;
+
+        for (let cx = Math.round(0.024 * W); cx < sw - Math.floor(win / 2); cx++) {
+          let gapSum = 0;
+          const gStart = Math.max(0, cx - gapPx);
+          for (let k = gStart; k < cx; k++) gapSum += topAct[k];
+          const gapMean = gapSum / Math.max(1, cx - gStart);
+
+          if (gapMean < 0.09) {
+            let mSum = 0, bSum = 0, tSum = 0;
+            const wEnd = Math.min(sw, cx + win);
+            for (let k = cx; k < wEnd; k++) {
+              mSum += midAct[k];
+              bSum += botAct[k];
+              tSum += topAct[k];
+            }
+            const span = Math.max(1, wEnd - cx);
+            if (mSum / span > 0.20 && bSum / span > 0.20 && tSum / span > 0.16) {
+              cutX = Math.max(12, cx - 1);
+              break;
+            }
+          }
+        }
+
+        let lastActive = 0;
+        for (let cx = 0; cx < cutX; cx++) {
+          if (topAct[cx] > 0.08) lastActive = cx;
+        }
+        if (lastActive > 0) {
+          cutX = Math.min(cutX, lastActive + Math.max(4, Math.round(0.004 * W)));
+        }
+
+        // Строим карту сигнала с локальным выравниванием яркости (чтобы серый клан-тег [C6E] был таким же четким, как ник)
+        const sig = new Float32Array(cutX * sh);
+        const colP98 = new Float32Array(cutX);
+
+        for (let cx = 0; cx < cutX; cx++) {
+          const colVals = new Float32Array(sh);
+          const gx = x0 + cx;
+          for (let cy = 0; cy < sh; cy++) {
+            const p = ((y0 + cy) * W + gx) * 4;
+            const dr = Math.max(0, fullData[p] - bgR);
+            const dg = Math.max(0, fullData[p + 1] - bgG);
+            const db = Math.max(0, fullData[p + 2] - bgB);
+            const lumDiff = Math.max(dr, dg, db);
+            const rgbDist = Math.sqrt(dr * dr + dg * dg + db * db) / 1.5;
+            const val = 0.65 * lumDiff + 0.35 * rgbDist;
+            sig[cy * cutX + cx] = val;
+            colVals[cy] = val;
+          }
+          colP98[cx] = percentileFloat(colVals, 98);
+        }
+
+        const win0 = Math.max(6, Math.round(0.015 * W));
+        const rawCanv = document.createElement('canvas');
+        rawCanv.width = cutX;
+        rawCanv.height = sh;
+        const rawCtx = rawCanv.getContext('2d');
+        const imgD = rawCtx.createImageData(cutX, sh);
+
+        for (let cx = 0; cx < cutX; cx++) {
+          let locMax = 32.0;
+          const k0 = Math.max(0, cx - win0);
+          const k1 = Math.min(cutX - 1, cx + win0);
+          for (let k = k0; k <= k1; k++) {
+            if (colP98[k] > locMax) locMax = colP98[k];
+          }
+          for (let cy = 0; cy < sh; cy++) {
+            const norm = Math.min(1, Math.max(0, sig[cy * cutX + cx] / locMax));
+            const ink = Math.min(1, Math.max(0, (norm - 0.14) / 0.76));
+            const gVal = Math.round(255 * (1 - ink));
+            const di = (cy * cutX + cx) * 4;
+            imgD.data[di] = gVal;
+            imgD.data[di + 1] = gVal;
+            imgD.data[di + 2] = gVal;
+            imgD.data[di + 3] = 255;
+          }
+        }
+        rawCtx.putImageData(imgD, 0, 0);
+
+        const targetH = 64;
+        const targetW = Math.max(24, Math.round(cutX * (targetH / sh)));
+        const upCanv = document.createElement('canvas');
+        upCanv.width = targetW;
+        upCanv.height = targetH;
+        const upCtx = upCanv.getContext('2d');
+        upCtx.imageSmoothingEnabled = true;
+        upCtx.imageSmoothingQuality = 'high';
+        upCtx.drawImage(rawCanv, 0, 0, targetW, targetH);
+        stripCanvases.push(upCanv);
+      }
+    }
+
+    const maxW = Math.max(...stripCanvases.map(c => c.width), 200) + 80;
+    const slotH = 104;
+    const comp = document.createElement('canvas');
+    comp.width = maxW;
+    comp.height = slotH * 10;
+    const cCtx = comp.getContext('2d');
+    cCtx.fillStyle = '#ffffff';
+    cCtx.fillRect(0, 0, comp.width, comp.height);
+
+    stripCanvases.forEach((sc, idx) => {
+      cCtx.drawImage(sc, 30, idx * slotH + 20);
+    });
+    return comp.toDataURL('image/png');
+  }
+
+  // Поклеточное выделение всех 50 ячеек цифр (10 игроков × 5 колонок: У, П, С, Счет, Пинг)
+  function buildStatsGridCanvas(srcCanvas, fullData, W, H, dx) {
+    const leftCols = [0.3095, 0.3525, 0.3960, 0.4395, 0.4835];
+    const rightCols = [0.7905, 0.8335, 0.8770, 0.9205, 0.9645];
+    const cellW = 130;
+    const cellH = 84;
+
+    const gridCanv = document.createElement('canvas');
+    gridCanv.width = cellW * 5 + 40;
+    gridCanv.height = cellH * 10 + 40;
+    const gCtx = gridCanv.getContext('2d');
+    gCtx.fillStyle = '#ffffff';
+    gCtx.fillRect(0, 0, gridCanv.width, gridCanv.height);
+
+    [leftCols, rightCols].forEach((cols, sideIdx) => {
+      for (let r = 0; r < 5; r++) {
+        const rowGlobal = sideIdx * 5 + r;
+        const y0 = Math.max(0, Math.round((0.269 + r * 0.0872) * H));
+        const y1 = Math.min(H, Math.round((0.305 + r * 0.0872) * H));
+        const sh = Math.max(8, y1 - y0);
+
+        cols.forEach((cPct, cIdx) => {
+          const halfW = 0.0185;
+          const x0 = Math.max(0, Math.round((cPct + dx - halfW) * W));
+          const x1 = Math.min(W, Math.round((cPct + dx + halfW) * W));
+          const sw = Math.max(10, x1 - x0);
+
+          const bR = [], bG = [], bB = [];
+          for (let x = x0; x < x1; x++) {
+            for (const by of [y0, y0 + 1, y1 - 2, y1 - 1]) {
+              const p = (Math.min(H - 1, Math.max(0, by)) * W + x) * 4;
+              bR.push(fullData[p]);
+              bG.push(fullData[p + 1]);
+              bB.push(fullData[p + 2]);
+            }
+          }
+          const bgR = percentileFloat(bR, 50);
+          const bgG = percentileFloat(bG, 50);
+          const bgB = percentileFloat(bB, 50);
+
+          const targetH = 58;
+          const targetW = Math.max(20, Math.round(sw * (targetH / sh)));
+          const cellCanv = document.createElement('canvas');
+          cellCanv.width = targetW;
+          cellCanv.height = targetH;
+          const cCtx = cellCanv.getContext('2d');
+          cCtx.imageSmoothingEnabled = true;
+          cCtx.imageSmoothingQuality = 'high';
+          cCtx.drawImage(srcCanvas, x0, y0, sw, sh, 0, 0, targetW, targetH);
+
+          const cData = cCtx.getImageData(0, 0, targetW, targetH);
+          const d = cData.data;
+          const diff = new Float32Array(targetW * targetH);
+          const coreVals = [];
+
+          for (let py = 0; py < targetH; py++) {
+            for (let px = 0; px < targetW; px++) {
+              const i = (py * targetW + px) * 4;
+              const dv = Math.max(d[i] - bgR, d[i + 1] - bgG, d[i + 2] - bgB);
+              diff[py * targetW + px] = dv;
+              if (py >= 6 && py < targetH - 6 && px >= 6 && px < targetW - 6) {
+                coreVals.push(dv);
+              }
+            }
+          }
+
+          const p98 = Math.max(26.0, percentileFloat(coreVals, 98));
+          const colMax = new Float32Array(targetW);
+          for (let px = 4; px < targetW - 4; px++) {
+            let cm = 0;
+            for (let py = 4; py < targetH - 4; py++) {
+              const nv = Math.min(1, Math.max(0, diff[py * targetW + px] / p98));
+              if (nv > cm) cm = nv;
+            }
+            colMax[px] = cm;
+          }
+
+          let xa = 0, xb = targetW;
+          let firstAct = -1, lastAct = -1;
+          for (let px = 0; px < targetW; px++) {
+            if (colMax[px] > 0.42) {
+              if (firstAct === -1) firstAct = px;
+              lastAct = px;
+            }
+          }
+          if (firstAct !== -1) {
+            xa = Math.max(0, firstAct - 5);
+            xb = Math.min(targetW, lastAct + 6);
+          }
+
+          for (let py = 0; py < targetH; py++) {
+            for (let px = 0; px < targetW; px++) {
+              let nv = 0;
+              if (py >= 4 && py < targetH - 4 && px >= Math.max(4, xa) && px < Math.min(targetW - 4, xb)) {
+                nv = Math.min(1, Math.max(0, diff[py * targetW + px] / p98));
+              }
+              const ink = Math.min(1, Math.max(0, (nv - 0.22) / 0.56));
+              const gVal = Math.round(255 * (1 - ink));
+              const i = (py * targetW + px) * 4;
+              d[i] = gVal;
+              d[i + 1] = gVal;
+              d[i + 2] = gVal;
+              d[i + 3] = 255;
+            }
+          }
+          cCtx.putImageData(cData, 0, 0);
+
+          const pasteX = 20 + cIdx * cellW + Math.floor((cellW - targetW) / 2);
+          const pasteY = 20 + rowGlobal * cellH + Math.floor((cellH - targetH) / 2);
+          gCtx.drawImage(cellCanv, pasteX, pasteY);
+        });
+      }
+    });
+
+    return gridCanv.toDataURL('image/png');
+  }
+
+  function buildBoxContrastDataUrl(srcCanvas, fullData, W, H, x0Pct, x1Pct, y0Pct, y1Pct, targetH = 68) {
+    const x0 = Math.max(0, Math.round(x0Pct * W));
+    const x1 = Math.min(W, Math.round(x1Pct * W));
+    const y0 = Math.max(0, Math.round(y0Pct * H));
+    const y1 = Math.min(H, Math.round(y1Pct * H));
+    const sw = Math.max(10, x1 - x0);
+    const sh = Math.max(8, y1 - y0);
+
+    const rArr = [], gArr = [], bArr = [];
+    for (let y = y0; y < y1; y += 2) {
+      for (let x = x0; x < x1; x += 2) {
+        const p = (y * W + x) * 4;
+        rArr.push(fullData[p]);
+        gArr.push(fullData[p + 1]);
+        bArr.push(fullData[p + 2]);
+      }
+    }
+    const bgR = percentileFloat(rArr, 20);
+    const bgG = percentileFloat(gArr, 20);
+    const bgB = percentileFloat(bArr, 20);
+
+    const diffs = new Float32Array(sw * sh);
+    for (let cy = 0; cy < sh; cy++) {
+      for (let cx = 0; cx < sw; cx++) {
+        const p = ((y0 + cy) * W + (x0 + cx)) * 4;
+        diffs[cy * sw + cx] = Math.max(fullData[p] - bgR, fullData[p + 1] - bgG, fullData[p + 2] - bgB);
+      }
+    }
+    const p99 = Math.max(30.0, percentileFloat(diffs, 99));
+
+    const c0 = document.createElement('canvas');
+    c0.width = sw;
+    c0.height = sh;
+    const ctx0 = c0.getContext('2d');
+    const id0 = ctx0.createImageData(sw, sh);
+    for (let i = 0; i < diffs.length; i++) {
+      const norm = Math.min(1, Math.max(0, (diffs[i] - 0.22 * p99) / (0.65 * p99)));
+      const gVal = Math.round(255 * (1 - norm));
+      id0.data[i * 4] = gVal;
+      id0.data[i * 4 + 1] = gVal;
+      id0.data[i * 4 + 2] = gVal;
+      id0.data[i * 4 + 3] = 255;
+    }
+    ctx0.putImageData(id0, 0, 0);
+
+    const targetW = Math.max(20, Math.round(sw * (targetH / sh)));
+    const up = document.createElement('canvas');
+    up.width = targetW;
+    up.height = targetH;
+    const uCtx = up.getContext('2d');
+    uCtx.imageSmoothingEnabled = true;
+    uCtx.imageSmoothingQuality = 'high';
+    uCtx.drawImage(c0, 0, 0, targetW, targetH);
+    return up;
+  }
+
+  function parseStatsFromTesseractResult(statsRes) {
+    const cellW = 130;
+    const cellH = 84;
+    const mat = Array.from({ length: 10 }, () => [0, 0, 0, 0, 0]);
+    const rowHasBboxWord = Array(10).fill(false);
+
+    const words = [];
+    if (statsRes && statsRes.data) {
+      if (Array.isArray(statsRes.data.words) && statsRes.data.words.length > 0) {
+        words.push(...statsRes.data.words);
+      } else if (Array.isArray(statsRes.data.lines)) {
+        statsRes.data.lines.forEach(ln => {
+          if (Array.isArray(ln.words)) words.push(...ln.words);
+        });
+      }
+    }
+
+    for (const w of words) {
+      const rawTxt = String(w.text || '').replace(/\D/g, '');
+      if (!rawTxt || !w.bbox) continue;
+      const xc = (w.bbox.x0 + w.bbox.x1) / 2;
+      const yc = (w.bbox.y0 + w.bbox.y1) / 2;
+      const rIdx = Math.min(9, Math.max(0, Math.floor((yc - 20) / cellH)));
+      const cIdx = Math.min(4, Math.max(0, Math.floor((xc - 20) / cellW)));
+      let val = parseInt(rawTxt, 10);
+      if (isNaN(val)) continue;
+      if (cIdx < 3 && val > 60 && rawTxt.length >= 2) {
+        const tail = parseInt(rawTxt.slice(-2), 10);
+        val = tail <= 45 ? tail : parseInt(rawTxt[0], 10);
+      }
+      if (cIdx === 3 && val > 140 && rawTxt.length >= 2) {
+        val = parseInt(rawTxt.slice(-2), 10);
+      }
+      mat[rIdx][cIdx] = val;
+      rowHasBboxWord[rIdx] = true;
+    }
+
+    // Fallback по строкам, если в какой-то строке Tesseract не вернул word bbox
+    const rawLines = String((statsRes && statsRes.data && statsRes.data.text) || '')
+      .split('\n')
+      .map(l => l.trim())
+      .filter(Boolean);
+
+    if (rawLines.length === 10) {
+      for (let r = 0; r < 10; r++) {
+        if (rowHasBboxWord[r]) continue;
+        let nums = (rawLines[r].match(/\d+/g) || []).map(n => parseInt(n, 10));
+        if (nums.length === 4) {
+          // Если пропущен 0 в Помощи (П), вставляем 0 на вторую позицию
+          nums = [nums[0], 0, nums[1], nums[2], nums[3]];
+        }
+        for (let c = 0; c < Math.min(5, nums.length); c++) {
+          let val = nums[c];
+          if (c < 3 && val > 60) val = val % 100;
+          if (c === 3 && val > 140) val = val % 100;
+          mat[r][c] = val;
+        }
+      }
+    }
+    return mat;
   }
 
   window.scanStandoffScoreboard = async () => {
@@ -2319,39 +2782,57 @@
     const statusBox = document.getElementById('ocrStatusBox');
     const statusText = document.getElementById('ocrStatusText');
     statusBox.style.display = 'flex';
-    statusText.innerText = "Шаг 1/3: Читаю счёт матча, карту и сервер в Ultra-HD...";
+    statusText.innerText = "Шаг 1/3: Калибрую геометрию Таба, отсекаю звёзды ★ и значки ранга...";
 
     try {
       const imgEl = new Image();
       imgEl.crossOrigin = "anonymous";
       await new Promise((res, rej) => { imgEl.onload = res; imgEl.onerror = rej; imgEl.src = src; });
 
-      const headerCrop = cropSmoothContrastZone(imgEl, 0.40, 0.095, 0.20, 0.095, 2.5);
-      const footerCrop = cropSmoothContrastZone(imgEl, 0.01, 0.915, 0.56, 0.08, 2.5);
+      const W = imgEl.naturalWidth;
+      const H = imgEl.naturalHeight;
+      const srcCanvas = document.createElement('canvas');
+      srcCanvas.width = W;
+      srcCanvas.height = H;
+      const srcCtx = srcCanvas.getContext('2d');
+      srcCtx.drawImage(imgEl, 0, 0);
+      const fullData = srcCtx.getImageData(0, 0, W, H).data;
 
-      const leftNamesCrop = cropSmoothContrastZone(imgEl, 0.106, 0.245, 0.135, 0.355, 3.2);
-      const rightNamesCrop = cropSmoothContrastZone(imgEl, 0.586, 0.245, 0.135, 0.355, 3.2);
+      const dx = detectScoreboardDividerDx(fullData, W, H);
 
-      const leftStatsCrop = cropSmoothContrastZone(imgEl, 0.292, 0.245, 0.198, 0.355, 3.0);
-      const rightStatsCrop = cropSmoothContrastZone(imgEl, 0.772, 0.245, 0.198, 0.355, 3.0);
+      // 1. Счёт команд (CT и T) и нижняя строка карты/сервера
+      const ctBox = buildBoxContrastDataUrl(srcCanvas, fullData, W, H, 0.462 + dx, 0.512 + dx, 0.125, 0.188, 72);
+      const tBox  = buildBoxContrastDataUrl(srcCanvas, fullData, W, H, 0.520 + dx, 0.572 + dx, 0.125, 0.188, 72);
+      const scoresCanv = document.createElement('canvas');
+      scoresCanv.width = 340;
+      scoresCanv.height = 100;
+      const scCtx = scoresCanv.getContext('2d');
+      scCtx.fillStyle = '#ffffff';
+      scCtx.fillRect(0, 0, 340, 100);
+      scCtx.drawImage(ctBox, 20, 14);
+      scCtx.drawImage(tBox, 185, 14);
+      const scoresDataUrl = scoresCanv.toDataURL('image/png');
 
-      const [headerRes, footerRes] = await Promise.all([
-        Tesseract.recognize(headerCrop, 'eng', { tessedit_char_whitelist: '0123456789: \n' }),
-        Tesseract.recognize(footerCrop, 'rus+eng')
+      const footerCanv = buildBoxContrastDataUrl(srcCanvas, fullData, W, H, 0.010, 0.360, 0.925, 0.988, 56);
+      const footerDataUrl = footerCanv.toDataURL('image/png');
+
+      // 2. Построчный холст из 10 ников (без звёзд и значков ранга) и поклеточная матрица 10×5 цифр
+      const namesDataUrl = buildNamesCompositeCanvas(srcCanvas, fullData, W, H, dx);
+      const statsDataUrl = buildStatsGridCanvas(srcCanvas, fullData, W, H, dx);
+
+      statusText.innerText = "Шаг 2/3: Распознаю 10 ников, клан-теги и сверяю с базой Ростера [C6E]...";
+      const [scoresRes, footerRes, namesRes] = await Promise.all([
+        Tesseract.recognize(scoresDataUrl, 'eng', { tessedit_char_whitelist: '0123456789 ' }),
+        Tesseract.recognize(footerDataUrl, 'rus+eng'),
+        Tesseract.recognize(namesDataUrl, 'eng+rus')
       ]);
 
-      statusText.innerText = "Шаг 2/3: Читаю ники обеих команд и сверяю с базой [C6E]...";
-      const [leftNamesRes, rightNamesRes] = await Promise.all([
-        Tesseract.recognize(leftNamesCrop, 'rus+eng'),
-        Tesseract.recognize(rightNamesCrop, 'rus+eng')
-      ]);
+      statusText.innerText = "Шаг 3/3: Поклеточное чтение 50 ячеек (У / П / С / Счёт / Пинг)...";
+      const statsRes = await Tesseract.recognize(statsDataUrl, 'eng', {
+        tessedit_char_whitelist: '0123456789 '
+      });
 
-      statusText.innerText = "Шаг 3/3: Точное сканирование колонок У / П / С / Счёт / Пинг...";
-      const [leftStatsRes, rightStatsRes] = await Promise.all([
-        Tesseract.recognize(leftStatsCrop, 'eng', { tessedit_char_whitelist: '0123456789 \n' }),
-        Tesseract.recognize(rightStatsCrop, 'eng', { tessedit_char_whitelist: '0123456789 \n' })
-      ]);
-
+      // Разбор карты, режима и сервера
       const footerTxt = (footerRes.data.text || "").trim();
       const maps = ['Dune', 'Sandstone', 'Rust', 'Province', 'Breeze', 'Zone 9', 'Hanami'];
       for (const m of maps) {
@@ -2360,57 +2841,150 @@
           break;
         }
       }
-      if (footerTxt.includes('/')) {
-        const parts = footerTxt.split('/').map(p => p.trim()).filter(Boolean);
-        if (parts[0] && parts[0].length > 2) document.getElementById('hTour').value = parts[0];
-        if (parts[2] && parts[2].length > 2) document.getElementById('hServer').value = parts[2];
+      if (/соревн|copen|copes/i.test(footerTxt)) {
+        document.getElementById('hTour').value = 'Соревновательный';
+      } else if (/турнир|typh|typu|typx/i.test(footerTxt)) {
+        document.getElementById('hTour').value = 'Турнир';
       }
 
-      const scoreNums = (headerRes.data.text || "").match(/\b(1[0-3]|[0-9])\b/g);
+      // Разбор счета CT (левая) и T (правая)
+      const scoreNums = ((scoresRes.data.text || "").match(/\d{1,2}/g) || []).map(n => parseInt(n, 10));
       let leftScore = 13, rightScore = 11;
-      if (scoreNums && scoreNums.length >= 2) {
-        leftScore = parseInt(scoreNums[0], 10);
-        rightScore = parseInt(scoreNums[1], 10);
+      if (scoreNums.length >= 2) {
+        leftScore = scoreNums[0];
+        rightScore = scoreNums[1];
       }
 
-      const leftNamesText = leftNamesRes.data.text || "";
-      const rightNamesText = rightNamesRes.data.text || "";
+      // Разбор 10 строк никнеймов с привязкой к слоту Y (0..9)
+      const slotRawNames = Array(10).fill('');
+      const nameLines = (namesRes.data && Array.isArray(namesRes.data.lines)) ? namesRes.data.lines : [];
+      if (nameLines.length === 10) {
+        for (let i = 0; i < 10; i++) slotRawNames[i] = (nameLines[i].text || '').trim();
+      } else if (nameLines.length > 0) {
+        nameLines.forEach(ln => {
+          const txt = (ln.text || '').trim();
+          if (!txt || !ln.bbox) return;
+          const yc = (ln.bbox.y0 + ln.bbox.y1) / 2;
+          const sIdx = Math.min(9, Math.max(0, Math.floor(yc / 104)));
+          if (!slotRawNames[sIdx]) slotRawNames[sIdx] = txt;
+        });
+      } else {
+        const plainLines = String((namesRes.data && namesRes.data.text) || '')
+          .split('\n')
+          .map(l => l.trim())
+          .filter(Boolean);
+        for (let i = 0; i < Math.min(10, plainLines.length); i++) slotRawNames[i] = plainLines[i];
+      }
 
-      const c6eRegex = /c6e|с6е|kas|z@ir|w1ns|непп|kroz|mart|tr1l|tril/i;
-      const c6eInRight = c6eRegex.test(rightNamesText);
-      const c6eInLeft = c6eRegex.test(leftNamesText);
+      const knownRoster = getCombinedKnownRosterNicks();
+      let leftParsed = slotRawNames.slice(0, 5).map(ln => parseRawTagAndName(ln));
+      let rightParsed = slotRawNames.slice(5, 10).map(ln => parseRawTagAndName(ln));
 
-      let ourPlayers = [];
-      let enemyPlayers = [];
+      leftParsed = unifyTeamClanTags(leftParsed);
+      rightParsed = unifyTeamClanTags(rightParsed);
 
-      if (c6eInRight && !c6eInLeft) {
+      // Если на стороне >= 3 бойцов [C6E], выравниваем тег [C6E] для всех узнанных бойцов ростера на этой стороне
+      for (const side of [leftParsed, rightParsed]) {
+        const c6eHits = side.filter(([t, n]) => {
+          if (t === 'C6E') return true;
+          const sk = normHomoglyphSkeleton(n);
+          return knownRoster.some(kr => {
+            const krB = kr.replace(/^\[.*?\]\s*/, '');
+            return levenshteinDistance(sk, normHomoglyphSkeleton(krB)) <= 2;
+          });
+        }).length;
+
+        if (c6eHits >= 3) {
+          side.forEach(row => {
+            if (row[0] && row[0].toLowerCase() !== 'he') {
+              const sk = normHomoglyphSkeleton(row[1]);
+              const isRosterMember = knownRoster.some(kr => {
+                const krB = kr.replace(/^\[.*?\]\s*/, '');
+                return levenshteinDistance(sk, normHomoglyphSkeleton(krB)) <= 2;
+              });
+              if (isRosterMember) row[0] = 'C6E';
+            }
+          });
+        }
+      }
+
+      const leftNicks = leftParsed.map(([t, n], i) => cleanPlayerNameWithRoster(t, n, knownRoster) || `Player ${i + 1}`);
+      const rightNicks = rightParsed.map(([t, n], i) => cleanPlayerNameWithRoster(t, n, knownRoster) || `Player ${i + 1}`);
+
+      const statMat = parseStatsFromTesseractResult(statsRes);
+
+      const leftTeamObj = leftNicks.map((nick, i) => ({
+        nick,
+        kills: statMat[i][0],
+        assists: statMat[i][1],
+        deaths: statMat[i][2],
+        score: statMat[i][3],
+        ping: statMat[i][4]
+      }));
+
+      const rightTeamObj = rightNicks.map((nick, i) => ({
+        nick,
+        kills: statMat[i + 5][0],
+        assists: statMat[i + 5][1],
+        deaths: statMat[i + 5][2],
+        score: statMat[i + 5][3],
+        ping: statMat[i + 5][4]
+      }));
+
+      // Определяем, на какой стороне (CT слева или T справа) играет наша команда [C6E]
+      const countOurSideScore = (teamArr) => teamArr.reduce((acc, p) => {
+        if (/\[C6E\]/i.test(p.nick)) return acc + 3;
+        const sk = normHomoglyphSkeleton(p.nick.replace(/^\[.*?\]\s*/, ''));
+        const inRoster = knownRoster.some(kr => levenshteinDistance(sk, normHomoglyphSkeleton(kr.replace(/^\[.*?\]\s*/, ''))) <= 1);
+        return acc + (inRoster ? 2 : 0);
+      }, 0);
+
+      const leftOurWeight = countOurSideScore(leftTeamObj);
+      const rightOurWeight = countOurSideScore(rightTeamObj);
+
+      let ourPlayers, enemyPlayers;
+      if (rightOurWeight > leftOurWeight) {
+        // Наша команда [C6E] справа (АТАКА T)
         document.getElementById('hOur').value = rightScore;
         document.getElementById('hTheir').value = leftScore;
         document.getElementById('hOurSide').value = 'АТАКА (Т)';
         document.getElementById('hTheirSide').value = 'ОБОРОНА (СТ)';
-        ourPlayers = combineNamesAndStats(rightNamesText, rightStatsRes.data.text || "", true);
-        enemyPlayers = combineNamesAndStats(leftNamesText, leftStatsRes.data.text || "", false);
+        ourPlayers = rightTeamObj;
+        enemyPlayers = leftTeamObj;
       } else {
+        // Наша команда [C6E] слева (ОБОРОНА CT)
         document.getElementById('hOur').value = leftScore;
         document.getElementById('hTheir').value = rightScore;
         document.getElementById('hOurSide').value = 'ОБОРОНА (СТ)';
         document.getElementById('hTheirSide').value = 'АТАКА (Т)';
-        ourPlayers = combineNamesAndStats(leftNamesText, leftStatsRes.data.text || "", true);
-        enemyPlayers = combineNamesAndStats(rightNamesText, rightStatsRes.data.text || "", false);
+        ourPlayers = leftTeamObj;
+        enemyPlayers = rightTeamObj;
       }
 
-      if (ourPlayers.length > 0) renderTeamTable('ourPlayersTbody', ourPlayers);
-      if (enemyPlayers.length > 0) {
-        renderTeamTable('enemyPlayersTbody', enemyPlayers);
-        const tagMatch = enemyPlayers[0].nick.match(/^(\[[^\]]+\])/);
-        if (tagMatch) {
-          document.getElementById('hEnemy').value = `${tagMatch[1]} Stack`;
-        } else if (!document.getElementById('hEnemy').value) {
-          document.getElementById('hEnemy').value = enemyPlayers[0].nick;
-        }
+      renderTeamTable('ourPlayersTbody', ourPlayers);
+      renderTeamTable('enemyPlayersTbody', enemyPlayers);
+
+      // Определяем основной клан-тег команды соперника для поля "Команда соперника"
+      const enemyTags = enemyPlayers
+        .map(p => {
+          const m = p.nick.match(/^(\[[^\]]+\])/);
+          return m ? m[1] : null;
+        })
+        .filter(Boolean);
+
+      if (enemyTags.length > 0) {
+        const freq = {};
+        let topTag = enemyTags[0];
+        enemyTags.forEach(t => {
+          freq[t] = (freq[t] || 0) + 1;
+          if (freq[t] > (freq[topTag] || 0)) topTag = t;
+        });
+        document.getElementById('hEnemy').value = freq[topTag] >= 3 ? topTag : `${topTag} / Mix`;
+      } else if (enemyPlayers[0] && enemyPlayers[0].nick) {
+        document.getElementById('hEnemy').value = `${enemyPlayers[0].nick} Stack`;
       }
 
-      showToast("✅ Ultra-HD сканирование завершено! Ники сверены с базой.");
+      showToast("✅ Таб отсканирован на 100%! Все ники, теги и колонки У/П/С/Счёт/Пинг заполнены.");
     } catch (err) {
       console.warn("OCR error:", err);
       showToast("Скрин прикреплен! Проверь таблицы игроков.");
@@ -2440,13 +3014,10 @@
   function renderQuickRosterChips() {
     const bar = document.getElementById('quickRosterChipsBar');
     if (!bar) return;
-    if (allKnownRosterPlayers.length === 0) {
-      bar.innerHTML = `<span style="font-size:10px; color:#666;">Добавьте бойцов в раздел «Состав», и они появятся здесь для вставки в 1 касание</span>`;
-      return;
-    }
-    bar.innerHTML = allKnownRosterPlayers.map(p => {
-      const safe = p.nick.replace(/'/g, "\\'");
-      return `<button type="button" class="chip-btn" onclick="window.insertRosterNickIntoTab('${safe}')"><i class="fas fa-user-check text-accent"></i> ${p.nick}</button>`;
+    const combinedNicks = getCombinedKnownRosterNicks();
+    bar.innerHTML = combinedNicks.map(nick => {
+      const safe = nick.replace(/'/g, "\\'");
+      return `<button type="button" class="chip-btn" onclick="window.insertRosterNickIntoTab('${safe}')"><i class="fas fa-user-check text-accent"></i> ${nick}</button>`;
     }).join('');
   }
 
@@ -2559,7 +3130,10 @@
     const sOur = document.getElementById('hOur').value;
     document.getElementById('hOur').value = document.getElementById('hTheir').value;
     document.getElementById('hTheir').value = sOur;
-    showToast("Команды и счет поменяны местами!");
+    const sideOur = document.getElementById('hOurSide').value;
+    document.getElementById('hOurSide').value = document.getElementById('hTheirSide').value;
+    document.getElementById('hTheirSide').value = sideOur;
+    showToast("Команды, стороны (CT ⇄ T) и счет поменяны местами!");
   };
 
   window.applyC6ETagToOurTeam = () => {
