@@ -578,6 +578,7 @@
   <!-- 4. БЫСТРЫЕ ВКЛАДКИ -->
   <div class="filter-bar">
     <button class="filter-btn active" onclick="filterPanels('all', this)"><i class="fas fa-th-large"></i> Все блоки</button>
+    <button class="filter-btn" onclick="filterPanels('cat-v5', this)" style="border-color:#00e676; color:#00e676;"><i class="fas fa-id-badge"></i> ⚡ v0.5.0: Профили [C6E], Чат и Магазин</button>
     <button class="filter-btn" onclick="filterPanels('cat-roster', this)" style="border-color:#ffb300; color:#ffb300;"><i class="fas fa-crown"></i> 👑 Пантеон (900 Gold) и Состав</button>
     <button class="filter-btn" onclick="filterPanels('cat-security', this)"><i class="fas fa-user-shield"></i> 🛡 Безопасность (C6E Shield)</button>
     <button class="filter-btn" onclick="filterPanels('cat-matches', this)"><i class="fas fa-trophy"></i> Матчи (Таб), Праки и Расписание</button>
@@ -586,6 +587,92 @@
   </div>
 
   <div class="container" id="adminContainer">
+
+    <!-- =========================================================================
+         НОВЫЙ ЦЕНТР УПРАВЛЕНИЯ v0.5.0: ПРОФИЛИ ГОСТЕЙ, ПРОВЕРКА [C6E], ЧАТ И МАГАЗИН
+         ========================================================================= -->
+    <div class="panel full-width cat-v5" style="border-top: 3px solid #00e676;">
+      <div class="panel-header">
+        <h2>
+          <span class="panel-icon" style="color:#00e676; background:rgba(0,230,118,0.15);"><i class="fas fa-users-cog"></i></span>
+          ЦЕНТР v0.5.0 // ВЕРИФИКАЦИЯ БОЙЦОВ [C6E], ИГРОВЫЕ ПРОФИЛИ, ЧАТ (12Ч) И МАГАЗИН
+        </h2>
+        <span id="admPendingC6EBadge" style="font-size:10px; font-family:var(--font-tech); font-weight:800; color:#ffb300; background:rgba(255,179,0,0.14); border:1px solid #ffb300; padding:4px 10px; border-radius:20px;">
+          ЗАЯВОК В [C6E]: 0
+        </span>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:16px;">
+        <!-- 1. ЗАЯВКИ НА ПРИНАДЛЕЖНОСТЬ К КЛАНУ [C6E] + СПИСОК ПРОФИЛЕЙ -->
+        <div style="background:rgba(0,0,0,0.45); padding:15px; border-radius:12px; border:1px solid var(--glass-border);">
+          <h3 style="font-size:12px; color:#ffb300; margin:0 0 6px 0;">
+            <i class="fas fa-shield-alt"></i> 1. ЗАЯВКИ ИГРОКОВ НА СТАТУС БОЙЦА [C6E]
+          </h3>
+          <p style="font-size:10px; color:var(--silver-muted); margin:0 0 10px 0;">
+            Когда гость при регистрации выбирает «Да, я из клана [C6E]», заявка прилетает сюда. Нажми <b>✅ Одобрить</b> (выдаст тег и значок <code>🛡️ Боец [C6E]</code>) или <b>❌ Отклонить</b> (сайт запретит ему тег [C6E] и заставит указать свой реальный клан).
+          </p>
+          <div id="adminPendingC6EList" class="data-list" style="max-height:210px; margin-bottom:14px;">
+            <span class="item-sub">Новых заявок на проверку пока нет</span>
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <h3 style="font-size:12px; color:var(--silver); margin:0;">
+              <i class="fas fa-id-card text-accent"></i> ВСЕ ПРОФИЛИ САЙТА (<span id="admTotalProfilesCount">0</span>)
+            </h3>
+            <span style="font-size:10px; color:var(--success); font-family:var(--font-tech); font-weight:800;">
+              🟢 ОНЛАЙН: <span id="admOnlineProfilesCount">0</span>
+            </span>
+          </div>
+          <div id="adminAllProfilesList" class="data-list" style="max-height:280px;">
+            <span class="item-sub">Загрузка профилей...</span>
+          </div>
+        </div>
+
+        <!-- 2. УПРАВЛЕНИЕ ОБЩИМ ЧАТОМ (12Ч АВТО-ОЧИСТКА) И МАГАЗИНОМ [C6E] -->
+        <div style="display:flex; flex-direction:column; gap:14px;">
+          <div style="background:rgba(0,0,0,0.45); padding:15px; border-radius:12px; border:1px solid var(--glass-border);">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
+              <h3 style="font-size:12px; color:#00e676; margin:0;">
+                <i class="fas fa-comments"></i> 2. ОБЩИЙ ЧАТ ИГРОКОВ (АВТО-ОЧИСТКА 12Ч)
+              </h3>
+              <button type="button" class="chip-btn" style="border-color:#ff5263; color:#ff5263;" onclick="window.clearGlobalChatNow()">
+                <i class="fas fa-trash-alt"></i> Очистить весь чат
+              </button>
+            </div>
+
+            <div style="display:flex; gap:6px; margin-bottom:10px;">
+              <input type="text" id="adminChatInput" placeholder="Написать в общий чат от имени 👑 FOUNDER KAS (можно @Ник)..." style="margin:0; flex:1;">
+              <button type="button" class="action-btn" style="margin:0; width:auto; padding:8px 14px;" onclick="window.sendAdminFounderChatMsg()">
+                <i class="fas fa-paper-plane"></i>
+              </button>
+            </div>
+
+            <div id="adminChatMessagesList" class="data-list" style="max-height:195px;">
+              <span class="item-sub">Сообщений в чате пока нет</span>
+            </div>
+          </div>
+
+          <div style="background:rgba(0,0,0,0.45); padding:15px; border-radius:12px; border:1px solid var(--glass-border);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <h3 style="font-size:12px; color:#ffb300; margin:0;">
+                <i class="fas fa-shopping-bag"></i> 3. НАСТРОЙКА РАЗДЕЛА «МАГАЗИН [C6E]»
+              </h3>
+              <span style="font-size:9.5px; color:var(--silver-muted); font-family:var(--font-tech);">
+                Ждут открытия: <b style="color:#ffb300;" id="admShopWaitCount">0</b>
+              </span>
+            </div>
+            <label style="margin-top:4px;">Заголовок Магазина</label>
+            <input type="text" id="admShopTitle" value="КИБЕР-МАРКЕТ CYBER 6 ESPORTS [C6E]">
+            <label style="margin-top:6px;">Интригующая надпись (ажиотаж для гостей)</label>
+            <textarea id="admShopHype" rows="2">Основатель и разработчик Kas готовит к запуску закрытый магазин [C6E]! Здесь появятся проверенные паки Голды, приватные конфигурации прицела и сенсы от топ-бойцов нашего состава, редкие VIP-рамки для профиля на сайте и пропуски на закрытые турниры с денежным фондом.</textarea>
+            <button type="button" class="action-btn secondary" style="margin-top:8px; padding:9px; border-color:#ffb300; color:#ffb300;" onclick="window.saveAdminShopConfig()">
+              <i class="fas fa-save"></i> СОХРАНИТЬ ТЕКСТ МАГАЗИНА НА САЙТЕ
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
 
     <!-- =========================================================================
          НОВАЯ ПАНЕЛЬ: УПРАВЛЕНИЕ ПАНТЕОНОМ [C6E] (ПРИЗОВАЯ ГОНКА 500 / 250 / 150 ГОЛДЫ)
@@ -920,7 +1007,7 @@
         <div class="row-inputs" style="margin-bottom:8px;">
           <div style="max-width:130px;">
             <label style="margin-top:0;">Версия сайта</label>
-            <input type="text" id="relVersionInp" value="v4.5" placeholder="v4.5" style="font-family:var(--font-tech); font-weight:800; color:#ffb300;">
+            <input type="text" id="relVersionInp" value="v0.5.0" placeholder="v4.5" style="font-family:var(--font-tech); font-weight:800; color:#ffb300;">
           </div>
           <div>
             <label style="margin-top:0;">Что ещё добавить от себя (необязательно)</label>
@@ -1408,7 +1495,9 @@
 
   function normalizeAdminNickKey(nick) {
     if (!nick) return "";
-    return String(nick).replace(/^\[?[cс]6[eе]\]?\s*\|?\s*/i, '').replace(/^\[[^\]]+\]\s*/, '').replace(/\s+/g, '').toLowerCase();
+    return normHomoglyphSkeleton(
+      String(nick).replace(/^\[?[cс]6[eе]\]?\s*\|?\s*/i, '').replace(/^\[[^\]]+\]\s*/, '').replace(/\s+/g, '')
+    );
   }
 
   window.adjustPantheonBonus = async (pKey, deltaPts) => {
@@ -2269,16 +2358,23 @@
   }
 
   function getCombinedKnownRosterNicks() {
-    const set = new Set(DEFAULT_C6E_ROSTER);
+    const map = new Map();
+    // Приоритет отдаем реальным никам из твоего Ростера в Firebase!
     if (Array.isArray(allKnownRosterPlayers)) {
       allKnownRosterPlayers.forEach(p => {
         if (p && p.nick) {
           const clean = p.nick.trim();
-          set.add(clean.includes('[') ? clean : `[C6E] ${clean}`);
+          const full = clean.includes('[') ? clean : `[C6E] ${clean}`;
+          const sk = normalizeAdminNickKey(full);
+          if (sk && !map.has(sk)) map.set(sk, full);
         }
       });
     }
-    return Array.from(set);
+    DEFAULT_C6E_ROSTER.forEach(nick => {
+      const sk = normalizeAdminNickKey(nick);
+      if (sk && !map.has(sk)) map.set(sk, nick);
+    });
+    return Array.from(map.values());
   }
 
   function parseRawTagAndName(rawLine) {
@@ -4082,6 +4178,251 @@
       dateVal: new Date().toLocaleDateString('ru-RU')
     };
   }
+
+  // =========================================================================
+  // ФУНКЦИИ УПРАВЛЕНИЯ v0.5.0 В АДМИНКЕ: ПРОФИЛИ, ЗАЯВКИ В [C6E], ЧАТ, МАГАЗИН
+  // =========================================================================
+  let adminProfilesCache = [];
+
+  window.approveUserC6EStatus = async (profileId) => {
+    try {
+      const ref = doc(db, DB_COLLECTION, "profiles");
+      const snap = await getDoc(ref);
+      if (!snap.exists()) return;
+      let list = Array.isArray(snap.data().list) ? [...snap.data().list] : [];
+      const idx = list.findIndex(p => p.profileId === profileId);
+      if (idx === -1) return;
+      list[idx] = {
+        ...list[idx],
+        c6eStatus: 'approved',
+        claimsC6E: true,
+        clanTag: 'C6E',
+        clanName: 'CYBER 6 ESPORTS',
+        rejectionHandled: true
+      };
+      await setDoc(ref, { list }, { merge: true });
+      showToast(`✅ Игрок ${list[idx].nick} подтверждён как боец [C6E]!`);
+    } catch (e) {
+      showToast("Ошибка одобрения профиля", true);
+    }
+  };
+
+  window.rejectUserC6EStatus = async (profileId) => {
+    try {
+      const ref = doc(db, DB_COLLECTION, "profiles");
+      const snap = await getDoc(ref);
+      if (!snap.exists()) return;
+      let list = Array.isArray(snap.data().list) ? [...snap.data().list] : [];
+      const idx = list.findIndex(p => p.profileId === profileId);
+      if (idx === -1) return;
+      list[idx] = {
+        ...list[idx],
+        c6eStatus: 'rejected',
+        claimsC6E: false,
+        clanTag: '',
+        clanName: '',
+        rejectionHandled: false
+      };
+      await setDoc(ref, { list }, { merge: true });
+      showToast(`❌ Игроку ${list[idx].nick} отказано в теге [C6E]! Сайт запросит его реальный клан.`);
+    } catch (e) {
+      showToast("Ошибка отклонения заявки", true);
+    }
+  };
+
+  window.boostAdminProfileLikes = async (profileId, delta = 10) => {
+    try {
+      const ref = doc(db, DB_COLLECTION, "profiles");
+      const snap = await getDoc(ref);
+      if (!snap.exists()) return;
+      let list = Array.isArray(snap.data().list) ? [...snap.data().list] : [];
+      const idx = list.findIndex(p => p.profileId === profileId);
+      if (idx === -1) return;
+      list[idx] = {
+        ...list[idx],
+        likes: Math.max(0, (parseInt(list[idx].likes, 10) || 0) + delta)
+      };
+      await setDoc(ref, { list }, { merge: true });
+      showToast(`❤️ Начислено +${delta} лайков профилю ${list[idx].nick}!`);
+    } catch (e) {}
+  };
+
+  window.deleteUserProfile = async (profileId) => {
+    if (!confirm("Точно удалить этот игровой профиль с сайта?")) return;
+    try {
+      const ref = doc(db, DB_COLLECTION, "profiles");
+      const snap = await getDoc(ref);
+      if (!snap.exists()) return;
+      let list = (snap.data().list || []).filter(p => p.profileId !== profileId);
+      await setDoc(ref, { list }, { merge: true });
+      showToast("Профиль удалён");
+    } catch (e) {}
+  };
+
+  function renderAdminProfilesPanel(list) {
+    adminProfilesCache = list || [];
+    const pendingCont = document.getElementById('adminPendingC6EList');
+    const allCont = document.getElementById('adminAllProfilesList');
+    const badgeEl = document.getElementById('admPendingC6EBadge');
+    const totalEl = document.getElementById('admTotalProfilesCount');
+    const onlineEl = document.getElementById('admOnlineProfilesCount');
+    if (!pendingCont || !allCont) return;
+
+    const now = Date.now();
+    const pending = list.filter(p => p.c6eStatus === 'pending');
+    const onlineCount = list.filter(p => (now - (p.lastSeen || 0)) < 15 * 60 * 1000).length;
+
+    if (badgeEl) badgeEl.innerText = `ЗАЯВОК В [C6E]: ${pending.length}`;
+    if (totalEl) totalEl.innerText = String(list.length);
+    if (onlineEl) onlineEl.innerText = String(onlineCount);
+
+    pendingCont.innerHTML = pending.length === 0
+      ? '<span class="item-sub">Новых заявок на проверку принадлежности к [C6E] пока нет</span>'
+      : pending.map(p => `
+          <div class="list-item" style="flex-direction:column; align-items:flex-start; border-left-color:#ffb300; background:rgba(255,179,0,0.08); gap:6px;">
+            <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+              <b>${p.countryFlag || '🌍'} ${p.nick} <span style="color:#ffb300;">(ID: ${p.gameId || '—'})</span></b>
+              <span style="font-size:9px; font-family:var(--font-tech); color:#ffb300;">⏳ ХОЧЕТ ТЕГ [C6E]</span>
+            </div>
+            <div class="item-sub">
+              K/D: <b>${p.kd || '1.00'}</b> • Возраст: <b>${p.age || 16}</b> • IP: <code>${p.ip || '—'}</code>
+            </div>
+            <div style="display:flex; gap:6px; width:100%;">
+              <button type="button" class="action-btn" style="margin:0; flex:1; padding:7px; background:var(--success); color:#000; font-size:10px;" onclick="window.approveUserC6EStatus('${p.profileId}')">
+                <i class="fas fa-check"></i> ✅ ОДОБРИТЬ В [C6E]
+              </button>
+              <button type="button" class="action-btn secondary" style="margin:0; flex:1; padding:7px; border-color:#ff5263; color:#ff5263; font-size:10px;" onclick="window.rejectUserC6EStatus('${p.profileId}')">
+                <i class="fas fa-times"></i> ❌ ОТКЛОНИТЬ (В ГОСТИ)
+              </button>
+            </div>
+          </div>
+        `).join('');
+
+    const sortedAll = [...list].sort((a, b) => (b.lastSeen || 0) - (a.lastSeen || 0));
+    allCont.innerHTML = sortedAll.length === 0
+      ? '<span class="item-sub">Зарегистрированных профилей пока нет</span>'
+      : sortedAll.map(p => {
+          const isOnline = (now - (p.lastSeen || 0)) < 15 * 60 * 1000;
+          const isC6E = p.c6eStatus === 'approved';
+          const safeIp = (p.ip || '').replace(/'/g, "\\'");
+          const safeDev = (p.profileId || '').replace(/'/g, "\\'");
+          const safeNick = (p.nick || 'Игрок').replace(/'/g, "\\'");
+          return `
+            <div class="list-item" style="border-left-color:${isC6E ? 'var(--success)' : 'var(--ct-blue)'};">
+              <div style="display:flex; align-items:center; gap:9px; min-width:0;">
+                <img src="${p.avatar || 'logo.png'}" onerror="this.src='logo.png'" style="width:34px; height:34px; border-radius:8px; object-fit:cover;">
+                <div class="item-info">
+                  <b>${isOnline ? '🟢' : '⚪'} ${p.countryFlag || '🌍'} ${isC6E ? '[C6E]' : (p.clanTag ? '[' + p.clanTag + ']' : '')} ${p.nick}</b>
+                  <span class="item-sub">ID: ${p.gameId || '—'} • K/D: ${p.kd || '1.0'} • ${p.age || 16} лет • ❤️ ${p.likes || 0} • ${isC6E ? '🛡️ Боец C6E' : '💎 ' + (p.clanName || 'Гость')}</span>
+                </div>
+              </div>
+              <div class="item-actions">
+                ${isC6E
+                  ? `<button class="btn-icon" title="Снять тег [C6E] и перевести в гости" onclick="window.rejectUserC6EStatus('${safeDev}')"><i class="fas fa-user-minus"></i></button>`
+                  : `<button class="btn-icon" style="color:var(--success);" title="Выдать официальный статус Бойца [C6E]" onclick="window.approveUserC6EStatus('${safeDev}')"><i class="fas fa-shield-alt"></i></button>`}
+                <button class="btn-icon" style="color:#ff5263;" title="+10 лайков профилю" onclick="window.boostAdminProfileLikes('${safeDev}', 10)"><i class="fas fa-heart"></i></button>
+                <button class="btn-icon ban" title="Забанить через C6E Shield" onclick="window.banUserQuick('${safeIp}', '${safeDev}', '${safeNick}')"><i class="fas fa-ban"></i></button>
+                <button class="btn-icon del" title="Удалить профиль" onclick="window.deleteUserProfile('${safeDev}')"><i class="fas fa-trash"></i></button>
+              </div>
+            </div>
+          `;
+        }).join('');
+  }
+
+  window.sendAdminFounderChatMsg = async () => {
+    const inp = document.getElementById('adminChatInput');
+    const text = (inp?.value || '').trim();
+    if (!text) return;
+    inp.value = '';
+    try {
+      const ref = doc(db, DB_COLLECTION, "global_chat");
+      const snap = await getDoc(ref);
+      const now = Date.now();
+      let messages = (snap.exists() && Array.isArray(snap.data().messages)) ? snap.data().messages : [];
+      messages.push({
+        id: now,
+        senderId: 'FOUNDER_KAS',
+        nick: 'Kas',
+        clanTag: 'C6E',
+        c6eStatus: 'approved',
+        isFounder: true,
+        avatar: 'logo.png',
+        frameStyle: 'frame-c6e-gold',
+        countryFlag: '👑',
+        text,
+        timeStr: new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }),
+        ts: now
+      });
+      await setDoc(ref, { messages, lastPurgeTs: (snap.exists() && snap.data().lastPurgeTs) ? snap.data().lastPurgeTs : now }, { merge: true });
+      showToast("👑 Сообщение от Основателя Kas отправлено в общий чат!");
+    } catch (e) {
+      showToast("Ошибка отправки в чат", true);
+    }
+  };
+
+  window.clearGlobalChatNow = async () => {
+    if (!confirm("Очистить все сообщения в Общем чате прямо сейчас?")) return;
+    try {
+      await setDoc(doc(db, DB_COLLECTION, "global_chat"), { messages: [], lastPurgeTs: Date.now() });
+      showToast("🧹 Общий чат полностью очищен!");
+    } catch (e) {}
+  };
+
+  window.deleteSingleChatMsg = async (msgId) => {
+    try {
+      const ref = doc(db, DB_COLLECTION, "global_chat");
+      const snap = await getDoc(ref);
+      if (!snap.exists()) return;
+      const messages = (snap.data().messages || []).filter(m => m.id !== msgId);
+      await setDoc(ref, { messages }, { merge: true });
+      showToast("Сообщение удалено");
+    } catch (e) {}
+  };
+
+  window.saveAdminShopConfig = async () => {
+    const title = (document.getElementById('admShopTitle')?.value || '').trim();
+    const hypeText = (document.getElementById('admShopHype')?.value || '').trim();
+    try {
+      await setDoc(doc(db, DB_COLLECTION, "shop_config"), { title, hypeText }, { merge: true });
+      showToast("🛒 Настройки и тизер Магазина [C6E] обновлены на сайте!");
+    } catch (e) {
+      showToast("Ошибка сохранения Магазина", true);
+    }
+  };
+
+  onSnapshot(doc(db, DB_COLLECTION, "profiles"), (snap) => {
+    const list = (snap.exists() && Array.isArray(snap.data().list)) ? snap.data().list : [];
+    renderAdminProfilesPanel(list);
+  });
+
+  onSnapshot(doc(db, DB_COLLECTION, "global_chat"), (snap) => {
+    const cont = document.getElementById('adminChatMessagesList');
+    if (!cont) return;
+    const msgs = (snap.exists() && Array.isArray(snap.data().messages)) ? snap.data().messages : [];
+    cont.innerHTML = msgs.length === 0
+      ? '<span class="item-sub">Сообщений в чате пока нет</span>'
+      : msgs.slice().reverse().map(m => `
+          <div class="list-item">
+            <div class="item-info">
+              <b>${m.countryFlag || '🌍'} ${m.clanTag ? '[' + m.clanTag + '] ' : ''}${m.nick} <span style="font-size:9px; color:var(--silver-muted);">${m.timeStr || ''}</span></b>
+              <span class="item-sub" style="color:#eee;">${m.text}</span>
+            </div>
+            <button class="btn-icon del" onclick="window.deleteSingleChatMsg(${m.id})"><i class="fas fa-trash"></i></button>
+          </div>
+        `).join('');
+  });
+
+  onSnapshot(doc(db, DB_COLLECTION, "shop_config"), (snap) => {
+    if (!snap.exists()) return;
+    const d = snap.data();
+    const tInp = document.getElementById('admShopTitle');
+    const hInp = document.getElementById('admShopHype');
+    const wEl  = document.getElementById('admShopWaitCount');
+    if (tInp && d.title) tInp.value = d.title;
+    if (hInp && d.hypeText) hInp.value = d.hypeText;
+    if (wEl) wEl.innerText = String(Array.isArray(d.waitlist) ? d.waitlist.length : 0);
+  });
+
 
   window.generateKasUpdateIntoEditor = async () => {
     showToast("Генерирую статью и баннер обновления от лица Kas...");
