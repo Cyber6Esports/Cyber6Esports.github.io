@@ -903,6 +903,59 @@
         <span id="newsEditBadge" style="display:none; font-size:9px; background:var(--accent); padding:3px 8px; border-radius:4px; font-family:var(--font-tech);">РЕЖИМ РЕДАКТИРОВАНИЯ</span>
       </div>
       
+      <!-- АВТО-КОНСТРУКТОР ОБНОВЛЕНИЙ САЙТА ОТ ЛИЦА РАЗРАБОТЧИКА KAS -->
+      <div style="background: linear-gradient(135deg, rgba(255,179,0,0.12), rgba(158,27,40,0.18)); border: 1px solid rgba(255,179,0,0.45); border-radius: 12px; padding: 14px; margin-bottom: 14px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
+          <span style="font-family:var(--font-tech); font-size:11px; font-weight:900; color:#ffb300;">
+            <i class="fas fa-bolt"></i> АВТО-ГЕНЕРАТОР ОБНОВЛЕНИЙ САЙТА ОТ ЛИЦА KAS (@kas_0ff)
+          </span>
+          <span style="font-size:9px; font-family:var(--font-tech); color:var(--success); background:rgba(0,230,118,0.12); border:1px solid rgba(0,230,118,0.35); padding:2px 8px; border-radius:20px;">
+            PUSH-УВЕДОМЛЕНИЕ ВСЕМ ИГРОКАМ НА САЙТЕ
+          </span>
+        </div>
+        <p style="font-size:11px; color:var(--silver-muted); margin:0 0 10px 0; line-height:1.45;">
+          Автоматически собирает красивую статью от твоего имени (<b>Kas — Основатель и Разработчик [C6E]</b>) с фирменной картинкой-баннером, <b>жирным шрифтом</b>, <i>курсивом</i>, блоками <code>кода</code> и цитатой (без упоминания админки) + включает всплывающее уведомление об обнове у всех посетителей сайта!
+        </p>
+
+        <div class="row-inputs" style="margin-bottom:8px;">
+          <div style="max-width:130px;">
+            <label style="margin-top:0;">Версия сайта</label>
+            <input type="text" id="relVersionInp" value="v4.5" placeholder="v4.5" style="font-family:var(--font-tech); font-weight:800; color:#ffb300;">
+          </div>
+          <div>
+            <label style="margin-top:0;">Что ещё добавить от себя (необязательно)</label>
+            <input type="text" id="relCustomNote" placeholder="Например: Добавлены новые фишки для бойцов состава...">
+          </div>
+        </div>
+
+        <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px;">
+          <label style="margin:0; display:inline-flex; align-items:center; gap:5px; font-size:10px; color:#fff; background:rgba(0,0,0,0.45); padding:5px 9px; border-radius:6px; border:1px solid rgba(255,255,255,0.1); cursor:pointer; text-transform:none;">
+            <input type="checkbox" id="chkRelPantheon" checked style="width:14px; height:14px;"> 👑 Пантеон (500/250/150 Gold)
+          </label>
+          <label style="margin:0; display:inline-flex; align-items:center; gap:5px; font-size:10px; color:#fff; background:rgba(0,0,0,0.45); padding:5px 9px; border-radius:6px; border:1px solid rgba(255,255,255,0.1); cursor:pointer; text-transform:none;">
+            <input type="checkbox" id="chkRelBoosts" checked style="width:14px; height:14px;"> 🔥 Бусты бойцов (+25 PTS)
+          </label>
+          <label style="margin:0; display:inline-flex; align-items:center; gap:5px; font-size:10px; color:#fff; background:rgba(0,0,0,0.45); padding:5px 9px; border-radius:6px; border:1px solid rgba(255,255,255,0.1); cursor:pointer; text-transform:none;">
+            <input type="checkbox" id="chkRelLiveKd" checked style="width:14px; height:14px;"> 📊 Живой LIVE K/D и Досье
+          </label>
+          <label style="margin:0; display:inline-flex; align-items:center; gap:5px; font-size:10px; color:#fff; background:rgba(0,0,0,0.45); padding:5px 9px; border-radius:6px; border:1px solid rgba(255,255,255,0.1); cursor:pointer; text-transform:none;">
+            <input type="checkbox" id="chkRelDualTab" checked style="width:14px; height:14px;"> 🏆 Двойной Таб 5v5 со скринами
+          </label>
+          <label style="margin:0; display:inline-flex; align-items:center; gap:5px; font-size:10px; color:#fff; background:rgba(0,0,0,0.45); padding:5px 9px; border-radius:6px; border:1px solid rgba(255,255,255,0.1); cursor:pointer; text-transform:none;">
+            <input type="checkbox" id="chkRelPracs" checked style="width:14px; height:14px;"> ⚔️ Праки (CW) и защита сайта
+          </label>
+        </div>
+
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button type="button" class="action-btn secondary" style="margin:0; flex:1; min-width:210px; border-color:#ffb300; color:#ffb300; padding:10px;" onclick="window.generateKasUpdateIntoEditor()">
+            <i class="fas fa-magic"></i> 1. СГЕНЕРИРОВАТЬ КРАСИВЫЙ ТЕКСТ И БАННЕР В РЕДАКТОР
+          </button>
+          <button type="button" class="action-btn" style="margin:0; flex:1; min-width:210px; background:linear-gradient(135deg, #ffb300, #d42638); color:#000; font-weight:900; padding:10px;" onclick="window.publishKasUpdateOneClick()">
+            <i class="fas fa-rocket"></i> ОПУБЛИКОВАТЬ ОБНОВУ НА САЙТ + УВЕДОМИТЬ ВСЕХ + В ТГК
+          </button>
+        </div>
+      </div>
+
       <input type="hidden" id="editingNewsId" value="">
       <label>Заголовок новости</label>
       <input type="text" id="newsTitle" placeholder="Например: Победа [C6E] в турнире">
@@ -1373,12 +1426,27 @@
   };
 
   window.resetWeeklyPantheonBoosts = async () => {
-    if (!confirm("Начать новую неделю гонки Пантеона? (Сбросит недельные бусты 🔥 и бонусные очки PTS у всех бойцов)")) return;
+    if (!confirm("Начать новую неделю гонки Пантеона? (Сбросит недельные бусты 🔥, замки IP/HW и бонусные очки PTS у всех бойцов)")) return;
     try {
-      await setDoc(doc(db, DB_COLLECTION, "pantheon"), { boosts: {}, bonusPts: {} });
+      await setDoc(doc(db, DB_COLLECTION, "pantheon"), { boosts: {}, bonusPts: {}, boostLocks: {} });
       showToast("👑 Новый недельный сезон Пантеона запущен!");
     } catch (e) {
       showToast("Ошибка сброса Пантеона", true);
+    }
+  };
+
+  window.resetSinglePlayerBoosts = async (pKey, nick) => {
+    if (!pKey) return;
+    if (!confirm(`Обнулить накрученные бусты 🔥 у игрока ${nick}?`)) return;
+    try {
+      const ref = doc(db, DB_COLLECTION, "pantheon");
+      const snap = await getDoc(ref);
+      let boosts = (snap.exists() && snap.data().boosts) ? { ...snap.data().boosts } : {};
+      boosts[pKey] = 0;
+      await setDoc(ref, { boosts }, { merge: true });
+      showToast(`🔄 Бусты игрока ${nick} обнулены!`);
+    } catch (e) {
+      showToast("Ошибка сброса бустов игрока", true);
     }
   };
 
@@ -1407,10 +1475,11 @@
           <div class="item-sub" style="margin:4px 0;">
             👑 Очки: <b style="color:#ffb300; display:inline;">${st.totalPantheonPts} PTS</b> • LIVE K/D: <b style="color:var(--success); display:inline;">${st.liveKd}</b> • Бустов сайта: 🔥 ${st.fanBoosts} • Бонус Основателя: <b>${st.founderBonus >= 0 ? '+' + st.founderBonus : st.founderBonus}</b>
           </div>
-          <div style="display:flex; gap:6px; width:100%; margin-top:4px;">
+          <div style="display:flex; gap:6px; width:100%; margin-top:4px; flex-wrap:wrap;">
             <button type="button" class="chip-btn" style="flex:1; border-color:var(--success); color:var(--success);" onclick="window.adjustPantheonBonus('${st.pKey}', 50)">+50 PTS</button>
             <button type="button" class="chip-btn" style="flex:1; border-color:#ffb300; color:#ffb300;" onclick="window.adjustPantheonBonus('${st.pKey}', 100)">+100 PTS</button>
             <button type="button" class="chip-btn" style="flex:1; border-color:var(--accent-light); color:var(--accent-light);" onclick="window.adjustPantheonBonus('${st.pKey}', -50)">-50 PTS</button>
+            <button type="button" class="chip-btn" style="border-color:#ff5263; color:#ff5263;" title="Обнулить бусты 🔥 этого бойца" onclick="window.resetSinglePlayerBoosts('${st.pKey}', '${st.nick.replace(/'/g, "\\'")}')"><i class="fas fa-undo"></i> 0🔥</button>
           </div>
         </div>
       `;
@@ -2032,7 +2101,8 @@
       delta = liveKd - baseKd;
     }
 
-    const fanBoosts = (cachedPantheon.boosts && cachedPantheon.boosts[pKey]) ? parseInt(cachedPantheon.boosts[pKey], 10) : 0;
+    const rawFanBoosts = (cachedPantheon.boosts && cachedPantheon.boosts[pKey]) ? parseInt(cachedPantheon.boosts[pKey], 10) : 0;
+    const fanBoosts = Math.min(20, rawFanBoosts);
     const founderBonus = (cachedPantheon.bonusPts && cachedPantheon.bonusPts[pKey]) ? parseInt(cachedPantheon.bonusPts[pKey], 10) : 0;
     const kdPts = Math.round(liveKd * 450);
     const growthPts = Math.round(delta * 1200);
@@ -3860,6 +3930,174 @@
     closeHelper();
   };
 
+  // Генерация фирменного 1280x720 баннера обновления от лица Разработчика Kas
+  async function buildKasReleaseBannerDataUrl(ver, featuresList) {
+    try {
+      const blob = await generateC6EBrandCardBlob({
+        badge: `OFFICIAL SITE UPDATE ${ver.toUpperCase()} // DEVELOPED BY KAS (@kas_0ff)`,
+        title: `ОБНОВЛЕНИЕ ПОРТАЛА CYBER 6 ESPORTS ${ver.toUpperCase()}`,
+        subtitle: 'НОВЫЕ ВОЗМОЖНОСТИ ДЛЯ БОЙЦОВ СОСТАВА И ГОСТЕЙ САЙТА',
+        lines: featuresList.slice(0, 5)
+      });
+      if (!blob) return '';
+      return await new Promise((res) => {
+        const reader = new FileReader();
+        reader.onloadend = () => res(reader.result || '');
+        reader.readAsDataURL(blob);
+      });
+    } catch (e) {
+      return '';
+    }
+  }
+
+  async function buildKasUpdatePayload() {
+    const ver = (document.getElementById('relVersionInp')?.value || 'v4.5').trim();
+    const customNote = (document.getElementById('relCustomNote')?.value || '').trim();
+    const incPantheon = document.getElementById('chkRelPantheon')?.checked !== false;
+    const incBoosts   = document.getElementById('chkRelBoosts')?.checked !== false;
+    const incLiveKd   = document.getElementById('chkRelLiveKd')?.checked !== false;
+    const incDualTab  = document.getElementById('chkRelDualTab')?.checked !== false;
+    const incPracs    = document.getElementById('chkRelPracs')?.checked !== false;
+
+    const cardLines = [];
+    if (incPantheon) cardLines.push('👑 ПАНТЕОН [C6E]: Гонка за 900 Голды (🥇 500G / 🥈 250G / 🥉 150G)');
+    if (incBoosts)   cardLines.push('🔥 БУСТ БОЙЦА (+25 PTS): Поддержка игроков на сайте каждые 6 часов');
+    if (incLiveKd)   cardLines.push('📊 LIVE K/D & ДОСЬЕ: Авто-пересчет скилла, винрейта и формы после игр');
+    if (incDualTab)  cardLines.push('🏆 ДВОЙНОЙ ТАБ 5v5: Полная статистика У/П/С/Счёт/Пинг и скрины матчей');
+    if (incPracs)    cardLines.push('⚔️ CW ПРАКИ & C6E SHIELD: Запись на матчи и защита портала');
+    if (customNote)  cardLines.push(`⚡ ДОПОЛНИТЕЛЬНО: ${customNote}`);
+
+    const bannerDataUrl = await buildKasReleaseBannerDataUrl(ver, cardLines);
+
+    const title = `🚀 ГЛОБАЛЬНОЕ ОБНОВЛЕНИЕ САЙТА ${ver.toUpperCase()} ОТ KAS: ${incPantheon ? '«ПАНТЕОН» НА 900 ГОЛДЫ, БУСТЫ И LIVE-ТАБ!' : 'НОВЫЕ ФУНКЦИИ ПОРТАЛА [C6E]!'}`;
+    const blocks = [];
+
+    if (bannerDataUrl) {
+      blocks.push(`
+        <div style="margin:0 0 16px 0; border-radius:12px; overflow:hidden; border:1px solid rgba(255,179,0,0.45); background:#0b0c0e; box-shadow:0 12px 32px rgba(0,0,0,0.65);">
+          <img src="${bannerDataUrl}" alt="C6E Update ${ver}" style="width:100%; max-height:380px; object-fit:cover; display:block;" onerror="this.onerror=null; this.src='logo.png';">
+        </div>
+      `);
+    } else {
+      blocks.push(`
+        <div style="margin:0 0 16px 0; border-radius:12px; overflow:hidden; border:1px solid rgba(255,179,0,0.45); background:linear-gradient(135deg, rgba(158,27,40,0.35), rgba(10,11,15,0.98)); padding:16px; display:flex; align-items:center; gap:14px;">
+          <img src="logo.png" alt="C6E" style="width:64px; height:64px; object-fit:contain; border-radius:12px; border:1px solid #ffb300;">
+          <div>
+            <div style="font-family:'Orbitron',sans-serif; font-size:10px; color:#ffb300; font-weight:800;">⚡ OFFICIAL PORTAL UPDATE ${ver.toUpperCase()} • BY KAS</div>
+            <div style="font-family:'Orbitron',sans-serif; font-size:16px; color:#fff; font-weight:900;">CYBER 6 ESPORTS // НОВАЯ ВЕРСИЯ САЙТА</div>
+          </div>
+        </div>
+      `);
+    }
+
+    blocks.push(`
+      <p style="margin:0 0 12px 0; font-size:13.5px; color:#e4e4e2; line-height:1.7;">
+        Салам всем бойцам нашего состава и гостям портала! На связи <strong>Kas</strong> — основатель и главный разработчик <strong>CYBER 6 ESPORTS <code>[C6E]</code></strong>. Я рад представить свежее обновление нашего официального сайта версии <code style="background:rgba(212,38,56,0.18); border:1px solid rgba(212,38,56,0.45); padding:2px 7px; border-radius:4px; color:#ff6b7a; font-family:'Orbitron',sans-serif; font-size:11px;">${ver}</code>, созданное специально для игроков и болельщиков нашего тега!
+      </p>
+    `);
+
+    if (incPantheon) {
+      blocks.push(`
+        <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:14px 16px; margin:12px 0;">
+          <div style="font-family:'Orbitron',sans-serif; font-size:12px; font-weight:800; color:#ffb300; margin-bottom:8px; letter-spacing:1px;">
+            👑 НОВЫЙ РАЗДЕЛ «ПАНТЕОН [C6E]» — ЕЖЕНЕДЕЛЬНАЯ ГОНКА ЗА 900 ГОЛДЫ
+          </div>
+          <p style="margin:0 0 8px 0; font-size:13px; color:#ccc; line-height:1.65;">
+            На сайте запущен интерактивный рейтинг лучших игроков недели <strong>«ПАНТЕОН»</strong>! Каждое воскресенье в <code style="background:rgba(255,255,255,0.08); padding:2px 6px; border-radius:4px; color:#fff;">23:59 (МСК)</code> ТОП-3 бойца получают личный <em>Бонус от Основателя Kas</em>:
+          </p>
+          <div style="display:flex; gap:8px; flex-wrap:wrap; margin:8px 0;">
+            <span style="background:rgba(255,179,0,0.16); border:1px solid #ffb300; color:#ffb300; font-family:'Orbitron',sans-serif; font-size:11px; font-weight:800; padding:5px 11px; border-radius:6px;">🥇 1 МЕСТО — 500 GOLD</span>
+            <span style="background:rgba(228,228,226,0.12); border:1px solid #e4e4e2; color:#ffffff; font-family:'Orbitron',sans-serif; font-size:11px; font-weight:800; padding:5px 11px; border-radius:6px;">🥈 2 МЕСТО — 250 GOLD</span>
+            <span style="background:rgba(205,127,50,0.16); border:1px solid #cd7f32; color:#ffb074; font-family:'Orbitron',sans-serif; font-size:11px; font-weight:800; padding:5px 11px; border-radius:6px;">🥉 3 МЕСТО — 150 GOLD</span>
+          </div>
+          <p style="margin:6px 0 0 0; font-size:12.5px; color:#bbb; line-height:1.6;">
+            Очки <code style="background:rgba(255,179,0,0.15); padding:2px 6px; border-radius:4px; color:#ffb300;">PTS</code> начисляются автоматически за твой <strong>LIVE K/D</strong>, <em>рост скилла за неделю (<code>Δ K/D</code>)</em>, сыгранные матчи, победы, медали <code>MVP</code> и активность на сайте.
+          </p>
+        </div>
+      `);
+    }
+
+    if (incBoosts) {
+      blocks.push(`
+        <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:14px 16px; margin:12px 0;">
+          <div style="font-family:'Orbitron',sans-serif; font-size:12px; font-weight:800; color:#00e676; margin-bottom:8px; letter-spacing:1px;">
+            🔥 СИСТЕМА ПОДДЕРЖКИ «БУСТ БОЙЦА (+25 PTS)»
+          </div>
+          <p style="margin:0; font-size:13px; color:#ccc; line-height:1.65;">
+            В карточках игроков в разделах <strong>«Пантеон»</strong> и <strong>«Состав»</strong> появилась кнопка <code style="background:rgba(255,179,0,0.2); border:1px solid #ffb300; padding:2px 7px; border-radius:4px; color:#ffb300; font-weight:700;">🔥 БУСТ БОЙЦА (+25 PTS)</code>. Каждые <em>6 часов</em> любой посетитель сайта может зарядить бойца очками активности и помочь ему забрать Голду в конце недели!
+          </p>
+        </div>
+      `);
+    }
+
+    if (incLiveKd || incDualTab) {
+      blocks.push(`
+        <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:14px 16px; margin:12px 0;">
+          <div style="font-family:'Orbitron',sans-serif; font-size:12px; font-weight:800; color:#5294ff; margin-bottom:8px; letter-spacing:1px;">
+            📊 ЖИВАЯ СТАТИСТИКА LIVE K/D, ДОСЬЕ И ДВОЙНОЙ ТАБ МАТЧЕЙ 5v5
+          </div>
+          <p style="margin:0; font-size:13px; color:#ccc; line-height:1.65;">
+            Все профили бойцов синхронизированы с историей игр: сайт автоматически считает актуальный <code>LIVE K/D</code>, индикатор игровой формы (<strong>🔥 В ОГНЕ</strong>) и персональное досье по картам. В разделе <strong>«Матчи»</strong> каждый результат открывается в формате полного <strong>Двойного Таба Standoff 2</strong> (<code>У / П / С / K/D / Счёт / Пинг</code>) с оригинальным скриншотом-пруфом.
+          </p>
+        </div>
+      `);
+    }
+
+    if (incPracs) {
+      blocks.push(`
+        <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:14px 16px; margin:12px 0;">
+          <div style="font-family:'Orbitron',sans-serif; font-size:12px; font-weight:800; color:#ff5263; margin-bottom:8px; letter-spacing:1px;">
+            ⚔️ ИНТЕРАКТИВНЫЕ ПРАКИ (CW) И ЗАЩИТА ПОРТАЛА C6E SHIELD
+          </div>
+          <p style="margin:0; font-size:13px; color:#ccc; line-height:1.65;">
+            Обновлена система вызова нашего состава на тренировочные матчи (<code>BO1 / BO3 / BO5</code>) с выбором пула карт и мгновенным оповещением команды, а система безопасности <code>C6E Shield</code> надежно защищает портал и отзывы от спама и рейдов.
+          </p>
+        </div>
+      `);
+    }
+
+    if (customNote) {
+      blocks.push(`
+        <div style="background:rgba(212,38,56,0.1); border:1px solid rgba(212,38,56,0.35); border-radius:10px; padding:12px 16px; margin:12px 0;">
+          <div style="font-family:'Orbitron',sans-serif; font-size:11px; font-weight:800; color:#ff6b7a; margin-bottom:4px;">⚡ ДОПОЛНИТЕЛЬНО В ПАТЧЕ ${ver.toUpperCase()}:</div>
+          <div style="font-size:13px; color:#fff; line-height:1.6;">${customNote}</div>
+        </div>
+      `);
+    }
+
+    blocks.push(`
+      <blockquote style="margin:16px 0 6px 0; padding:14px 18px; border-left:4px solid #ffb300; background:rgba(255,179,0,0.07); color:#e4e4e2; font-style:italic; border-radius:0 10px 10px 0; line-height:1.65;">
+        «Я постоянно прокачиваю платформу <strong>CYBER 6 ESPORTS [C6E]</strong>, чтобы у нашего состава были лучшие технологии в Standoff 2. Следите за своим <code>LIVE K/D</code>, поддерживайте бойцов бустами на сайте и боритесь за <code>500</code>, <code>250</code> и <code>150 GOLD</code> каждую неделю!»
+        <div style="margin-top:8px; font-style:normal; font-family:'Orbitron',sans-serif; font-size:10px; font-weight:800; color:#ffb300; letter-spacing:1px;">
+          — KAS (@kas_0ff) // ОСНОВАТЕЛЬ И ГЛАВНЫЙ РАЗРАБОТЧИК CYBER 6 ESPORTS [C6E]
+        </div>
+      </blockquote>
+    `);
+
+    return {
+      ver,
+      title,
+      htmlText: blocks.join('\n'),
+      cardLines,
+      dateVal: new Date().toLocaleDateString('ru-RU')
+    };
+  }
+
+  window.generateKasUpdateIntoEditor = async () => {
+    showToast("Генерирую статью и баннер обновления от лица Kas...");
+    const payload = await buildKasUpdatePayload();
+    document.getElementById('newsTitle').value = payload.title;
+    document.getElementById('newsDate').value = payload.dateVal;
+    document.getElementById('newsTag').value = 'ОБНОВЛЕНИЕ';
+    document.getElementById('newsVisualEditor').innerHTML = payload.htmlText;
+    showToast("✅ Красивая новость об обнове с картинкой готова в редакторе!");
+  };
+
+  window.publishKasUpdateOneClick = async () => {
+    await window.generateKasUpdateIntoEditor();
+    await window.addNews();
+  };
+
   window.addNews = async () => {
     const title = document.getElementById('newsTitle').value.trim();
     if (!title) return showToast("Введите заголовок новости!", true);
@@ -3870,12 +4108,16 @@
     const dateVal = document.getElementById('newsDate').value.trim() || new Date().toLocaleDateString('ru-RU');
     const tagVal = document.getElementById('newsTag').value;
     const editingId = document.getElementById('editingNewsId').value;
+    const verInp = (document.getElementById('relVersionInp')?.value || 'v4.5').trim();
+    const nowId = editingId ? parseInt(editingId, 10) : Date.now();
+    const versionId = tagVal === 'ОБНОВЛЕНИЕ' ? `c6e_rel_${verInp.replace(/[^a-zA-Z0-9]/g, '_')}_${nowId}` : undefined;
 
     const ref = doc(db, DB_COLLECTION, "news");
     const snap = await getDoc(ref);
     let list = (snap.exists() && snap.data().list) ? snap.data().list : [];
 
-    const newsItem = { id: editingId ? parseInt(editingId, 10) : Date.now(), title, text: formattedText, date: dateVal, tag: tagVal };
+    const newsItem = { id: nowId, title, text: formattedText, date: dateVal, tag: tagVal };
+    if (versionId) newsItem.versionId = versionId;
 
     if (editingId) {
       list = list.map(n => n.id === newsItem.id ? newsItem : n);
@@ -3888,6 +4130,21 @@
       showToast("Новость сохранена на сайте!");
       document.getElementById('newsTitle').value = '';
       editor.innerHTML = '';
+    }
+
+    // Если рубрика «ОБНОВЛЕНИЕ» — запускаем глобальное уведомление для всех посетителей сайта!
+    if (tagVal === 'ОБНОВЛЕНИЕ') {
+      await setDoc(doc(db, DB_COLLECTION, "site_release"), {
+        id: nowId,
+        versionId: versionId || `c6e_rel_${nowId}`,
+        versionLabel: `${verInp.toUpperCase()} // PORTAL UPDATE`,
+        date: dateVal,
+        tag: 'ОБНОВЛЕНИЕ',
+        author: 'Kas (@kas_0ff)',
+        title,
+        text: formattedText
+      });
+      showToast("🚀 Push-уведомление об обнове активировано для всех посетителей сайта!");
     }
 
     if (document.getElementById('tgAutoPostNews').checked) {
