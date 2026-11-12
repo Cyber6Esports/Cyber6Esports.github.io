@@ -10,7 +10,7 @@
   <title>CYBER 6 ESPORTS | Официальный сайт</title>
   
   <meta property="og:title" content="CYBER 6 ESPORTS | C6E">
-  <meta property="og:description" content="Официальный портал организации Cyber 6 Esports. Новости, состав и запись на праки.">
+  <meta property="og:description" content="Официальный портал организации Cyber 6 Esports. Новости, состав, Пантеон и запись на праки.">
   <meta property="og:image" content="logo.png"> 
   <meta property="og:type" content="website">
   
@@ -19,7 +19,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=3">
 </head>
 <body>
 
@@ -76,6 +76,7 @@
 
   <div class="nav-dropdown" id="navDropdown">
     <button class="menu-item active-tab" id="btn-home" onclick="selectTab('home', this)"><i class="fas fa-home"></i> Главная</button>
+    <button class="menu-item" id="btn-pantheon" onclick="selectTab('pantheon', this)" style="color: #ffb300;"><i class="fas fa-crown" style="color: #ffb300;"></i> Пантеон</button>
     <button class="menu-item" id="btn-team" onclick="selectTab('team', this)"><i class="fas fa-users"></i> Состав</button>
     <button class="menu-item" id="btn-practice" onclick="selectTab('practice', this)"><i class="fas fa-crosshairs"></i> Праки</button>
     <button class="menu-item" id="btn-schedule" onclick="selectTab('schedule', this)"><i class="far fa-calendar-alt"></i> Расписание</button>
@@ -97,9 +98,14 @@
       <img src="logo.png" alt="Cyber 6 Esports" class="hero-logo-badge" onerror="this.style.display='none'">
       <h2 class="hero-title">CYBER <span>6</span> ESPORTS</h2>
       <div id="typing-text">STANDOFF 2 PROFESSIONAL TEAM</div>
-      <button class="btn-glitch" onclick="selectTab('join', null)" style="max-width: 260px;">
-        ПОДАТЬ ЗАЯВКУ <i class="fas fa-angle-right" style="margin-left: 10px;"></i>
-      </button>
+      <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap;">
+        <button class="btn-glitch" onclick="selectTab('join', null)" style="max-width: 230px;">
+          ПОДАТЬ ЗАЯВКУ <i class="fas fa-angle-right" style="margin-left: 8px;"></i>
+        </button>
+        <button class="btn-glitch" onclick="selectTab('pantheon', document.getElementById('btn-pantheon'))" style="max-width: 230px; border-left-color: #ffb300; color: #ffb300;">
+          <i class="fas fa-crown" style="margin-right: 8px;"></i> ПАНТЕОН (900 GOLD)
+        </button>
+      </div>
     </div>
 
     <div class="stats-row">
@@ -153,10 +159,16 @@
 
     <div class="card text-center" style="background: linear-gradient(135deg, rgba(158, 27, 40, 0.12), rgba(20, 21, 25, 0.9));">
       <h3 class="font-tech" style="font-size: 15px; color: var(--silver); margin-top: 0;">SUPPORT CYBER 6 ESPORTS</h3>
-      <!-- ССЫЛКА ДЛЯ ЗАМЕНЫ: Донат -->
       <a href="https://dalink.to/airex_team_esports" target="_blank" class="btn-glitch" style="max-width: 260px; margin-top: 8px;">
         <i class="fas fa-heart text-accent" style="margin-right: 8px;"></i> ОТПРАВИТЬ ДОНАТ
       </a>
+    </div>
+  </section>
+
+  <!-- НОВЫЙ ИННОВАЦИОННЫЙ РАЗДЕЛ: ПАНТЕОН [C6E] (ЕЖЕНЕДЕЛЬНАЯ ГОНКА ЗА 500 / 250 / 150 ГОЛДЫ ОТ ОСНОВАТЕЛЯ) -->
+  <section id="pantheon">
+    <div id="pantheon-root">
+      <div class="text-center" style="padding: 30px; color: var(--silver-muted);">Загрузка Пантеона [C6E]...</div>
     </div>
   </section>
 
@@ -185,7 +197,6 @@
       <p style="font-size: 12px; color: var(--silver-muted); margin-bottom: 16px;">Нажмите на удобный свободный слот ниже, выберите карты пика и отправьте вызов штабу Cyber 6 Esports.</p>
 
       <form id="prac-form" onsubmit="submitPrac(event)">
-        <!-- Интерактивный выбор слота карточками + скрытый input -->
         <input type="hidden" id="prac-slot-select" required>
         <div class="form-group">
           <label class="form-label" style="color: var(--accent-light);"><i class="far fa-clock"></i> 1. НАЖМИТЕ НА СВОБОДНЫЙ СЛОТ (ВРЕМЯ МСК):</label>
@@ -255,7 +266,6 @@
 
     <div class="card text-center">
       <h3 class="font-tech text-silver" style="margin-top: 0;">OFFICIAL SOCIAL LINKS</h3>
-      <!-- ССЫЛКИ ДЛЯ ЗАМЕНЫ: Соцсети -->
       <div style="font-size: 30px; display: flex; justify-content: center; gap: 28px; margin-top: 15px;">
         <a href="https://t.me/AIREXTEAM" target="_blank" class="text-silver"><i class="fab fa-telegram"></i></a>
         <a href="https://www.tiktok.com/@airex_team" target="_blank" class="text-silver"><i class="fab fa-tiktok"></i></a>
@@ -507,6 +517,6 @@
   };
 </script>
 
-<script type="module" src="app.js"></script>
+<script type="module" src="app.js?v=3"></script>
 </body>
 </html>
