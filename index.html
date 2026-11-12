@@ -60,13 +60,38 @@
   </audio>
 </div>
 
-<!-- ВЕРХНЯЯ ПАНЕЛЬ НАВИГАЦИИ -->
+<input type="file" id="guestAvatarFileInput" accept="image/*" style="display:none;">
+<input type="file" id="guestBannerFileInput" accept="image/*" style="display:none;">
+
+<!-- ВЕРХНЯЯ ПАНЕЛЬ НАВИГАЦИИ v0.5.0 -->
 <nav class="navbar">
   <div class="nav-brand" onclick="selectTab('home', document.getElementById('btn-home'))">
     <img src="logo.png" alt="C6E" onerror="this.style.display='none'"> 
     <div class="nav-brand-text">
       <h1>CYBER <span class="six-num">6</span></h1>
-      <span class="nav-brand-sub">ESPORTS</span>
+      <span class="nav-brand-sub">PORTAL v0.5.0</span>
+    </div>
+  </div>
+
+  <!-- БЛОК ПРОФИЛЯ ГОСТЯ, КОЛОКОЛЬЧИКА УВЕДОМЛЕНИЙ И СМЕНЫ ТЕМЫ В ШАПКЕ -->
+  <div class="nav-top-actions" style="display:flex; align-items:center; gap:7px; margin-left:auto; margin-right:8px;">
+    <button type="button" id="theme-switcher-btn" class="nav-icon-btn" onclick="if(window.openThemeSwitcherModal) window.openThemeSwitcherModal()" title="Сменить цвет оформления сайта">
+      <i class="fas fa-palette"></i>
+    </button>
+
+    <button type="button" id="notif-bell-btn" class="nav-icon-btn" onclick="if(window.openNotificationsModal) window.openNotificationsModal()" title="Уведомления и упоминания">
+      <i class="fas fa-bell"></i>
+      <span id="notif-badge-count" class="notif-count-pill" style="display:none;">0</span>
+    </button>
+
+    <div id="header-profile-chip" class="header-profile-chip" onclick="if(window.openMyProfileModal) window.openMyProfileModal()" title="Открыть игровой профиль">
+      <div class="hp-avatar-wrap frame-c6e-red">
+        <img id="hp-avatar-img" src="logo.png" alt="Avatar" onerror="this.src='logo.png'">
+      </div>
+      <div class="hp-info">
+        <div id="hp-nick-line" class="hp-nick">Создать профиль</div>
+        <div id="hp-sub-line" class="hp-sub">💎 Гость портала</div>
+      </div>
     </div>
   </div>
 
@@ -77,6 +102,8 @@
   <div class="nav-dropdown" id="navDropdown">
     <button class="menu-item active-tab" id="btn-home" onclick="selectTab('home', this)"><i class="fas fa-home"></i> Главная</button>
     <button class="menu-item" id="btn-pantheon" onclick="selectTab('pantheon', this)" style="color: #ffb300;"><i class="fas fa-crown" style="color: #ffb300;"></i> Пантеон</button>
+    <button class="menu-item" id="btn-chat" onclick="selectTab('chat', this)" style="color: #00e676;"><i class="fas fa-comments" style="color: #00e676;"></i> Общий чат</button>
+    <button class="menu-item" id="btn-shop" onclick="selectTab('shop', this)" style="color: #ff6b7a;"><i class="fas fa-shopping-bag" style="color: #ff6b7a;"></i> Магазин</button>
     <button class="menu-item" id="btn-team" onclick="selectTab('team', this)"><i class="fas fa-users"></i> Состав</button>
     <button class="menu-item" id="btn-practice" onclick="selectTab('practice', this)"><i class="fas fa-crosshairs"></i> Праки</button>
     <button class="menu-item" id="btn-schedule" onclick="selectTab('schedule', this)"><i class="far fa-calendar-alt"></i> Расписание</button>
@@ -92,22 +119,62 @@
 
 <div class="container">
 
-  <!-- 1. ГЛАВНАЯ -->
+  <!-- 1. ИННОВАЦИОННЫЙ ГЛАВНЫЙ ЭКРАН v0.5.0 (COMMAND HUB) -->
   <section id="home" class="active" style="display: block; opacity: 1; transform: translateY(0);">
-    <div class="card text-center" style="padding: 40px 20px;">
+    <div class="card cyber-hero-v5">
+      <div class="hero-top-meta">
+        <span class="hero-live-pill"><span class="online-dot-pulse"></span> PORTAL v0.5.0 LIVE</span>
+        <span class="hero-dev-pill" onclick="if(window.openSiteReleaseModal) window.openSiteReleaseModal()"><i class="fas fa-code"></i> DEV: KAS (@kas_0ff)</span>
+      </div>
+
       <img src="logo.png" alt="Cyber 6 Esports" class="hero-logo-badge" onerror="this.style.display='none'">
       <h2 class="hero-title">CYBER <span>6</span> ESPORTS</h2>
       <div id="typing-text">STANDOFF 2 PROFESSIONAL TEAM</div>
-      <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap;">
-        <button class="btn-glitch" onclick="selectTab('join', null)" style="max-width: 230px;">
-          ПОДАТЬ ЗАЯВКУ <i class="fas fa-angle-right" style="margin-left: 8px;"></i>
+
+      <div class="hero-quick-grid">
+        <button class="btn-glitch" onclick="selectTab('pantheon', document.getElementById('btn-pantheon'))" style="border-left-color: #ffb300; color: #ffb300;">
+          <i class="fas fa-crown" style="margin-right: 7px;"></i> ПАНТЕОН (900G)
         </button>
-        <button class="btn-glitch" onclick="selectTab('pantheon', document.getElementById('btn-pantheon'))" style="max-width: 230px; border-left-color: #ffb300; color: #ffb300;">
-          <i class="fas fa-crown" style="margin-right: 8px;"></i> ПАНТЕОН (900 GOLD)
+        <button class="btn-glitch" onclick="selectTab('chat', document.getElementById('btn-chat'))" style="border-left-color: #00e676; color: #00e676;">
+          <i class="fas fa-comments" style="margin-right: 7px;"></i> ОБЩИЙ ЧАТ
         </button>
-        <button class="btn-glitch" id="hero-patch-btn" onclick="if(window.openSiteReleaseModal) window.openSiteReleaseModal()" style="max-width: 230px; border-left-color: #00e676; color: #00e676;">
-          <i class="fas fa-bolt" style="margin-right: 8px;"></i> ОБНОВА САЙТА ОТ KAS
+        <button class="btn-glitch" onclick="selectTab('shop', document.getElementById('btn-shop'))" style="border-left-color: var(--accent-light);">
+          <i class="fas fa-shopping-bag" style="margin-right: 7px;"></i> МАГАЗИН [C6E]
         </button>
+        <button class="btn-glitch" id="hero-patch-btn" onclick="if(window.openSiteReleaseModal) window.openSiteReleaseModal()" style="border-left-color: #3b82f6; color: #93c5fd;">
+          <i class="fas fa-bolt" style="margin-right: 7px;"></i> ПАТЧ 0.5.0 ОТ KAS
+        </button>
+      </div>
+    </div>
+
+    <!-- ЖИВОЙ РАДАР ОНЛАЙНА И ИГРОВЫХ ПРОФИЛЕЙ ГОСТЕЙ И БОЙЦОВ -->
+    <div class="card community-radar-card" id="home-community-hub">
+      <div class="community-radar-header">
+        <div>
+          <div style="font-family:var(--font-tech); font-size:13px; font-weight:900; color:#fff; display:flex; align-items:center; gap:8px;">
+            <span class="online-dot-pulse"></span> ИГРОКИ ОНЛАЙН И СООБЩЕСТВО ПОРТАЛА
+          </div>
+          <div style="font-size:10px; color:var(--silver-muted); margin-top:3px;">
+            Нажми на карточку любого гостя или бойца, чтобы посмотреть его баннер, K/D, биографию и поставить ❤️ лайк профилю!
+          </div>
+        </div>
+        <div class="community-counters-strip">
+          <div class="comm-counter-pill online">
+            <span class="lbl">ОНЛАЙН</span>
+            <span class="val" id="comm-online-count">1</span>
+          </div>
+          <div class="comm-counter-pill total">
+            <span class="lbl">ВСЕГО ПРОФИЛЕЙ</span>
+            <span class="val" id="comm-total-count">1</span>
+          </div>
+          <button type="button" class="chip-btn" style="border-color:var(--accent-light); color:#fff;" onclick="if(window.openMyProfileModal) window.openMyProfileModal()">
+            <i class="fas fa-user-edit text-accent"></i> Мой профиль
+          </button>
+        </div>
+      </div>
+
+      <div id="home-online-profiles-grid" class="online-profiles-showcase">
+        <div style="font-size:11px; color:var(--silver-muted); padding:14px; text-align:center;">Загрузка профилей игроков...</div>
       </div>
     </div>
 
@@ -150,21 +217,28 @@
 
     <div class="card">
       <h3 class="font-tech" style="font-size: 14px; margin-top: 0; margin-bottom: 15px; color: var(--silver);">
-        <i class="fas fa-bolt text-accent"></i> ПОСЛЕДНИЕ СОБЫТИЯ
+        <i class="fas fa-bolt text-accent"></i> ПОСЛЕДНИЕ СОБЫТИЯ И ОБНОВЛЕНИЯ
       </h3>
       <div id="home-news-feed">
         <div class="text-center" style="font-size: 12px; color: #666; padding: 20px;">Загрузка данных...</div>
       </div>
       <button class="btn-glitch btn-secondary" onclick="selectTab('news', document.getElementById('btn-news'))" style="margin-top: 10px;">
-        АРХИВ НОВОСТЕЙ
+        ОТКРЫТЬ ВСЕ НОВОСТИ
       </button>
     </div>
+  </section>
 
-    <div class="card text-center" style="background: linear-gradient(135deg, rgba(158, 27, 40, 0.12), rgba(20, 21, 25, 0.9));">
-      <h3 class="font-tech" style="font-size: 15px; color: var(--silver); margin-top: 0;">SUPPORT CYBER 6 ESPORTS</h3>
-      <a href="https://dalink.to/airex_team_esports" target="_blank" class="btn-glitch" style="max-width: 260px; margin-top: 8px;">
-        <i class="fas fa-heart text-accent" style="margin-right: 8px;"></i> ОТПРАВИТЬ ДОНАТ
-      </a>
+  <!-- НОВЫЙ РАЗДЕЛ v0.5.0: ОБЩИЙ ЧАТ ИГРОКОВ (АВТО-ОЧИСТКА КАЖДЫЕ 12 ЧАСОВ + @УПОМИНАНИЯ) -->
+  <section id="chat">
+    <div id="global-chat-root">
+      <div class="text-center" style="padding:30px; color:var(--silver-muted);">Загрузка общего чата [C6E]...</div>
+    </div>
+  </section>
+
+  <!-- НОВЫЙ РАЗДЕЛ v0.5.0: МАГАЗИН [C6E] (ЭКСКЛЮЗИВНЫЙ КИБЕР-МАРКЕТ) -->
+  <section id="shop">
+    <div id="c6e-shop-root">
+      <div class="text-center" style="padding:30px; color:var(--silver-muted);">Загрузка кибер-маркета [C6E]...</div>
     </div>
   </section>
 
@@ -520,6 +594,6 @@
   };
 </script>
 
-<script type="module" src="app.js?v=4"></script>
+<script type="module" src="app.js?v=5"></script>
 </body>
 </html>
