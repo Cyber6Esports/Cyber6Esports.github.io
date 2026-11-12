@@ -696,12 +696,13 @@ function computePlayerLiveAnalytics(playerObj) {
 
   // ФОРМУЛА ОЧКОВ ПАНТЕОНА (PTS = Скилл K/D + Прогресс K/D + Боевая активность в Табе + Активность на сайте)
   const fanBoosts = (pantheonMeta.boosts && pantheonMeta.boosts[pKey]) ? parseInt(pantheonMeta.boosts[pKey], 10) : 0;
+  const cappedFanBoosts = Math.min(20, fanBoosts); // Защита от накрутки: максимум 20 бустов (500 PTS) в неделю с сайта
   const founderBonus = (pantheonMeta.bonusPts && pantheonMeta.bonusPts[pKey]) ? parseInt(pantheonMeta.bonusPts[pKey], 10) : 0;
 
   const kdPts = Math.round(liveKd * 450); // Базовый вес скилла K/D
   const growthPts = Math.round(delta * 1200); // Огромный бонус за рост K/D за неделю!
   const matchActivityPts = (matchesPlayed * 85) + (matchesWon * 95) + (mvpCount * 160) + (totalKills * 3); // Активность в матчах
-  const siteActivityPts = (fanBoosts * 25) + founderBonus; // Активность на сайте (бусты + бонус Основателя)
+  const siteActivityPts = (cappedFanBoosts * 25) + founderBonus; // Активность на сайте (бусты с лимитом + бонус Основателя)
 
   const totalPantheonPts = Math.max(100, kdPts + growthPts + matchActivityPts + siteActivityPts);
 
@@ -744,41 +745,136 @@ function computePlayerLiveAnalytics(playerObj) {
   };
 }
 
-// Подписка на данные Пантеона (бусты активности на сайте и бонусы Основателя)
+// Аппаратный отпечаток устройства (GPU + Экран + Ядра процессора) — не сбрасывается в Инкогнито или другом браузере!
+function getHardwareSignatureHash() {
+  try {
+    let glRenderer = 'nogl';
+    const canvas = document.createElement('canvas');
+    const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+    if (gl) {
+      const dbg = gl.getExtension('WEBGL_debug_renderer_info');
+      if (dbg) glRenderer = gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) || 'webgl';
+    }
+    const raw = [
+      screen.width,
+      screen.height,
+      screen.colorDepth,
+      Math.round((window.devicePixelRatio || 1) * 100),
+      navigator.hardwareConcurrency || 0,
+      navigator.deviceMemory || 0,
+      Intl.DateTimeFormat().resolvedOptions().timeZone || '',
+      glRenderer
+    ].join('|');
+    let h = 2166136261;
+    for (let i = 0; i < raw.length; i++) {
+      h ^= raw.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    return 'HW-' + (h >>> 0).toString(16).toUpperCase().padStart(8, '0');
+  } catch (e) {
+    return 'HW-FALLBACK';
+  }
+}
+
+// Подписка на данные Пантеона (бусты активности на сайте, бонусы Основателя и серверные замки анти-накрутки)
 onSnapshot(doc(db, DB_COLLECTION, "pantheon"), (snap) => {
   if (snap.exists()) {
     pantheonMeta = {
       boosts: snap.data().boosts || {},
-      bonusPts: snap.data().bonusPts || {}
+      bonusPts: snap.data().bonusPts || {},
+      boostLocks: snap.data().boostLocks || {}
     };
   } else {
-    pantheonMeta = { boosts: {}, bonusPts: {} };
+    pantheonMeta = { boosts: {}, bonusPts: {}, boostLocks: {} };
   }
   renderPantheonSection();
 });
 
-// Функция «🔥 БУСТ БОЙЦА (+25 PTS)» на сайте (раз в 12 часов с одного устройства)
+// Защищенная функция «🔥 БУСТ БОЙЦА (+25 PTS)» (C6E Shield Anti-Multi-Device & Anti-Incognito Lock)
+let isBoostInProgress = false;
 window.boostPantheonPlayer = async (nick) => {
   if (checkIfCurrentUserBanned()) return;
+  if (isBoostInProgress) return;
   const pKey = normalizeNickKey(nick);
   if (!pKey) return;
 
-  const cooldownKey = `c6e_boost_${pKey}`;
-  if (!checkCooldown(cooldownKey, 360)) {
-    return window.showNotify("Вы уже заряжали этого бойца сегодня! Следующий буст через 6 часов.", "error");
-  }
-
+  isBoostInProgress = true;
   try {
+    await resolveVisitorIp();
+    const hwHash = getHardwareSignatureHash();
+    const cleanIpKey = (currentVisitorIp && currentVisitorIp !== 'Определяется...' && currentVisitorIp !== 'Скрыт / VPN')
+      ? 'ip_' + currentVisitorIp.replace(/[^a-zA-Z0-9]/g, '_')
+      : null;
+
+    // 1. Защита от VPN / Скрытого IP при голосовании
+    if (!cleanIpKey) {
+      await logSecurityAction('🚨 ТРЕВОГА: Буст со скрытым IP/VPN', nick, `Попытка накрутки буста без IP (${hwHash})`);
+      window.showNotify("🛡 C6E Shield: Отключите VPN/прокси для честного голосования в Пантеоне!", "error");
+      return;
+    }
+
     const ref = doc(db, DB_COLLECTION, "pantheon");
     const snap = await getDoc(ref);
-    let boosts = (snap.exists() && snap.data().boosts) ? { ...snap.data().boosts } : {};
-    boosts[pKey] = (parseInt(boosts[pKey], 10) || 0) + 1;
+    const data = snap.exists() ? snap.data() : {};
+    let boosts = data.boosts ? { ...data.boosts } : {};
+    let boostLocks = data.boostLocks ? { ...data.boostLocks } : {};
 
-    await setDoc(ref, { boosts }, { merge: true });
-    setCooldown(cooldownKey);
-    window.showNotify(`🔥 Вы дали +25 PTS активности бойцу ${nick} в гонке за Голду!`, "success");
+    // Лимит 20 бустов (500 PTS) в неделю на одного бойца
+    if ((parseInt(boosts[pKey], 10) || 0) >= 20) {
+      window.showNotify(`Боец ${nick} уже набрал максимум 20/20 бустов (500 PTS) на этой неделе! Теперь решают только матчи в Табе.`, "error");
+      return;
+    }
+
+    const nowMs = Date.now();
+    const COOLDOWN_MS = 12 * 60 * 60 * 1000; // 12 часов серверной блокировки по IP (Wi-Fi сети), железу (HW) и Device ID
+
+    const lockKeys = [
+      cleanIpKey,                       // Блокирует ВСЕ вторые телефоны/ПК в том же доме/Wi-Fi/точке доступа!
+      `hw_${hwHash}`,                   // Блокирует Инкогнито и другие браузеры на том же телефоне!
+      `dev_${currentVisitorDevId}`      // Блокирует по ID устройства
+    ];
+
+    // Проверяем и локальный, и серверный замок в Firebase
+    const localCoolKey = `c6e_boost_global_lock`;
+    let blockedReason = null;
+    let remainingMins = 0;
+
+    if (!checkCooldown(localCoolKey, 720)) {
+      blockedReason = 'Локальный таймер браузера';
+      remainingMins = 720;
+    } else {
+      for (const lk of lockKeys) {
+        const lastTs = parseInt(boostLocks[lk], 10) || 0;
+        if (nowMs - lastTs < COOLDOWN_MS) {
+          remainingMins = Math.ceil((COOLDOWN_MS - (nowMs - lastTs)) / 60000);
+          blockedReason = lk.startsWith('ip_')
+            ? 'С вашей интернет-сети (IP / Wi-Fi) уже голосовали со второго устройства'
+            : 'С этого устройства (даже через Инкогнито) уже был дан буст';
+          break;
+        }
+      }
+    }
+
+    if (blockedReason) {
+      const hrs = Math.floor(remainingMins / 60);
+      const mins = remainingMins % 60;
+      await logSecurityAction('🚨 ТРЕВОГА: Попытка мульти-буста', nick, `${blockedReason} | HW: ${hwHash}`);
+      window.showNotify(`🛡 C6E Shield: Мульти-аккаунт/второе устройство перехвачено! Буст с вашей сети будет доступен через ${hrs}ч ${mins}м.`, "error");
+      return;
+    }
+
+    // Записываем буст и ставим серверный замок на IP, HW-отпечаток и Device ID
+    boosts[pKey] = (parseInt(boosts[pKey], 10) || 0) + 1;
+    lockKeys.forEach(lk => { boostLocks[lk] = nowMs; });
+
+    await setDoc(ref, { boosts, boostLocks }, { merge: true });
+    setCooldown(localCoolKey);
+    await logSecurityAction('🔥 Буст Пантеона (+25 PTS)', nick, `Честный буст бойцу ${nick} | HW: ${hwHash}`);
+    window.showNotify(`🔥 Вы дали +25 PTS бойцу ${nick}! (Защита C6E Shield: 1 буст в 12ч с одной сети/устройства)`, "success");
   } catch (e) {
     window.showNotify("Ошибка начисления буста", "error");
+  } finally {
+    isBoostInProgress = false;
   }
 };
 
