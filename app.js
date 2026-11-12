@@ -299,6 +299,276 @@ c6eProStyles.innerHTML = `
     border-radius: 18px; padding: 30px 22px;
     box-shadow: 0 0 50px rgba(212, 38, 56, 0.45);
   }
+
+  /* =========================================================
+     СТИЛИ ОБНОВЛЕНИЯ v0.5.0: ТЕМЫ, ШАПКА ПРОФИЛЯ, РАМКИ [C6E], ЧАТ, МАГАЗИН
+     ========================================================= */
+  html[data-theme="red"] {
+    --accent: #9e1b28; --accent-light: #d42638;
+    --accent-dim: rgba(158, 27, 40, 0.16); --accent-glow: rgba(212, 38, 56, 0.38);
+  }
+  html[data-theme="green"] {
+    --accent: #0b6e4f; --accent-light: #00c885;
+    --accent-dim: rgba(11, 110, 79, 0.18); --accent-glow: rgba(0, 200, 133, 0.38);
+  }
+  html[data-theme="gold"] {
+    --accent: #9a6b00; --accent-light: #ffb300;
+    --accent-dim: rgba(154, 107, 0, 0.18); --accent-glow: rgba(255, 179, 0, 0.38);
+  }
+  html[data-theme="blue"] {
+    --accent: #1446a0; --accent-light: #3b82f6;
+    --accent-dim: rgba(20, 70, 160, 0.18); --accent-glow: rgba(59, 130, 246, 0.38);
+  }
+
+  .c6e-modal-overlay {
+    position: fixed; inset: 0; z-index: 12000;
+    background: rgba(4, 5, 8, 0.88); backdrop-filter: blur(14px);
+    display: none; align-items: center; justify-content: center; padding: 14px;
+  }
+  .c6e-modal-overlay.active { display: flex; }
+  .c6e-modal-card {
+    width: min(96vw, 600px); max-height: 90vh; overflow-y: auto;
+    background: linear-gradient(180deg, #15171e 0%, #0b0c10 100%);
+    border: 1px solid var(--silver-border); border-top: 3px solid var(--accent-light);
+    border-radius: 16px; box-shadow: 0 25px 70px rgba(0,0,0,0.95);
+    overflow: hidden; display: flex; flex-direction: column;
+  }
+  .c6e-modal-head {
+    padding: 14px 18px; background: rgba(255,255,255,0.03);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    display: flex; justify-content: space-between; align-items: center; gap: 10px;
+  }
+  .c6e-modal-body { padding: 18px; overflow-y: auto; }
+  .c6e-modal-close {
+    width: 30px; height: 30px; border-radius: 8px;
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+    color: var(--silver); cursor: pointer; font-size: 13px;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .c6e-modal-close:hover { background: var(--accent); color: #fff; }
+
+  .nav-icon-btn {
+    position: relative; width: 38px; height: 38px; border-radius: 10px;
+    background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border);
+    color: var(--silver); display: inline-flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 14px; transition: 0.25s;
+  }
+  .nav-icon-btn:hover { border-color: var(--accent-light); color: #fff; background: var(--accent-dim); }
+  .notif-count-pill {
+    position: absolute; top: -4px; right: -4px; min-width: 17px; height: 17px;
+    padding: 0 4px; border-radius: 10px; background: var(--accent-light); color: #fff;
+    font-family: var(--font-tech); font-size: 9px; font-weight: 900;
+    display: inline-flex; align-items: center; justify-content: center;
+    box-shadow: 0 0 10px var(--accent-glow);
+  }
+
+  .header-profile-chip {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 4px 10px 4px 5px; border-radius: 12px;
+    background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border);
+    cursor: pointer; transition: 0.25s; max-width: 195px;
+  }
+  .header-profile-chip:hover { border-color: var(--accent-light); background: var(--accent-dim); }
+  .hp-avatar-wrap {
+    width: 32px; height: 32px; position: relative; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; padding: 2px;
+    clip-path: polygon(50% 0%, 95% 25%, 95% 75%, 50% 100%, 5% 75%, 5% 25%);
+  }
+  .hp-avatar-wrap img {
+    width: 100%; height: 100%; object-fit: cover;
+    clip-path: polygon(50% 0%, 95% 25%, 95% 75%, 50% 100%, 5% 75%, 5% 25%);
+    background: #0b0c0e;
+  }
+  .hp-info { min-width: 0; display: flex; flex-direction: column; line-height: 1.15; }
+  .hp-nick {
+    font-family: var(--font-tech); font-size: 10px; font-weight: 800; color: #fff;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .hp-sub {
+    font-size: 8.5px; color: var(--silver-muted); font-weight: 600;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  @media (max-width: 480px) {
+    .header-profile-chip { max-width: 138px; padding: 3px 7px 3px 4px; gap: 5px; }
+    .hp-nick { font-size: 9px; }
+    .hp-sub { font-size: 7.5px; }
+    .nav-icon-btn { width: 34px; height: 34px; font-size: 12px; }
+  }
+
+  /* ГЕКСАГОНАЛЬНЫЕ РАМКИ В СТИЛЕ ЛОГОТИПА [C6E] */
+  .c6e-hex-avatar {
+    position: relative; display: inline-flex; align-items: center; justify-content: center;
+    padding: 3px; flex-shrink: 0;
+    clip-path: polygon(50% 0%, 95% 25%, 95% 75%, 50% 100%, 5% 75%, 5% 25%);
+    transition: 0.3s;
+  }
+  .c6e-hex-avatar img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+    clip-path: polygon(50% 0%, 95% 25%, 95% 75%, 50% 100%, 5% 75%, 5% 25%);
+    background: #0b0c0e;
+  }
+  .frame-c6e-red {
+    background: linear-gradient(135deg, #ff2a40, #e4e4e2, #9e1b28);
+    filter: drop-shadow(0 0 8px rgba(212, 38, 56, 0.55));
+  }
+  .frame-c6e-gold {
+    background: linear-gradient(135deg, #ffe066, #ffb300, #9a6b00);
+    filter: drop-shadow(0 0 8px rgba(255, 179, 0, 0.6));
+  }
+  .frame-c6e-green {
+    background: linear-gradient(135deg, #00e676, #e4e4e2, #0b6e4f);
+    filter: drop-shadow(0 0 8px rgba(0, 230, 118, 0.55));
+  }
+  .frame-c6e-blue {
+    background: linear-gradient(135deg, #60a5fa, #e4e4e2, #1d4ed8);
+    filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.55));
+  }
+
+  /* БАННЕРЫ ПРОФИЛЕЙ */
+  .prof-banner-box {
+    height: 118px; border-radius: 12px 12px 0 0; position: relative;
+    background-size: cover; background-position: center; overflow: hidden;
+    border-bottom: 2px solid var(--accent-light);
+  }
+  .banner-crimson {
+    background: radial-gradient(circle at 80% 20%, rgba(212,38,56,0.55), transparent 60%),
+                linear-gradient(135deg, #2a080d 0%, #0b0c10 60%, #4a0e17 100%);
+  }
+  .banner-gold {
+    background: radial-gradient(circle at 80% 20%, rgba(255,179,0,0.5), transparent 60%),
+                linear-gradient(135deg, #2d2004 0%, #0b0c10 60%, #4d3500 100%);
+  }
+  .banner-emerald {
+    background: radial-gradient(circle at 80% 20%, rgba(0,230,118,0.45), transparent 60%),
+                linear-gradient(135deg, #05291c 0%, #0b0c10 60%, #0b4630 100%);
+  }
+  .banner-sapphire {
+    background: radial-gradient(circle at 80% 20%, rgba(59,130,246,0.5), transparent 60%),
+                linear-gradient(135deg, #081c3a 0%, #0b0c10 60%, #10326b 100%);
+  }
+
+  /* ГЛАВНЫЙ ЭКРАН v0.5.0 И РАДАР ОНЛАЙНА */
+  .cyber-hero-v5 {
+    text-align: center; padding: 28px 18px; position: relative; overflow: hidden;
+    background: radial-gradient(circle at 50% 0%, var(--accent-dim) 0%, rgba(14, 15, 20, 0.95) 75%);
+    border-top: 2px solid var(--accent-light);
+  }
+  .hero-top-meta {
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 8px; margin-bottom: 14px;
+  }
+  .hero-live-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border-radius: 20px; font-family: var(--font-tech);
+    font-size: 9px; font-weight: 800; color: var(--success);
+    background: rgba(0, 230, 118, 0.1); border: 1px solid rgba(0, 230, 118, 0.35);
+  }
+  .hero-dev-pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 10px; border-radius: 20px; font-family: var(--font-tech);
+    font-size: 9px; font-weight: 800; color: #ffb300; cursor: pointer;
+    background: rgba(255, 179, 0, 0.12); border: 1px solid rgba(255, 179, 0, 0.4);
+  }
+  .hero-quick-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+    gap: 10px; margin-top: 16px;
+  }
+  .online-dot-pulse {
+    width: 8px; height: 8px; border-radius: 50%; background: #00e676;
+    display: inline-block; box-shadow: 0 0 10px #00e676;
+    animation: pulse-logo 1.4s infinite;
+  }
+
+  .community-radar-card {
+    border-top: 2px solid var(--accent-light);
+    background: linear-gradient(160deg, rgba(18, 19, 25, 0.96), rgba(10, 11, 14, 0.98));
+  }
+  .community-radar-header {
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 12px; padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.07); margin-bottom: 14px;
+  }
+  .community-counters-strip {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  }
+  .comm-counter-pill {
+    padding: 5px 11px; border-radius: 8px; background: rgba(255,255,255,0.03);
+    border: 1px solid var(--glass-border); display: flex; align-items: center; gap: 7px;
+  }
+  .comm-counter-pill .lbl { font-family: var(--font-tech); font-size: 8px; color: var(--silver-muted); }
+  .comm-counter-pill .val { font-family: var(--font-tech); font-size: 13px; font-weight: 900; color: #fff; }
+  .comm-counter-pill.online { border-color: rgba(0, 230, 118, 0.35); background: rgba(0, 230, 118, 0.06); }
+  .comm-counter-pill.online .val { color: var(--success); }
+
+  .online-profiles-showcase {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
+    gap: 10px; max-height: 340px; overflow-y: auto; padding-right: 2px;
+  }
+  .mini-prof-card {
+    border-radius: 11px; overflow: hidden; border: 1px solid rgba(255,255,255,0.09);
+    background: rgba(12, 13, 18, 0.92); cursor: pointer; transition: 0.25s;
+    position: relative; display: flex; flex-direction: column;
+  }
+  .mini-prof-card:hover {
+    transform: translateY(-3px); border-color: var(--accent-light);
+    box-shadow: 0 10px 24px rgba(0,0,0,0.7);
+  }
+  .mini-prof-top { height: 42px; background-size: cover; background-position: center; position: relative; }
+  .mini-prof-body { padding: 0 11px 11px 11px; margin-top: -18px; position: relative; }
+
+  /* ОБЩИЙ ЧАТ ИГРОКОВ (12Ч АВТО-ОЧИСТКА) */
+  .chat-box-wrap {
+    border-radius: 14px; border: 1px solid var(--silver-border);
+    background: rgba(11, 12, 16, 0.96); overflow: hidden;
+    display: flex; flex-direction: column; height: 68vh; min-height: 440px; max-height: 680px;
+  }
+  .chat-top-bar {
+    padding: 12px 16px; background: linear-gradient(90deg, var(--accent-dim), rgba(15,16,22,0.98));
+    border-bottom: 1px solid var(--glass-border);
+    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;
+  }
+  .chat-messages-area {
+    flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 10px;
+  }
+  .chat-msg-item {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 10px 12px; border-radius: 11px;
+    background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.06);
+  }
+  .chat-msg-item.mention-me {
+    border-color: #ffb300; background: rgba(255, 179, 0, 0.09);
+  }
+  .chat-msg-item.is-mine {
+    border-left: 3px solid var(--accent-light); background: rgba(255,255,255,0.04);
+  }
+  .chat-mention-tag {
+    display: inline-block; padding: 1px 6px; border-radius: 4px;
+    background: rgba(255, 179, 0, 0.2); border: 1px solid #ffb300;
+    color: #ffb300; font-family: var(--font-tech); font-size: 10px; font-weight: 800;
+  }
+  .chat-input-bar {
+    padding: 11px 14px; background: rgba(16, 17, 23, 0.98);
+    border-top: 1px solid var(--glass-border); display: flex; gap: 8px; align-items: center;
+  }
+
+  /* РАЗДЕЛ МАГАЗИН [C6E] */
+  .shop-vault-hero {
+    border-radius: 16px; padding: 30px 22px; text-align: center;
+    background: radial-gradient(circle at 50% 0%, var(--accent-dim), rgba(10,11,15,0.98) 75%);
+    border: 1px solid var(--accent-light); box-shadow: 0 20px 55px rgba(0,0,0,0.85);
+    position: relative; overflow: hidden; margin-bottom: 18px;
+  }
+  .shop-teaser-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px;
+  }
+  .shop-teaser-card {
+    border-radius: 13px; padding: 18px; background: rgba(16, 17, 23, 0.92);
+    border: 1px dashed rgba(255,255,255,0.16); position: relative;
+    display: flex; flex-direction: column; justify-content: space-between;
+    transition: 0.3s;
+  }
+  .shop-teaser-card:hover { border-color: #ffb300; transform: translateY(-3px); }
+
 `;
 document.head.appendChild(c6eProStyles);
 
@@ -585,13 +855,23 @@ function formatPlayerNickHTML(rawNick, isOurTeam = false) {
 // ЯДРО СИНХРОНИЗАЦИИ K/D + ИННОВАЦИОННЫЙ РЕЙТИНГ «ПАНТЕОН [C6E]» (PTS)
 // =========================================================================
 
+const C6E_HOMO_MAP = {
+  'а':'a','в':'b','с':'c','е':'e','н':'h','к':'k','м':'m',
+  'о':'o','р':'p','т':'t','у':'y','х':'x','п':'n','и':'u',
+  '0':'o','1':'i','l':'i','3':'e','6':'g','@':'a','4':'a'
+};
+
 function normalizeNickKey(nick) {
   if (!nick) return "";
   return String(nick)
     .replace(/^\[?[cс]6[eе]\]?\s*\|?\s*/i, '')
     .replace(/^\[[^\]]+\]\s*/, '')
     .replace(/\s+/g, '')
-    .toLowerCase();
+    .toLowerCase()
+    .split('')
+    .map(ch => C6E_HOMO_MAP[ch] || ch)
+    .join('')
+    .replace(/[^a-z0-9]/g, '');
 }
 
 function isMatchWithinDays(dateStr, days = 7) {
@@ -1483,19 +1763,19 @@ onSnapshot(doc(db, DB_COLLECTION, "roster_reserve"), (s) => {
 // ============================================================================
 const DEFAULT_KAS_RELEASE = {
   id: 1763000450000,
-  versionId: "c6e_release_v4_5_pantheon",
-  versionLabel: "v4.5 // PANTHEON & LIVE TAB",
+  versionId: "c6e_release_v0_5_0_global",
+  versionLabel: "v0.5.0 // PROFILES, CHAT, SHOP & THEMES",
   date: "13.11.2026",
   tag: "ОБНОВЛЕНИЕ",
   author: "Kas (@kas_0ff)",
-  title: "🚀 ГЛОБАЛЬНОЕ ОБНОВЛЕНИЕ САЙТА v4.5 ОТ KAS: «ПАНТЕОН» НА 900 ГОЛДЫ, БУСТЫ БОЙЦОВ И LIVE-ТАБ!",
+  title: "🚀 МЕГА-ОБНОВЛЕНИЕ ПОРТАЛА v0.5.0 ОТ KAS: ИГРОВЫЕ ПРОФИЛИ, ОБЩИЙ ЧАТ, МАГАЗИН [C6E], ТЕМЫ И ПАНТЕОН 900 GOLD!",
   text: `
     <div style="margin:0 0 16px 0; border-radius:12px; overflow:hidden; border:1px solid rgba(255,179,0,0.45); background:linear-gradient(135deg, rgba(158,27,40,0.35) 0%, rgba(10,11,15,0.98) 60%, rgba(255,179,0,0.16) 100%); padding:18px; position:relative; box-shadow:0 12px 32px rgba(0,0,0,0.65);">
       <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
         <img src="logo.png" alt="C6E" onerror="this.style.display='none'" style="width:68px; height:68px; object-fit:contain; border-radius:14px; border:1px solid rgba(255,179,0,0.5); background:rgba(0,0,0,0.5); padding:6px;">
         <div style="flex:1; min-width:200px;">
           <div style="display:inline-flex; align-items:center; gap:6px; background:rgba(255,179,0,0.15); border:1px solid #ffb300; color:#ffb300; font-family:'Orbitron',sans-serif; font-size:9px; font-weight:800; padding:3px 10px; border-radius:20px; letter-spacing:1px; margin-bottom:6px;">
-            ⚡ OFFICIAL PORTAL UPDATE v4.5 • BY KAS
+            ⚡ OFFICIAL PORTAL UPDATE v0.5.0 • BY KAS
           </div>
           <div style="font-family:'Orbitron',sans-serif; font-size:16px; font-weight:900; color:#ffffff; letter-spacing:0.5px;">
             CYBER <span style="color:#d42638;">6</span> ESPORTS // <span style="color:#ffb300;">PANTHEON ERA</span>
@@ -1508,7 +1788,7 @@ const DEFAULT_KAS_RELEASE = {
     </div>
 
     <p style="margin:0 0 12px 0; font-size:13.5px; color:#e4e4e2; line-height:1.7;">
-      Салам всем бойцам нашего состава и гостям портала! На связи <strong>Kas</strong> — основатель и главный разработчик <strong>CYBER 6 ESPORTS <code>[C6E]</code></strong>. Сегодня на нашем официальном сайте вышло крупное обновление <code style="background:rgba(212,38,56,0.18); border:1px solid rgba(212,38,56,0.45); padding:2px 7px; border-radius:4px; color:#ff6b7a; font-family:'Orbitron',sans-serif; font-size:11px;">v4.5</code>, которое выводит соревновательную систему клана на совершенно новый уровень!
+      Салам всем бойцам нашего состава и гостям портала! На связи <strong>Kas</strong> — основатель и главный разработчик <strong>CYBER 6 ESPORTS <code>[C6E]</code></strong>. Сегодня на нашем официальном сайте вышло крупное обновление <code style="background:rgba(212,38,56,0.18); border:1px solid rgba(212,38,56,0.45); padding:2px 7px; border-radius:4px; color:#ff6b7a; font-family:'Orbitron',sans-serif; font-size:11px;">v0.5.0</code>, которое выводит соревновательную систему клана на совершенно новый уровень!
     </p>
 
     <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:14px 16px; margin:14px 0;">
@@ -2477,3 +2757,1244 @@ window.submitReview = async (e) => {
     window.showNotify("Ошибка сети", "error");
   }
 };
+
+
+
+// ============================================================================
+// 8. ЯДРО ОБНОВЛЕНИЯ v0.5.0: ТЕМЫ, ИГРОВЫЕ ПРОФИЛИ (12+), ВЕРИФИКАЦИЯ [C6E],
+//    ФЛАГИ СТРАН, ОНЛАЙН-РАДАР, ОБЩИЙ ЧАТ (12Ч), УВЕДОМЛЕНИЯ И МАГАЗИН [C6E]
+// ============================================================================
+
+const THEME_PRESETS = {
+  red:   { name: '🔴 Кровавый Рубин [C6E]', accent: '#9e1b28', light: '#d42638', dim: 'rgba(158, 27, 40, 0.16)', glow: 'rgba(212, 38, 56, 0.38)' },
+  green: { name: '🟢 Темно-зеленый Изумруд', accent: '#0b6e4f', light: '#00c885', dim: 'rgba(11, 110, 79, 0.18)', glow: 'rgba(0, 200, 133, 0.38)' },
+  gold:  { name: '🟡 Темно-желтый Пантеон', accent: '#9a6b00', light: '#ffb300', dim: 'rgba(154, 107, 0, 0.18)', glow: 'rgba(255, 179, 0, 0.38)' },
+  blue:  { name: '🔵 Темно-синий Сапфир', accent: '#1446a0', light: '#3b82f6', dim: 'rgba(20, 70, 160, 0.18)', glow: 'rgba(59, 130, 246, 0.38)' }
+};
+
+function applySiteTheme(themeKey) {
+  const key = THEME_PRESETS[themeKey] ? themeKey : 'red';
+  const t = THEME_PRESETS[key];
+  document.documentElement.setAttribute('data-theme', key);
+  document.documentElement.style.setProperty('--accent', t.accent);
+  document.documentElement.style.setProperty('--accent-light', t.light);
+  document.documentElement.style.setProperty('--accent-dim', t.dim);
+  document.documentElement.style.setProperty('--accent-glow', t.glow);
+  try { localStorage.setItem('c6e_theme_color', key); } catch (e) {}
+}
+
+// Применяем сохраненную тему сразу при старте
+try {
+  const savedTheme = localStorage.getItem('c6e_theme_color') || 'red';
+  applySiteTheme(savedTheme);
+} catch (e) {}
+
+window.openThemeSwitcherModal = () => {
+  let modal = document.getElementById('c6e-theme-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'c6e-theme-modal';
+    modal.className = 'c6e-modal-overlay';
+    modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('active'); });
+    document.body.appendChild(modal);
+  }
+  const cur = localStorage.getItem('c6e_theme_color') || 'red';
+  modal.innerHTML = `
+    <div class="c6e-modal-card" style="max-width:420px;">
+      <div class="c6e-modal-head">
+        <span style="font-family:var(--font-tech); font-size:12px; font-weight:900; color:#fff;">
+          <i class="fas fa-palette text-accent"></i> ЦВЕТ ОФОРМЛЕНИЯ САЙТА
+        </span>
+        <button type="button" class="c6e-modal-close" onclick="document.getElementById('c6e-theme-modal').classList.remove('active')">✕</button>
+      </div>
+      <div class="c6e-modal-body">
+        <p style="font-size:11px; color:var(--silver-muted); margin:0 0 12px 0;">
+          Выбери фирменный цветовой стиль интерфейса (текст и структура сайта остаются идеально читаемыми):
+        </p>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          ${Object.entries(THEME_PRESETS).map(([k, v]) => `
+            <button type="button" onclick="window.selectSiteTheme('${k}')" style="display:flex; justify-content:space-between; align-items:center; padding:12px 14px; border-radius:10px; border:1px solid ${cur === k ? v.light : 'rgba(255,255,255,0.1)'}; background:${cur === k ? v.dim : 'rgba(255,255,255,0.03)'}; color:#fff; font-family:var(--font-tech); font-size:11px; font-weight:800; cursor:pointer;">
+              <span>${v.name}</span>
+              <span style="width:18px; height:18px; border-radius:50%; background:${v.light}; box-shadow:0 0 10px ${v.light}; display:inline-block;"></span>
+            </button>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+  modal.classList.add('active');
+};
+
+window.selectSiteTheme = (themeKey) => {
+  applySiteTheme(themeKey);
+  const modal = document.getElementById('c6e-theme-modal');
+  if (modal) modal.classList.remove('active');
+  if (window.showNotify && THEME_PRESETS[themeKey]) {
+    window.showNotify(`🎨 Установлена тема: ${THEME_PRESETS[themeKey].name}`, 'success');
+  }
+};
+
+// АВТОМАТИЧЕСКОЕ ОПРЕДЕЛЕНИЕ ФЛАГА СТРАНЫ ПО ВВЕДЕННОМУ ТЕКСТУ
+const COUNTRY_FLAG_DICT = [
+  { keys: ['рф', 'росси', 'rus', 'russia', 'москв', 'спб', 'ru'], flag: '🇷🇺', label: 'Россия' },
+  { keys: ['кыргыз', 'киргиз', 'бишкек', 'ош', 'kg', 'kyrgyz'], flag: '🇰🇬', label: 'Кыргызстан' },
+  { keys: ['казах', 'алмат', 'астан', 'kz', 'kazakh'], flag: '🇰🇿', label: 'Казахстан' },
+  { keys: ['индонез', 'indonesia', 'id', 'джакарт'], flag: '🇮🇩', label: 'Индонезия' },
+  { keys: ['узбеки', 'ташкент', 'uz', 'uzbek'], flag: '🇺🇿', label: 'Узбекистан' },
+  { keys: ['беларус', 'белорус', 'минск', 'by', 'belarus'], flag: '🇧🇾', label: 'Беларусь' },
+  { keys: ['украин', 'киев', 'ua', 'ukrain'], flag: '🇺🇦', label: 'Украина' },
+  { keys: ['таджик', 'душанбе', 'tj', 'tajik'], flag: '🇹🇯', label: 'Таджикистан' },
+  { keys: ['азербай', 'баку', 'az', 'azer'], flag: '🇦🇿', label: 'Азербайджан' },
+  { keys: ['армени', 'ереван', 'am', 'armen'], flag: '🇦🇲', label: 'Армения' },
+  { keys: ['грузи', 'тбилис', 'ge', 'georgia'], flag: '🇬🇪', label: 'Грузия' },
+  { keys: ['турци', 'стамбул', 'tr', 'turkey'], flag: '🇹🇷', label: 'Турция' },
+  { keys: ['сша', 'америк', 'usa', 'us'], flag: '🇺🇸', label: 'США' },
+  { keys: ['герман', 'берлин', 'de', 'german'], flag: '🇩🇪', label: 'Германия' },
+  { keys: ['польш', 'варшав', 'pl', 'poland'], flag: '🇵🇱', label: 'Польша' },
+  { keys: ['бразил', 'br', 'brazil'], flag: '🇧🇷', label: 'Бразилия' },
+  { keys: ['япони', 'токио', 'jp', 'japan'], flag: '🇯🇵', label: 'Япония' },
+  { keys: ['коре', 'сеул', 'kr', 'korea'], flag: '🇰🇷', label: 'Южная Корея' },
+  { keys: ['китай', 'пекин', 'cn', 'china'], flag: '🇨🇳', label: 'Китай' },
+  { keys: ['инди', 'дели', 'in', 'india'], flag: '🇮🇳', label: 'Индия' },
+  { keys: ['великобрит', 'англи', 'лондон', 'uk', 'gb'], flag: '🇬🇧', label: 'Великобритания' },
+  { keys: ['франц', 'париж', 'fr', 'france'], flag: '🇫🇷', label: 'Франция' }
+];
+
+function resolveCountryInfo(rawInput) {
+  const s = String(rawInput || '').trim();
+  if (!s) return { flag: '🌍', label: 'Международный' };
+  const low = s.toLowerCase();
+  for (const item of COUNTRY_FLAG_DICT) {
+    if (item.keys.some(k => low === k || (k.length >= 3 && low.includes(k)))) {
+      return { flag: item.flag, label: item.label };
+    }
+  }
+  return { flag: '🏳️', label: s };
+}
+
+// Сжатие фото с телефона пользователя для Аватарки (240x240) или Баннера (720x260)
+function compressUserImageFile(file, maxW = 260, maxH = 260, quality = 0.80) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let w = img.width, h = img.height;
+        const ratio = Math.min(maxW / w, maxH / h, 1);
+        w = Math.max(40, Math.round(w * ratio));
+        h = Math.max(40, Math.round(h * ratio));
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+// Глобальное состояние профилей, уведомлений, чата и магазина
+let allProfilesList = [];
+let myLocalProfile = null;
+let myUserNotifications = [];
+let globalChatMessages = [];
+let globalChatLastPurge = Date.now();
+let shopConfigData = {
+  title: 'КИБЕР-МАРКЕТ CYBER 6 ESPORTS [C6E]',
+  subtitle: 'ЗАКРЫТЫЙ АУКЦИОН И ЭКСКЛЮЗИВНЫЙ ИГРОВОЙ КОНТЕНТ',
+  hypeText: 'Основатель и разработчик Kas готовит к запуску закрытый магазин [C6E]! Здесь появятся проверенные паки Голды, приватные конфигурации прицела и сенсы от топ-бойцов нашего состава, редкие VIP-рамки для профиля на сайте и пропуски на закрытые турниры с денежным фондом.',
+  waitlist: []
+};
+const sessionBootTime = Date.now();
+
+function loadLocalProfileCache() {
+  try {
+    const raw = localStorage.getItem('c6e_user_profile_v5');
+    if (raw) myLocalProfile = JSON.parse(raw);
+  } catch (e) {}
+  try {
+    const rawN = localStorage.getItem('c6e_user_notifs_v5');
+    if (rawN) myUserNotifications = JSON.parse(rawN);
+  } catch (e) {}
+}
+loadLocalProfileCache();
+
+function saveLocalProfileCache(prof) {
+  myLocalProfile = prof;
+  try {
+    localStorage.setItem('c6e_user_profile_v5', JSON.stringify(prof));
+  } catch (e) {}
+  updateHeaderProfileChipUI();
+  autoFillFormsWithProfile();
+}
+
+function addPersonalNotification(title, body, type = 'info', actionTab = null) {
+  const item = {
+    id: Date.now() + Math.floor(Math.random() * 1000),
+    title,
+    body,
+    type,
+    actionTab,
+    timeStr: new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }),
+    read: false
+  };
+  myUserNotifications.unshift(item);
+  if (myUserNotifications.length > 35) myUserNotifications = myUserNotifications.slice(0, 35);
+  try {
+    localStorage.setItem('c6e_user_notifs_v5', JSON.stringify(myUserNotifications));
+  } catch (e) {}
+  updateNotifBellBadgeUI();
+
+  // Отправка системного уведомления на устройство (если пользователь разрешил)
+  try {
+    if ('Notification' in window && Notification.permission === 'granted') {
+      new Notification(title, {
+        body: body,
+        icon: 'logo.png',
+        badge: 'logo.png'
+      });
+    }
+  } catch (e) {}
+}
+
+function updateNotifBellBadgeUI() {
+  const badge = document.getElementById('notif-badge-count');
+  if (!badge) return;
+  const unread = myUserNotifications.filter(n => !n.read).length;
+  if (unread > 0) {
+    badge.style.display = 'inline-flex';
+    badge.innerText = unread > 9 ? '9+' : String(unread);
+  } else {
+    badge.style.display = 'none';
+  }
+}
+updateNotifBellBadgeUI();
+
+window.requestDevicePushPermission = async () => {
+  if (!('Notification' in window)) {
+    return window.showNotify("Ваш браузер не поддерживает системные push-уведомления, но колокольчик на сайте работает!", "error");
+  }
+  try {
+    const perm = await Notification.requestPermission();
+    if (perm === 'granted') {
+      window.showNotify("📲 Уведомления на устройство успешно включены!", "success");
+      addPersonalNotification("🔔 Уведомления CYBER 6 ESPORTS активны!", "Теперь вы будете получать оповещения об упоминаниях в чате, лайках и обновлениях сайта от Kas.", "success");
+      if (document.getElementById('c6e-notif-modal')?.classList.contains('active')) {
+        window.openNotificationsModal();
+      }
+    } else {
+      window.showNotify("Вы отклонили системные уведомления. Все события будут приходить в колокольчик 🔔 в шапке сайта!", "error");
+    }
+  } catch (e) {}
+};
+
+window.openNotificationsModal = () => {
+  let modal = document.getElementById('c6e-notif-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'c6e-notif-modal';
+    modal.className = 'c6e-modal-overlay';
+    modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('active'); });
+    document.body.appendChild(modal);
+  }
+
+  // Помечаем все прочитанными
+  myUserNotifications.forEach(n => { n.read = true; });
+  try { localStorage.setItem('c6e_user_notifs_v5', JSON.stringify(myUserNotifications)); } catch (e) {}
+  updateNotifBellBadgeUI();
+
+  const permStatus = ('Notification' in window) ? Notification.permission : 'unsupported';
+
+  modal.innerHTML = `
+    <div class="c6e-modal-card" style="max-width:500px;">
+      <div class="c6e-modal-head">
+        <span style="font-family:var(--font-tech); font-size:12px; font-weight:900; color:#fff;">
+          <i class="fas fa-bell text-accent"></i> ЦЕНТР УВЕДОМЛЕНИЙ [C6E]
+        </span>
+        <button type="button" class="c6e-modal-close" onclick="document.getElementById('c6e-notif-modal').classList.remove('active')">✕</button>
+      </div>
+      <div class="c6e-modal-body">
+        <div style="background:rgba(255,255,255,0.03); border:1px solid var(--glass-border); border-radius:10px; padding:10px 12px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+          <div style="font-size:11px; color:var(--silver);">
+            📲 <b>Push-уведомления на телефон/ПК:</b>
+            <span style="color:${permStatus === 'granted' ? 'var(--success)' : '#ffb300'}; font-weight:700;">
+              ${permStatus === 'granted' ? 'ВКЛЮЧЕНЫ ✅' : 'НЕ ВКЛЮЧЕНЫ'}
+            </span>
+          </div>
+          ${permStatus !== 'granted' ? `
+            <button type="button" class="chip-btn" style="border-color:var(--success); color:var(--success);" onclick="window.requestDevicePushPermission()">
+              🔔 Разрешить отправку
+            </button>
+          ` : ''}
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:8px; max-height:52vh; overflow-y:auto;">
+          ${myUserNotifications.length === 0 ? `
+            <div style="text-align:center; padding:25px; font-size:12px; color:var(--silver-muted);">
+              Пока нет новых уведомлений. Когда вас упомянут через <b>@Ник</b> в чате или поставят ❤️ лайк вашему профилю, они появятся здесь!
+            </div>
+          ` : myUserNotifications.map(n => `
+            <div style="padding:10px 12px; border-radius:10px; background:rgba(255,255,255,0.03); border-left:3px solid ${n.type === 'mention' ? '#ffb300' : (n.type === 'error' ? '#ff5263' : 'var(--success)')};">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                <b style="font-size:11.5px; color:#fff;">${escapeHTML(n.title)}</b>
+                <span style="font-size:9px; color:var(--silver-muted);">${escapeHTML(n.timeStr)}</span>
+              </div>
+              <div style="font-size:11.5px; color:#ccc; line-height:1.45;">${escapeHTML(n.body)}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+  modal.classList.add('active');
+};
+
+function getDisplayTagAndBadge(prof) {
+  if (!prof) return { tagStr: '', badgeHtml: '💎 Гость портала', isApprovedC6E: false };
+  if (prof.c6eStatus === 'approved') {
+    return {
+      tagStr: '[C6E]',
+      badgeHtml: '<span style="color:#00e676; font-weight:800;">🛡️ Боец [C6E]</span>',
+      isApprovedC6E: true
+    };
+  }
+  if (prof.c6eStatus === 'pending') {
+    return {
+      tagStr: '[C6E?]',
+      badgeHtml: '<span style="color:#ffb300; font-weight:700;">⏳ Проверка [C6E]</span>',
+      isApprovedC6E: false
+    };
+  }
+  const cleanTag = (prof.clanTag || '').replace(/[\[\]]/g, '').trim();
+  return {
+    tagStr: cleanTag ? `[${cleanTag}]` : '',
+    badgeHtml: `<span style="color:#93c5fd; font-weight:700;">💎 Гость ${prof.clanName ? '• ' + escapeHTML(prof.clanName) : 'портала'}</span>`,
+    isApprovedC6E: false
+  };
+}
+
+function updateHeaderProfileChipUI() {
+  const imgEl = document.getElementById('hp-avatar-img');
+  const wrapEl = document.querySelector('#header-profile-chip .hp-avatar-wrap');
+  const nickEl = document.getElementById('hp-nick-line');
+  const subEl = document.getElementById('hp-sub-line');
+  if (!nickEl || !subEl) return;
+
+  if (!myLocalProfile || !myLocalProfile.nick) {
+    nickEl.innerText = 'Создать профиль';
+    subEl.innerHTML = '💎 Гость портала';
+    return;
+  }
+
+  const info = getDisplayTagAndBadge(myLocalProfile);
+  if (imgEl) imgEl.src = myLocalProfile.avatar || 'logo.png';
+  if (wrapEl) {
+    wrapEl.className = `hp-avatar-wrap ${myLocalProfile.frameStyle || 'frame-c6e-red'}`;
+  }
+  nickEl.innerText = `${myLocalProfile.countryFlag || '🌍'} ${info.tagStr ? info.tagStr + ' ' : ''}${myLocalProfile.nick}`;
+  subEl.innerHTML = `${info.badgeHtml} • ❤️ ${myLocalProfile.likes || 0}`;
+}
+
+// АВТО-ПОДСТАНОВКА ДАННЫХ ПРОФИЛЯ ВО ВСЕ ФОРМЫ САЙТА (ПРАКИ, ОТЗЫВЫ, ЗАЯВКА В КЛАН)
+function autoFillFormsWithProfile() {
+  if (!myLocalProfile || !myLocalProfile.nick) return;
+  const info = getDisplayTagAndBadge(myLocalProfile);
+  const fullDisplayNick = `${info.tagStr ? info.tagStr + ' ' : ''}${myLocalProfile.nick}`.trim();
+
+  // 1. Форма записи на Прак (CW)
+  const pcClan = document.getElementById('pc-clan');
+  const pcCap  = document.getElementById('pc-cap');
+  const pcId   = document.getElementById('pc-id');
+  if (pcClan && !pcClan.value) {
+    pcClan.value = myLocalProfile.clanName || (info.tagStr ? info.tagStr : myLocalProfile.nick + ' Team');
+  }
+  if (pcCap && !pcCap.value) pcCap.value = fullDisplayNick;
+  if (pcId && !pcId.value && myLocalProfile.gameId) pcId.value = String(myLocalProfile.gameId).replace(/\D/g, '');
+
+  // 2. Форма Отзывов
+  const revNick = document.getElementById('rev-nick');
+  if (revNick && !revNick.value) revNick.value = fullDisplayNick;
+
+  // 3. Форма Заявки в команду
+  const joinNick = document.getElementById('nick');
+  if (joinNick && !joinNick.value) joinNick.value = fullDisplayNick;
+}
+
+// ОБЯЗАТЕЛЬНОЕ ОКНО РЕГИСТРАЦИИ / РЕДАКТИРОВАНИЯ ИГРОВОГО ПРОФИЛЯ ГОСТЯ (12+)
+let tempProfileAvatarDataUrl = '';
+let tempProfileBannerDataUrl = '';
+
+document.getElementById('guestAvatarFileInput')?.addEventListener('change', async (e) => {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+  try {
+    tempProfileAvatarDataUrl = await compressUserImageFile(file, 240, 240, 0.82);
+    const inp = document.getElementById('prof-avatar-url-inp');
+    const prev = document.getElementById('prof-avatar-preview-img');
+    if (inp) inp.value = tempProfileAvatarDataUrl;
+    if (prev) prev.src = tempProfileAvatarDataUrl;
+    window.showNotify("Аватарка с устройства загружена!", "success");
+  } catch (err) {
+    window.showNotify("Не удалось обработать фото", "error");
+  }
+  e.target.value = '';
+});
+
+document.getElementById('guestBannerFileInput')?.addEventListener('change', async (e) => {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+  try {
+    tempProfileBannerDataUrl = await compressUserImageFile(file, 720, 260, 0.80);
+    const inp = document.getElementById('prof-banner-custom-inp');
+    if (inp) inp.value = tempProfileBannerDataUrl;
+    const sel = document.getElementById('prof-banner-preset-sel');
+    if (sel) sel.value = 'custom';
+    window.showNotify("Баннер профиля с устройства загружен!", "success");
+  } catch (err) {
+    window.showNotify("Не удалось обработать баннер", "error");
+  }
+  e.target.value = '';
+});
+
+window.openMyProfileModal = (forceRegistrationGate = false, rejectedMessage = null) => {
+  if (checkIfCurrentUserBanned()) return;
+  let modal = document.getElementById('c6e-profile-gate-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'c6e-profile-gate-modal';
+    modal.className = 'c6e-modal-overlay';
+    modal.style.zIndex = '12500';
+    document.body.appendChild(modal);
+  }
+
+  const p = myLocalProfile || {
+    nick: '',
+    gameId: '',
+    claimsC6E: false,
+    c6eStatus: 'guest',
+    clanTag: '',
+    clanName: '',
+    kd: '1.20',
+    age: 16,
+    countryText: 'Россия',
+    countryFlag: '🇷🇺',
+    bio: '',
+    avatar: 'logo.png',
+    banner: 'banner-crimson',
+    frameStyle: 'frame-c6e-red'
+  };
+
+  const isForceGuest = Boolean(rejectedMessage) || p.c6eStatus === 'rejected';
+  const isC6ESelected = isForceGuest ? false : Boolean(p.claimsC6E || p.c6eStatus === 'approved' || p.c6eStatus === 'pending');
+  const isCustomBanner = p.banner && !['banner-crimson','banner-gold','banner-emerald','banner-sapphire'].includes(p.banner);
+
+  modal.innerHTML = `
+    <div class="c6e-modal-card" style="max-width:580px; border-top:3px solid var(--accent-light);">
+      <div class="c6e-modal-head">
+        <div>
+          <span style="font-family:var(--font-tech); font-size:12px; font-weight:900; color:#fff;">
+            <i class="fas fa-id-card text-accent"></i> ${forceRegistrationGate ? 'СОЗДАНИЕ ИГРОВОГО ПРОФИЛЯ ПОРТАЛА [C6E]' : 'МОЙ ИГРОВОЙ ПРОФИЛЬ [C6E]'}
+          </span>
+          <div style="font-size:10px; color:var(--silver-muted); margin-top:2px;">
+            ${forceRegistrationGate ? 'Обязательная быстрая регистрация без паролей и почты для входа на сайт' : 'Твои данные автоматически подставляются при записи на прак, в отзывах и чате'}
+          </div>
+        </div>
+        ${!forceRegistrationGate ? `<button type="button" class="c6e-modal-close" onclick="document.getElementById('c6e-profile-gate-modal').classList.remove('active')">✕</button>` : ''}
+      </div>
+
+      <div class="c6e-modal-body" style="max-height:78vh; overflow-y:auto;">
+        ${rejectedMessage ? `
+          <div style="background:rgba(212,38,56,0.16); border:1px solid #ff5263; border-radius:10px; padding:12px; margin-bottom:14px; font-size:11.5px; color:#fff; line-height:1.5;">
+            🚫 <b>Заявка на тег [C6E] отклонена администрацией!</b><br>
+            ${escapeHTML(rejectedMessage)} Укажите ниже тег и название клана Standoff 2, в котором вы состоите, чтобы получить значок <b>💎 Гостя сайта</b>.
+          </div>
+        ` : ''}
+
+        <!-- ПРЕВЬЮ АВАТАРКИ В РАМКЕ ЛОГОТИПА [C6E] -->
+        <div style="display:flex; align-items:center; gap:14px; background:rgba(255,255,255,0.03); padding:12px; border-radius:12px; border:1px solid var(--glass-border); margin-bottom:14px;">
+          <div id="prof-avatar-preview-frame" class="c6e-hex-avatar ${escapeHTML(p.frameStyle || 'frame-c6e-red')}" style="width:64px; height:64px;">
+            <img id="prof-avatar-preview-img" src="${escapeHTML(p.avatar || 'logo.png')}" onerror="this.src='logo.png'">
+          </div>
+          <div style="flex:1; min-width:0;">
+            <div style="font-size:11px; font-weight:700; color:#fff; margin-bottom:6px;">Аватарка профиля (с устройства или по ссылке)</div>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <button type="button" class="chip-btn" style="border-color:var(--accent-light); color:#fff;" onclick="document.getElementById('guestAvatarFileInput').click()">
+                <i class="fas fa-mobile-alt text-accent"></i> Загрузить с телефона
+              </button>
+              <input type="text" id="prof-avatar-url-inp" class="form-input" value="${escapeHTML(p.avatar === 'logo.png' ? '' : (p.avatar || ''))}" placeholder="Или вставь прямую ссылку на фото..." style="padding:6px 9px; font-size:11px; flex:1; min-width:140px;" oninput="document.getElementById('prof-avatar-preview-img').src = this.value || 'logo.png'">
+            </div>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:10px; margin-bottom:12px;">
+          <div>
+            <label class="form-label">1. ТВОЙ НИК В STANDOFF 2 *</label>
+            <input type="text" id="prof-nick-inp" class="form-input" value="${escapeHTML(p.nick || '')}" placeholder="Например: Kas" required>
+          </div>
+          <div>
+            <label class="form-label">2. ИГРОВОЙ ID STANDOFF 2 *</label>
+            <input type="text" id="prof-gameid-inp" class="form-input" value="${escapeHTML(p.gameId || '')}" placeholder="Например: 74829104" required>
+          </div>
+        </div>
+
+        <!-- ВЫБОР: ВЫ ИЗ КЛАНА [C6E] ИЛИ НЕТ? -->
+        <div style="background:rgba(255,255,255,0.03); border:1px solid var(--glass-border); border-radius:11px; padding:12px; margin-bottom:12px;">
+          <label class="form-label" style="margin-bottom:8px; color:#ffb300;"><i class="fas fa-shield-alt"></i> 3. ВЫ СОСТОИТЕ В НАШЕМ КЛАНЕ [C6E] CYBER 6 ESPORTS?</label>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+            <label id="lbl-c6e-no" style="display:flex; align-items:center; gap:7px; padding:10px; border-radius:9px; border:1px solid ${!isC6ESelected ? 'var(--accent-light)' : 'rgba(255,255,255,0.1)'}; background:${!isC6ESelected ? 'var(--accent-dim)' : 'rgba(0,0,0,0.4)'}; cursor:pointer; font-size:11px; font-weight:700; color:#fff;">
+              <input type="radio" name="profC6ERadio" value="no" ${!isC6ESelected ? 'checked' : ''} onchange="window.toggleProfileClanFields(false)">
+              💎 Нет, я Гость / Другой клан
+            </label>
+            <label id="lbl-c6e-yes" style="display:flex; align-items:center; gap:7px; padding:10px; border-radius:9px; border:1px solid ${isC6ESelected ? '#ffb300' : 'rgba(255,255,255,0.1)'}; background:${isC6ESelected ? 'rgba(255,179,0,0.15)' : 'rgba(0,0,0,0.4)'}; cursor:pointer; font-size:11px; font-weight:700; color:#fff;">
+              <input type="radio" name="profC6ERadio" value="yes" ${isC6ESelected ? 'checked' : ''} ${isForceGuest ? 'disabled' : ''} onchange="window.toggleProfileClanFields(true)">
+              🛡️ Да, я боец [C6E]
+            </label>
+          </div>
+
+          <div id="prof-guest-clan-fields" style="display:${isC6ESelected ? 'none' : 'grid'}; grid-template-columns:110px 1fr; gap:8px; margin-top:10px;">
+            <div>
+              <label class="form-label">ТЕГ КЛАНА</label>
+              <input type="text" id="prof-clantag-inp" class="form-input" value="${escapeHTML(p.clanTag === 'C6E' ? '' : (p.clanTag || ''))}" placeholder="[TAG]" maxlength="7">
+            </div>
+            <div>
+              <label class="form-label">НАЗВАНИЕ ТВОЕГО КЛАНА STANDOFF 2</label>
+              <input type="text" id="prof-clanname-inp" class="form-input" value="${escapeHTML(p.clanName === 'CYBER 6 ESPORTS' ? '' : (p.clanName || ''))}" placeholder="Например: Horizon Esports (или Свободный агент)">
+            </div>
+          </div>
+
+          <div id="prof-c6e-notice" style="display:${isC6ESelected ? 'block' : 'none'}; margin-top:10px; font-size:11px; color:#ffb300; background:rgba(255,179,0,0.08); padding:8px 10px; border-radius:8px; border:1px dashed rgba(255,179,0,0.4);">
+            ⚡ <b>Проверка принадлежности к [C6E]:</b> В админку <b>Kas</b> придёт уведомление. После подтверждения админом ты получишь официальный статус <b>🛡️ Боец [C6E]</b>. Если ты не из состава, регистрация под тегом <code>[C6E]</code> будет отклонена.
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(135px, 1fr)); gap:10px; margin-bottom:12px;">
+          <div>
+            <label class="form-label">4. ДЕЙСТВУЮЩИЙ K/D *</label>
+            <input type="number" id="prof-kd-inp" class="form-input" step="0.01" min="0.1" max="15" value="${escapeHTML(p.kd || '1.20')}" placeholder="1.45" required>
+          </div>
+          <div>
+            <label class="form-label">5. ВОЗРАСТ (ОТ 12+) *</label>
+            <input type="number" id="prof-age-inp" class="form-input" min="12" max="99" value="${escapeHTML(p.age || 16)}" placeholder="16" required>
+          </div>
+          <div>
+            <label class="form-label">6. СТРАНА / РЕГИОН <span id="prof-flag-live">${escapeHTML(p.countryFlag || '🇷🇺')}</span></label>
+            <input type="text" id="prof-country-inp" class="form-input" value="${escapeHTML(p.countryText || 'Россия')}" placeholder="РФ, Кыргызстан, Индонезия..." oninput="window.updateLiveCountryFlag(this.value)" required>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;">
+          <div>
+            <label class="form-label">7. РАМКА В СТИЛЕ ЛОГОТИПА [C6E]</label>
+            <select id="prof-frame-sel" class="form-input" onchange="document.getElementById('prof-avatar-preview-frame').className = 'c6e-hex-avatar ' + this.value">
+              <option value="frame-c6e-red" ${p.frameStyle === 'frame-c6e-red' ? 'selected' : ''}>🔴 Рубиновый Щит [C6E]</option>
+              <option value="frame-c6e-gold" ${p.frameStyle === 'frame-c6e-gold' ? 'selected' : ''}>🟡 Золото Пантеона</option>
+              <option value="frame-c6e-green" ${p.frameStyle === 'frame-c6e-green' ? 'selected' : ''}>🟢 Изумрудный Кибер</option>
+              <option value="frame-c6e-blue" ${p.frameStyle === 'frame-c6e-blue' ? 'selected' : ''}>🔵 Ледяной Сапфир</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label">8. БАННЕР ПРОФИЛЯ</label>
+            <div style="display:flex; gap:5px;">
+              <select id="prof-banner-preset-sel" class="form-input" style="flex:1;" onchange="document.getElementById('prof-custom-banner-row').style.display = this.value === 'custom' ? 'flex' : 'none'">
+                <option value="banner-crimson" ${p.banner === 'banner-crimson' ? 'selected' : ''}>🔴 Кибер-Рубин [C6E]</option>
+                <option value="banner-gold" ${p.banner === 'banner-gold' ? 'selected' : ''}>🟡 Золотой Пантеон</option>
+                <option value="banner-emerald" ${p.banner === 'banner-emerald' ? 'selected' : ''}>🟢 Изумрудная Матрица</option>
+                <option value="banner-sapphire" ${p.banner === 'banner-sapphire' ? 'selected' : ''}>🔵 Сапфировый Лед</option>
+                <option value="custom" ${isCustomBanner ? 'selected' : ''}>🖼️ Своё фото / ссылка</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div id="prof-custom-banner-row" style="display:${isCustomBanner ? 'flex' : 'none'}; gap:6px; margin-bottom:12px; align-items:center;">
+          <button type="button" class="chip-btn" onclick="document.getElementById('guestBannerFileInput').click()"><i class="fas fa-image text-accent"></i> Баннер с телефона</button>
+          <input type="text" id="prof-banner-custom-inp" class="form-input" value="${escapeHTML(isCustomBanner ? p.banner : '')}" placeholder="Или ссылка на картинку баннера..." style="flex:1; padding:7px;">
+        </div>
+
+        <div style="margin-bottom:14px;">
+          <label class="form-label">9. ОПИСАНИЕ ПРОФИЛЯ / БИОГРАФИЯ (НЕОБЯЗАТЕЛЬНО)</label>
+          <textarea id="prof-bio-inp" class="form-input" rows="2" placeholder="Напиши пару слов о себе, любимом оружии (AWM / AKR) или девайсе...">${escapeHTML(p.bio || '')}</textarea>
+        </div>
+
+        <button type="button" class="btn-glitch" onclick="window.saveMyUserProfile()">
+          <i class="fas fa-check-circle" style="margin-right:8px;"></i> СОХРАНИТЬ ПРОФИЛЬ И ВОЙТИ НА ПОРТАЛ [C6E]
+        </button>
+      </div>
+    </div>
+  `;
+
+  modal.classList.add('active');
+};
+
+window.toggleProfileClanFields = (claimsC6E) => {
+  const guestFields = document.getElementById('prof-guest-clan-fields');
+  const notice = document.getElementById('prof-c6e-notice');
+  if (guestFields) guestFields.style.display = claimsC6E ? 'none' : 'grid';
+  if (notice) notice.style.display = claimsC6E ? 'block' : 'none';
+};
+
+window.updateLiveCountryFlag = (val) => {
+  const info = resolveCountryInfo(val);
+  const el = document.getElementById('prof-flag-live');
+  if (el) el.innerText = info.flag;
+};
+
+window.saveMyUserProfile = async () => {
+  if (checkIfCurrentUserBanned()) return;
+  const nick = (document.getElementById('prof-nick-inp')?.value || '').trim().replace(/^\[[^\]]+\]\s*/, '');
+  const gameId = (document.getElementById('prof-gameid-inp')?.value || '').trim();
+  const kdRaw = parseFloat(String(document.getElementById('prof-kd-inp')?.value || '1.0').replace(',', '.')) || 1.0;
+  const ageVal = parseInt(document.getElementById('prof-age-inp')?.value || '0', 10);
+  const countryRaw = (document.getElementById('prof-country-inp')?.value || 'Россия').trim();
+  const bio = (document.getElementById('prof-bio-inp')?.value || '').trim();
+  const frameStyle = document.getElementById('prof-frame-sel')?.value || 'frame-c6e-red';
+  const bannerPreset = document.getElementById('prof-banner-preset-sel')?.value || 'banner-crimson';
+  const bannerCustom = (document.getElementById('prof-banner-custom-inp')?.value || '').trim();
+  const avatarUrl = (document.getElementById('prof-avatar-url-inp')?.value || '').trim() || 'logo.png';
+
+  const radioYes = document.querySelector('input[name="profC6ERadio"][value="yes"]');
+  const claimsC6E = Boolean(radioYes && radioYes.checked);
+  const rawClanTag = (document.getElementById('prof-clantag-inp')?.value || '').replace(/[\[\]]/g, '').trim();
+  const rawClanName = (document.getElementById('prof-clanname-inp')?.value || '').trim();
+
+  if (!nick || nick.length < 2) return window.showNotify("Введите ваш игровой никнейм!", "error");
+  if (!gameId || gameId.length < 4) return window.showNotify("Введите корректный игровой ID Standoff 2!", "error");
+  if (isNaN(ageVal) || ageVal < 12) return window.showNotify("Регистрация доступна строго для игроков от 12 лет (12+)!", "error");
+
+  if (containsSpam(nick) || containsSpam(bio) || containsSpam(rawClanName)) {
+    const bad = findMatchedSpamWord(`${nick} ${bio} ${rawClanName}`);
+    await logSecurityAction('🚨 ТРЕВОГА: Запрещенное слово в профиле', nick, `Слово «${bad}»`, true);
+    return window.showNotify("В профиле обнаружены недопустимые слова!", "error");
+  }
+
+  // Если гость не из [C6E], не даем вручную вписать чужой тег C6E в поле гостя
+  if (!claimsC6E && /^c6e|с6е$/i.test(rawClanTag)) {
+    return window.showNotify("Тег [C6E] выдается только после одобрения заявки администрацией! Выберите «Да, я боец [C6E]» или укажите свой клан.", "error");
+  }
+
+  const countryInfo = resolveCountryInfo(countryRaw);
+  await resolveVisitorIp();
+
+  const ref = doc(db, DB_COLLECTION, "profiles");
+  const snap = await getDoc(ref);
+  let list = (snap.exists() && Array.isArray(snap.data().list)) ? [...snap.data().list] : [];
+
+  const existingIdx = list.findIndex(item => item.profileId === clientSecurityMeta.deviceId);
+  const prevProf = existingIdx >= 0 ? list[existingIdx] : null;
+
+  let c6eStatus = 'guest';
+  let finalClanTag = rawClanTag;
+  let finalClanName = rawClanName || 'Свободный агент';
+
+  if (claimsC6E) {
+    // Если уже был одобрен ранее — сохраняем одобрение, иначе отправляем заявку в админку (pending)
+    if (prevProf && prevProf.c6eStatus === 'approved') {
+      c6eStatus = 'approved';
+    } else {
+      c6eStatus = 'pending';
+    }
+    finalClanTag = 'C6E';
+    finalClanName = 'CYBER 6 ESPORTS';
+  }
+
+  const newProf = {
+    profileId: clientSecurityMeta.deviceId,
+    nick,
+    gameId,
+    claimsC6E,
+    c6eStatus,
+    clanTag: finalClanTag,
+    clanName: finalClanName,
+    kd: Math.min(15, Math.max(0.1, kdRaw)).toFixed(2),
+    age: ageVal,
+    countryText: countryInfo.label,
+    countryFlag: countryInfo.flag,
+    bio,
+    avatar: avatarUrl,
+    banner: bannerPreset === 'custom' ? (bannerCustom || 'banner-crimson') : bannerPreset,
+    frameStyle,
+    likes: prevProf ? (parseInt(prevProf.likes, 10) || 0) : 0,
+    likedBy: (prevProf && Array.isArray(prevProf.likedBy)) ? prevProf.likedBy : [],
+    activityPts: (prevProf ? (parseInt(prevProf.activityPts, 10) || 10) : 15) + 5,
+    lastSeen: Date.now(),
+    ip: clientSecurityMeta.ip,
+    device: clientSecurityMeta.deviceInfo,
+    rejectionHandled: c6eStatus !== 'rejected'
+  };
+
+  if (existingIdx >= 0) {
+    list[existingIdx] = newProf;
+  } else {
+    list.push(newProf);
+  }
+
+  await setDoc(ref, { list }, { merge: true });
+  saveLocalProfileCache(newProf);
+
+  if (c6eStatus === 'pending' && (!prevProf || prevProf.c6eStatus !== 'pending')) {
+    await logSecurityAction('🛡️ Заявка на профиль бойца [C6E]', `${nick} (ID: ${gameId})`, `Игрок утверждает, что состоит в [C6E]. Ожидает проверки в админке!`);
+    addPersonalNotification("⏳ Заявка на тег [C6E] отправлена!", "Администратор Kas проверит ваш профиль в панели управления. После одобрения вы получите значок бойца [C6E].", "info");
+    window.showNotify("Профиль создан! Заявка на принадлежность к клану [C6E] отправлена в админку.", "success");
+  } else {
+    window.showNotify("✅ Игровой профиль сохранен! Добро пожаловать на портал [C6E].", "success");
+  }
+
+  document.getElementById('c6e-profile-gate-modal')?.classList.remove('active');
+
+  // Предлагаем включить уведомления на устройство при первой регистрации
+  if ('Notification' in window && Notification.permission === 'default') {
+    setTimeout(() => { window.requestDevicePushPermission(); }, 900);
+  }
+};
+
+// ПРОСМОТР ЧУЖОГО ИЛИ СВОЕГО ПОЛНОГО ПРОФИЛЯ + СИСТЕМА ЛАЙКОВ ❤️
+window.openPublicProfileModal = (profileId) => {
+  const p = allProfilesList.find(x => x.profileId === profileId) || (myLocalProfile && myLocalProfile.profileId === profileId ? myLocalProfile : null);
+  if (!p) return;
+
+  let modal = document.getElementById('c6e-public-profile-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'c6e-public-profile-modal';
+    modal.className = 'c6e-modal-overlay';
+    modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('active'); });
+    document.body.appendChild(modal);
+  }
+
+  const info = getDisplayTagAndBadge(p);
+  const isOnline = (Date.now() - (p.lastSeen || 0)) < 15 * 60 * 1000;
+  const isMe = myLocalProfile && myLocalProfile.profileId === p.profileId;
+  const alreadyLiked = Array.isArray(p.likedBy) && p.likedBy.includes(clientSecurityMeta.deviceId);
+
+  const isPresetBanner = ['banner-crimson','banner-gold','banner-emerald','banner-sapphire'].includes(p.banner);
+  const bannerClass = isPresetBanner ? p.banner : 'banner-crimson';
+  const bannerStyle = !isPresetBanner && p.banner ? `background-image:url('${escapeHTML(p.banner)}');` : '';
+
+  modal.innerHTML = `
+    <div class="c6e-modal-card" style="max-width:500px; padding:0;">
+      <div class="prof-banner-box ${bannerClass}" style="${bannerStyle}">
+        <button type="button" class="c6e-modal-close" style="position:absolute; top:12px; right:12px; background:rgba(0,0,0,0.65);" onclick="document.getElementById('c6e-public-profile-modal').classList.remove('active')">✕</button>
+        <div style="position:absolute; top:12px; left:12px; display:flex; gap:6px;">
+          <span style="padding:4px 9px; border-radius:20px; background:rgba(0,0,0,0.7); border:1px solid ${isOnline ? '#00e676' : '#666'}; font-family:var(--font-tech); font-size:9px; font-weight:800; color:${isOnline ? '#00e676' : '#aaa'};">
+            ${isOnline ? '🟢 ОНЛАЙН НА САЙТЕ' : '⚪ БЫЛ НЕДАВНО'}
+          </span>
+        </div>
+      </div>
+
+      <div style="padding:0 20px 20px 20px; margin-top:-38px; position:relative;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+          <div class="c6e-hex-avatar ${escapeHTML(p.frameStyle || 'frame-c6e-red')}" style="width:78px; height:78px;">
+            <img src="${escapeHTML(p.avatar || 'logo.png')}" onerror="this.src='logo.png'">
+          </div>
+          <div style="display:flex; gap:8px;">
+            <button type="button" class="chip-btn" style="border-color:#ff5263; color:${alreadyLiked ? '#fff' : '#ff5263'}; background:${alreadyLiked ? 'rgba(212,38,56,0.35)' : 'rgba(0,0,0,0.5)'}; padding:8px 13px; font-size:11px;" onclick="window.likeUserProfile('${escapeHTML(p.profileId)}')">
+              ❤️ Лайк (${p.likes || 0})
+            </button>
+            ${isMe ? `
+              <button type="button" class="chip-btn" style="border-color:var(--accent-light); color:#fff; padding:8px 12px;" onclick="document.getElementById('c6e-public-profile-modal').classList.remove('active'); window.openMyProfileModal(false);">
+                <i class="fas fa-pen"></i> Изменить
+              </button>
+            ` : `
+              <button type="button" class="chip-btn" style="border-color:#00e676; color:#00e676; padding:8px 12px;" onclick="document.getElementById('c6e-public-profile-modal').classList.remove('active'); window.mentionUserInChat('${escapeHTML(p.nick).replace(/'/g, "\\'")}')">
+                💬 @Упомянуть
+              </button>
+            `}
+          </div>
+        </div>
+
+        <div style="font-family:var(--font-tech); font-size:18px; font-weight:900; color:#fff; display:flex; align-items:center; gap:7px; flex-wrap:wrap;">
+          <span>${escapeHTML(p.countryFlag || '🌍')}</span>
+          ${info.tagStr ? `<span style="color:var(--accent-light);">${escapeHTML(info.tagStr)}</span>` : ''}
+          <span>${escapeHTML(p.nick)}</span>
+        </div>
+        <div style="font-size:11px; margin-top:4px;">
+          ${info.badgeHtml} • <span style="color:var(--silver-muted);">${escapeHTML(p.countryText || 'Россия')} • ${escapeHTML(p.age || 16)} лет</span>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin:14px 0; background:rgba(255,255,255,0.03); padding:11px; border-radius:11px; border:1px solid var(--glass-border); text-align:center;">
+          <div>
+            <div style="font-family:var(--font-tech); font-size:15px; font-weight:900; color:var(--success);">${escapeHTML(p.kd || '1.00')}</div>
+            <div style="font-size:8px; color:var(--silver-muted); text-transform:uppercase;">ДЕЙСТВУЮЩИЙ K/D</div>
+          </div>
+          <div style="border-left:1px solid rgba(255,255,255,0.07); border-right:1px solid rgba(255,255,255,0.07);">
+            <div style="font-family:var(--font-tech); font-size:13px; font-weight:900; color:#fff;">${escapeHTML(p.gameId || '—')}</div>
+            <div style="font-size:8px; color:var(--silver-muted); text-transform:uppercase;">STANDOFF 2 ID</div>
+          </div>
+          <div>
+            <div style="font-family:var(--font-tech); font-size:15px; font-weight:900; color:#ffb300;">⚡ ${p.activityPts || 15}</div>
+            <div style="font-size:8px; color:var(--silver-muted); text-transform:uppercase;">АКТИВНОСТЬ</div>
+          </div>
+        </div>
+
+        <div style="background:rgba(0,0,0,0.45); border:1px solid rgba(255,255,255,0.06); border-radius:10px; padding:11px 13px; font-size:12px; color:#ccc; line-height:1.55;">
+          <div style="font-size:9px; font-family:var(--font-tech); color:var(--silver-muted); margin-bottom:4px;">ОПИСАНИЕ ПРОФИЛЯ / БИОГРАФИЯ:</div>
+          ${p.bio ? escapeHTML(p.bio) : '<span style="color:#666; font-style:italic;">Игрок пока не добавил биографию.</span>'}
+        </div>
+      </div>
+    </div>
+  `;
+  modal.classList.add('active');
+};
+
+window.likeUserProfile = async (targetProfileId) => {
+  if (checkIfCurrentUserBanned()) return;
+  try {
+    const ref = doc(db, DB_COLLECTION, "profiles");
+    const snap = await getDoc(ref);
+    if (!snap.exists()) return;
+    let list = Array.isArray(snap.data().list) ? [...snap.data().list] : [];
+    const idx = list.findIndex(x => x.profileId === targetProfileId);
+    if (idx === -1) return;
+
+    const target = { ...list[idx] };
+    const likedBy = Array.isArray(target.likedBy) ? [...target.likedBy] : [];
+    if (likedBy.includes(clientSecurityMeta.deviceId)) {
+      return window.showNotify("Вы уже ставили ❤️ лайк этому профилю!", "error");
+    }
+
+    likedBy.push(clientSecurityMeta.deviceId);
+    target.likedBy = likedBy;
+    target.likes = (parseInt(target.likes, 10) || 0) + 1;
+    target.activityPts = (parseInt(target.activityPts, 10) || 15) + 3;
+    list[idx] = target;
+
+    await setDoc(ref, { list }, { merge: true });
+    window.showNotify(`❤️ Вы поставили лайк профилю ${target.nick}!`, "success");
+    if (document.getElementById('c6e-public-profile-modal')?.classList.contains('active')) {
+      window.openPublicProfileModal(targetProfileId);
+    }
+  } catch (e) {}
+};
+
+function renderCommunityRadarOnHome() {
+  const grid = document.getElementById('home-online-profiles-grid');
+  const onlineEl = document.getElementById('comm-online-count');
+  const totalEl = document.getElementById('comm-total-count');
+  if (!grid) return;
+
+  const now = Date.now();
+  const list = [...allProfilesList].sort((a, b) => (b.lastSeen || 0) - (a.lastSeen || 0));
+  const onlineCount = Math.max(1, list.filter(p => (now - (p.lastSeen || 0)) < 15 * 60 * 1000).length);
+
+  if (onlineEl) onlineEl.innerText = String(onlineCount);
+  if (totalEl) totalEl.innerText = String(Math.max(1, list.length));
+
+  if (list.length === 0) {
+    grid.innerHTML = `<div style="font-size:11px; color:var(--silver-muted); padding:16px; text-align:center; grid-column:1/-1;">Стань первым зарегистрированным участником обновлённого портала [C6E]!</div>`;
+    return;
+  }
+
+  grid.innerHTML = list.slice(0, 12).map(p => {
+    const info = getDisplayTagAndBadge(p);
+    const isOnline = (now - (p.lastSeen || 0)) < 15 * 60 * 1000;
+    const isPresetBanner = ['banner-crimson','banner-gold','banner-emerald','banner-sapphire'].includes(p.banner);
+    const bannerClass = isPresetBanner ? p.banner : 'banner-crimson';
+    const bannerStyle = !isPresetBanner && p.banner ? `background-image:url('${escapeHTML(p.banner)}');` : '';
+
+    return `
+      <div class="mini-prof-card" onclick="window.openPublicProfileModal('${escapeHTML(p.profileId)}')">
+        <div class="mini-prof-top ${bannerClass}" style="${bannerStyle}">
+          <span style="position:absolute; top:6px; right:8px; font-size:9px; font-family:var(--font-tech); color:#fff; background:rgba(0,0,0,0.65); padding:2px 6px; border-radius:10px;">
+            ❤️ ${p.likes || 0}
+          </span>
+        </div>
+        <div class="mini-prof-body">
+          <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:6px;">
+            <div class="c6e-hex-avatar ${escapeHTML(p.frameStyle || 'frame-c6e-red')}" style="width:42px; height:42px;">
+              <img src="${escapeHTML(p.avatar || 'logo.png')}" onerror="this.src='logo.png'">
+            </div>
+            <span style="font-size:8.5px; font-family:var(--font-tech); font-weight:800; color:${isOnline ? 'var(--success)' : 'var(--silver-muted)'};">
+              ${isOnline ? '🟢 ONLINE' : '⚪ OFFLINE'}
+            </span>
+          </div>
+          <div style="font-family:var(--font-tech); font-size:12px; font-weight:800; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+            ${escapeHTML(p.countryFlag || '🌍')} ${info.tagStr ? `<span style="color:var(--accent-light);">${escapeHTML(info.tagStr)}</span> ` : ''}${escapeHTML(p.nick)}
+          </div>
+          <div style="font-size:9.5px; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+            ${info.badgeHtml}
+          </div>
+          <div style="display:flex; justify-content:space-between; font-size:9px; color:var(--silver-muted); margin-top:6px; padding-top:5px; border-top:1px solid rgba(255,255,255,0.06);">
+            <span>K/D: <b style="color:var(--success);">${escapeHTML(p.kd || '1.00')}</b></span>
+            <span>⚡ ${p.activityPts || 15}</span>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// Слушатель базы профилей + проверка обязательной регистрации + проверка ответа админа по заявке в [C6E]
+onSnapshot(doc(db, DB_COLLECTION, "profiles"), (snap) => {
+  allProfilesList = (snap.exists() && Array.isArray(snap.data().list)) ? snap.data().list : [];
+  const remoteMe = allProfilesList.find(x => x.profileId === clientSecurityMeta.deviceId);
+
+  if (remoteMe) {
+    // Проверяем, не изменил ли админ статус заявки в клан [C6E]
+    if (myLocalProfile && myLocalProfile.c6eStatus === 'pending' && remoteMe.c6eStatus === 'approved') {
+      addPersonalNotification("🛡️ Вы приняты в [C6E] на сайте!", "Основатель Kas подтвердил вашу принадлежность к клану CYBER 6 ESPORTS!", "success");
+      window.showNotify("🛡️ Администрация подтвердила ваш профиль бойца [C6E]!", "success");
+    }
+    if (remoteMe.c6eStatus === 'rejected') {
+      saveLocalProfileCache(remoteMe);
+      addPersonalNotification("❌ Отказ в регистрации под тегом [C6E]", "Администратор отклонил заявку на статус бойца [C6E]. Укажите ваш реальный клан в профиле.", "error");
+      window.openMyProfileModal(true, "Вы не числитесь в основном или резервном составе CYBER 6 ESPORTS.");
+    } else {
+      // Проверяем новые лайки профиля
+      if (myLocalProfile && (remoteMe.likes || 0) > (myLocalProfile.likes || 0)) {
+        addPersonalNotification("❤️ Новый лайк профиля!", `Вашему игровому профилю поставили лайк! Всего лайков: ${remoteMe.likes}`, "info");
+      }
+      saveLocalProfileCache(remoteMe);
+    }
+  } else if (!myLocalProfile || !myLocalProfile.nick) {
+    // Обязательная регистрация при входе на сайт (без профиля сайт закрыт модальным гейтом)
+    setTimeout(() => {
+      if (!myLocalProfile || !myLocalProfile.nick) {
+        window.openMyProfileModal(true);
+      }
+    }, 850);
+  }
+
+  renderCommunityRadarOnHome();
+  renderGlobalChatSection();
+});
+
+// Обновление онлайна каждые 3 минуты
+setInterval(async () => {
+  if (!myLocalProfile || !myLocalProfile.nick) return;
+  try {
+    const ref = doc(db, DB_COLLECTION, "profiles");
+    const snap = await getDoc(ref);
+    if (!snap.exists()) return;
+    let list = Array.isArray(snap.data().list) ? [...snap.data().list] : [];
+    const idx = list.findIndex(x => x.profileId === clientSecurityMeta.deviceId);
+    if (idx >= 0) {
+      list[idx] = { ...list[idx], lastSeen: Date.now() };
+      await setDoc(ref, { list }, { merge: true });
+    }
+  } catch (e) {}
+}, 180000);
+
+// ============================================================================
+// ОБЩИЙ ЧАТ ИГРОКОВ С АВТО-ОЧИСТКОЙ КАЖДЫЕ 12 ЧАСОВ И @УПОМИНАНИЯМИ
+// ============================================================================
+const CHAT_RETENTION_MS = 12 * 60 * 60 * 1000; // 12 часов
+
+function getRemainingChatResetText() {
+  const elapsed = Date.now() - (globalChatLastPurge || Date.now());
+  const rem = Math.max(0, CHAT_RETENTION_MS - (elapsed % CHAT_RETENTION_MS));
+  const h = Math.floor(rem / (1000 * 60 * 60));
+  const m = Math.floor((rem % (1000 * 60 * 60)) / (1000 * 60));
+  return `${h}ч ${m}м`;
+}
+
+function formatChatMessageTextHTML(rawText) {
+  const safe = escapeHTML(rawText || '');
+  return safe.replace(/@([A-Za-zА-Яа-яЁё0-9_@.\-]{2,24})/g, '<span class="chat-mention-tag">@$1</span>');
+}
+
+window.mentionUserInChat = (nick) => {
+  selectTab('chat', document.getElementById('btn-chat'));
+  setTimeout(() => {
+    const inp = document.getElementById('global-chat-input');
+    if (inp) {
+      const clean = String(nick || '').replace(/^\[[^\]]+\]\s*/, '').trim();
+      if (!inp.value.includes(`@${clean}`)) {
+        inp.value = `${inp.value ? inp.value + ' ' : ''}@${clean} `;
+      }
+      inp.focus();
+    }
+  }, 150);
+};
+
+function renderGlobalChatSection() {
+  const root = document.getElementById('global-chat-root');
+  if (!root) return;
+
+  const existingInputVal = document.getElementById('global-chat-input')?.value || '';
+  const now = Date.now();
+  const validMsgs = globalChatMessages.filter(m => (now - (m.ts || 0)) < CHAT_RETENTION_MS);
+  const myCleanNick = myLocalProfile ? myLocalProfile.nick.toLowerCase() : '';
+
+  root.innerHTML = `
+    <div class="chat-box-wrap">
+      <div class="chat-top-bar">
+        <div>
+          <div style="font-family:var(--font-tech); font-size:13px; font-weight:900; color:#fff; display:flex; align-items:center; gap:8px;">
+            <i class="fas fa-comments text-accent"></i> ОБЩИЙ ЧАТ ИГРОКОВ ПОРТАЛА [C6E]
+          </div>
+          <div style="font-size:10px; color:var(--silver-muted); margin-top:2px;">
+            Нажми на <b>@Ник</b> игрока, чтобы упомянуть его (ему придёт уведомление в 🔔 колокольчик и на телефон)
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="padding:4px 10px; border-radius:20px; background:rgba(255,179,0,0.12); border:1px solid rgba(255,179,0,0.4); font-family:var(--font-tech); font-size:9px; color:#ffb300; font-weight:800;">
+            🧹 Авто-очистка чата через: ${getRemainingChatResetText()}
+          </span>
+        </div>
+      </div>
+
+      <!-- Быстрая панель онлайн-игроков для @упоминания в 1 клик -->
+      <div style="padding:7px 12px; background:rgba(0,0,0,0.45); border-bottom:1px solid rgba(255,255,255,0.05); display:flex; align-items:center; gap:6px; overflow-x:auto; white-space:nowrap;">
+        <span style="font-size:9px; font-family:var(--font-tech); color:var(--silver-muted);">УПОМЯНУТЬ:</span>
+        ${allProfilesList.slice(0, 10).map(p => {
+          const safeN = escapeHTML(p.nick).replace(/'/g, "\\'");
+          return `<button type="button" class="chip-btn" style="padding:3px 8px; font-size:9.5px;" onclick="window.mentionUserInChat('${safeN}')">${escapeHTML(p.countryFlag || '🌍')} @${escapeHTML(p.nick)}</button>`;
+        }).join('')}
+      </div>
+
+      <div class="chat-messages-area" id="chat-messages-scroll">
+        ${validMsgs.length === 0 ? `
+          <div style="text-align:center; margin:auto; padding:30px; color:var(--silver-muted); font-size:12px;">
+            <i class="fas fa-comment-dots" style="font-size:28px; color:var(--accent-light); margin-bottom:8px; display:block;"></i>
+            Чат чист! Напиши первое сообщение или позови игроков через <b>@Ник</b>.
+          </div>
+        ` : validMsgs.map(m => {
+          const isMine = myLocalProfile && m.senderId === myLocalProfile.profileId;
+          const mentionsMe = myCleanNick && String(m.text || '').toLowerCase().includes(`@${myCleanNick}`);
+          const tagStr = m.c6eStatus === 'approved' ? '[C6E]' : (m.clanTag ? `[${m.clanTag}]` : '');
+          const rolePill = m.isFounder
+            ? '<span style="background:#ffb300; color:#000; font-family:var(--font-tech); font-size:8px; font-weight:900; padding:1px 6px; border-radius:4px;">👑 FOUNDER KAS</span>'
+            : (m.c6eStatus === 'approved'
+                ? '<span style="color:#00e676; font-size:9px; font-weight:800;">🛡️ [C6E]</span>'
+                : '<span style="color:#93c5fd; font-size:9px;">💎 Гость</span>');
+
+          return `
+            <div class="chat-msg-item ${isMine ? 'is-mine' : ''} ${mentionsMe ? 'mention-me' : ''}">
+              <div class="c6e-hex-avatar ${escapeHTML(m.frameStyle || 'frame-c6e-red')}" style="width:38px; height:38px; cursor:pointer;" onclick="window.openPublicProfileModal('${escapeHTML(m.senderId || '')}')">
+                <img src="${escapeHTML(m.avatar || 'logo.png')}" onerror="this.src='logo.png'">
+              </div>
+              <div style="flex:1; min-width:0;">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:3px;">
+                  <div style="display:flex; align-items:center; gap:5px; flex-wrap:wrap;">
+                    <span style="cursor:pointer; font-family:var(--font-tech); font-size:11px; font-weight:800; color:#fff;" onclick="window.openPublicProfileModal('${escapeHTML(m.senderId || '')}')">
+                      ${escapeHTML(m.countryFlag || '🌍')} ${tagStr ? `<span style="color:var(--accent-light);">${escapeHTML(tagStr)}</span> ` : ''}${escapeHTML(m.nick || 'Игрок')}
+                    </span>
+                    ${rolePill}
+                  </div>
+                  <div style="display:flex; align-items:center; gap:6px;">
+                    <span style="font-size:9px; color:var(--silver-muted);">${escapeHTML(m.timeStr || '')}</span>
+                    ${!isMine ? `<button type="button" style="background:none; border:none; color:#ffb300; font-size:10px; cursor:pointer; font-family:var(--font-tech); font-weight:700;" onclick="window.mentionUserInChat('${escapeHTML(m.nick || '').replace(/'/g, "\\'")}')">@Ответить</button>` : ''}
+                  </div>
+                </div>
+                <div style="font-size:12.5px; color:#e4e4e2; line-height:1.5; word-break:break-word;">
+                  ${formatChatMessageTextHTML(m.text)}
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+
+      <form class="chat-input-bar" onsubmit="window.sendGlobalChatMessage(event)">
+        <input type="text" id="global-chat-input" class="form-input" value="${escapeHTML(existingInputVal)}" placeholder="Напиши в общий чат (используй @Ник для упоминания)..." maxlength="280" style="margin:0; flex:1;" required>
+        <button type="submit" class="btn-glitch" style="width:auto; padding:10px 18px; margin:0;">
+          <i class="fas fa-paper-plane"></i>
+        </button>
+      </form>
+    </div>
+  `;
+
+  const sc = document.getElementById('chat-messages-scroll');
+  if (sc) sc.scrollTop = sc.scrollHeight;
+}
+
+window.sendGlobalChatMessage = async (e) => {
+  if (e) e.preventDefault();
+  if (checkIfCurrentUserBanned()) return;
+  if (!myLocalProfile || !myLocalProfile.nick) {
+    window.showNotify("Сначала создайте игровой профиль!", "error");
+    return window.openMyProfileModal(true);
+  }
+
+  const inp = document.getElementById('global-chat-input');
+  const text = (inp?.value || '').trim();
+  if (!text) return;
+
+  if (containsSpam(text)) {
+    const bad = findMatchedSpamWord(text);
+    await logSecurityAction('🚨 ТРЕВОГА: Запрещенное слово в чате', myLocalProfile.nick, `Слово «${bad}»: "${text.slice(0, 50)}"`, true);
+    return window.showNotify("🛡 C6E Shield: Сообщение заблокировано анти-мат фильтром!", "error");
+  }
+
+  if (inp) inp.value = '';
+
+  try {
+    const ref = doc(db, DB_COLLECTION, "global_chat");
+    const snap = await getDoc(ref);
+    const now = Date.now();
+    let messages = (snap.exists() && Array.isArray(snap.data().messages)) ? snap.data().messages : [];
+    let lastPurgeTs = (snap.exists() && snap.data().lastPurgeTs) ? snap.data().lastPurgeTs : now;
+
+    // Авто-очистка сообщений старше 12 часов
+    messages = messages.filter(m => (now - (m.ts || 0)) < CHAT_RETENTION_MS);
+    if (now - lastPurgeTs >= CHAT_RETENTION_MS) {
+      messages = [];
+      lastPurgeTs = now;
+    }
+
+    const newMsg = {
+      id: now + Math.floor(Math.random() * 1000),
+      senderId: myLocalProfile.profileId,
+      nick: myLocalProfile.nick,
+      clanTag: myLocalProfile.c6eStatus === 'approved' ? 'C6E' : (myLocalProfile.clanTag || ''),
+      c6eStatus: myLocalProfile.c6eStatus || 'guest',
+      avatar: myLocalProfile.avatar || 'logo.png',
+      frameStyle: myLocalProfile.frameStyle || 'frame-c6e-red',
+      countryFlag: myLocalProfile.countryFlag || '🌍',
+      text,
+      timeStr: new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }),
+      ts: now
+    };
+
+    messages.push(newMsg);
+    if (messages.length > 90) messages = messages.slice(-90);
+
+    await setDoc(ref, { messages, lastPurgeTs }, { merge: true });
+  } catch (err) {
+    window.showNotify("Ошибка отправки сообщения", "error");
+  }
+};
+
+let lastProcessedChatMsgId = 0;
+onSnapshot(doc(db, DB_COLLECTION, "global_chat"), (snap) => {
+  const now = Date.now();
+  if (snap.exists()) {
+    const rawMsgs = Array.isArray(snap.data().messages) ? snap.data().messages : [];
+    globalChatLastPurge = snap.data().lastPurgeTs || now;
+    globalChatMessages = rawMsgs.filter(m => (now - (m.ts || 0)) < CHAT_RETENTION_MS);
+
+    // Проверяем, не упомянули ли текущего пользователя в новом сообщении через @Ник
+    if (myLocalProfile && myLocalProfile.nick && globalChatMessages.length > 0) {
+      const latest = globalChatMessages[globalChatMessages.length - 1];
+      if (latest.id !== lastProcessedChatMsgId && latest.ts > sessionBootTime && latest.senderId !== myLocalProfile.profileId) {
+        lastProcessedChatMsgId = latest.id;
+        const myClean = myLocalProfile.nick.toLowerCase();
+        const txtLow = String(latest.text || '').toLowerCase();
+        if (txtLow.includes(`@${myClean}`) || txtLow.includes('@all') || txtLow.includes('@все')) {
+          addPersonalNotification(
+            `💬 ${latest.nick} упомянул вас в чате!`,
+            latest.text,
+            'mention',
+            'chat'
+          );
+          if (window.showNotify) {
+            window.showNotify(`🔔 ${latest.nick} упомянул вас в Общем чате!`, 'success');
+          }
+        }
+      }
+    }
+  } else {
+    globalChatMessages = [];
+  }
+  renderGlobalChatSection();
+});
+
+// ============================================================================
+// РАЗДЕЛ «МАГАЗИН [C6E]» (ЭЛЕГАНТНЫЙ КИБЕР-МАРКЕТ С АЖИОТАЖЕМ)
+// ============================================================================
+function renderShopSection() {
+  const root = document.getElementById('c6e-shop-root');
+  if (!root) return;
+
+  const waitCount = Array.isArray(shopConfigData.waitlist) ? shopConfigData.waitlist.length : 0;
+  const isWaiting = Array.isArray(shopConfigData.waitlist) && shopConfigData.waitlist.some(w => w.deviceId === clientSecurityMeta.deviceId);
+
+  const teaserItems = [
+    { icon: 'fa-coins', color: '#ffb300', badge: 'LOCKED // SOON', title: 'ПАКИ ГОЛДЫ & GOLD PASS', desc: 'Мгновенное пополнение Голды и боевых пропусков Standoff 2 по закрытому курсу для участников портала [C6E].' },
+    { icon: 'fa-Sliders-h', color: '#00e676', badge: 'PRO CONFIGS', title: 'ПРИВАТНЫЕ НАСТРОЙКИ БОЙЦОВ [C6E]', desc: 'Эксклюзивные паки кастомной раскладки, точной сенсы, прицелов и секретов оттяжки от основы Cyber 6 Esports.' },
+    { icon: 'fa-crown', color: '#ff5263', badge: 'VIP STATUS', title: 'КАСТОМНЫЕ VIP-РАМКИ И БАННЕРЫ', desc: 'Уникальные анимированные рамки профиля, золотой ник в Общем чате и приоритетный слот на праках.' },
+    { icon: 'fa-trophy', color: '#3b82f6', badge: 'TOURNAMENT SLOTS', title: 'БИЛЕТЫ НА ЗАКРЫТЫЕ ТУРНИРЫ C6E', desc: 'Прямые инвайты на еженедельные дуэли 1v1, 2v2 и 5v5 с гарантированным призовым фондом в Голде.' }
+  ];
+
+  root.innerHTML = `
+    <div class="shop-vault-hero">
+      <div style="display:inline-flex; align-items:center; gap:7px; padding:5px 14px; border-radius:20px; background:rgba(255,179,0,0.14); border:1px solid #ffb300; color:#ffb300; font-family:var(--font-tech); font-size:9.5px; font-weight:900; letter-spacing:1.2px; margin-bottom:12px;">
+        <i class="fas fa-lock"></i> SECRET CYBER MARKET // BY FOUNDER KAS
+      </div>
+      <h2 style="font-family:var(--font-tech); font-size:clamp(20px, 4vw, 28px); font-weight:900; color:#fff; margin:0 0 8px 0; letter-spacing:1px;">
+        ${escapeHTML(shopConfigData.title || 'КИБЕР-МАРКЕТ CYBER 6 ESPORTS [C6E]')}
+      </h2>
+      <div style="font-family:var(--font-tech); font-size:11px; color:var(--accent-light); font-weight:800; letter-spacing:1.5px; margin-bottom:14px;">
+        ${escapeHTML(shopConfigData.subtitle || 'ЗАКРЫТЫЙ АУКЦИОН И ЭКСКЛЮЗИВНЫЙ ИГРОВОЙ КОНТЕНТ')}
+      </div>
+      <p style="max-width:640px; margin:0 auto 20px auto; font-size:13px; color:#d4d6dc; line-height:1.65;">
+        ${escapeHTML(shopConfigData.hypeText)}
+      </p>
+
+      <div style="display:flex; justify-content:center; align-items:center; gap:12px; flex-wrap:wrap;">
+        <button type="button" class="boost-btn" style="width:auto; padding:12px 22px; font-size:11px;" onclick="window.joinShopWaitlist()">
+          <i class="fas fa-bell"></i> ${isWaiting ? '✅ ВЫ В СПИСКЕ ПЕРВЫХ ПОКУПАТЕЛЕЙ' : 'УВЕДОМИТЬ МЕНЯ ОБ ОТКРЫТИИ ПЕРВЫМ'}
+        </button>
+        <span style="padding:10px 14px; border-radius:10px; background:rgba(255,255,255,0.04); border:1px solid var(--glass-border); font-family:var(--font-tech); font-size:10px; color:var(--silver);">
+          🔥 Уже ждут открытия: <b style="color:#ffb300;">${waitCount + 24}</b> игроков
+        </span>
+      </div>
+    </div>
+
+    <div class="shop-teaser-grid">
+      ${teaserItems.map(item => `
+        <div class="shop-teaser-card">
+          <div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+              <span style="width:38px; height:38px; border-radius:10px; background:rgba(255,255,255,0.04); border:1px solid ${item.color}; color:${item.color}; display:inline-flex; align-items:center; justify-content:center; font-size:16px;">
+                <i class="fas ${item.icon}"></i>
+              </span>
+              <span style="font-family:var(--font-tech); font-size:8.5px; font-weight:800; color:${item.color}; background:rgba(0,0,0,0.5); padding:3px 8px; border-radius:6px; border:1px solid ${item.color};">
+                🔒 ${item.badge}
+              </span>
+            </div>
+            <h3 style="font-family:var(--font-tech); font-size:13px; font-weight:800; color:#fff; margin:0 0 8px 0;">
+              ${item.title}
+            </h3>
+            <p style="font-size:11.5px; color:var(--silver-muted); line-height:1.55; margin:0 0 14px 0;">
+              ${item.desc}
+            </p>
+          </div>
+          <div style="padding-top:10px; border-top:1px solid rgba(255,255,255,0.06); display:flex; justify-content:space-between; align-items:center; font-family:var(--font-tech); font-size:9.5px; color:#888;">
+            <span>ДОСТУП ПО ПРОФИЛЮ [C6E]</span>
+            <span style="color:#ffb300;">СКОРО ➔</span>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+window.joinShopWaitlist = async () => {
+  if (checkIfCurrentUserBanned()) return;
+  try {
+    const ref = doc(db, DB_COLLECTION, "shop_config");
+    const snap = await getDoc(ref);
+    let waitlist = (snap.exists() && Array.isArray(snap.data().waitlist)) ? [...snap.data().waitlist] : [];
+    if (waitlist.some(w => w.deviceId === clientSecurityMeta.deviceId)) {
+      return window.showNotify("Вы уже записаны в VIP-лист ожидания Магазина [C6E]!", "success");
+    }
+    waitlist.push({
+      deviceId: clientSecurityMeta.deviceId,
+      nick: myLocalProfile ? myLocalProfile.nick : 'Гость',
+      ts: Date.now()
+    });
+    await setDoc(ref, { waitlist }, { merge: true });
+    addPersonalNotification("🛒 Вы в VIP-списке Магазина [C6E]!", "Как только Основатель Kas откроет продажи, вы получите персональное уведомление.", "success");
+    window.showNotify("🔥 Вы добавлены в список ожидания Магазина [C6E]!", "success");
+  } catch (e) {}
+};
+
+onSnapshot(doc(db, DB_COLLECTION, "shop_config"), (snap) => {
+  if (snap.exists()) {
+    shopConfigData = { ...shopConfigData, ...snap.data() };
+  }
+  renderShopSection();
+}, () => {
+  renderShopSection();
+});
+
+// Инициализация UI при старте
+updateHeaderProfileChipUI();
+setTimeout(autoFillFormsWithProfile, 500);
+renderShopSection();
