@@ -1,12 +1,12 @@
 /* ============================================================================
-   CYBER 6 ESPORTS [C6E] — PRO APPLICATION LOGIC + ZERO-SCROLL ROSTER (app.js)
-   Токен бота полностью удалён из открытого кода GitHub и загружается из базы!
+   CYBER 6 ESPORTS [C6E] — PRO APPLICATION LOGIC + ZERO-SCROLL ROSTER + C6E SHIELD
+   Токен бота скрыт от GitHub, встроена защита IP / Device ID, Бан-система и перехват матов/спама!
    ============================================================================ */
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
 import { getFirestore, doc, onSnapshot, getDoc, setDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
-// Встраиваем стили Двойного Таба Standoff 2 + Карусели Состава на 1 экран (без скролла вверх-вниз)
+// Встраиваем стили Двойного Таба Standoff 2 + Карусели Состава + Экрана Блокировки C6E Shield
 const c6eProStyles = document.createElement('style');
 c6eProStyles.innerHTML = `
   /* Двойной Таб Standoff 2 */
@@ -212,6 +212,23 @@ c6eProStyles.innerHTML = `
     border-radius: 16px; padding: 20px; box-shadow: 0 25px 60px rgba(0,0,0,0.95);
     position: relative;
   }
+
+  /* ЭКРАН БЛОКИРОВКИ ВРЕДИТЕЛЯ (C6E SHIELD BAN OVERLAY) */
+  #c6e-ban-overlay {
+    position: fixed; inset: 0; z-index: 99999;
+    background: radial-gradient(circle at 50% 35%, rgba(158, 27, 40, 0.35) 0%, #07080a 70%);
+    backdrop-filter: blur(18px);
+    display: none; flex-direction: column; align-items: center; justify-content: center;
+    padding: 24px; text-align: center;
+  }
+  #c6e-ban-overlay.active { display: flex; }
+  .ban-card-box {
+    max-width: 440px; width: 100%;
+    background: rgba(16, 17, 22, 0.96);
+    border: 2px solid var(--accent-light);
+    border-radius: 18px; padding: 30px 22px;
+    box-shadow: 0 0 50px rgba(212, 38, 56, 0.45);
+  }
 `;
 document.head.appendChild(c6eProStyles);
 
@@ -220,6 +237,10 @@ analyticsModal.id = 'c6e-analytics-modal';
 analyticsModal.onclick = (e) => { if (e.target === analyticsModal) closeAnalyticsModal(); };
 analyticsModal.innerHTML = `<div class="analytics-modal-box" id="c6e-analytics-content"></div>`;
 document.body.appendChild(analyticsModal);
+
+const banOverlay = document.createElement('div');
+banOverlay.id = 'c6e-ban-overlay';
+document.body.appendChild(banOverlay);
 
 window.closeAnalyticsModal = () => {
   document.getElementById('c6e-analytics-modal').classList.remove('active');
@@ -262,6 +283,165 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const DB_COLLECTION = "siteData";
 
+// =========================================================================
+// СИСТЕМА БЕЗОПАСНОСТИ C6E SHIELD (FINGERPRINT + IP + BANS + LOGS)
+// =========================================================================
+
+function getOrCreateDeviceId() {
+  let devId = localStorage.getItem('c6e_shield_device_id');
+  if (!devId) {
+    const rawSig = [
+      navigator.userAgent || '',
+      navigator.language || '',
+      screen.width + 'x' + screen.height,
+      navigator.hardwareConcurrency || 4,
+      Intl.DateTimeFormat().resolvedOptions().timeZone || ''
+    ].join('|');
+    let hash = 0;
+    for (let i = 0; i < rawSig.length; i++) {
+      hash = ((hash << 5) - hash) + rawSig.charCodeAt(i);
+      hash |= 0;
+    }
+    const randSuffix = Math.random().toString(36).substring(2, 6).toUpperCase();
+    devId = `C6E-${Math.abs(hash).toString(16).toUpperCase().slice(0, 6)}-${randSuffix}`;
+    localStorage.setItem('c6e_shield_device_id', devId);
+  }
+  return devId;
+}
+
+function getReadableDeviceInfo() {
+  const ua = navigator.userAgent || '';
+  let os = 'Device';
+  if (/android/i.test(ua)) {
+    const m = ua.match(/Android\s([0-9.]+);\s([^;)]+)/i);
+    os = m ? `Android ${m[1]} (${m[2].trim()})` : 'Android Phone';
+  } else if (/iPhone|iPad|iPod/i.test(ua)) {
+    os = 'iOS (iPhone/iPad)';
+  } else if (/Windows/i.test(ua)) {
+    os = 'Windows PC';
+  } else if (/Mac/i.test(ua)) {
+    os = 'MacOS';
+  }
+  return `${os} [${screen.width}x${screen.height}]`;
+}
+
+let clientSecurityMeta = {
+  deviceId: getOrCreateDeviceId(),
+  ip: 'Определяется...',
+  deviceInfo: getReadableDeviceInfo(),
+  isBanned: false,
+  banReason: ''
+};
+
+let globalBannedList = [];
+
+async function resolveClientIp() {
+  if (clientSecurityMeta.ip && clientSecurityMeta.ip !== 'Определяется...') return clientSecurityMeta.ip;
+  const endpoints = [
+    'https://api.ipify.org?format=json',
+    'https://api64.ipify.org?format=json',
+    'https://ipwho.is/'
+  ];
+  for (const url of endpoints) {
+    try {
+      const res = await fetch(url);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.ip) {
+          clientSecurityMeta.ip = data.ip;
+          checkIfCurrentUserBanned();
+          return data.ip;
+        }
+      }
+    } catch (e) {}
+  }
+  clientSecurityMeta.ip = 'Скрыт / VPN';
+  return clientSecurityMeta.ip;
+}
+
+resolveClientIp();
+
+function checkIfCurrentUserBanned() {
+  const myDev = clientSecurityMeta.deviceId;
+  const myIp = clientSecurityMeta.ip;
+
+  const foundBan = globalBannedList.find(b =>
+    (b.deviceId && b.deviceId === myDev) ||
+    (b.ip && b.ip !== 'Скрыт / VPN' && b.ip !== 'Определяется...' && b.ip === myIp)
+  );
+
+  const overlay = document.getElementById('c6e-ban-overlay');
+  if (foundBan) {
+    clientSecurityMeta.isBanned = true;
+    clientSecurityMeta.banReason = foundBan.reason || 'Спам / Нарушение правил портала [C6E]';
+    if (overlay) {
+      overlay.innerHTML = `
+        <div class="ban-card-box">
+          <div style="width:68px; height:68px; border-radius:50%; background:rgba(212,38,56,0.18); border:2px solid var(--accent-light); display:flex; align-items:center; justify-content:center; margin:0 auto 16px auto; font-size:28px; color:var(--accent-light);">
+            <i class="fas fa-ban"></i>
+          </div>
+          <div style="font-family:var(--font-tech); font-size:18px; font-weight:900; color:#fff; letter-spacing:1.5px; margin-bottom:8px;">
+            ДОСТУП ЗАБЛОКИРОВАН
+          </div>
+          <div style="font-size:12px; color:var(--silver-muted); line-height:1.5; margin-bottom:16px;">
+            Система безопасности <b style="color:#fff;">CYBER 6 SHIELD</b> ограничила доступ вашего устройства к функциям портала.
+          </div>
+          <div style="background:rgba(0,0,0,0.55); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:12px; text-align:left; font-size:11px; color:var(--silver);">
+            <div style="margin-bottom:4px;">🚫 <b>Причина:</b> <span style="color:var(--accent-light);">${escapeHTML(clientSecurityMeta.banReason)}</span></div>
+            <div style="margin-bottom:4px;">🆔 <b>Device ID:</b> <code>${escapeHTML(myDev)}</code></div>
+            <div>🌐 <b>IP-адрес:</b> <code>${escapeHTML(myIp)}</code></div>
+          </div>
+        </div>
+      `;
+      overlay.classList.add('active');
+    }
+    return true;
+  } else {
+    clientSecurityMeta.isBanned = false;
+    if (overlay) overlay.classList.remove('active');
+    return false;
+  }
+}
+
+onSnapshot(doc(db, DB_COLLECTION, "security_logs"), (snap) => {
+  if (snap.exists()) {
+    globalBannedList = snap.data().banned || [];
+  } else {
+    globalBannedList = [];
+  }
+  checkIfCurrentUserBanned();
+});
+
+// Записываем каждое действие (включая заблокированный спам и мат!) в журнал безопасности админки
+async function logSecurityEvent(actionName, actorName, detailsText, isAlert = false) {
+  await resolveClientIp();
+  try {
+    const ref = doc(db, DB_COLLECTION, "security_logs");
+    const snap = await getDoc(ref);
+    let logs = (snap.exists() && snap.data().logs) ? snap.data().logs : [];
+    const banned = (snap.exists() && snap.data().banned) ? snap.data().banned : [];
+
+    const newEntry = {
+      id: Date.now(),
+      date: new Date().toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }),
+      action: actionName,
+      actor: actorName,
+      details: detailsText,
+      ip: clientSecurityMeta.ip,
+      deviceId: clientSecurityMeta.deviceId,
+      deviceInfo: clientSecurityMeta.deviceInfo,
+      isAlert: Boolean(isAlert)
+    };
+
+    logs.push(newEntry);
+    if (logs.length > 80) logs = logs.slice(-80);
+
+    await setDoc(ref, { logs, banned }, { merge: true });
+  } catch (e) {
+    console.warn("Security log error:", e);
+  }
+}
+
 // Подгружаем защищённый токен из Firebase
 onSnapshot(doc(db, DB_COLLECTION, "bot_config"), (snap) => {
   if (snap.exists() && snap.data().encToken) {
@@ -290,6 +470,12 @@ function containsSpam(text) {
   if (!text) return false;
   const lower = text.toLowerCase();
   return BLACKLIST.some(word => lower.includes(word));
+}
+
+function findMatchedSpamWord(text) {
+  if (!text) return "";
+  const lower = text.toLowerCase();
+  return BLACKLIST.find(word => lower.includes(word)) || "спам";
 }
 
 function checkCooldown(key, timeInMinutes) {
@@ -1485,11 +1671,16 @@ onSnapshot(doc(db, DB_COLLECTION, "reviews"), (snap) => {
 });
 
 // =========================================================
-// 7. ОТПРАВКА ФОРМ
+// 7. ОТПРАВКА ФОРМ (ЗАЩИЩЕНО СИСТЕМОЙ C6E SHIELD + ЗАПИСЬ МАТОВ)
 // =========================================================
 
 window.sendToTelegram = async (e) => {
   e.preventDefault();
+  if (checkIfCurrentUserBanned()) return;
+  if (!checkCooldown('last_join_submit', 15)) {
+    return window.showNotify("Анкета уже отправлена! Подождите 15 минут.", "error");
+  }
+
   const btn = e.target.querySelector('button');
   const originalText = btn.innerText;
 
@@ -1501,8 +1692,16 @@ window.sendToTelegram = async (e) => {
     return;
   }
 
+  if (containsSpam(nick) || containsSpam(tg)) {
+    const badWord = findMatchedSpamWord(nick + ' ' + tg);
+    logSecurityEvent("⚠️ СПАМ / МАТ (АНКЕТА)", nick || "Аноним", `Заблокирована попытка отправить запрещённое слово («${badWord}») в анкете: Ник=${nick}, TG=${tg}`, true);
+    return window.showNotify("Обнаружены запрещенные слова! Нарушение зафиксировано C6E Shield.", "error");
+  }
+
   btn.disabled = true;
-  btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> ОТПРАВКА...';
+  btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> ПРОВЕРКА C6E SHIELD...';
+
+  await resolveClientIp();
 
   const data = {
     nick: escapeHTML(nick),
@@ -1513,14 +1712,20 @@ window.sendToTelegram = async (e) => {
   };
 
   try {
+    await logSecurityEvent("ЗАЯВКА В КЛУБ", nick, `TG: ${tg} | Роль: ${data.role} | Часы: ${data.hours}`, false);
+
     const tgMsg = `📝 <b>НОВАЯ ЗАЯВКА В CYBER 6 ESPORTS [C6E]</b>\n\n` +
                   `👤 <b>Ник:</b> ${data.nick}\n` +
                   `⏳ <b>Часы:</b> ${data.hours}\n` +
                   `🎯 <b>Роль:</b> ${data.role}\n` +
                   `🏆 <b>Пик Ранг:</b> ${data.rank}\n` +
-                  `✈️ <b>TG:</b> ${data.tg}`;
+                  `✈️ <b>TG:</b> ${data.tg}\n` +
+                  `────────────────────\n` +
+                  `🛡 <b>Device ID:</b> <code>${clientSecurityMeta.deviceId}</code>\n` +
+                  `🌐 <b>IP:</b> <code>${clientSecurityMeta.ip}</code>`;
 
     await sendToBot(TG_CONFIG.groupId, tgMsg);
+    setCooldown('last_join_submit');
     window.showNotify("Заявка в [C6E] отправлена!", "success");
     e.target.reset();
   } catch (err) {
@@ -1533,6 +1738,7 @@ window.sendToTelegram = async (e) => {
 
 window.submitPrac = async (e) => {
   e.preventDefault();
+  if (checkIfCurrentUserBanned()) return;
   if (!checkCooldown('last_prac_submit', 10)) {
     return window.showNotify("Подождите 10 минут перед следующей заявкой.", "error");
   }
@@ -1547,17 +1753,21 @@ window.submitPrac = async (e) => {
   const lineup = document.getElementById('pc-lineup').value.trim();
 
   if (!slotId) return window.showNotify("Нажмите на свободный слот времени выше!", "error");
+  if (containsSpam(clanName) || containsSpam(lineup) || containsSpam(captain)) {
+    const badWord = findMatchedSpamWord(`${clanName} ${captain} ${lineup}`);
+    logSecurityEvent("⚠️ СПАМ / МАТ (ПРАКИ)", `${clanName || 'Клан'} (${captain || 'Капитан'})`, `Заблокирована попытка отправить слово («${badWord}») в праках: ${clanName} | ${lineup}`, true);
+    return window.showNotify("Обнаружены запрещенные слова! Нарушение зафиксировано C6E Shield.", "error");
+  }
   if (!/^\d{7,14}$/.test(capId)) return window.showNotify("ID должен содержать от 7 до 14 цифр!", "error");
   if (!/^@[a-zA-Z0-9_]{3,25}$/.test(contact)) return window.showNotify("TG должен начинаться с @!", "error");
-  if (containsSpam(clanName) || containsSpam(lineup) || containsSpam(captain)) {
-    return window.showNotify("Обнаружены запрещенные слова!", "error");
-  }
   if (maps.length === 0) return window.showNotify("Выберите хотя бы одну карту!", "error");
 
   const btn = e.target.querySelector('button[type="submit"]');
   const originalText = btn.innerHTML;
   btn.innerText = "БРОНИРОВАНИЕ...";
   btn.disabled = true;
+
+  await resolveClientIp();
 
   try {
     const ref = doc(db, DB_COLLECTION, "practices");
@@ -1579,10 +1789,14 @@ window.submitPrac = async (e) => {
       contact: escapeHTML(contact),
       format: slotObj.format || "BO1",
       maps: maps,
-      lineup: escapeHTML(lineup)
+      lineup: escapeHTML(lineup),
+      ip: clientSecurityMeta.ip,
+      deviceId: clientSecurityMeta.deviceId,
+      deviceInfo: clientSecurityMeta.deviceInfo
     };
 
     await updateDoc(ref, { list: list });
+    await logSecurityEvent("ПРАК (CW)", `${clanName} (${captain})`, `TG: ${contact} | ID: ${capId} | Карты: ${maps.join(', ')}`, false);
 
     const d = new Date(slotObj.isoDate);
     const weekday = d.toLocaleDateString('ru-RU', { weekday: 'long' }).toUpperCase();
@@ -1627,6 +1841,7 @@ window.submitPrac = async (e) => {
 
 window.submitReview = async (e) => {
   e.preventDefault();
+  if (checkIfCurrentUserBanned()) return;
   if (!checkCooldown('last_review_submit', 30)) {
     return window.showNotify("Отзыв можно оставлять раз в 30 минут.", "error");
   }
@@ -1637,8 +1852,12 @@ window.submitReview = async (e) => {
 
   if (text.length < 5) return window.showNotify("Отзыв слишком короткий!", "error");
   if (containsSpam(text) || containsSpam(nick)) {
-    return window.showNotify("Обнаружены запрещенные слова.", "error");
+    const badWord = findMatchedSpamWord(`${nick} ${text}`);
+    logSecurityEvent("⚠️ СПАМ / МАТ (ОТЗЫВЫ)", nick || "Аноним", `Заблокирована попытка отправить запрещённое слово («${badWord}») в отзыве: "${text.slice(0, 80)}"`, true);
+    return window.showNotify("Обнаружены запрещенные слова! Нарушение зафиксировано C6E Shield.", "error");
   }
+
+  await resolveClientIp();
 
   try {
     const ref = doc(db, DB_COLLECTION, "reviews");
@@ -1650,9 +1869,14 @@ window.submitReview = async (e) => {
         id: Date.now(),
         nick: escapeHTML(nick),
         target: escapeHTML(target),
-        text: escapeHTML(text)
+        text: escapeHTML(text),
+        ip: clientSecurityMeta.ip,
+        deviceId: clientSecurityMeta.deviceId,
+        deviceInfo: clientSecurityMeta.deviceInfo
       })
     });
+
+    await logSecurityEvent("ОТЗЫВ", nick, `Кому: ${target} | Текст: ${text.slice(0, 80)}`, false);
 
     setCooldown('last_review_submit');
     window.showNotify("Отзыв опубликован!", "success");
