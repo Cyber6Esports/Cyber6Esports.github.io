@@ -1,5 +1,6 @@
 /* ============================================================================
    CYBER 6 ESPORTS [C6E] — PRO APPLICATION LOGIC + ZERO-SCROLL ROSTER (app.js)
+   Токен бота полностью удалён из открытого кода GitHub и загружается из базы!
    ============================================================================ */
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
@@ -26,6 +27,8 @@ c6eProStyles.innerHTML = `
   .so2-bottom-bar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 10px; padding: 8px 12px; background: rgba(0, 0, 0, 0.45); border-radius: 6px; font-size: 10px; color: var(--silver-muted); border: 1px solid rgba(255, 255, 255, 0.05); }
   .mvp-compare-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin-top: 12px; }
   .mvp-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 9px 12px; display: flex; align-items: center; gap: 10px; font-size: 11px; }
+  .chip-btn { background: rgba(255,255,255,0.06); border: 1px solid var(--glass-border); color: var(--silver); font-family: var(--font-tech); font-size: 10px; padding: 5px 10px; border-radius: 6px; cursor: pointer; transition: 0.2s; }
+  .chip-btn:hover { background: var(--accent); color: #fff; border-color: var(--silver); }
 
   /* =========================================================
      НОВАЯ ВИТРИНА СОСТАВА НА 1 ЭКРАН (БЕЗ СКРОЛЛА ВВЕРХ-ВНИЗ!)
@@ -56,7 +59,6 @@ c6eProStyles.innerHTML = `
   }
   .report-mini-btn:hover { background: var(--accent-light); }
 
-  /* Горизонтальная полоса быстрого переключения бойцов (аватарки + ники) */
   .player-selector-bar {
     display: flex; gap: 8px; overflow-x: auto; padding: 4px 2px 10px 2px;
     scrollbar-width: none; -ms-overflow-style: none;
@@ -82,7 +84,6 @@ c6eProStyles.innerHTML = `
   }
   .player-chip.active .player-chip-nick { color: #fff; }
 
-  /* Горизонтальная Свайп-Карусель карточек (1 экран = 1 карточка на телефоне) */
   .roster-carousel-wrap { position: relative; width: 100%; }
   .roster-swipe-track {
     display: flex; gap: 16px; overflow-x: auto;
@@ -105,7 +106,6 @@ c6eProStyles.innerHTML = `
     display: flex; flex-direction: column;
   }
 
-  /* Компактная шапка карточки, чтобы вся карточка влезала в 1 экран телефона */
   .pro-card-top {
     position: relative;
     height: 195px;
@@ -179,7 +179,6 @@ c6eProStyles.innerHTML = `
   .recent-pill.good { background: rgba(0, 230, 118, 0.15); color: #00e676; border: 1px solid rgba(0,230,118,0.3); }
   .recent-pill.bad { background: rgba(212, 38, 56, 0.15); color: #ff5c6c; border: 1px solid rgba(212,38,56,0.3); }
 
-  /* Компактная строка девайса/сенсы/оружия в 3 колонки (экономит высоту экрана!) */
   .pro-specs-compact {
     display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px;
     background: rgba(255,255,255,0.02); border-radius: 8px; padding: 7px 8px;
@@ -188,7 +187,6 @@ c6eProStyles.innerHTML = `
   .spec-mini-lbl { font-size: 7px; color: var(--silver-muted); text-transform: uppercase; letter-spacing: 0.5px; }
   .spec-mini-val { font-size: 10px; font-weight: 700; color: var(--silver); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-  /* Навигация карусели внизу карточки */
   .carousel-nav-bar {
     display: flex; justify-content: space-between; align-items: center;
     margin-top: 2px; padding: 0 4px;
@@ -201,7 +199,6 @@ c6eProStyles.innerHTML = `
   }
   .carousel-arrow-btn:active, .carousel-arrow-btn:hover { background: var(--accent); color: #fff; }
 
-  /* Модальное окно Досье и Еженедельного отчёта */
   #c6e-analytics-modal {
     position: fixed; inset: 0; z-index: 11500;
     background: rgba(0, 0, 0, 0.88); backdrop-filter: blur(12px);
@@ -228,12 +225,28 @@ window.closeAnalyticsModal = () => {
   document.getElementById('c6e-analytics-modal').classList.remove('active');
 };
 
-// 1. ТЕЛЕГРАМ КОНФИГ
+// 1. ТЕЛЕГРАМ КОНФИГ (ТОКЕН СКРЫТ ОТ GITHUB И ПОДГРУЖАЕТСЯ ИЗ БАЗЫ FIREBASE)
 const TG_CONFIG = {
-  token: "9067430811:AAEsrB6wnoYcf2TRnkydy1J7XMPNPnY0vsI",
+  token: "",
   channelId: "-1004428385527",
   groupId: "-1004452371581"
 };
+
+const SECRET_SALT = "C6E_PRO_SHIELD_2026";
+function decodeBotToken(enc) {
+  if (!enc) return "";
+  try {
+    const rev = enc.split("").reverse().join("");
+    const xored = decodeURIComponent(escape(atob(rev)));
+    let orig = "";
+    for (let i = 0; i < xored.length; i++) {
+      orig += String.fromCharCode(xored.charCodeAt(i) ^ SECRET_SALT.charCodeAt(i % SECRET_SALT.length));
+    }
+    return orig.trim();
+  } catch (e) {
+    return "";
+  }
+}
 
 // 2. FIREBASE КОНФИГ
 const firebaseConfig = {
@@ -249,6 +262,13 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const DB_COLLECTION = "siteData";
 
+// Подгружаем защищённый токен из Firebase
+onSnapshot(doc(db, DB_COLLECTION, "bot_config"), (snap) => {
+  if (snap.exists() && snap.data().encToken) {
+    TG_CONFIG.token = decodeBotToken(snap.data().encToken);
+  }
+});
+
 let allHistoryData = [];
 let currentHistoryFilter = 'all';
 let allScheduleData = [];
@@ -256,7 +276,6 @@ let currentScheduleFilter = 'all';
 let mainRosterData = [];
 let reserveRosterData = [];
 
-// Текущая выбранная вкладка в разделе Состав ('main', 'reserve', 'table') и индекс активного игрока
 let activeRosterTab = 'main';
 let activePlayerIdx = 0;
 
@@ -470,6 +489,14 @@ window.showNotify = (text, type) => {
 };
 
 async function sendToBot(chatId, message) {
+  if (!TG_CONFIG.token) {
+    const snap = await getDoc(doc(db, DB_COLLECTION, "bot_config"));
+    if (snap.exists() && snap.data().encToken) {
+      TG_CONFIG.token = decodeBotToken(snap.data().encToken);
+    }
+  }
+  if (!TG_CONFIG.token) return;
+
   const response = await fetch(`https://api.telegram.org/bot${TG_CONFIG.token}/sendMessage`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -532,7 +559,6 @@ function renderAllRosters() {
   const teamSection = document.getElementById('team');
   if (!teamSection) return;
 
-  // Скрываем старые длинные блоки ниже, чтобы весь Состав умещался на 1 экране без скролла вверх-вниз!
   const currentList = activeRosterTab === 'reserve' ? reserveRosterData : mainRosterData;
 
   let mainContentHtml = '';
@@ -544,7 +570,6 @@ function renderAllRosters() {
       </div>
     `;
   } else if (activeRosterTab === 'table') {
-    // Режим «Все на 1 экране компактной таблицей»
     const allCombined = [...mainRosterData, ...reserveRosterData];
     mainContentHtml = `
       <div class="so2-team-panel">
@@ -585,7 +610,6 @@ function renderAllRosters() {
       </div>
     `;
   } else {
-    // Горизонтальная полоса быстрого выбора игрока в 1 тап + Свайп-Карусель на 1 экран
     const selectorChipsHtml = currentList.map((p, idx) => {
       const st = computePlayerLiveAnalytics(p);
       const shortNick = p.nick.replace(/^\[?[cс]6[eе]\]?\s*\|?\s*/i, '');
@@ -720,7 +744,6 @@ function renderAllRosters() {
     ${mainContentHtml}
   `;
 
-  // Слушаем свайп пальцем по карусели, чтобы подсветка верхних иконок игроков переключалась синхронно
   const track = document.getElementById('c6e-roster-track');
   if (track) {
     track.addEventListener('scroll', () => {
@@ -1048,7 +1071,7 @@ onSnapshot(doc(db, DB_COLLECTION, "practices"), (snap) => {
             <span style="font-size:9px; background:var(--accent-dim); border:1px solid var(--accent); padding:2px 6px; border-radius:4px; color:var(--silver); font-family:var(--font-tech);">${escapeHTML(s.format || 'BO1')}</span>
           </div>
           <div class="slot-time">${escapeHTML(s.displayTime)}</div>
-          <div class="slot-meta">
+          <div style="font-size:10px; color:var(--silver-muted); margin-top:4px; display:flex; justify-content:space-between;">
             <span><i class="fas fa-server"></i> ${escapeHTML(s.server || 'Россия, Москва')}</span>
             <span style="color:var(--accent-light); font-weight:700;">ВЫБРАТЬ ➔</span>
           </div>
