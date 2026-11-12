@@ -245,7 +245,6 @@
       background: var(--accent); color: #fff; border-color: var(--silver);
     }
 
-    /* Чекбокс авто-публикации в ТГК */
     .tg-check-label {
       display: flex; align-items: center; gap: 8px; cursor: pointer;
       margin-top: 14px; padding: 10px 12px; border-radius: 8px;
@@ -315,6 +314,8 @@
     .btn-icon.tg:hover { background: var(--tg-blue); color: #fff; }
     .btn-icon.edit:hover { border-color: var(--silver); color: #fff; background: rgba(255,255,255,0.12); }
     .btn-icon.del:hover { border-color: var(--accent-light); color: var(--accent-light); background: var(--accent-dim); }
+    .btn-icon.ban { color: #ff5263; border-color: rgba(212, 38, 56, 0.45); background: rgba(212, 38, 56, 0.14); }
+    .btn-icon.ban:hover { background: var(--accent-light); color: #fff; }
 
     /* ВИЗУАЛЬНЫЙ РЕДАКТОР НОВОСТЕЙ */
     .editor-toolbar {
@@ -445,7 +446,6 @@
 
 <input type="file" id="phoneImageInput" accept="image/*" style="display: none;">
 <input type="file" id="proofImageInput" accept="image/*" style="display: none;">
-<!-- Скрытый логотип для авто-генератора фирменных карточек в Telegram -->
 <img id="hiddenBrandLogo" src="logo.png" crossorigin="anonymous" style="display:none;">
 
 <!-- ЭКРАН АВТОРИЗАЦИИ -->
@@ -469,7 +469,7 @@
       <img src="logo.png" alt="C6E" onerror="this.style.display='none'">
       <div>
         <h1>CYBER <span>6</span> ESPORTS</h1>
-        <div class="status-pill"><span class="status-dot"></span> TG BOT & FIREBASE SYNC ACTIVE</div>
+        <div class="status-pill"><span class="status-dot"></span> TG BOT & C6E SHIELD ACTIVE</div>
       </div>
     </div>
     <div style="display: flex; gap: 8px;">
@@ -510,7 +510,6 @@
       </div>
     </div>
 
-    <!-- ЗАЩИЩЁННАЯ СТРОКА УПРАВЛЕНИЯ ТОКЕНОМ БОТА -->
     <div class="tg-shield-bar">
       <div style="font-size:11px; color:var(--silver); font-weight:700; display:flex; align-items:center; gap:8px;">
         <i class="fas fa-key" style="color:var(--tg-blue);"></i>
@@ -558,11 +557,19 @@
       </div>
       <div class="kpi-icon"><i class="fas fa-trophy"></i></div>
     </div>
+    <div class="kpi-card">
+      <div>
+        <div class="kpi-val" id="kpi-bans" style="color:var(--accent-light);">0</div>
+        <div class="kpi-lbl">В БАН-ЛИСТЕ SHIELD</div>
+      </div>
+      <div class="kpi-icon"><i class="fas fa-user-shield"></i></div>
+    </div>
   </div>
 
   <!-- 4. БЫСТРЫЕ ВКЛАДКИ -->
   <div class="filter-bar">
     <button class="filter-btn active" onclick="filterPanels('all', this)"><i class="fas fa-th-large"></i> Все блоки</button>
+    <button class="filter-btn" onclick="filterPanels('cat-security', this)"><i class="fas fa-user-shield"></i> 🛡 Безопасность (C6E Shield)</button>
     <button class="filter-btn" onclick="filterPanels('cat-matches', this)"><i class="fas fa-trophy"></i> Матчи (Таб), Праки и Расписание</button>
     <button class="filter-btn" onclick="filterPanels('cat-news', this)"><i class="fas fa-newspaper"></i> Новости</button>
     <button class="filter-btn" onclick="filterPanels('cat-roster', this)"><i class="fas fa-users"></i> Состав [C6E]</button>
@@ -570,6 +577,53 @@
   </div>
 
   <div class="container" id="adminContainer">
+
+    <!-- =========================================================================
+         0. СИСТЕМА БЕЗОПАСНОСТИ C6E SHIELD (ЛОГ IP/УСТРОЙСТВ + ЧЁРНЫЙ СПИСОК БАНОВ)
+         ========================================================================= -->
+    <div class="panel full-width cat-security">
+      <div class="panel-header">
+        <h2><span class="panel-icon"><i class="fas fa-user-shield"></i></span> C6E SHIELD // ЖУРНАЛ IP, ПОПЫТОК ВЗЛОМА И ЧЁРНЫЙ СПИСОК</h2>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <button type="button" class="chip-btn" onclick="clearSecurityLogs()"><i class="fas fa-broom"></i> Очистить журнал</button>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 18px;">
+        <!-- ЛЕВАЯ КОЛОНКА: ЖУРНАЛ ВСЕХ ОТПРАВИТЕЛЕЙ И ТРЕВОГ -->
+        <div style="background: rgba(0,0,0,0.4); padding: 16px; border-radius: 12px; border: 1px solid var(--glass-border);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <h3 style="font-size: 12px; color: var(--silver); margin:0;"><i class="fas fa-satellite-dish text-accent"></i> ЖУРНАЛ АКТИВНОСТИ И ПОПЫТОК ВЗЛОМА / МАТОВ</h3>
+          </div>
+          <p style="font-size:10px; color:var(--silver-muted); margin-top:0;">Красной плашкой <b>🚨 ТРЕВОГА</b> подсвечиваются попытки подобрать пароль к админке и попытки отправить запрещённые слова или мат на сайте.</p>
+          <div id="securityLogsList" class="data-list" style="max-height: 360px; margin-top:8px;">
+            <span class="item-sub">Журнал пока пуст...</span>
+          </div>
+        </div>
+
+        <!-- ПРАВАЯ КОЛОНКА: РУЧНОЙ БАН И ЧЁРНЫЙ СПИСОК -->
+        <div style="background: rgba(158, 27, 40, 0.08); padding: 16px; border-radius: 12px; border: 1px solid rgba(212, 38, 56, 0.3);">
+          <h3 style="font-size: 12px; color: var(--accent-light); margin-bottom:8px;"><i class="fas fa-ban"></i> ЧЁРНЫЙ СПИСОК (БАН ПО IP ИЛИ DEVICE ID)</h3>
+          <div class="row-inputs">
+            <div>
+              <label style="margin-top:4px;">IP-адрес или Device ID</label>
+              <input type="text" id="manualBanTarget" placeholder="Например: C6E-8F2A10-ABCD или IP">
+            </div>
+            <div>
+              <label style="margin-top:4px;">Ник / Причина бана</label>
+              <input type="text" id="manualBanReason" placeholder="Спам праками / Попытка взлома">
+            </div>
+          </div>
+          <button type="button" class="action-btn" style="margin-top:10px; padding:10px;" onclick="addManualBan()">
+            <i class="fas fa-gavel"></i> ЗАБЛОКИРОВАТЬ ДОСТУП К САЙТУ
+          </button>
+
+          <div id="bannedUsersList" class="data-list" style="max-height: 245px; margin-top:12px;">
+            <span class="item-sub">В чёрном списке пока никого нет</span>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- =========================================================================
          1. ИСТОРИЯ МАТЧЕЙ + ДВОЙНОЙ ТАБ STANDOFF 2 + АВТО-ПОСТ В ТГК СО СКРИНОМ
@@ -668,7 +722,6 @@
         </div>
       </div>
 
-      <!-- ДВЕ ТАБЛИЦЫ ИГРОКОВ ([C6E] + ПРОТИВНИКИ) -->
       <div class="dual-scoreboard-wrap">
         <div class="team-tab-box c6e-box">
           <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -1050,8 +1103,6 @@
   import { getFirestore, doc, setDoc, getDoc, onSnapshot, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
   import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 
-  // ТОКЕН БОЛЬШЕ НЕ ХРАНИТСЯ В ОТКРЫТОМ КОДЕ НА GITHUB!
-  // Он загружается в зашифрованном виде из документа siteData/bot_config в Firebase.
   const TG_CONFIG = {
     token: "",
     channelId: "-1004428385527",
@@ -1100,11 +1151,100 @@
   const auth = getAuth(app);
   const DB_COLLECTION = "siteData";
 
+  // Определение отпечатка устройства и IP для фиксации попыток взлома админки
+  function getOrCreateAdminDeviceId() {
+    let devId = localStorage.getItem('c6e_shield_device_id');
+    if (!devId) {
+      const rawSig = [
+        navigator.userAgent || '',
+        navigator.language || '',
+        screen.width + 'x' + screen.height,
+        navigator.hardwareConcurrency || 4,
+        Intl.DateTimeFormat().resolvedOptions().timeZone || ''
+      ].join('|');
+      let hash = 0;
+      for (let i = 0; i < rawSig.length; i++) {
+        hash = ((hash << 5) - hash) + rawSig.charCodeAt(i);
+        hash |= 0;
+      }
+      const randSuffix = Math.random().toString(36).substring(2, 6).toUpperCase();
+      devId = `C6E-${Math.abs(hash).toString(16).toUpperCase().slice(0, 6)}-${randSuffix}`;
+      localStorage.setItem('c6e_shield_device_id', devId);
+    }
+    return devId;
+  }
+
+  function getReadableAdminDeviceInfo() {
+    const ua = navigator.userAgent || '';
+    let os = 'Device';
+    if (/android/i.test(ua)) {
+      const m = ua.match(/Android\s([0-9.]+);\s([^;)]+)/i);
+      os = m ? `Android ${m[1]} (${m[2].trim()})` : 'Android Phone';
+    } else if (/iPhone|iPad|iPod/i.test(ua)) {
+      os = 'iOS (iPhone/iPad)';
+    } else if (/Windows/i.test(ua)) {
+      os = 'Windows PC';
+    } else if (/Mac/i.test(ua)) {
+      os = 'MacOS';
+    }
+    return `${os} [${screen.width}x${screen.height}]`;
+  }
+
+  let currentVisitorIp = 'Определяется...';
+  const currentVisitorDevId = getOrCreateAdminDeviceId();
+  const currentVisitorDevInfo = getReadableAdminDeviceInfo();
+
+  async function resolveVisitorIp() {
+    if (currentVisitorIp && currentVisitorIp !== 'Определяется...') return currentVisitorIp;
+    const endpoints = ['https://api.ipify.org?format=json', 'https://api64.ipify.org?format=json', 'https://ipwho.is/'];
+    for (const url of endpoints) {
+      try {
+        const res = await fetch(url);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.ip) {
+            currentVisitorIp = data.ip;
+            return data.ip;
+          }
+        }
+      } catch (e) {}
+    }
+    currentVisitorIp = 'Скрыт / VPN';
+    return currentVisitorIp;
+  }
+  resolveVisitorIp();
+
+  async function logAdminSecurityAttempt(emailTried) {
+    await resolveVisitorIp();
+    try {
+      const ref = doc(db, DB_COLLECTION, "security_logs");
+      const snap = await getDoc(ref);
+      let logs = (snap.exists() && snap.data().logs) ? snap.data().logs : [];
+      const banned = (snap.exists() && snap.data().banned) ? snap.data().banned : [];
+
+      logs.push({
+        id: Date.now(),
+        date: new Date().toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }),
+        action: "⚠️ ПОПЫТКА ВХОДА В АДМИНКУ",
+        actor: `Email: ${emailTried || 'не указан'}`,
+        details: "Введён неверный пароль при попытке входа в Command Center!",
+        ip: currentVisitorIp,
+        deviceId: currentVisitorDevId,
+        deviceInfo: currentVisitorDevInfo,
+        isAlert: true
+      });
+      if (logs.length > 80) logs = logs.slice(-80);
+      await setDoc(ref, { logs, banned }, { merge: true });
+    } catch (e) {}
+  }
+
   let cachedNews = [];
   let cachedRoster = [];
   let cachedPracs = [];
   let cachedSchedule = [];
   let cachedHistory = [];
+  let cachedSecurityLogs = [];
+  let cachedBannedUsers = [];
 
   function showToast(msg, isError = false) {
     const container = document.getElementById('toast-container');
@@ -1121,7 +1261,6 @@
     }, 3400);
   }
 
-  // Показать/скрыть токен в поле ввода
   window.toggleTokenVisibility = () => {
     const inp = document.getElementById('secretBotTokenInput');
     const icon = document.getElementById('tokenEyeIcon');
@@ -1134,7 +1273,6 @@
     }
   };
 
-  // Сохранить новый токен в Firebase (зашифрованным) + автоматически удалить любые спам-вебхуки!
   window.saveSecretBotToken = async () => {
     const rawToken = document.getElementById('secretBotTokenInput').value.trim();
     if (!rawToken || !rawToken.includes(':')) {
@@ -1143,17 +1281,14 @@
 
     showToast("Проверяю токен и очищаю спам-вебхуки...");
     try {
-      // 1. Сбрасываем любые чужие вебхуки и очередь спама в Telegram API
       await fetch(`https://api.telegram.org/bot${rawToken}/deleteWebhook?drop_pending_updates=true`);
 
-      // 2. Проверяем валидность токена через getMe
       const meRes = await fetch(`https://api.telegram.org/bot${rawToken}/getMe`);
       const meData = await meRes.json();
       if (!meData.ok) {
         throw new Error(meData.description || "Токен недействителен");
       }
 
-      // 3. Шифруем и сохраняем в Firebase (в GitHub коде токена нет вообще!)
       const encToken = encodeBotToken(rawToken);
       await setDoc(doc(db, DB_COLLECTION, "bot_config"), {
         encToken,
@@ -1167,6 +1302,92 @@
       showToast(`✅ Бот @${meData.result.username} защищён, спам-вебхуки удалены!`);
     } catch (err) {
       showToast("Ошибка токена: " + err.message, true);
+    }
+  };
+
+  // =========================================================================
+  // ФУНКЦИИ УПРАВЛЕНИЯ БЕЗОПАСНОСТЬЮ C6E SHIELD (БАН / РАЗБАН / ОЧИСТКА ЛОГОВ)
+  // =========================================================================
+
+  window.banUserQuick = async (ip, deviceId, actorName) => {
+    if (!ip && !deviceId) return showToast("Нет данных IP или Device ID для бана", true);
+    const reason = prompt(`Укажите причину блокировки для ${actorName || deviceId}:`, "Спам / Вредительство на сайте [C6E]");
+    if (reason === null) return;
+
+    try {
+      const ref = doc(db, DB_COLLECTION, "security_logs");
+      const snap = await getDoc(ref);
+      let banned = (snap.exists() && snap.data().banned) ? snap.data().banned : [];
+
+      const already = banned.some(b => (deviceId && b.deviceId === deviceId) || (ip && ip !== 'Скрыт / VPN' && b.ip === ip));
+      if (already) return showToast("Этот пользователь уже в чёрном списке!", true);
+
+      banned.push({
+        id: Date.now(),
+        date: new Date().toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }),
+        ip: ip || '',
+        deviceId: deviceId || '',
+        actor: actorName || 'Нарушитель',
+        reason: reason.trim() || 'Нарушение правил портала [C6E]'
+      });
+
+      await setDoc(ref, { banned }, { merge: true });
+      showToast(`🚫 ${actorName || deviceId} заблокирован в C6E Shield!`);
+    } catch (e) {
+      showToast("Ошибка блокировки", true);
+    }
+  };
+
+  window.addManualBan = async () => {
+    const target = document.getElementById('manualBanTarget').value.trim();
+    const reason = document.getElementById('manualBanReason').value.trim() || "Заблокирован администратором [C6E]";
+    if (!target) return showToast("Введите IP-адрес или Device ID (C6E-...)", true);
+
+    const isDevId = /^C6E-/i.test(target);
+    try {
+      const ref = doc(db, DB_COLLECTION, "security_logs");
+      const snap = await getDoc(ref);
+      let banned = (snap.exists() && snap.data().banned) ? snap.data().banned : [];
+
+      banned.push({
+        id: Date.now(),
+        date: new Date().toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }),
+        ip: isDevId ? '' : target,
+        deviceId: isDevId ? target.toUpperCase() : '',
+        actor: 'Ручная блокировка',
+        reason
+      });
+
+      await setDoc(ref, { banned }, { merge: true });
+      document.getElementById('manualBanTarget').value = '';
+      document.getElementById('manualBanReason').value = '';
+      showToast("🚫 Добавлен в чёрный список C6E Shield!");
+    } catch (e) {
+      showToast("Ошибка сохранения бана", true);
+    }
+  };
+
+  window.unbanUser = async (banId) => {
+    try {
+      const ref = doc(db, DB_COLLECTION, "security_logs");
+      const snap = await getDoc(ref);
+      if (!snap.exists()) return;
+      const banned = (snap.data().banned || []).filter(b => b.id !== banId);
+      await setDoc(ref, { banned }, { merge: true });
+      showToast("🔓 Блокировка снята!");
+    } catch (e) {
+      showToast("Ошибка разбана", true);
+    }
+  };
+
+  window.clearSecurityLogs = async () => {
+    if (!confirm("Очистить журнал активности посетителей? (Чёрный список банов сохранится)")) return;
+    try {
+      const ref = doc(db, DB_COLLECTION, "security_logs");
+      await setDoc(ref, { logs: [] }, { merge: true });
+      showToast("Журнал активности очищен!");
+    } catch (e) {
+      showToast("Ошибка очистки", true);
     }
   };
 
@@ -1577,7 +1798,7 @@
       cardConfig: {
         badge: 'WEEKLY OPS // SCHEDULE',
         title: 'РАСПИСАНИЕ ИГР [C6E]',
-        subtitle: 'ОФИЦИАНЫЙ ГРАФИК МАТЧЕЙ И ТРЕНИРОВОК (МСК)',
+        subtitle: 'ОФИЦИАЛЬНЫЙ ГРАФИК МАТЧЕЙ И ТРЕНИРОВОК (МСК)',
         lines: cardLines
       }
     });
@@ -2044,9 +2265,9 @@
     return clean;
   }
 
-  // АВТОРИЗАЦИЯ
+  // АВТОРИЗАЦИЯ С ЗАЩИТОЙ ОТ ПОДБОРА ПАРОЛЯ
   window.sysLogin = async () => {
-    const email = document.getElementById('adminEmail').value;
+    const email = document.getElementById('adminEmail').value.trim();
     const pass = document.getElementById('adminPass').value;
     const err = document.getElementById('loginError');
     const btn = document.querySelector('#loginOverlay .action-btn');
@@ -2055,11 +2276,30 @@
 
     try {
       btn.disabled = true; btn.innerText = "ПРОВЕРКА ДОСТУПА...";
+      await resolveVisitorIp();
+
+      // Проверяем, не забанен ли уже этот посетитель
+      const secSnap = await getDoc(doc(db, DB_COLLECTION, "security_logs"));
+      if (secSnap.exists()) {
+        const bannedList = secSnap.data().banned || [];
+        const isBanned = bannedList.some(b =>
+          (b.deviceId && b.deviceId === currentVisitorDevId) ||
+          (b.ip && b.ip !== 'Скрыт / VPN' && b.ip === currentVisitorIp)
+        );
+        if (isBanned) {
+          btn.disabled = false; btn.innerHTML = '<i class="fas fa-shield-alt"></i> ВОЙТИ В ЦЕНТР УПРАВЛЕНИЯ';
+          err.style.opacity = 1;
+          err.innerText = "🚫 Ваше устройство заблокировано C6E Shield!";
+          return;
+        }
+      }
+
       await signInWithEmailAndPassword(auth, email, pass);
     } catch (e) {
       btn.disabled = false; btn.innerHTML = '<i class="fas fa-shield-alt"></i> ВОЙТИ В ЦЕНТР УПРАВЛЕНИЯ';
       err.style.opacity = 1;
-      err.innerText = "Неверный Email или пароль";
+      err.innerText = "Неверный Email или пароль (попытка записана в C6E Shield)";
+      await logAdminSecurityAttempt(email);
     }
   };
 
@@ -2087,7 +2327,6 @@
   }
 
   function initAdminListeners() {
-    // Слушаем защищённый токен бота из Firebase
     listenToDoc(DB_COLLECTION, "bot_config", (data) => {
       const badge = document.getElementById('tgTokenStatusBadge');
       const inp = document.getElementById('secretBotTokenInput');
@@ -2106,6 +2345,77 @@
       if (badge) {
         badge.className = 'tg-shield-status warn';
         badge.innerHTML = `⚠️ ВВЕДИТЕ НОВЫЙ ТОКЕН В ПОЛЕ НИЖЕ`;
+      }
+    });
+
+    // Слушаем журнал безопасности C6E Shield и чёрный список банов
+    listenToDoc(DB_COLLECTION, "security_logs", (data) => {
+      const logs = data.logs || [];
+      const banned = data.banned || [];
+      cachedSecurityLogs = logs;
+      cachedBannedUsers = banned;
+
+      const kpiBans = document.getElementById('kpi-bans');
+      if (kpiBans) kpiBans.innerText = banned.length;
+
+      const logsCont = document.getElementById('securityLogsList');
+      if (logsCont) {
+        const sortedLogs = [...logs].reverse();
+        logsCont.innerHTML = sortedLogs.length === 0
+          ? '<span class="item-sub" style="padding:8px;">Журнал активности пока пуст</span>'
+          : sortedLogs.map(l => {
+              const isAlreadyBanned = banned.some(b =>
+                (l.deviceId && b.deviceId === l.deviceId) ||
+                (l.ip && l.ip !== 'Скрыт / VPN' && b.ip === l.ip)
+              );
+              const isAlert = Boolean(l.isAlert || (l.action && l.action.includes('⚠️')));
+              const safeIp = (l.ip || '').replace(/'/g, "\\'");
+              const safeDev = (l.deviceId || '').replace(/'/g, "\\'");
+              const safeActor = (l.actor || 'Гость').replace(/'/g, "\\'");
+
+              return `
+                <div class="list-item" style="border-left-color:${isAlert ? 'var(--accent-light)' : (isAlreadyBanned ? 'var(--warning)' : 'var(--tg-blue)')}; background:${isAlert ? 'rgba(212,38,56,0.12)' : 'rgba(255,255,255,0.03)'}; align-items:flex-start;">
+                  <div class="item-info">
+                    <b style="color:${isAlert ? '#ff5263' : 'var(--silver)'};">
+                      ${isAlert ? '<span style="background:var(--accent-light); color:#fff; font-size:8px; padding:2px 5px; border-radius:4px; margin-right:5px; font-family:var(--font-tech);">🚨 ТРЕВОГА</span>' : ''}
+                      [${l.action}] ${l.actor} <span style="font-size:9px; color:var(--silver-muted); font-weight:400;">• ${l.date}</span>
+                    </b>
+                    <div class="item-sub" style="color:#ddd; margin-bottom:4px;">${l.details || ''}</div>
+                    <div class="item-sub" style="font-family:monospace; color:var(--silver);">
+                      🌐 IP: <b>${l.ip || '—'}</b> | 🆔 ID: <b>${l.deviceId || '—'}</b><br>
+                      📱 ${l.deviceInfo || 'Устройство'}
+                    </div>
+                  </div>
+                  <div class="item-actions">
+                    ${isAlreadyBanned
+                      ? `<span style="font-size:9px; color:var(--accent-light); font-family:var(--font-tech); padding:4px 6px; border:1px solid var(--accent-light); border-radius:4px;">В БАНЕ</span>`
+                      : `<button type="button" class="btn-icon ban" title="Забанить по IP и Устройству" onclick="window.banUserQuick('${safeIp}', '${safeDev}', '${safeActor}')"><i class="fas fa-ban"></i></button>`
+                    }
+                  </div>
+                </div>
+              `;
+            }).join('');
+      }
+
+      const bannedCont = document.getElementById('bannedUsersList');
+      if (bannedCont) {
+        const sortedBanned = [...banned].reverse();
+        bannedCont.innerHTML = sortedBanned.length === 0
+          ? '<span class="item-sub" style="padding:8px;">В чёрном списке пока никого нет</span>'
+          : sortedBanned.map(b => `
+              <div class="list-item" style="border-left-color:var(--accent-light); background:rgba(212,38,56,0.1);">
+                <div class="item-info">
+                  <b style="color:#fff;">🚫 ${b.actor || 'Нарушитель'} <span style="font-size:9px; color:var(--silver-muted);">${b.date || ''}</span></b>
+                  <span class="item-sub" style="color:var(--accent-light);">Причина: ${b.reason || 'Спам'}</span>
+                  <span class="item-sub" style="font-family:monospace; display:block; margin-top:2px;">
+                    ${b.ip ? `IP: ${b.ip} ` : ''}${b.deviceId ? `| ID: ${b.deviceId}` : ''}
+                  </span>
+                </div>
+                <div class="item-actions">
+                  <button type="button" class="btn-icon edit" title="Разбанить" onclick="window.unbanUser(${b.id})"><i class="fas fa-unlock"></i></button>
+                </div>
+              </div>
+            `).join('');
       }
     });
 
@@ -2231,6 +2541,9 @@
           const tg = p.team ? p.team.contact : '';
           const cleanTg = tg.replace('@', '');
           const mapsList = (p.team && p.team.maps) ? p.team.maps.join(', ') : 'Любая';
+          const pIp = (p.team && p.team.ip) ? p.team.ip.replace(/'/g, "\\'") : '';
+          const pDev = (p.team && p.team.deviceId) ? p.team.deviceId.replace(/'/g, "\\'") : '';
+          const safeClan = clan.replace(/'/g, "\\'");
 
           bookedCont.innerHTML += `
             <div class="list-item" style="background: rgba(0,0,0,0.55); border: 1px solid var(--accent-light); flex-direction:column; align-items: flex-start; gap:8px; padding:12px;">
@@ -2242,6 +2555,7 @@
                 📅 ${p.displayTime}<br>
                 👤 Капитан: <b>${cap}</b> (ID: ${p.team ? p.team.capId : '-'})<br>
                 🗺 Карты: <span style="color:var(--accent-light);">${mapsList}</span>
+                ${(pIp || pDev) ? `<br><span style="font-family:monospace; font-size:9px; color:var(--silver-muted);">🛡 IP: ${pIp || '—'} | ID: ${pDev || '—'}</span>` : ''}
               </div>
               <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; width:100%; margin-top:4px;">
                 <a href="https://t.me/${cleanTg}" target="_blank" style="text-decoration:none;">
@@ -2249,7 +2563,10 @@
                 </a>
                 <button type="button" class="action-btn secondary" style="padding:7px; margin:0; font-size:9px;" onclick="window.syncPracToSchedule(${p.id})"><i class="fas fa-calendar-check"></i> В РАСПИСАНИЕ</button>
                 <button type="button" class="action-btn" style="padding:7px; margin:0; font-size:9px;" onclick="window.movePracToHistory(${p.id})"><i class="fas fa-trophy"></i> В ИСТОРИЮ МАТЧЕЙ</button>
-                <button type="button" class="action-btn secondary" style="padding:7px; margin:0; font-size:9px; color:var(--accent-light);" onclick="window.deletePracSlot(${p.id})"><i class="fas fa-trash"></i> УДАЛИТЬ</button>
+                <div style="display:flex; gap:4px;">
+                  ${(pIp || pDev) ? `<button type="button" class="action-btn secondary" style="padding:7px; margin:0; font-size:9px; color:#ff5263; flex:1;" onclick="window.banUserQuick('${pIp}', '${pDev}', '${safeClan}')"><i class="fas fa-ban"></i> БАН</button>` : ''}
+                  <button type="button" class="action-btn secondary" style="padding:7px; margin:0; font-size:9px; color:var(--accent-light); flex:1;" onclick="window.deletePracSlot(${p.id})"><i class="fas fa-trash"></i></button>
+                </div>
               </div>
             </div>`;
         }
@@ -2290,17 +2607,24 @@
 
     listenToDoc(DB_COLLECTION, "reviews", (data) => {
       const list = data.list || [];
-      document.getElementById('reviewsList').innerHTML = list.slice().reverse().map(r => `
-        <div class="list-item" style="align-items: flex-start;">
-          <div class="item-info">
-            <b>${r.nick} <span style="color:var(--accent-light);">➔ ${r.target}</span></b>
-            <div class="item-sub" style="font-size:11px; margin-top:3px; color:#ddd;">${r.text}</div>
+      document.getElementById('reviewsList').innerHTML = list.slice().reverse().map(r => {
+        const rIp = (r.ip || '').replace(/'/g, "\\'");
+        const rDev = (r.deviceId || '').replace(/'/g, "\\'");
+        const rNick = (r.nick || 'Автор').replace(/'/g, "\\'");
+        return `
+          <div class="list-item" style="align-items: flex-start;">
+            <div class="item-info">
+              <b>${r.nick} <span style="color:var(--accent-light);">➔ ${r.target}</span></b>
+              <div class="item-sub" style="font-size:11px; margin-top:3px; color:#ddd;">${r.text}</div>
+              ${(r.ip || r.deviceId) ? `<div class="item-sub" style="font-family:monospace; font-size:9px; margin-top:3px;">🛡 IP: ${r.ip || '—'} | ID: ${r.deviceId || '—'}</div>` : ''}
+            </div>
+            <div class="item-actions">
+              ${(r.ip || r.deviceId) ? `<button class="btn-icon ban" title="Забанить автора" onclick="window.banUserQuick('${rIp}', '${rDev}', '${rNick}')"><i class="fas fa-ban"></i></button>` : ''}
+              <button class="btn-icon del" title="Удалить отзыв" onclick="window.deleteItem('reviews', ${r.id})"><i class="fas fa-trash"></i></button>
+            </div>
           </div>
-          <div class="item-actions">
-            <button class="btn-icon del" onclick="window.deleteItem('reviews', ${r.id})"><i class="fas fa-trash"></i></button>
-          </div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     });
   }
 
@@ -2521,7 +2845,6 @@
     showToast("Статус события обновлен!");
   };
 
-  // РЕДАКТОР НОВОСТЕЙ
   function appendVisualHtml(htmlSnippet, isBlock = false) {
     const editor = document.getElementById('newsVisualEditor');
     editor.focus();
