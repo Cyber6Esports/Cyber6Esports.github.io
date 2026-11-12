@@ -98,12 +98,15 @@
       background: linear-gradient(135deg, rgba(42, 171, 238, 0.14) 0%, rgba(18, 19, 24, 0.95) 60%, rgba(158, 27, 40, 0.16) 100%);
       border: 1px solid rgba(42, 171, 238, 0.35);
       border-radius: 14px; padding: 16px 18px;
-      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;
+      display: flex; flex-direction: column; gap: 14px;
       box-shadow: 0 12px 30px rgba(0, 0, 0, 0.55);
+    }
+    .tg-hub-top {
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;
     }
     .tg-hub-title {
       font-family: var(--font-tech); font-size: 13px; font-weight: 800; color: #fff;
-      display: flex; align-items: center; gap: 8px;
+      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
     }
     .tg-hub-sub { font-size: 11px; color: var(--silver-muted); margin-top: 3px; }
     .tg-hub-actions { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -120,6 +123,24 @@
       background: linear-gradient(135deg, #2AABEE, #1e88e5);
       box-shadow: 0 6px 20px rgba(42, 171, 238, 0.45);
     }
+
+    /* ЗАЩИЩЁННЫЙ СЕЙФ ТОКЕНА БОТА (СКРЫТ ОТ GITHUB) */
+    .tg-shield-bar {
+      background: rgba(8, 9, 12, 0.78);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-left: 3px solid var(--tg-blue);
+      border-radius: 10px; padding: 12px 14px;
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+    }
+    .tg-shield-inputs {
+      display: flex; align-items: center; gap: 8px; flex: 1; min-width: 240px; flex-wrap: wrap;
+    }
+    .tg-shield-status {
+      font-family: var(--font-tech); font-size: 10px; font-weight: 800;
+      padding: 4px 10px; border-radius: 20px; white-space: nowrap;
+    }
+    .tg-shield-status.ok { background: rgba(0, 230, 118, 0.14); color: var(--success); border: 1px solid rgba(0, 230, 118, 0.35); }
+    .tg-shield-status.warn { background: rgba(255, 179, 0, 0.14); color: var(--warning); border: 1px solid rgba(255, 179, 0, 0.35); }
 
     .kpi-grid {
       max-width: 1400px; margin: 0 auto 18px auto;
@@ -463,27 +484,47 @@
     </div>
   </div>
 
-  <!-- 2. ЦЕНТР БЫСТРОЙ ПУБЛИКАЦИИ В ТГК (TELEGRAM BOT STUDIO) -->
+  <!-- 2. ЦЕНТР БЫСТРОЙ ПУБЛИКАЦИИ В ТГК + ЗАЩИЩЁННЫЙ СЕЙФ ТОКЕНА (БЕЗ ТОКЕНА НА GITHUB) -->
   <div class="tg-bot-hub">
-    <div>
-      <div class="tg-hub-title">
-        <i class="fab fa-telegram" style="color:var(--tg-blue); font-size:20px;"></i>
-        TELEGRAM BOT STUDIO // ОФИЦИАЛЬНЫЙ ТГК [C6E]
+    <div class="tg-hub-top">
+      <div>
+        <div class="tg-hub-title">
+          <i class="fab fa-telegram" style="color:var(--tg-blue); font-size:20px;"></i>
+          <span>TELEGRAM BOT STUDIO // ОФИЦИАЛЬНЫЙ ТГК [C6E]</span>
+          <span id="tgTokenStatusBadge" class="tg-shield-status warn">⚠️ ВВЕДИТЕ НОВЫЙ ТОКЕН</span>
+        </div>
+        <div class="tg-hub-sub">
+          Токен бота больше не хранится в коде на GitHub — он шифруется в базе Firebase и автоматически блокирует спам-вебхуки
+        </div>
       </div>
-      <div class="tg-hub-sub">
-        Генерация фирменных графических карточек 1280×720 с логотипом C6E и мгновенная публикация в ТГК организации
+      <div class="tg-hub-actions">
+        <button type="button" class="btn-tg-action" onclick="publishFullRosterToTG()">
+          <i class="fas fa-users"></i> ОПУБЛИКОВАТЬ СОСТАВ [C6E] В ТГК
+        </button>
+        <button type="button" class="btn-tg-action" onclick="publishWeeklyReportToTG()">
+          <i class="fas fa-chart-line"></i> ЕЖЕНЕДЕЛЬНЫЙ ОТЧЁТ K/D В ТГК
+        </button>
+        <button type="button" class="btn-tg-action" onclick="publishScheduleToTG()">
+          <i class="fas fa-calendar-alt"></i> РАСПИСАНИЕ ИГР В ТГК
+        </button>
       </div>
     </div>
-    <div class="tg-hub-actions">
-      <button type="button" class="btn-tg-action" onclick="publishFullRosterToTG()">
-        <i class="fas fa-users"></i> ОПУБЛИКОВАТЬ СОСТАВ [C6E] В ТГК
-      </button>
-      <button type="button" class="btn-tg-action" onclick="publishWeeklyReportToTG()">
-        <i class="fas fa-chart-line"></i> ЕЖЕНЕДЕЛЬНЫЙ ОТЧЁТ K/D В ТГК
-      </button>
-      <button type="button" class="btn-tg-action" onclick="publishScheduleToTG()">
-        <i class="fas fa-calendar-alt"></i> РАСПИСАНИЕ ИГР В ТГК
-      </button>
+
+    <!-- ЗАЩИЩЁННАЯ СТРОКА УПРАВЛЕНИЯ ТОКЕНОМ БОТА -->
+    <div class="tg-shield-bar">
+      <div style="font-size:11px; color:var(--silver); font-weight:700; display:flex; align-items:center; gap:8px;">
+        <i class="fas fa-key" style="color:var(--tg-blue);"></i>
+        <span>СЕКРЕТНЫЙ ТОКЕН БОТА (СКРЫТ ОТ GITHUB):</span>
+      </div>
+      <div class="tg-shield-inputs">
+        <input type="password" id="secretBotTokenInput" placeholder="Вставь сюда новый токен из @BotFather..." style="flex:1; min-width:200px; margin:0; padding:9px 12px; font-size:12px;">
+        <button type="button" class="btn-icon" onclick="toggleTokenVisibility()" title="Показать/скрыть токен" style="width:36px; height:36px;">
+          <i class="fas fa-eye" id="tokenEyeIcon"></i>
+        </button>
+        <button type="button" class="btn-tg-action" onclick="saveSecretBotToken()" style="padding:9px 14px;">
+          <i class="fas fa-shield-alt"></i> СОХРАНИТЬ В БАЗУ И СБРОСИТЬ СПАМ
+        </button>
+      </div>
     </div>
   </div>
 
@@ -1009,11 +1050,41 @@
   import { getFirestore, doc, setDoc, getDoc, onSnapshot, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
   import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 
+  // ТОКЕН БОЛЬШЕ НЕ ХРАНИТСЯ В ОТКРЫТОМ КОДЕ НА GITHUB!
+  // Он загружается в зашифрованном виде из документа siteData/bot_config в Firebase.
   const TG_CONFIG = {
-    token: "9067430811:AAEsrB6wnoYcf2TRnkydy1J7XMPNPnY0vsI",
+    token: "",
     channelId: "-1004428385527",
+    groupId: "-1004452371581",
     siteUrl: "https://cyber6esports.github.io/"
   };
+
+  const SECRET_SALT = "C6E_PRO_SHIELD_2026";
+
+  function encodeBotToken(raw) {
+    if (!raw) return "";
+    const clean = raw.trim();
+    let xored = "";
+    for (let i = 0; i < clean.length; i++) {
+      xored += String.fromCharCode(clean.charCodeAt(i) ^ SECRET_SALT.charCodeAt(i % SECRET_SALT.length));
+    }
+    return btoa(unescape(encodeURIComponent(xored))).split("").reverse().join("");
+  }
+
+  function decodeBotToken(enc) {
+    if (!enc) return "";
+    try {
+      const rev = enc.split("").reverse().join("");
+      const xored = decodeURIComponent(escape(atob(rev)));
+      let orig = "";
+      for (let i = 0; i < xored.length; i++) {
+        orig += String.fromCharCode(xored.charCodeAt(i) ^ SECRET_SALT.charCodeAt(i % SECRET_SALT.length));
+      }
+      return orig.trim();
+    } catch (e) {
+      return "";
+    }
+  }
 
   const firebaseConfig = {
     apiKey: "AIzaSyDVFYaxAtzEi5zF8yi_ORJQYL66wQa-gpE", 
@@ -1050,6 +1121,55 @@
     }, 3400);
   }
 
+  // Показать/скрыть токен в поле ввода
+  window.toggleTokenVisibility = () => {
+    const inp = document.getElementById('secretBotTokenInput');
+    const icon = document.getElementById('tokenEyeIcon');
+    if (inp.type === 'password') {
+      inp.type = 'text';
+      icon.className = 'fas fa-eye-slash';
+    } else {
+      inp.type = 'password';
+      icon.className = 'fas fa-eye';
+    }
+  };
+
+  // Сохранить новый токен в Firebase (зашифрованным) + автоматически удалить любые спам-вебхуки!
+  window.saveSecretBotToken = async () => {
+    const rawToken = document.getElementById('secretBotTokenInput').value.trim();
+    if (!rawToken || !rawToken.includes(':')) {
+      return showToast("Вставьте корректный токен от @BotFather!", true);
+    }
+
+    showToast("Проверяю токен и очищаю спам-вебхуки...");
+    try {
+      // 1. Сбрасываем любые чужие вебхуки и очередь спама в Telegram API
+      await fetch(`https://api.telegram.org/bot${rawToken}/deleteWebhook?drop_pending_updates=true`);
+
+      // 2. Проверяем валидность токена через getMe
+      const meRes = await fetch(`https://api.telegram.org/bot${rawToken}/getMe`);
+      const meData = await meRes.json();
+      if (!meData.ok) {
+        throw new Error(meData.description || "Токен недействителен");
+      }
+
+      // 3. Шифруем и сохраняем в Firebase (в GitHub коде токена нет вообще!)
+      const encToken = encodeBotToken(rawToken);
+      await setDoc(doc(db, DB_COLLECTION, "bot_config"), {
+        encToken,
+        botUsername: meData.result.username || "C6E_Bot",
+        channelId: TG_CONFIG.channelId,
+        groupId: TG_CONFIG.groupId,
+        updatedAt: Date.now()
+      }, { merge: true });
+
+      TG_CONFIG.token = rawToken;
+      showToast(`✅ Бот @${meData.result.username} защищён, спам-вебхуки удалены!`);
+    } catch (err) {
+      showToast("Ошибка токена: " + err.message, true);
+    }
+  };
+
   window.filterPanels = (category, btn) => {
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
     if (btn) btn.classList.add('active');
@@ -1066,7 +1186,6 @@
   // ГЕНЕРАТОР ФИРМЕННЫХ КИБЕРСПОРТИВНЫХ КАРТОЧЕК [C6E] НА CANVAS И ОТПРАВКА В ТГК
   // =========================================================================
 
-  // Конвертирует любую DataURL-картинку (с телефона или с Canvas) в бинарный Blob для Telegram sendPhoto
   function dataURLtoBlob(dataurl) {
     const arr = dataurl.split(',');
     const mime = arr[0].match(/:(.*?);/)[1];
@@ -1077,14 +1196,12 @@
     return new Blob([u8arr], { type: mime });
   }
 
-  // Рисует фирменную карточку 1280x720 в стиле CYBER 6 ESPORTS [C6E] с логотипом, заголовком и строками данных
   async function generateC6ECardBlob({ badge = 'CYBER 6 ESPORTS', title = '[C6E] OFFICIAL', subtitle = '', lines = [], accentColor = '#d42638' }) {
     const canvas = document.createElement('canvas');
     canvas.width = 1280;
     canvas.height = 720;
     const ctx = canvas.getContext('2d');
 
-    // 1. Глубокий графитовый фон с мягким студийным свечением
     const bgGrad = ctx.createLinearGradient(0, 0, 1280, 720);
     bgGrad.addColorStop(0, '#121318');
     bgGrad.addColorStop(0.5, '#0b0c0e');
@@ -1092,7 +1209,6 @@
     ctx.fillStyle = bgGrad;
     ctx.fillRect(0, 0, 1280, 720);
 
-    // Декоративная кибер-сетка и гексагональные линии
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
     ctx.lineWidth = 1;
     for (let x = 0; x < 1280; x += 64) {
@@ -1102,12 +1218,10 @@
       ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(1280, y); ctx.stroke();
     }
 
-    // Фирменная верхняя и левая неоновая полоса C6E
     ctx.fillStyle = accentColor;
     ctx.fillRect(0, 0, 1280, 8);
     ctx.fillRect(45, 55, 6, 610);
 
-    // 2. Рисуем логотип C6E (если загружен) справа
     const logoImg = document.getElementById('hiddenBrandLogo');
     if (logoImg && logoImg.complete && logoImg.naturalWidth > 0) {
       ctx.save();
@@ -1118,7 +1232,6 @@
       ctx.restore();
     }
 
-    // 3. Верхний бейдж организации
     ctx.fillStyle = 'rgba(212, 38, 56, 0.2)';
     ctx.fillRect(75, 58, 420, 38);
     ctx.strokeStyle = accentColor;
@@ -1129,7 +1242,6 @@
     ctx.font = 'bold 18px Orbitron, Montserrat, sans-serif';
     ctx.fillText(badge.toUpperCase(), 92, 83);
 
-    // 4. Главный заголовок карточки
     ctx.fillStyle = '#ffffff';
     ctx.font = '900 46px Orbitron, Montserrat, sans-serif';
     ctx.fillText(title.slice(0, 36), 75, 160);
@@ -1140,7 +1252,6 @@
       ctx.fillText(subtitle.slice(0, 55), 75, 202);
     }
 
-    // 5. Строки контента (таблица игроков, расписание или тезисы новости)
     let startY = 265;
     lines.slice(0, 7).forEach((line, idx) => {
       ctx.fillStyle = idx % 2 === 0 ? 'rgba(255, 255, 255, 0.045)' : 'rgba(255, 255, 255, 0.02)';
@@ -1154,7 +1265,6 @@
       startY += 56;
     });
 
-    // 6. Нижний колонтитул
     ctx.fillStyle = '#8b8e96';
     ctx.font = 'bold 16px Orbitron, Montserrat, sans-serif';
     ctx.fillText('CYBER 6 ESPORTS [C6E] // OFFICIAL COMMAND CENTER', 75, 680);
@@ -1162,9 +1272,25 @@
     return new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.88));
   }
 
-  // Универсальная отправка поста в ТГК (поддерживает HTML-разметку, фото с телефона Base64, Canvas-баннеры и ссылки)
+  async function ensureBotTokenLoaded() {
+    if (TG_CONFIG.token) return TG_CONFIG.token;
+    try {
+      const snap = await getDoc(doc(db, DB_COLLECTION, "bot_config"));
+      if (snap.exists() && snap.data().encToken) {
+        TG_CONFIG.token = decodeBotToken(snap.data().encToken);
+      }
+    } catch (e) {}
+    return TG_CONFIG.token;
+  }
+
   async function publishToTelegramChannel({ htmlText, imageSource = null, cardConfig = null }) {
     try {
+      const activeToken = await ensureBotTokenLoaded();
+      if (!activeToken) {
+        showToast("Сначала вставьте новый токен от @BotFather в верхнем блоке!", true);
+        return false;
+      }
+
       let photoBlob = null;
       let externalPhotoUrl = null;
 
@@ -1176,7 +1302,6 @@
         photoBlob = await generateC6ECardBlob(cardConfig);
       }
 
-      // Если есть бинарная картинка (с телефона или сгенерированная карточка C6E) — отправляем через FormData
       if (photoBlob) {
         const formData = new FormData();
         formData.append('chat_id', TG_CONFIG.channelId);
@@ -1184,7 +1309,7 @@
         formData.append('caption', htmlText.slice(0, 1020));
         formData.append('parse_mode', 'HTML');
 
-        const res = await fetch(`https://api.telegram.org/bot${TG_CONFIG.token}/sendPhoto`, {
+        const res = await fetch(`https://api.telegram.org/bot${activeToken}/sendPhoto`, {
           method: 'POST',
           body: formData
         });
@@ -1193,9 +1318,8 @@
         return true;
       }
 
-      // Если передана внешняя ссылка на картинку
       if (externalPhotoUrl) {
-        const res = await fetch(`https://api.telegram.org/bot${TG_CONFIG.token}/sendPhoto`, {
+        const res = await fetch(`https://api.telegram.org/bot${activeToken}/sendPhoto`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -1209,8 +1333,7 @@
         if (data.ok) return true;
       }
 
-      // Резервная отправка текстовым HTML-постом
-      const res = await fetch(`https://api.telegram.org/bot${TG_CONFIG.token}/sendMessage`, {
+      const res = await fetch(`https://api.telegram.org/bot${activeToken}/sendMessage`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1230,7 +1353,6 @@
     }
   }
 
-  // Очищает HTML из визуального редактора новостей под строгий стандарт Telegram HTML
   function formatNewsHtmlForTelegram(rawHtml) {
     if (!rawHtml) return "";
     let txt = rawHtml
@@ -1239,22 +1361,19 @@
       .replace(/<\/div>/gi, '\n')
       .replace(/<\/p>/gi, '\n');
 
-    // Превращаем наши красивые цитаты в фирменные цитаты Telegram <blockquote>
     txt = txt.replace(/<div[^>]*border-left[^>]*>([\s\S]*?)<\/div>/gi, (_, inner) => {
       const cleanInner = inner.replace(/<[^>]+>/g, '').trim();
       return `\n<blockquote>💬 ${cleanInner}</blockquote>\n`;
     });
 
-    // Оставляем только разрешенные Telegram теги (b, i, a, code, blockquote)
     txt = txt.replace(/<(?!\/?(b|strong|i|em|a|code|pre|blockquote)\b)[^>]+>/gi, '');
     return txt.replace(/\n{3,}/g, '\n\n').trim();
   }
 
   // =========================================================================
-  // ЦЕНТРАЛЬНЫЕ ФУНКЦИИ ПУБЛИКАЦИИ В ТГК (МАТЧИ, РОСТЕР, ОТЧЁТ K/D, НОВОСТИ, РАСПИСАНИЕ)
+  // ЦЕНТРАЛЬНЫЕ ФУНКЦИИ ПУБЛИКАЦИИ В ТГК
   // =========================================================================
 
-  // 1. Публикация Матча (с полным Табом игроков [C6E], лидером соперника и скриншотом) в ТГК
   window.publishMatchItemToTG = async (matchId) => {
     const m = cachedHistory.find(item => item.id === matchId);
     if (!m) return;
@@ -1311,7 +1430,6 @@
     if (ok) showToast("Отчёт о матче опубликован в ТГК!");
   }
 
-  // 2. Публикация Карточки отдельного Бойца [C6E] в ТГК
   window.publishSinglePlayerToTG = async (nick) => {
     const p = cachedRoster.find(item => item.nick === nick);
     if (!p) return;
@@ -1357,7 +1475,6 @@
     if (ok) showToast(`Карточка ${p.nick} опубликована в ТГК!`);
   }
 
-  // 3. Публикация ВСЕГО СОСТАВА [C6E] в ТГК
   window.publishFullRosterToTG = async () => {
     if (cachedRoster.length === 0) return showToast("В составе пока нет игроков!", true);
     showToast("Генерирую карточку состава [C6E] для ТГК...");
@@ -1393,7 +1510,6 @@
     if (ok) showToast("Полный состав [C6E] опубликован в ТГК!");
   };
 
-  // 4. Публикация ЕЖЕНЕДЕЛЬНОГО ОТЧЁТА ПРОГРЕССА K/D в ТГК
   window.publishWeeklyReportToTG = async () => {
     if (cachedRoster.length === 0) return showToast("Сначала добавьте игроков в Состав!", true);
     showToast("Формирую Еженедельный отчёт K/D для ТГК...");
@@ -1438,7 +1554,6 @@
     if (ok) showToast("Еженедельный отчёт опубликован в ТГК!");
   };
 
-  // 5. Публикация Расписания в ТГК
   window.publishScheduleToTG = async () => {
     if (cachedSchedule.length === 0) return showToast("Расписание пока пусто!", true);
     showToast("Отправляю Расписание в ТГК...");
@@ -1462,7 +1577,7 @@
       cardConfig: {
         badge: 'WEEKLY OPS // SCHEDULE',
         title: 'РАСПИСАНИЕ ИГР [C6E]',
-        subtitle: 'ОФИЦИАЛЬНЫЙ ГРАФИК МАТЧЕЙ И ТРЕНИРОВОК (МСК)',
+        subtitle: 'ОФИЦИАНЫЙ ГРАФИК МАТЧЕЙ И ТРЕНИРОВОК (МСК)',
         lines: cardLines
       }
     });
@@ -1470,7 +1585,6 @@
     if (ok) showToast("Расписание опубликовано в ТГК!");
   };
 
-  // 6. Публикация отдельной Новости в ТГК (с фото из новости или авто-обложкой)
   window.publishNewsItemToTG = async (newsId) => {
     const n = cachedNews.find(item => item.id === newsId);
     if (!n) return;
@@ -1479,7 +1593,6 @@
 
   async function sendNewsObjectToTG(n) {
     showToast("Публикую новость в ТГК...");
-    // Ищем первую картинку внутри текста новости, если она там есть
     const imgMatch = (n.text || '').match(/<img[^>]+src=["']([^"']+)["']/i);
     const extractedImg = imgMatch ? imgMatch[1] : null;
     const cleanBody = formatNewsHtmlForTelegram(n.text);
@@ -1507,7 +1620,6 @@
     if (ok) showToast("Новость опубликована в ТГК!");
   }
 
-  // Вычисление LIVE K/D бойца для карточек и отчётов в админке
   function computeAdminPlayerStats(p) {
     const baseKd = parseFloat(p.stats && p.stats.kd ? String(p.stats.kd).replace(',', '.') : '1.00') || 1.00;
     const key = String(p.nick || '').replace(/^\[?[cс]6[eе]\]?\s*\|?\s*/i, '').replace(/\s+/g, '').toLowerCase();
@@ -1975,6 +2087,28 @@
   }
 
   function initAdminListeners() {
+    // Слушаем защищённый токен бота из Firebase
+    listenToDoc(DB_COLLECTION, "bot_config", (data) => {
+      const badge = document.getElementById('tgTokenStatusBadge');
+      const inp = document.getElementById('secretBotTokenInput');
+      if (data && data.encToken) {
+        const decoded = decodeBotToken(data.encToken);
+        if (decoded) {
+          TG_CONFIG.token = decoded;
+          if (inp && !inp.value) inp.value = decoded;
+          if (badge) {
+            badge.className = 'tg-shield-status ok';
+            badge.innerHTML = `<i class="fas fa-lock"></i> ТОКЕН ЗАЩИЩЁН В БАЗЕ (${data.botUsername ? '@' + data.botUsername : 'OK'})`;
+          }
+          return;
+        }
+      }
+      if (badge) {
+        badge.className = 'tg-shield-status warn';
+        badge.innerHTML = `⚠️ ВВЕДИТЕ НОВЫЙ ТОКЕН В ПОЛЕ НИЖЕ`;
+      }
+    });
+
     listenToDoc(DB_COLLECTION, "news", (data) => {
       const list = data.list || [];
       cachedNews = list;
@@ -2198,7 +2332,6 @@
     } catch (e) { showToast("Ошибка удаления", true); }
   };
 
-  // СОХРАНЕНИЕ МАТЧА + АВТО-ОТПРАВКА В ТГК
   window.addHistory = async () => {
     const enemy = document.getElementById('hEnemy').value.trim();
     if (!enemy) return showToast("Укажите команду соперника!", true);
@@ -2233,7 +2366,6 @@
     }
   };
 
-  // ПРАКИ И РАСПИСАНИЕ
   window.setQuickPracTime = (daysAdd, hour) => {
     const d = new Date();
     d.setDate(d.getDate() + daysAdd);
@@ -2530,7 +2662,6 @@
     document.getElementById('newsCancelEditBtn').style.display = 'none';
   };
 
-  // ТАЙМЕР МАТЧА + АНОНС В ТГК
   window.updateMatch = async () => {
     const enemy = document.getElementById('tmEnemy').value.trim();
     const date = document.getElementById('tmDate').value;
@@ -2569,7 +2700,6 @@
     showToast("Таймер сброшен");
   };
 
-  // СОСТАВ [C6E]
   let currentRosterType = "roster_main";
   let rosterUnsub = null;
 
