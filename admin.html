@@ -484,7 +484,7 @@
     </div>
   </div>
 
-  <!-- 2. ЦЕНТР БЫСТРОЙ ПУБЛИКАЦИИ В ТГК + ЗАЩИЩЁННЫЙ СЕЙФ ТОКЕНА (БЕЗ ТОКЕНА НА GITHUB) -->
+  <!-- 2. ЦЕНТР БЫСТРОЙ ПУБЛИКАЦИИ В ТГК + ЗАЩИЩЁННЫЙ СЕЙФ ТОКЕНА -->
   <div class="tg-bot-hub">
     <div class="tg-hub-top">
       <div>
@@ -498,14 +498,17 @@
         </div>
       </div>
       <div class="tg-hub-actions">
+        <button type="button" class="btn-tg-action" style="background:linear-gradient(135deg, #ffb300, #d42638); color:#000;" onclick="publishPantheonWinnersToTG()">
+          <i class="fas fa-crown"></i> ПАНТЕОН ТОП-3 (900 GOLD) В ТГК
+        </button>
         <button type="button" class="btn-tg-action" onclick="publishFullRosterToTG()">
-          <i class="fas fa-users"></i> ОПУБЛИКОВАТЬ СОСТАВ [C6E] В ТГК
+          <i class="fas fa-users"></i> СОСТАВ [C6E] В ТГК
         </button>
         <button type="button" class="btn-tg-action" onclick="publishWeeklyReportToTG()">
-          <i class="fas fa-chart-line"></i> ЕЖЕНЕДЕЛЬНЫЙ ОТЧЁТ K/D В ТГК
+          <i class="fas fa-chart-line"></i> ОТЧЁТ K/D В ТГК
         </button>
         <button type="button" class="btn-tg-action" onclick="publishScheduleToTG()">
-          <i class="fas fa-calendar-alt"></i> РАСПИСАНИЕ ИГР В ТГК
+          <i class="fas fa-calendar-alt"></i> РАСПИСАНИЕ В ТГК
         </button>
       </div>
     </div>
@@ -569,14 +572,39 @@
   <!-- 4. БЫСТРЫЕ ВКЛАДКИ -->
   <div class="filter-bar">
     <button class="filter-btn active" onclick="filterPanels('all', this)"><i class="fas fa-th-large"></i> Все блоки</button>
+    <button class="filter-btn" onclick="filterPanels('cat-roster', this)" style="border-color:#ffb300; color:#ffb300;"><i class="fas fa-crown"></i> 👑 Пантеон (900 Gold) и Состав</button>
     <button class="filter-btn" onclick="filterPanels('cat-security', this)"><i class="fas fa-user-shield"></i> 🛡 Безопасность (C6E Shield)</button>
     <button class="filter-btn" onclick="filterPanels('cat-matches', this)"><i class="fas fa-trophy"></i> Матчи (Таб), Праки и Расписание</button>
     <button class="filter-btn" onclick="filterPanels('cat-news', this)"><i class="fas fa-newspaper"></i> Новости</button>
-    <button class="filter-btn" onclick="filterPanels('cat-roster', this)"><i class="fas fa-users"></i> Состав [C6E]</button>
     <button class="filter-btn" onclick="filterPanels('cat-media', this)"><i class="fas fa-photo-video"></i> Медиа и Отзывы</button>
   </div>
 
   <div class="container" id="adminContainer">
+
+    <!-- =========================================================================
+         НОВАЯ ПАНЕЛЬ: УПРАВЛЕНИЕ ПАНТЕОНОМ [C6E] (ПРИЗОВАЯ ГОНКА 500 / 250 / 150 ГОЛДЫ)
+         ========================================================================= -->
+    <div class="panel full-width cat-roster" style="border-top: 3px solid #ffb300;">
+      <div class="panel-header">
+        <h2><span class="panel-icon" style="color:#ffb300; background:rgba(255,179,0,0.15);"><i class="fas fa-crown"></i></span> ПАНТЕОН [C6E] // УПРАВЛЕНИЕ ГОНКОЙ ЗА 900 ГОЛДЫ ОТ ОСНОВАТЕЛЯ</h2>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button type="button" class="btn-tg-action" style="background:linear-gradient(135deg, #ffb300, #d42638); color:#000; padding:8px 12px;" onclick="publishPantheonWinnersToTG()">
+            <i class="fab fa-telegram"></i> ОПУБЛИКОВАТЬ ИТОГИ ПАНТЕОНА (500/250/150G) В ТГК
+          </button>
+          <button type="button" class="chip-btn" onclick="resetWeeklyPantheonBoosts()">
+            <i class="fas fa-redo"></i> Новый сезон недели (сброс бустов)
+          </button>
+        </div>
+      </div>
+
+      <p style="font-size:11px; color:var(--silver-muted); margin-top:0;">
+        Рейтинг <b>ПАНТЕОН</b> на сайте автоматически суммирует: <b>LIVE K/D</b> + <b>Рост K/D за неделю</b> + <b>Игры и MVP в Табе</b> + <b>Бусты посетителей сайта (🔥)</b>. Здесь ты можешь начислять бойцам дополнительные <b>Бонусные очки PTS от Основателя</b> (за актив в клане, тренировки или медийку)!
+      </p>
+
+      <div id="adminPantheonList" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:10px; margin-top:8px;">
+        <span class="item-sub">Загрузка рейтинга Пантеона...</span>
+      </div>
+    </div>
 
     <!-- =========================================================================
          0. СИСТЕМА БЕЗОПАСНОСТИ C6E SHIELD (ЛОГ IP/УСТРОЙСТВ + ЧЁРНЫЙ СПИСОК БАНОВ)
@@ -720,7 +748,6 @@
         </div>
       </div>
 
-      <!-- БЫСТРАЯ ВСТАВКА БОЙЦОВ ИЗ ТВОЕГО РОСТЕРА В 1 ТАП -->
       <div style="margin-top:10px; padding:10px 12px; background:rgba(255,255,255,0.03); border:1px solid var(--glass-border); border-radius:8px;">
         <div style="font-size:9px; font-family:var(--font-tech); color:var(--silver-muted); margin-bottom:6px;">
           <i class="fas fa-hand-pointer text-accent"></i> БЫСТРАЯ ПОДСТАНОВКА БОЙЦОВ ИЗ БАЗЫ РОСТЕРА (НАЖМИ НА НИК, ЧТОБЫ ВСТАВИТЬ В ВЫБРАННУЮ СТРОКУ ТАБА):
@@ -1247,14 +1274,15 @@
 
   let cachedNews = [];
   let cachedRoster = [];
-  let allKnownRosterPlayers = []; // Все бойцы из Основы + Резерва для 100% точной сверки ников в Табе!
+  let allKnownRosterPlayers = [];
   let cachedPracs = [];
   let cachedSchedule = [];
   let cachedHistory = [];
   let cachedSecurityLogs = [];
   let cachedBannedUsers = [];
+  let cachedPantheon = { boosts: {}, bonusPts: {} };
   let lastFocusedNameInput = null;
-  let rawFullResProofDataUrl = null; // Оригинальный скриншот без сжатия для Ultra-HD OCR!
+  let rawFullResProofDataUrl = null;
 
   function showToast(msg, isError = false) {
     const container = document.getElementById('toast-container');
@@ -1313,6 +1341,125 @@
     } catch (err) {
       showToast("Ошибка токена: " + err.message, true);
     }
+  };
+
+  // =========================================================================
+  // ФУНКЦИИ УПРАВЛЕНИЯ ПАНТЕОНОМ [C6E] (НАЧИСЛЕНИЕ БОНУСНЫХ PTS & ПОСТ В ТГК)
+  // =========================================================================
+
+  function normalizeAdminNickKey(nick) {
+    if (!nick) return "";
+    return String(nick).replace(/^\[?[cс]6[eе]\]?\s*\|?\s*/i, '').replace(/^\[[^\]]+\]\s*/, '').replace(/\s+/g, '').toLowerCase();
+  }
+
+  window.adjustPantheonBonus = async (pKey, deltaPts) => {
+    if (!pKey) return;
+    try {
+      const ref = doc(db, DB_COLLECTION, "pantheon");
+      const snap = await getDoc(ref);
+      let bonusPts = (snap.exists() && snap.data().bonusPts) ? { ...snap.data().bonusPts } : {};
+      bonusPts[pKey] = (parseInt(bonusPts[pKey], 10) || 0) + deltaPts;
+      await setDoc(ref, { bonusPts }, { merge: true });
+      showToast(`${deltaPts >= 0 ? '+' : ''}${deltaPts} PTS начислено в Пантеон!`);
+    } catch (e) {
+      showToast("Ошибка начисления PTS", true);
+    }
+  };
+
+  window.resetWeeklyPantheonBoosts = async () => {
+    if (!confirm("Начать новую неделю гонки Пантеона? (Сбросит недельные бусты 🔥 и бонусные очки PTS у всех бойцов)")) return;
+    try {
+      await setDoc(doc(db, DB_COLLECTION, "pantheon"), { boosts: {}, bonusPts: {} });
+      showToast("👑 Новый недельный сезон Пантеона запущен!");
+    } catch (e) {
+      showToast("Ошибка сброса Пантеона", true);
+    }
+  };
+
+  function renderAdminPantheonPanel() {
+    const cont = document.getElementById('adminPantheonList');
+    if (!cont) return;
+    const source = allKnownRosterPlayers.length > 0 ? allKnownRosterPlayers : cachedRoster;
+    if (source.length === 0) {
+      cont.innerHTML = `<span class="item-sub">Сначала добавьте игроков в Состав [C6E]</span>`;
+      return;
+    }
+
+    const list = source.map(p => computeAdminPlayerStats(p));
+    list.sort((a, b) => b.totalPantheonPts - a.totalPantheonPts);
+
+    const prizeBadges = ['🥇 1 МЕСТО (500 GOLD)', '🥈 2 МЕСТО (250 GOLD)', '🥉 3 МЕСТО (150 GOLD)'];
+
+    cont.innerHTML = list.map((st, idx) => {
+      const prizeLabel = idx < 3 ? `<span style="font-size:9px; color:#ffb300; font-family:var(--font-tech); font-weight:800;">${prizeBadges[idx]}</span>` : `<span style="font-size:9px; color:var(--silver-muted); font-family:var(--font-tech);">#${idx + 1} В ГОНКЕ</span>`;
+      return `
+        <div class="list-item" style="flex-direction:column; align-items:flex-start; border-left-color:${idx === 0 ? '#ffb300' : (idx < 3 ? 'var(--silver)' : 'var(--accent-light)')}; background:rgba(0,0,0,0.45);">
+          <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+            <b>${st.nick}</b>
+            ${prizeLabel}
+          </div>
+          <div class="item-sub" style="margin:4px 0;">
+            👑 Очки: <b style="color:#ffb300; display:inline;">${st.totalPantheonPts} PTS</b> • LIVE K/D: <b style="color:var(--success); display:inline;">${st.liveKd}</b> • Бустов сайта: 🔥 ${st.fanBoosts} • Бонус Основателя: <b>${st.founderBonus >= 0 ? '+' + st.founderBonus : st.founderBonus}</b>
+          </div>
+          <div style="display:flex; gap:6px; width:100%; margin-top:4px;">
+            <button type="button" class="chip-btn" style="flex:1; border-color:var(--success); color:var(--success);" onclick="window.adjustPantheonBonus('${st.pKey}', 50)">+50 PTS</button>
+            <button type="button" class="chip-btn" style="flex:1; border-color:#ffb300; color:#ffb300;" onclick="window.adjustPantheonBonus('${st.pKey}', 100)">+100 PTS</button>
+            <button type="button" class="chip-btn" style="flex:1; border-color:var(--accent-light); color:var(--accent-light);" onclick="window.adjustPantheonBonus('${st.pKey}', -50)">-50 PTS</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  window.publishPantheonWinnersToTG = async () => {
+    const source = allKnownRosterPlayers.length > 0 ? allKnownRosterPlayers : cachedRoster;
+    if (source.length === 0) return showToast("Сначала добавьте игроков в Состав!", true);
+    showToast("Генерирую карточку ПАНТЕОНА (900 GOLD) для ТГК...");
+
+    const ranked = source.map(p => computeAdminPlayerStats(p));
+    ranked.sort((a, b) => b.totalPantheonPts - a.totalPantheonPts);
+
+    const p1 = ranked[0] || { nick: 'TBA', totalPantheonPts: 0, liveKd: '1.00' };
+    const p2 = ranked[1] || { nick: 'TBA', totalPantheonPts: 0, liveKd: '1.00' };
+    const p3 = ranked[2] || { nick: 'TBA', totalPantheonPts: 0, liveKd: '1.00' };
+
+    const allRowsText = ranked.slice(0, 6).map((st, i) => {
+      const medal = i === 0 ? '🥇 <b>500 GOLD</b> —' : (i === 1 ? '🥈 <b>250 GOLD</b> —' : (i === 2 ? '🥉 <b>150 GOLD</b> —' : `#${i + 1}`));
+      return `${medal} <b>${st.nick}</b> — <code>${st.totalPantheonPts} PTS</code> (K/D: ${st.liveKd} | 🔥${st.fanBoosts})`;
+    }).join('\n');
+
+    const cardLines = [
+      `🥇 1 МЕСТО (500 GOLD):  ${p1.nick}  —  ${p1.totalPantheonPts} PTS  (K/D: ${p1.liveKd})`,
+      `🥈 2 МЕСТО (250 GOLD):  ${p2.nick}  —  ${p2.totalPantheonPts} PTS  (K/D: ${p2.liveKd})`,
+      `🥉 3 МЕСТО (150 GOLD):  ${p3.nick}  —  ${p3.totalPantheonPts} PTS  (K/D: ${p3.liveKd})`,
+      ...ranked.slice(3, 6).map((st, idx) => `#${idx + 4}  ${st.nick}  —  ${st.totalPantheonPts} PTS  (LIVE K/D: ${st.liveKd})`)
+    ];
+
+    const htmlPost =
+      `👑 <b>ПАНТЕОН CYBER 6 ESPORTS [C6E] // ГОНКА ЗА 900 ГОЛДЫ</b>\n` +
+      `────────────────────\n` +
+      `🎁 <b>Призовой фонд недели от Основателя:</b>\n` +
+      `🥇 1 место — <b>500 GOLD</b>\n` +
+      `🥈 2 место — <b>250 GOLD</b>\n` +
+      `🥉 3 место — <b>150 GOLD</b>\n` +
+      `────────────────────\n` +
+      `📊 <b>ТЕКУЩИЙ РЕЙТИНГ БОЙЦОВ (K/D + АКТИВНОСТЬ):</b>\n` +
+      `${allRowsText}\n\n` +
+      `🔥 <i>Заходи в раздел «Пантеон» на сайте и жми «Буст бойца (+25 PTS)», чтобы поддержать лучшего игрока недели!</i>\n` +
+      `🔗 <a href="${TG_CONFIG.siteUrl}">ГОЛОСОВАТЬ В ПАНТЕОНЕ НА САЙТЕ [C6E]</a>`;
+
+    const ok = await publishToTelegramChannel({
+      htmlText: htmlPost,
+      cardConfig: {
+        badge: 'PANTHEON [C6E] // WEEKLY 900 GOLD PRIZE POOL',
+        title: 'ПАНТЕОН ЛУЧШИХ БОЙЦОВ',
+        subtitle: `ЛИДЕР НА 500 ГОЛДЫ: ${p1.nick} (${p1.totalPantheonPts} PTS)`,
+        lines: cardLines,
+        accentColor: '#ffb300'
+      }
+    });
+
+    if (ok) showToast("Пантеон [C6E] опубликован в ТГК!");
   };
 
   // =========================================================================
@@ -1678,6 +1825,7 @@
       `👤 <b>Игрок:</b> <code>${p.nick}</code>\n` +
       `🎯 <b>Роль:</b> ${p.role || 'Player'}\n` +
       `📊 <b>LIVE K/D (с учетом Таба):</b> <code>${st.liveKd}</code> (${deltaSign})\n` +
+      `👑 <b>Рейтинг Пантеона:</b> <code>${st.totalPantheonPts} PTS</code>\n` +
       `🏆 <b>Ранг:</b> ${p.stats ? p.stats.rank : 'The Legend'}\n` +
       `────────────────────\n` +
       `📱 <b>Девайс:</b> ${p.device || 'Mobile'}\n` +
@@ -1692,7 +1840,7 @@
       cardConfig: {
         badge: 'CYBER 6 ESPORTS // ROSTER CARD',
         title: p.nick,
-        subtitle: `РОЛЬ: ${p.role}  |  LIVE K/D: ${st.liveKd} (${deltaSign})`,
+        subtitle: `РОЛЬ: ${p.role}  |  LIVE K/D: ${st.liveKd}  |  ${st.totalPantheonPts} PTS`,
         lines: [
           `Ранг: ${p.stats ? p.stats.rank : 'The Legend'}   |   Матчей в Табе: ${st.matchesPlayed}`,
           `Статистика Таба: ${st.kills} Убийств / ${st.deaths} Смертей`,
@@ -1712,12 +1860,12 @@
 
     const rosterLinesText = cachedRoster.map((p, idx) => {
       const st = computeAdminPlayerStats(p);
-      return `${idx + 1}. <b>${p.nick}</b> — ${p.role} | LIVE K/D: <code>${st.liveKd}</code> (${p.device || 'Mobile'})`;
+      return `${idx + 1}. <b>${p.nick}</b> — ${p.role} | LIVE K/D: <code>${st.liveKd}</code> | <code>${st.totalPantheonPts} PTS</code>`;
     }).join('\n');
 
     const cardLines = cachedRoster.map((p, idx) => {
       const st = computeAdminPlayerStats(p);
-      return `#${idx + 1}  ${p.nick}   —   ${p.role}   |   LIVE K/D: ${st.liveKd}`;
+      return `#${idx + 1}  ${p.nick}   —   ${p.role}   |   LIVE K/D: ${st.liveKd}   |   ${st.totalPantheonPts} PTS`;
     });
 
     const htmlPost =
@@ -1753,12 +1901,12 @@
 
     const reportRows = statsList.map((st, i) => {
       const arrow = st.delta > 0.004 ? `🟢 ▲ +${st.delta.toFixed(2)}` : (st.delta < -0.004 ? `🔴 ▼ ${st.delta.toFixed(2)}` : `⚪ 0.00`);
-      return `${i + 1}. <b>${st.nick}</b> — LIVE K/D: <code>${st.liveKd}</code> (${arrow}) | У/С: ${st.kills}/${st.deaths}`;
+      return `${i + 1}. <b>${st.nick}</b> — LIVE K/D: <code>${st.liveKd}</code> (${arrow}) | <code>${st.totalPantheonPts} PTS</code>`;
     }).join('\n');
 
     const cardLines = statsList.map((st, i) => {
       const sign = st.delta >= 0 ? `+${st.delta.toFixed(2)}` : st.delta.toFixed(2);
-      return `#${i + 1} ${st.nick}  |  LIVE K/D: ${st.liveKd} (${sign})  |  Киллы: ${st.kills}`;
+      return `#${i + 1} ${st.nick}  |  LIVE K/D: ${st.liveKd} (${sign})  |  ${st.totalPantheonPts} PTS`;
     });
 
     const htmlPost =
@@ -1853,16 +2001,20 @@
 
   function computeAdminPlayerStats(p) {
     const baseKd = parseFloat(p.stats && p.stats.kd ? String(p.stats.kd).replace(',', '.') : '1.00') || 1.00;
-    const key = String(p.nick || '').replace(/^\[?[cс]6[eе]\]?\s*\|?\s*/i, '').replace(/\s+/g, '').toLowerCase();
-    let kills = 0, deaths = 0, matchesPlayed = 0;
+    const pKey = normalizeAdminNickKey(p.nick);
+    let kills = 0, deaths = 0, matchesPlayed = 0, matchesWon = 0, mvpCount = 0;
 
     cachedHistory.forEach(m => {
+      const isWin = (parseInt(m.our, 10) || 0) > (parseInt(m.their, 10) || 0);
+      if (m.mvp && normalizeAdminNickKey(m.mvp.split('(')[0]) === pKey) mvpCount++;
+
       (m.players || []).forEach(mp => {
-        const mKey = String(mp.nick || '').replace(/^\[?[cс]6[eе]\]?\s*\|?\s*/i, '').replace(/\s+/g, '').toLowerCase();
-        if (key && mKey && (mKey === key || mKey.includes(key) || key.includes(mKey))) {
+        const mKey = normalizeAdminNickKey(mp.nick);
+        if (pKey && mKey && (mKey === pKey || mKey.includes(pKey) || pKey.includes(mKey))) {
           kills += parseInt(mp.kills, 10) || 0;
           deaths += parseInt(mp.deaths, 10) || 0;
           matchesPlayed++;
+          if (isWin) matchesWon++;
         }
       });
     });
@@ -1874,19 +2026,31 @@
       delta = liveKd - baseKd;
     }
 
+    const fanBoosts = (cachedPantheon.boosts && cachedPantheon.boosts[pKey]) ? parseInt(cachedPantheon.boosts[pKey], 10) : 0;
+    const founderBonus = (cachedPantheon.bonusPts && cachedPantheon.bonusPts[pKey]) ? parseInt(cachedPantheon.bonusPts[pKey], 10) : 0;
+    const kdPts = Math.round(liveKd * 450);
+    const growthPts = Math.round(delta * 1200);
+    const matchActivityPts = (matchesPlayed * 85) + (matchesWon * 95) + (mvpCount * 160) + (kills * 3);
+    const siteActivityPts = (fanBoosts * 25) + founderBonus;
+    const totalPantheonPts = Math.max(100, kdPts + growthPts + matchActivityPts + siteActivityPts);
+
     return {
       nick: p.nick,
+      pKey,
       baseKd: baseKd.toFixed(2),
       liveKd: liveKd.toFixed(2),
       delta,
       kills,
       deaths,
-      matchesPlayed
+      matchesPlayed,
+      fanBoosts,
+      founderBonus,
+      totalPantheonPts
     };
   }
 
   // =========================================================================
-  // PRO ULTRA-HD ИИ-СКАНЕР ТАБА STANDOFF 2 (РАЗДЕЛЬНОЕ ЧТЕНИЕ НИКОВ И ЦИФР)
+  // PRO ULTRA-HD ИИ-СКАНЕР ТАБА STANDOFF 2
   // =========================================================================
 
   let imageTargetCallback = null;
@@ -1955,9 +2119,7 @@
     if (!file) return;
     showToast("Загружаю скриншот Таба в Ultra-HD...");
     try {
-      // 1. Сохраняем полный оригинал 100% качества для идеально чёткого чтения ников!
       rawFullResProofDataUrl = await readFileAsRawDataUrl(file);
-      // 2. Сжатую копию кладем в поле для сохранения в базу Firebase
       const compressedUrl = await compressImageFile(file, 1180, 0.85);
       document.getElementById('hProofUrl').value = compressedUrl;
       updateProofPreview(compressedUrl);
@@ -1982,7 +2144,6 @@
     }
   };
 
-  // Мягкое 3-кратное увеличение + адаптивный контраст (сохраняет сглаживание букв @, [, ], 1, l)
   function cropSmoothContrastZone(imgEl, rx, ry, rw, rh, scale = 3.0) {
     const canvas = document.createElement('canvas');
     const sx = Math.round(imgEl.naturalWidth * rx);
@@ -2005,7 +2166,6 @@
       const lum = 0.299 * r + 0.587 * g + 0.114 * b;
       const brightness = Math.max(lum, maxCh * 0.88);
 
-      // Мягкая кривая контраста: светлый текст на темном фоне превращается в четкие темные буквы на белом листе
       let out = 255;
       if (brightness > 145) {
         out = 0;
@@ -2022,7 +2182,6 @@
     return canvas.toDataURL('image/png');
   }
 
-  // Вычисление расстояния Левенштейна для точной сверки отсканированного ника с твоей базой игроков [C6E]
   function levenshteinSimilarity(a, b) {
     const s1 = String(a || '').toLowerCase().trim();
     const s2 = String(b || '').toLowerCase().trim();
@@ -2041,7 +2200,6 @@
     return 1 - dp[len1][len2] / Math.max(len1, len2);
   }
 
-  // Умная очистка и восстановление любого ника Standoff 2 (как нашего, так и противника!)
   function cleanSo2Nickname(rawLine, isOurTeam = false) {
     if (!rawLine) return "";
     let s = String(rawLine)
@@ -2050,31 +2208,25 @@
       .replace(/^[0-9#.\-—_+\s]{1,3}(?=[A-Za-zА-Яа-яЁё\[({])/, '')
       .trim();
 
-    // 1. Восстанавливаем сломанные скобки клан-тега в начале строки: (AB88), IAB88I, [AB881 -> [AB88]
     s = s.replace(/^[\[(I1l|]([A-Za-zА-Яа-я0-9_]{2,5})[\])I1l|]\s*/i, '[$1] ');
     s = s.replace(/^\[([A-Za-zА-Яа-я0-9_]{2,5})\s+(?=[A-Za-zА-Яа-я0-9@])/, '[$1] ');
 
-    // 2. Распознаём наш тег [C6E], даже если OCR прочитал его как [С6Е], [C6F], [G6E], IC6EI, C6E
     if (/^\[?[cсg6][6бb][eеf]\]?\s+/i.test(s)) {
       s = s.replace(/^\[?[cсg6][6бb][eеf]\]?\s+/i, '[C6E] ');
     }
 
-    // Отделяем клан-тег (если есть) от самого ника
     let tagPart = '';
     let namePart = s;
     const tagMatch = s.match(/^(\[[^\]]{1,6}\])\s*(.*)$/);
     if (tagMatch) {
       tagPart = tagMatch[1];
       namePart = tagMatch[2].trim();
-      // Внутри клан-тега [AB88] / [PkS] / [YB] переводим похожие русские буквы в английские
       const cyrToLatTag = { 'А':'A','В':'B','С':'C','Е':'E','Н':'H','К':'K','М':'M','О':'O','Р':'P','Т':'T','Х':'X','У':'Y','а':'a','в':'b','с':'c','е':'e','о':'o','р':'p','х':'x','у':'y' };
       tagPart = tagPart.replace(/[АВСЕКМОРТХУавсеорху]/g, ch => cyrToLatTag[ch] || ch);
     }
 
-    // Убираем случайные одиночные символы мусора в конце (от значка ранга, если задел край)
     namePart = namePart.replace(/\s+[0-9@©®§*+=\-—_]{1,2}$/, '').trim();
 
-    // 3. Определяем язык ника: если большинство букв — латиница, исправляем русские двойники на латиницу (и наоборот)
     const latCount = (namePart.match(/[A-Za-z]/g) || []).length;
     const cyrCount = (namePart.match(/[А-Яа-яЁё]/g) || []).length;
 
@@ -2092,7 +2244,6 @@
       namePart = namePart.replace(/[A-Za-z]/g, ch => latToCyr[ch] || ch);
     }
 
-    // 4. Сверяемся со всеми твоими реальными игроками из базы Ростера (Основа + Резерв)!
     const cleanCandidate = namePart.replace(/[^a-zA-Zа-яА-ЯёЁ0-9@]/g, '').toLowerCase();
     if (cleanCandidate.length >= 2 && allKnownRosterPlayers.length > 0) {
       let bestRosterNick = null;
@@ -2127,7 +2278,6 @@
     return tagPart ? `${tagPart} ${namePart}`.trim() : namePart.trim();
   }
 
-  // Чтение 5 строк ников и 5 строк цифр по отдельным чистым колонкам!
   function combineNamesAndStats(namesRawText, statsRawText, isOurTeam = false) {
     const rawNameLines = String(namesRawText || '')
       .split('\n')
@@ -2152,7 +2302,6 @@
       let score = n.length >= 4 ? n[3] : (kills * 2 + assists);
       let ping = n.length >= 5 ? n[4] : 45;
 
-      // Защита от склеивания двух цифр (например, если киллы > 45 в обычном матче)
       if (kills > 48 && kills < 100) kills = Math.floor(kills / 10);
       if (assists > 30) assists = Math.floor(assists / 10);
       if (deaths > 35) deaths = 18;
@@ -2177,15 +2326,12 @@
       imgEl.crossOrigin = "anonymous";
       await new Promise((res, rej) => { imgEl.onload = res; imgEl.onerror = rej; imgEl.src = src; });
 
-      // 1. Зоны шапки (счёт) и подвала (Режим / Карта / Сервер)
       const headerCrop = cropSmoothContrastZone(imgEl, 0.40, 0.095, 0.20, 0.095, 2.5);
       const footerCrop = cropSmoothContrastZone(imgEl, 0.01, 0.915, 0.56, 0.08, 2.5);
 
-      // 2. ОТДЕЛЬНЫЕ ЧИСТЫЕ КОЛОНКИ НИКОВ (без аватарок слева и без значков рангов справа!)
       const leftNamesCrop = cropSmoothContrastZone(imgEl, 0.106, 0.245, 0.135, 0.355, 3.2);
       const rightNamesCrop = cropSmoothContrastZone(imgEl, 0.586, 0.245, 0.135, 0.355, 3.2);
 
-      // 3. ОТДЕЛЬНЫЕ ЧИСТЫЕ КОЛОНКИ ЦИФР (У, П, С, Счёт, Пинг — строго правее значка ранга!)
       const leftStatsCrop = cropSmoothContrastZone(imgEl, 0.292, 0.245, 0.198, 0.355, 3.0);
       const rightStatsCrop = cropSmoothContrastZone(imgEl, 0.772, 0.245, 0.198, 0.355, 3.0);
 
@@ -2206,7 +2352,6 @@
         Tesseract.recognize(rightStatsCrop, 'eng', { tessedit_char_whitelist: '0123456789 \n' })
       ]);
 
-      // Разбираем карту и сервер из нижней полосы
       const footerTxt = (footerRes.data.text || "").trim();
       const maps = ['Dune', 'Sandstone', 'Rust', 'Province', 'Breeze', 'Zone 9', 'Hanami'];
       for (const m of maps) {
@@ -2221,7 +2366,6 @@
         if (parts[2] && parts[2].length > 2) document.getElementById('hServer').value = parts[2];
       }
 
-      // Разбираем раунды
       const scoreNums = (headerRes.data.text || "").match(/\b(1[0-3]|[0-9])\b/g);
       let leftScore = 13, rightScore = 11;
       if (scoreNums && scoreNums.length >= 2) {
@@ -2232,7 +2376,6 @@
       const leftNamesText = leftNamesRes.data.text || "";
       const rightNamesText = rightNamesRes.data.text || "";
 
-      // Определяем, с какой стороны наша команда [C6E]
       const c6eRegex = /c6e|с6е|kas|z@ir|w1ns|непп|kroz|mart|tr1l|tril/i;
       const c6eInRight = c6eRegex.test(rightNamesText);
       const c6eInLeft = c6eRegex.test(leftNamesText);
@@ -2276,7 +2419,6 @@
     }
   };
 
-  // Быстрая подстановка бойца из базы ростера в выбранную (или первую свободную) строку Таба в 1 тап!
   window.insertRosterNickIntoTab = (nick) => {
     const fullNick = nick.includes('[C6E]') ? nick : `[C6E] ${nick}`;
     if (lastFocusedNameInput && document.body.contains(lastFocusedNameInput)) {
@@ -2454,7 +2596,6 @@
     return clean;
   }
 
-  // АВТОРИЗАЦИЯ С ЗАЩИТОЙ ОТ ПОДБОРА ПАРОЛЯ
   window.sysLogin = async () => {
     const email = document.getElementById('adminEmail').value.trim();
     const pass = document.getElementById('adminPass').value;
@@ -2523,10 +2664,10 @@
     });
     allKnownRosterPlayers = Array.from(map.values());
     renderQuickRosterChips();
+    renderAdminPantheonPanel();
   }
 
   function initAdminListeners() {
-    // Загружаем и Основу, и Резерв для 100% распознавания ников в сканере Таба
     listenToDoc(DB_COLLECTION, "roster_main", (data) => {
       knownMainList = data.list || [];
       syncAllKnownRoster();
@@ -2534,6 +2675,13 @@
     listenToDoc(DB_COLLECTION, "roster_reserve", (data) => {
       knownReserveList = data.list || [];
       syncAllKnownRoster();
+    });
+    listenToDoc(DB_COLLECTION, "pantheon", (data) => {
+      cachedPantheon = {
+        boosts: data.boosts || {},
+        bonusPts: data.bonusPts || {}
+      };
+      renderAdminPantheonPanel();
     });
 
     listenToDoc(DB_COLLECTION, "bot_config", (data) => {
@@ -2788,6 +2936,7 @@
       list.forEach(m => { if (parseInt(m.our, 10) > parseInt(m.their, 10)) wins++; });
       const wr = list.length > 0 ? Math.round((wins / list.length) * 100) : 0;
       document.getElementById('kpi-winrate').innerText = `${wr}%`;
+      renderAdminPantheonPanel();
 
       const sorted = [...list].sort((a,b) => b.id - a.id);
       document.getElementById('historyList').innerHTML = sorted.map(h => {
@@ -3260,7 +3409,7 @@
                   <img src="${p.img || 'logo.png'}" onerror="this.src='logo.png'" style="width:36px; height:36px; border-radius:6px; object-fit:cover; border:1px solid var(--silver-border);">
                   <div class="item-info">
                     <b>${p.nick}</b>
-                    <span class="item-sub">${p.role} • LIVE K/D: <b style="color:var(--success); display:inline;">${st.liveKd}</b></span>
+                    <span class="item-sub">${p.role} • LIVE K/D: <b style="color:var(--success); display:inline;">${st.liveKd}</b> • <b style="color:#ffb300; display:inline;">${st.totalPantheonPts} PTS</b></span>
                   </div>
                 </div>
                 <div class="item-actions">
