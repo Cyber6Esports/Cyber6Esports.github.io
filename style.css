@@ -355,3 +355,32 @@ section.active { display: block; opacity: 1; transform: translateY(0); }
   transform: translateX(120%); opacity: 0; transition: all 0.4s var(--ease-bounce);
 }
 .hud-toast.active { transform: translateX(0); opacity: 1; }
+
+
+/* =========================================================
+   ОБНОВЛЕНИЕ v0.5.0: ТЕМЫ ОФОРМЛЕНИЯ, ПРОФИЛИ, ЧАТ, МАГАЗИН
+   ========================================================= */
+html[data-theme="red"] {
+  --accent: #9e1b28;
+  --accent-light: #d42638;
+  --accent-dim: rgba(158, 27, 40, 0.16);
+  --accent-glow: rgba(212, 38, 56, 0.38);
+}
+html[data-theme="green"] {
+  --accent: #0b6e4f;
+  --accent-light: #00c885;
+  --accent-dim: rgba(11, 110, 79, 0.18);
+  --accent-glow: rgba(0, 200, 133, 0.38);
+}
+html[data-theme="gold"] {
+  --accent: #9a6b00;
+  --accent-light: #ffb300;
+  --accent-dim: rgba(154, 107, 0, 0.18);
+  --accent-glow: rgba(255, 179, 0, 0.38);
+}
+html[data-theme="blue"] {
+  --accent: #1446a0;
+  --accent-light: #3b82f6;
+  --accent-dim: rgba(20, 70, 160, 0.18);
+  --accent-glow: rgba(59, 130, 246, 0.38);
+}
