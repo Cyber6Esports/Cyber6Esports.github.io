@@ -443,6 +443,16 @@
     }
     .toast.show { transform: translateX(0); }
     .toast i { color: var(--accent-light); font-size: 15px; }
+
+    @media (max-width: 640px) {
+      body, html { overflow-x: hidden; max-width: 100vw; }
+      .top-bar { padding: 10px 12px; height: auto; min-height: 58px; flex-wrap: wrap; gap: 8px; }
+      .brand-title { font-size: 13px; }
+      .workspace { padding: 12px 10px 80px 10px; }
+      .panel { padding: 14px 12px; }
+      .kpi-strip { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+      .grid-2 { grid-template-columns: 1fr !important; gap: 12px; }
+    }
   </style>
 </head>
 <body>
@@ -3704,8 +3714,8 @@
 
     // СИНХРОНИЗАЦИЯ ПРОФИЛЕЙ ГОСТЕЙ, ЗАЯВОК В [C6E], ЧАТА И МАГАЗИНА v0.5.0
     listenToDoc(DB_COLLECTION, "profiles", (data) => {
-      const list = Array.isArray(data.list) ? data.list : [];
-      renderAdminProfilesPanel(list);
+      adminProfilesMain = Array.isArray(data.list) ? data.list : [];
+      refreshMergedAdminProfiles();
     });
 
     listenToDoc(DB_COLLECTION, "global_chat", (data) => {
@@ -3735,6 +3745,10 @@
     });
 
     listenToDoc(DB_COLLECTION, "reviews", (data) => {
+      if (Array.isArray(data.c6e_profiles)) {
+        adminProfilesMirrorRev = data.c6e_profiles;
+        refreshMergedAdminProfiles();
+      }
       const list = data.list || [];
       document.getElementById('reviewsList').innerHTML = list.slice().reverse().map(r => {
         const rIp = (r.ip || '').replace(/'/g, "\\'");
@@ -4214,14 +4228,84 @@
   // =========================================================================
   // ФУНКЦИИ УПРАВЛЕНИЯ v0.5.0 В АДМИНКЕ: ПРОФИЛИ, ЗАЯВКИ В [C6E], ЧАТ, МАГАЗИН
   // =========================================================================
+  let adminProfilesMain = [];
+  let adminProfilesMirrorRev = [];
+  let adminProfilesMirrorPrac = [];
+  let adminProfilesMirrorSec = [];
   let adminProfilesCache = [];
+
+  function mergeAdminProfiles(...arrays) {
+    const map = new Map();
+    for (const arr of arrays) {
+      if (!Array.isArray(arr)) continue;
+      for (const p of arr) {
+        if (!p || !p.profileId || !p.nick) continue;
+        if (p._deleted) {
+          map.delete(p.profileId);
+          continue;
+        }
+        const cleaned = {
+          ...p,
+          clanTag: String(p.clanTag || '').replace(/[\[\]\?]/g, '').trim()
+        };
+        const prev = map.get(cleaned.profileId);
+        if (!prev || (cleaned.adminUpdatedAt || cleaned.lastSeen || 0) >= (prev.adminUpdatedAt || prev.lastSeen || 0)) {
+          map.set(cleaned.profileId, cleaned);
+        }
+      }
+    }
+    return Array.from(map.values());
+  }
+
+  async function saveAdminProfilesEverywhere(updatedList) {
+    adminProfilesCache = updatedList;
+    renderAdminProfilesPanel(updatedList);
+    try {
+      localStorage.setItem('c6e_shared_profiles_mirror', JSON.stringify(updatedList));
+      const rawMe = localStorage.getItem('c6e_user_profile_v5');
+      if (rawMe) {
+        const me = JSON.parse(rawMe);
+        const foundMe = updatedList.find(x => x.profileId === me.profileId);
+        if (foundMe) localStorage.setItem('c6e_user_profile_v5', JSON.stringify(foundMe));
+      }
+    } catch (e) {}
+
+    try { await setDoc(doc(db, DB_COLLECTION, "profiles"), { list: updatedList }, { merge: true }); } catch (e1) {}
+    try { await setDoc(doc(db, DB_COLLECTION, "reviews"), { c6e_profiles: updatedList }, { merge: true }); } catch (e2) {}
+    try { await setDoc(doc(db, DB_COLLECTION, "practices"), { c6e_profiles: updatedList }, { merge: true }); } catch (e3) {}
+    try { await setDoc(doc(db, DB_COLLECTION, "security_logs"), { c6e_profiles: updatedList }, { merge: true }); } catch (e4) {}
+  }
+
+  function refreshMergedAdminProfiles() {
+    let localArr = [];
+    try {
+      const rawM = localStorage.getItem('c6e_shared_profiles_mirror');
+      if (rawM) localArr = JSON.parse(rawM);
+      const rawSingle = localStorage.getItem('c6e_user_profile_v5');
+      if (rawSingle) {
+        const sProf = JSON.parse(rawSingle);
+        if (sProf && sProf.nick && sProf.profileId) localArr.push(sProf);
+      }
+    } catch (e) {}
+
+    const merged = mergeAdminProfiles(
+      localArr,
+      adminProfilesMirrorSec,
+      adminProfilesMirrorPrac,
+      adminProfilesMirrorRev,
+      adminProfilesMain
+    );
+    renderAdminProfilesPanel(merged);
+
+    if (merged.length > adminProfilesMain.length) {
+      setDoc(doc(db, DB_COLLECTION, "profiles"), { list: merged }, { merge: true }).catch(() => {});
+      setDoc(doc(db, DB_COLLECTION, "reviews"), { c6e_profiles: merged }, { merge: true }).catch(() => {});
+    }
+  }
 
   window.approveUserC6EStatus = async (profileId) => {
     try {
-      const ref = doc(db, DB_COLLECTION, "profiles");
-      const snap = await getDoc(ref);
-      if (!snap.exists()) return;
-      let list = Array.isArray(snap.data().list) ? [...snap.data().list] : [];
+      let list = [...adminProfilesCache];
       const idx = list.findIndex(p => p.profileId === profileId);
       if (idx === -1) return;
       list[idx] = {
@@ -4230,10 +4314,11 @@
         claimsC6E: true,
         clanTag: 'C6E',
         clanName: 'CYBER 6 ESPORTS',
-        rejectionHandled: true
+        rejectionHandled: true,
+        adminUpdatedAt: Date.now()
       };
-      await setDoc(ref, { list }, { merge: true });
-      showToast(`✅ Игрок ${list[idx].nick} подтверждён как боец [C6E]!`);
+      await saveAdminProfilesEverywhere(list);
+      showToast(`✅ Игрок ${list[idx].nick} подтверждён как официальный боец [C6E]!`);
     } catch (e) {
       showToast("Ошибка одобрения профиля", true);
     }
@@ -4241,10 +4326,7 @@
 
   window.rejectUserC6EStatus = async (profileId) => {
     try {
-      const ref = doc(db, DB_COLLECTION, "profiles");
-      const snap = await getDoc(ref);
-      if (!snap.exists()) return;
-      let list = Array.isArray(snap.data().list) ? [...snap.data().list] : [];
+      let list = [...adminProfilesCache];
       const idx = list.findIndex(p => p.profileId === profileId);
       if (idx === -1) return;
       list[idx] = {
@@ -4253,9 +4335,10 @@
         claimsC6E: false,
         clanTag: '',
         clanName: '',
-        rejectionHandled: false
+        rejectionHandled: false,
+        adminUpdatedAt: Date.now()
       };
-      await setDoc(ref, { list }, { merge: true });
+      await saveAdminProfilesEverywhere(list);
       showToast(`❌ Игроку ${list[idx].nick} отказано в теге [C6E]! Сайт запросит его реальный клан.`);
     } catch (e) {
       showToast("Ошибка отклонения заявки", true);
@@ -4264,17 +4347,15 @@
 
   window.boostAdminProfileLikes = async (profileId, delta = 10) => {
     try {
-      const ref = doc(db, DB_COLLECTION, "profiles");
-      const snap = await getDoc(ref);
-      if (!snap.exists()) return;
-      let list = Array.isArray(snap.data().list) ? [...snap.data().list] : [];
+      let list = [...adminProfilesCache];
       const idx = list.findIndex(p => p.profileId === profileId);
       if (idx === -1) return;
       list[idx] = {
         ...list[idx],
-        likes: Math.max(0, (parseInt(list[idx].likes, 10) || 0) + delta)
+        likes: Math.max(0, (parseInt(list[idx].likes, 10) || 0) + delta),
+        adminUpdatedAt: Date.now()
       };
-      await setDoc(ref, { list }, { merge: true });
+      await saveAdminProfilesEverywhere(list);
       showToast(`❤️ Начислено +${delta} лайков профилю ${list[idx].nick}!`);
     } catch (e) {}
   };
@@ -4282,11 +4363,8 @@
   window.deleteUserProfile = async (profileId) => {
     if (!confirm("Точно удалить этот игровой профиль с сайта?")) return;
     try {
-      const ref = doc(db, DB_COLLECTION, "profiles");
-      const snap = await getDoc(ref);
-      if (!snap.exists()) return;
-      let list = (snap.data().list || []).filter(p => p.profileId !== profileId);
-      await setDoc(ref, { list }, { merge: true });
+      let list = adminProfilesCache.filter(p => p.profileId !== profileId);
+      await saveAdminProfilesEverywhere(list);
       showToast("Профиль удалён");
     } catch (e) {}
   };
@@ -4304,27 +4382,30 @@
     const pending = list.filter(p => p.c6eStatus === 'pending');
     const onlineCount = list.filter(p => (now - (p.lastSeen || 0)) < 15 * 60 * 1000).length;
 
-    if (badgeEl) badgeEl.innerText = `ЗАЯВОК В [C6E]: ${pending.length}`;
+    if (badgeEl) {
+      badgeEl.innerText = `ЗАЯВОК В [C6E]: ${pending.length}`;
+      badgeEl.style.background = pending.length > 0 ? 'rgba(255, 179, 0, 0.25)' : 'rgba(255,255,255,0.06)';
+    }
     if (totalEl) totalEl.innerText = String(list.length);
     if (onlineEl) onlineEl.innerText = String(onlineCount);
 
     pendingCont.innerHTML = pending.length === 0
       ? '<span class="item-sub">Новых заявок на проверку принадлежности к [C6E] пока нет</span>'
       : pending.map(p => `
-          <div class="list-item" style="flex-direction:column; align-items:flex-start; border-left-color:#ffb300; background:rgba(255,179,0,0.08); gap:6px;">
-            <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
-              <b>${p.countryFlag || '🌍'} ${p.nick} <span style="color:#ffb300;">(ID: ${p.gameId || '—'})</span></b>
-              <span style="font-size:9px; font-family:var(--font-tech); color:#ffb300;">⏳ ХОЧЕТ ТЕГ [C6E]</span>
+          <div class="list-item" style="flex-direction:column; align-items:flex-start; border-left:4px solid #ffb300; background:rgba(255,179,0,0.12); gap:8px; padding:12px;">
+            <div style="display:flex; justify-content:space-between; width:100%; align-items:center; flex-wrap:wrap; gap:6px;">
+              <b style="font-size:13px; color:#fff;">${p.countryFlag || '🌍'} [C6E] ${p.nick} <span style="color:#ffb300;">(ID: ${p.gameId || '—'})</span></b>
+              <span style="font-size:9px; font-family:var(--font-tech); background:#ffb300; color:#000; font-weight:900; padding:2px 7px; border-radius:4px;">⏳ ЖДЁТ ПРОВЕРКИ</span>
             </div>
-            <div class="item-sub">
-              K/D: <b>${p.kd || '1.00'}</b> • Возраст: <b>${p.age || 16}</b> • IP: <code>${p.ip || '—'}</code>
+            <div class="item-sub" style="color:#ddd;">
+              K/D: <b>${p.kd || '1.00'}</b> • Возраст: <b>${p.age || 16} лет</b> • Страна: <b>${p.countryText || 'Россия'}</b> • IP: <code>${p.ip || '—'}</code>
             </div>
-            <div style="display:flex; gap:6px; width:100%;">
-              <button type="button" class="action-btn" style="margin:0; flex:1; padding:7px; background:var(--success); color:#000; font-size:10px;" onclick="window.approveUserC6EStatus('${p.profileId}')">
-                <i class="fas fa-check"></i> ✅ ОДОБРИТЬ В [C6E]
+            <div style="display:flex; gap:8px; width:100%; flex-wrap:wrap;">
+              <button type="button" class="action-btn" style="margin:0; flex:1; min-width:140px; padding:9px; background:var(--success); color:#000; font-size:10px; font-weight:900;" onclick="window.approveUserC6EStatus('${p.profileId}')">
+                <i class="fas fa-check-circle"></i> ✅ ОДОБРИТЬ В [C6E]
               </button>
-              <button type="button" class="action-btn secondary" style="margin:0; flex:1; padding:7px; border-color:#ff5263; color:#ff5263; font-size:10px;" onclick="window.rejectUserC6EStatus('${p.profileId}')">
-                <i class="fas fa-times"></i> ❌ ОТКЛОНИТЬ (В ГОСТИ)
+              <button type="button" class="action-btn secondary" style="margin:0; flex:1; min-width:140px; padding:9px; border-color:#ff5263; color:#ff5263; font-size:10px; font-weight:900;" onclick="window.rejectUserC6EStatus('${p.profileId}')">
+                <i class="fas fa-times-circle"></i> ❌ ОТКЛОНИТЬ (В ГОСТИ)
               </button>
             </div>
           </div>
@@ -4336,22 +4417,24 @@
       : sortedAll.map(p => {
           const isOnline = (now - (p.lastSeen || 0)) < 15 * 60 * 1000;
           const isC6E = p.c6eStatus === 'approved';
+          const isPend = p.c6eStatus === 'pending';
           const safeIp = (p.ip || '').replace(/'/g, "\\'");
           const safeDev = (p.profileId || '').replace(/'/g, "\\'");
           const safeNick = (p.nick || 'Игрок').replace(/'/g, "\\'");
+          const cleanTag = isC6E ? '[C6E]' : (isPend ? '[C6E]' : (p.clanTag ? '[' + String(p.clanTag).replace(/[\[\]\?]/g, '') + ']' : ''));
           return `
-            <div class="list-item" style="border-left-color:${isC6E ? 'var(--success)' : 'var(--ct-blue)'};">
-              <div style="display:flex; align-items:center; gap:9px; min-width:0;">
-                <img src="${p.avatar || 'logo.png'}" onerror="this.src='logo.png'" style="width:34px; height:34px; border-radius:8px; object-fit:cover;">
-                <div class="item-info">
-                  <b>${isOnline ? '🟢' : '⚪'} ${p.countryFlag || '🌍'} ${isC6E ? '[C6E]' : (p.clanTag ? '[' + p.clanTag + ']' : '')} ${p.nick}</b>
-                  <span class="item-sub">ID: ${p.gameId || '—'} • K/D: ${p.kd || '1.0'} • ${p.age || 16} лет • ❤️ ${p.likes || 0} • ${isC6E ? '🛡️ Боец C6E' : '💎 ' + (p.clanName || 'Гость')}</span>
+            <div class="list-item" style="border-left-color:${isC6E ? 'var(--success)' : (isPend ? '#ffb300' : 'var(--ct-blue)')}; flex-wrap:wrap; gap:8px;">
+              <div style="display:flex; align-items:center; gap:9px; min-width:0; flex:1;">
+                <img src="${p.avatar || 'logo.png'}" onerror="this.src='logo.png'" style="width:34px; height:34px; border-radius:8px; object-fit:cover; flex-shrink:0;">
+                <div class="item-info" style="min-width:0;">
+                  <b>${isOnline ? '🟢' : '⚪'} ${p.countryFlag || '🌍'} ${cleanTag} ${p.nick}</b>
+                  <span class="item-sub">ID: ${p.gameId || '—'} • K/D: ${p.kd || '1.0'} • ${p.age || 16} лет • ❤️ ${p.likes || 0} • ${isC6E ? '🛡️ Боец C6E' : (isPend ? '⏳ Ждёт проверки C6E' : '💎 ' + (p.clanName || 'Гость'))}</span>
                 </div>
               </div>
               <div class="item-actions">
                 ${isC6E
                   ? `<button class="btn-icon" title="Снять тег [C6E] и перевести в гости" onclick="window.rejectUserC6EStatus('${safeDev}')"><i class="fas fa-user-minus"></i></button>`
-                  : `<button class="btn-icon" style="color:var(--success);" title="Выдать официальный статус Бойца [C6E]" onclick="window.approveUserC6EStatus('${safeDev}')"><i class="fas fa-shield-alt"></i></button>`}
+                  : `<button class="btn-icon" style="color:var(--success); border-color:var(--success);" title="Подтвердить статус Бойца [C6E]" onclick="window.approveUserC6EStatus('${safeDev}')"><i class="fas fa-check"></i></button>`}
                 <button class="btn-icon" style="color:#ff5263;" title="+10 лайков профилю" onclick="window.boostAdminProfileLikes('${safeDev}', 10)"><i class="fas fa-heart"></i></button>
                 <button class="btn-icon ban" title="Забанить через C6E Shield" onclick="window.banUserQuick('${safeIp}', '${safeDev}', '${safeNick}')"><i class="fas fa-ban"></i></button>
                 <button class="btn-icon del" title="Удалить профиль" onclick="window.deleteUserProfile('${safeDev}')"><i class="fas fa-trash"></i></button>
@@ -4386,6 +4469,7 @@
         ts: now
       });
       await setDoc(ref, { messages, lastPurgeTs: (snap.exists() && snap.data().lastPurgeTs) ? snap.data().lastPurgeTs : now }, { merge: true });
+      await setDoc(doc(db, DB_COLLECTION, "reviews"), { c6e_chat: messages }, { merge: true }).catch(() => {});
       showToast("👑 Сообщение от Основателя Kas отправлено в общий чат!");
     } catch (e) {
       showToast("Ошибка отправки в чат", true);
@@ -4396,6 +4480,7 @@
     if (!confirm("Очистить все сообщения в Общем чате прямо сейчас?")) return;
     try {
       await setDoc(doc(db, DB_COLLECTION, "global_chat"), { messages: [], lastPurgeTs: Date.now() });
+      await setDoc(doc(db, DB_COLLECTION, "reviews"), { c6e_chat: [], c6e_chat_purge: Date.now() }, { merge: true }).catch(() => {});
       showToast("🧹 Общий чат полностью очищен!");
     } catch (e) {}
   };
@@ -4407,6 +4492,7 @@
       if (!snap.exists()) return;
       const messages = (snap.data().messages || []).filter(m => m.id !== msgId);
       await setDoc(ref, { messages }, { merge: true });
+      await setDoc(doc(db, DB_COLLECTION, "reviews"), { c6e_chat: messages }, { merge: true }).catch(() => {});
       showToast("Сообщение удалено");
     } catch (e) {}
   };
@@ -4423,9 +4509,34 @@
   };
 
   onSnapshot(doc(db, DB_COLLECTION, "profiles"), (snap) => {
-    const list = (snap.exists() && Array.isArray(snap.data().list)) ? snap.data().list : [];
-    renderAdminProfilesPanel(list);
+    adminProfilesMain = (snap.exists() && Array.isArray(snap.data().list)) ? snap.data().list : [];
+    refreshMergedAdminProfiles();
+  }, () => {
+    refreshMergedAdminProfiles();
   });
+
+  onSnapshot(doc(db, DB_COLLECTION, "reviews"), (snap) => {
+    if (snap.exists() && Array.isArray(snap.data().c6e_profiles)) {
+      adminProfilesMirrorRev = snap.data().c6e_profiles;
+      refreshMergedAdminProfiles();
+    }
+  });
+
+  onSnapshot(doc(db, DB_COLLECTION, "practices"), (snap) => {
+    if (snap.exists() && Array.isArray(snap.data().c6e_profiles)) {
+      adminProfilesMirrorPrac = snap.data().c6e_profiles;
+      refreshMergedAdminProfiles();
+    }
+  });
+
+  onSnapshot(doc(db, DB_COLLECTION, "security_logs"), (snap) => {
+    if (snap.exists() && Array.isArray(snap.data().c6e_profiles)) {
+      adminProfilesMirrorSec = snap.data().c6e_profiles;
+      refreshMergedAdminProfiles();
+    }
+  });
+
+  setTimeout(refreshMergedAdminProfiles, 300);
 
   onSnapshot(doc(db, DB_COLLECTION, "global_chat"), (snap) => {
     const cont = document.getElementById('adminChatMessagesList');
@@ -4450,11 +4561,10 @@
     const tInp = document.getElementById('admShopTitle');
     const hInp = document.getElementById('admShopHype');
     const wEl  = document.getElementById('admShopWaitCount');
-    if (tInp && d.title) tInp.value = d.title;
-    if (hInp && d.hypeText) hInp.value = d.hypeText;
+    if (tInp && !tInp.value && d.title) tInp.value = d.title;
+    if (hInp && !hInp.value && d.hypeText) hInp.value = d.hypeText;
     if (wEl) wEl.innerText = String(Array.isArray(d.waitlist) ? d.waitlist.length : 0);
   });
-
 
   window.generateKasUpdateIntoEditor = async () => {
     showToast("Генерирую статью и баннер обновления от лица Kas...");
