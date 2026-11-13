@@ -322,7 +322,7 @@ c6eProStyles.innerHTML = `
 
   .c6e-modal-overlay {
     position: fixed; inset: 0; z-index: 12000;
-    background: rgba(4, 5, 8, 0.88); backdrop-filter: blur(14px);
+    background: rgba(5, 6, 10, 0.94);
     display: none; align-items: center; justify-content: center; padding: 14px;
   }
   .c6e-modal-overlay.active { display: flex; }
@@ -409,19 +409,19 @@ c6eProStyles.innerHTML = `
   }
   .frame-c6e-red {
     background: linear-gradient(135deg, #ff2a40, #e4e4e2, #9e1b28);
-    filter: drop-shadow(0 0 8px rgba(212, 38, 56, 0.55));
+    
   }
   .frame-c6e-gold {
     background: linear-gradient(135deg, #ffe066, #ffb300, #9a6b00);
-    filter: drop-shadow(0 0 8px rgba(255, 179, 0, 0.6));
+    
   }
   .frame-c6e-green {
     background: linear-gradient(135deg, #00e676, #e4e4e2, #0b6e4f);
-    filter: drop-shadow(0 0 8px rgba(0, 230, 118, 0.55));
+    
   }
   .frame-c6e-blue {
     background: linear-gradient(135deg, #60a5fa, #e4e4e2, #1d4ed8);
-    filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.55));
+    
   }
 
   /* БАННЕРЫ ПРОФИЛЕЙ */
@@ -1080,15 +1080,15 @@ window.boostPantheonPlayer = async (nick) => {
 
   isBoostInProgress = true;
   try {
-    await resolveVisitorIp();
+    await resolveClientIp();
     const hwHash = getHardwareSignatureHash();
-    const cleanIpKey = (currentVisitorIp && currentVisitorIp !== 'Определяется...' && currentVisitorIp !== 'Скрыт / VPN')
-      ? 'ip_' + currentVisitorIp.replace(/[^a-zA-Z0-9]/g, '_')
+    const cleanIpKey = (clientSecurityMeta.ip && clientSecurityMeta.ip !== 'Определяется...' && clientSecurityMeta.ip !== 'Скрыт / VPN')
+      ? 'ip_' + clientSecurityMeta.ip.replace(/[^a-zA-Z0-9]/g, '_')
       : null;
 
     // 1. Защита от VPN / Скрытого IP при голосовании
     if (!cleanIpKey) {
-      await logSecurityAction('🚨 ТРЕВОГА: Буст со скрытым IP/VPN', nick, `Попытка накрутки буста без IP (${hwHash})`);
+      await logSecurityEvent('🚨 ТРЕВОГА: Буст со скрытым IP/VPN', nick, `Попытка накрутки буста без IP (${hwHash})`);
       window.showNotify("🛡 C6E Shield: Отключите VPN/прокси для честного голосования в Пантеоне!", "error");
       return;
     }
@@ -1111,7 +1111,7 @@ window.boostPantheonPlayer = async (nick) => {
     const lockKeys = [
       cleanIpKey,                       // Блокирует ВСЕ вторые телефоны/ПК в том же доме/Wi-Fi/точке доступа!
       `hw_${hwHash}`,                   // Блокирует Инкогнито и другие браузеры на том же телефоне!
-      `dev_${currentVisitorDevId}`      // Блокирует по ID устройства
+      `dev_${clientSecurityMeta.deviceId}`      // Блокирует по ID устройства
     ];
 
     // Проверяем и локальный, и серверный замок в Firebase
@@ -1138,7 +1138,7 @@ window.boostPantheonPlayer = async (nick) => {
     if (blockedReason) {
       const hrs = Math.floor(remainingMins / 60);
       const mins = remainingMins % 60;
-      await logSecurityAction('🚨 ТРЕВОГА: Попытка мульти-буста', nick, `${blockedReason} | HW: ${hwHash}`);
+      await logSecurityEvent('🚨 ТРЕВОГА: Попытка мульти-буста', nick, `${blockedReason} | HW: ${hwHash}`);
       window.showNotify(`🛡 C6E Shield: Мульти-аккаунт/второе устройство перехвачено! Буст с вашей сети будет доступен через ${hrs}ч ${mins}м.`, "error");
       return;
     }
@@ -1149,7 +1149,7 @@ window.boostPantheonPlayer = async (nick) => {
 
     await setDoc(ref, { boosts, boostLocks }, { merge: true });
     setCooldown(localCoolKey);
-    await logSecurityAction('🔥 Буст Пантеона (+25 PTS)', nick, `Честный буст бойцу ${nick} | HW: ${hwHash}`);
+    await logSecurityEvent('🔥 Буст Пантеона (+25 PTS)', nick, `Честный буст бойцу ${nick} | HW: ${hwHash}`);
     window.showNotify(`🔥 Вы дали +25 PTS бойцу ${nick}! (Защита C6E Shield: 1 буст в 12ч с одной сети/устройства)`, "success");
   } catch (e) {
     window.showNotify("Ошибка начисления буста", "error");
@@ -2904,6 +2904,7 @@ let myLocalProfile = null;
 let myUserNotifications = [];
 let globalChatMessages = [];
 let globalChatLastPurge = Date.now();
+let currentHomeCommFilter = 'all';
 let shopConfigData = {
   title: 'КИБЕР-МАРКЕТ CYBER 6 ESPORTS [C6E]',
   subtitle: 'ЗАКРЫТЫЙ АУКЦИОН И ЭКСКЛЮЗИВНЫЙ ИГРОВОЙ КОНТЕНТ',
@@ -2911,6 +2912,17 @@ let shopConfigData = {
   waitlist: []
 };
 const sessionBootTime = Date.now();
+
+// УПРАВЛЕНИЕ БЛОКИРОВКОЙ ЭКРАНА ДО СОЗДАНИЯ ПРОФИЛЯ (БЕЗ ПРОКРУТКИ И ПРОСВЕЧИВАНИЯ САЙТА)
+function setGateLockState(locked) {
+  if (locked) {
+    document.documentElement.classList.add('c6e-gate-locked');
+    document.body?.classList.add('c6e-gate-locked');
+  } else {
+    document.documentElement.classList.remove('c6e-gate-locked');
+    document.body?.classList.remove('c6e-gate-locked');
+  }
+}
 
 function loadLocalProfileCache() {
   try {
@@ -2929,8 +2941,36 @@ function saveLocalProfileCache(prof) {
   try {
     localStorage.setItem('c6e_user_profile_v5', JSON.stringify(prof));
   } catch (e) {}
+  if (prof && prof.nick && prof.c6eStatus !== 'rejected') {
+    setGateLockState(false);
+  }
   updateHeaderProfileChipUI();
   autoFillFormsWithProfile();
+}
+
+// ОТПРАВКА СИСТЕМНОГО PUSH-УВЕДОМЛЕНИЯ НА ТЕЛЕФОН / ПК (С ПОДДЕРЖКОЙ ANDROID CHROME И SERVICE WORKER)
+function triggerNativeDeviceNotification(title, body) {
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+  try {
+    if (navigator.serviceWorker && navigator.serviceWorker.getRegistration) {
+      navigator.serviceWorker.getRegistration().then((reg) => {
+        if (reg && typeof reg.showNotification === 'function') {
+          reg.showNotification(title, {
+            body: body,
+            icon: 'logo.png',
+            badge: 'logo.png',
+            vibrate: [180, 80, 180]
+          });
+        } else {
+          new Notification(title, { body: body, icon: 'logo.png', badge: 'logo.png' });
+        }
+      }).catch(() => {
+        try { new Notification(title, { body: body, icon: 'logo.png' }); } catch (e) {}
+      });
+    } else {
+      new Notification(title, { body: body, icon: 'logo.png', badge: 'logo.png' });
+    }
+  } catch (e) {}
 }
 
 function addPersonalNotification(title, body, type = 'info', actionTab = null) {
@@ -2949,49 +2989,74 @@ function addPersonalNotification(title, body, type = 'info', actionTab = null) {
     localStorage.setItem('c6e_user_notifs_v5', JSON.stringify(myUserNotifications));
   } catch (e) {}
   updateNotifBellBadgeUI();
-
-  // Отправка системного уведомления на устройство (если пользователь разрешил)
-  try {
-    if ('Notification' in window && Notification.permission === 'granted') {
-      new Notification(title, {
-        body: body,
-        icon: 'logo.png',
-        badge: 'logo.png'
-      });
-    }
-  } catch (e) {}
+  triggerNativeDeviceNotification(title, body);
 }
 
 function updateNotifBellBadgeUI() {
   const badge = document.getElementById('notif-badge-count');
-  if (!badge) return;
-  const unread = myUserNotifications.filter(n => !n.read).length;
-  if (unread > 0) {
-    badge.style.display = 'inline-flex';
-    badge.innerText = unread > 9 ? '9+' : String(unread);
-  } else {
-    badge.style.display = 'none';
+  if (badge) {
+    const unread = myUserNotifications.filter(n => !n.read).length;
+    if (unread > 0) {
+      badge.style.display = 'inline-flex';
+      badge.innerText = unread > 9 ? '9+' : String(unread);
+    } else {
+      badge.style.display = 'none';
+    }
+  }
+  const homePushBar = document.getElementById('home-push-optin-bar');
+  if (homePushBar) {
+    if ('Notification' in window && Notification.permission !== 'granted') {
+      homePushBar.style.display = 'flex';
+    } else {
+      homePushBar.style.display = 'none';
+    }
   }
 }
 updateNotifBellBadgeUI();
 
-window.requestDevicePushPermission = async () => {
+// СИНХРОННЫЙ ЗАПРОС РАЗРЕШЕНИЯ НА PUSH-УВЕДОМЛЕНИЯ ПО КЛИКУ ПОЛЬЗОВАТЕЛЯ
+window.requestDevicePushPermission = () => {
   if (!('Notification' in window)) {
-    return window.showNotify("Ваш браузер не поддерживает системные push-уведомления, но колокольчик на сайте работает!", "error");
+    window.showNotify("Ваш браузер не поддерживает системные push-уведомления, но колокольчик 🔔 в шапке сайта активен!", "error");
+    return Promise.resolve('unsupported');
+  }
+  if (Notification.permission === 'granted') {
+    updateNotifBellBadgeUI();
+    triggerNativeDeviceNotification("🔔 CYBER 6 ESPORTS [C6E]", "Системные уведомления на ваше устройство уже активны!");
+    window.showNotify("📲 Push-уведомления на устройство уже включены!", "success");
+    return Promise.resolve('granted');
   }
   try {
-    const perm = await Notification.requestPermission();
-    if (perm === 'granted') {
-      window.showNotify("📲 Уведомления на устройство успешно включены!", "success");
-      addPersonalNotification("🔔 Уведомления CYBER 6 ESPORTS активны!", "Теперь вы будете получать оповещения об упоминаниях в чате, лайках и обновлениях сайта от Kas.", "success");
-      if (document.getElementById('c6e-notif-modal')?.classList.contains('active')) {
-        window.openNotificationsModal();
-      }
-    } else {
-      window.showNotify("Вы отклонили системные уведомления. Все события будут приходить в колокольчик 🔔 в шапке сайта!", "error");
+    // Вызывается строго синхронно внутри пользовательского клика (требование Android Chrome / iOS Safari)
+    const reqResult = Notification.requestPermission((permLegacy) => {
+      handlePushPermissionOutcome(permLegacy);
+    });
+    if (reqResult && typeof reqResult.then === 'function') {
+      return reqResult.then((perm) => {
+        handlePushPermissionOutcome(perm);
+        return perm;
+      }).catch(() => 'default');
     }
   } catch (e) {}
+  return Promise.resolve('default');
 };
+
+function handlePushPermissionOutcome(perm) {
+  updateNotifBellBadgeUI();
+  if (perm === 'granted') {
+    window.showNotify("📲 Уведомления на ваше устройство успешно включены!", "success");
+    addPersonalNotification(
+      "🔔 Уведомления CYBER 6 ESPORTS активны!",
+      "Теперь вы будете получать оповещения на устройство об обновлениях от Kas, @упоминаниях в чате и лайках профиля.",
+      "success"
+    );
+    if (document.getElementById('c6e-notif-modal')?.classList.contains('active')) {
+      window.openNotificationsModal();
+    }
+  } else if (perm === 'denied') {
+    window.showNotify("Системные уведомления отключены в браузере. Все события будут приходить в колокольчик 🔔 в шапке сайта!", "error");
+  }
+}
 
 window.openNotificationsModal = () => {
   let modal = document.getElementById('c6e-notif-modal');
@@ -3003,7 +3068,6 @@ window.openNotificationsModal = () => {
     document.body.appendChild(modal);
   }
 
-  // Помечаем все прочитанными
   myUserNotifications.forEach(n => { n.read = true; });
   try { localStorage.setItem('c6e_user_notifs_v5', JSON.stringify(myUserNotifications)); } catch (e) {}
   updateNotifBellBadgeUI();
@@ -3027,7 +3091,7 @@ window.openNotificationsModal = () => {
             </span>
           </div>
           ${permStatus !== 'granted' ? `
-            <button type="button" class="chip-btn" style="border-color:var(--success); color:var(--success);" onclick="window.requestDevicePushPermission()">
+            <button type="button" class="chip-btn" style="background:var(--success); border-color:var(--success); color:#000; font-weight:800;" onclick="window.requestDevicePushPermission()">
               🔔 Разрешить отправку
             </button>
           ` : ''}
@@ -3106,7 +3170,6 @@ function autoFillFormsWithProfile() {
   const info = getDisplayTagAndBadge(myLocalProfile);
   const fullDisplayNick = `${info.tagStr ? info.tagStr + ' ' : ''}${myLocalProfile.nick}`.trim();
 
-  // 1. Форма записи на Прак (CW)
   const pcClan = document.getElementById('pc-clan');
   const pcCap  = document.getElementById('pc-cap');
   const pcId   = document.getElementById('pc-id');
@@ -3116,11 +3179,9 @@ function autoFillFormsWithProfile() {
   if (pcCap && !pcCap.value) pcCap.value = fullDisplayNick;
   if (pcId && !pcId.value && myLocalProfile.gameId) pcId.value = String(myLocalProfile.gameId).replace(/\D/g, '');
 
-  // 2. Форма Отзывов
   const revNick = document.getElementById('rev-nick');
   if (revNick && !revNick.value) revNick.value = fullDisplayNick;
 
-  // 3. Форма Заявки в команду
   const joinNick = document.getElementById('nick');
   if (joinNick && !joinNick.value) joinNick.value = fullDisplayNick;
 }
@@ -3154,6 +3215,8 @@ document.getElementById('guestBannerFileInput')?.addEventListener('change', asyn
     if (inp) inp.value = tempProfileBannerDataUrl;
     const sel = document.getElementById('prof-banner-preset-sel');
     if (sel) sel.value = 'custom';
+    const customRow = document.getElementById('prof-custom-banner-row');
+    if (customRow) customRow.style.display = 'flex';
     window.showNotify("Баннер профиля с устройства загружен!", "success");
   } catch (err) {
     window.showNotify("Не удалось обработать баннер", "error");
@@ -3161,15 +3224,39 @@ document.getElementById('guestBannerFileInput')?.addEventListener('change', asyn
   e.target.value = '';
 });
 
+function showProfileFormStatus(msg, isError = true) {
+  const box = document.getElementById('prof-form-status-msg');
+  if (box) {
+    box.style.display = 'block';
+    box.style.background = isError ? 'rgba(212, 38, 56, 0.18)' : 'rgba(0, 230, 118, 0.14)';
+    box.style.borderColor = isError ? '#ff5263' : 'var(--success)';
+    box.style.color = isError ? '#ff8a96' : '#00e676';
+    box.innerHTML = msg;
+  }
+  if (window.showNotify) {
+    window.showNotify(msg.replace(/<[^>]*>/g, ''), isError ? 'error' : 'success');
+  }
+}
+
 window.openMyProfileModal = (forceRegistrationGate = false, rejectedMessage = null) => {
   if (checkIfCurrentUserBanned()) return;
+
+  if (forceRegistrationGate) {
+    setGateLockState(true);
+  }
+
   let modal = document.getElementById('c6e-profile-gate-modal');
   if (!modal) {
     modal = document.createElement('div');
     modal.id = 'c6e-profile-gate-modal';
     modal.className = 'c6e-modal-overlay';
-    modal.style.zIndex = '12500';
     document.body.appendChild(modal);
+  }
+
+  if (forceRegistrationGate) {
+    modal.classList.add('gate-fullscreen');
+  } else {
+    modal.classList.remove('gate-fullscreen');
   }
 
   const p = myLocalProfile || {
@@ -3192,22 +3279,23 @@ window.openMyProfileModal = (forceRegistrationGate = false, rejectedMessage = nu
   const isForceGuest = Boolean(rejectedMessage) || p.c6eStatus === 'rejected';
   const isC6ESelected = isForceGuest ? false : Boolean(p.claimsC6E || p.c6eStatus === 'approved' || p.c6eStatus === 'pending');
   const isCustomBanner = p.banner && !['banner-crimson','banner-gold','banner-emerald','banner-sapphire'].includes(p.banner);
+  const needPushAsk = ('Notification' in window) && Notification.permission !== 'granted';
 
   modal.innerHTML = `
     <div class="c6e-modal-card" style="max-width:580px; border-top:3px solid var(--accent-light);">
       <div class="c6e-modal-head">
         <div>
           <span style="font-family:var(--font-tech); font-size:12px; font-weight:900; color:#fff;">
-            <i class="fas fa-id-card text-accent"></i> ${forceRegistrationGate ? 'СОЗДАНИЕ ИГРОВОГО ПРОФИЛЯ ПОРТАЛА [C6E]' : 'МОЙ ИГРОВОЙ ПРОФИЛЬ [C6E]'}
+            <i class="fas fa-id-card text-accent"></i> ${forceRegistrationGate ? 'РЕГИСТРАЦИЯ ИГРОВОГО ПРОФИЛЯ ПОРТАЛА [C6E]' : 'МОЙ ИГРОВОЙ ПРОФИЛЬ [C6E]'}
           </span>
           <div style="font-size:10px; color:var(--silver-muted); margin-top:2px;">
-            ${forceRegistrationGate ? 'Обязательная быстрая регистрация без паролей и почты для входа на сайт' : 'Твои данные автоматически подставляются при записи на прак, в отзывах и чате'}
+            ${forceRegistrationGate ? 'Заполни профиль один раз без паролей и почты, чтобы открыть доступ ко всем разделам сайта' : 'Твои данные автоматически подставляются при записи на прак, в отзывах и чате'}
           </div>
         </div>
         ${!forceRegistrationGate ? `<button type="button" class="c6e-modal-close" onclick="document.getElementById('c6e-profile-gate-modal').classList.remove('active')">✕</button>` : ''}
       </div>
 
-      <div class="c6e-modal-body" style="max-height:78vh; overflow-y:auto;">
+      <div class="c6e-modal-body" style="max-height:80vh; overflow-y:auto;">
         ${rejectedMessage ? `
           <div style="background:rgba(212,38,56,0.16); border:1px solid #ff5263; border-radius:10px; padding:12px; margin-bottom:14px; font-size:11.5px; color:#fff; line-height:1.5;">
             🚫 <b>Заявка на тег [C6E] отклонена администрацией!</b><br>
@@ -3316,12 +3404,21 @@ window.openMyProfileModal = (forceRegistrationGate = false, rejectedMessage = nu
           <input type="text" id="prof-banner-custom-inp" class="form-input" value="${escapeHTML(isCustomBanner ? p.banner : '')}" placeholder="Или ссылка на картинку баннера..." style="flex:1; padding:7px;">
         </div>
 
-        <div style="margin-bottom:14px;">
+        <div style="margin-bottom:12px;">
           <label class="form-label">9. ОПИСАНИЕ ПРОФИЛЯ / БИОГРАФИЯ (НЕОБЯЗАТЕЛЬНО)</label>
           <textarea id="prof-bio-inp" class="form-input" rows="2" placeholder="Напиши пару слов о себе, любимом оружии (AWM / AKR) или девайсе...">${escapeHTML(p.bio || '')}</textarea>
         </div>
 
-        <button type="button" class="btn-glitch" onclick="window.saveMyUserProfile()">
+        ${needPushAsk ? `
+          <label style="display:flex; align-items:center; gap:9px; padding:10px 12px; border-radius:10px; background:rgba(0,230,118,0.08); border:1px solid rgba(0,230,118,0.35); margin-bottom:12px; cursor:pointer; font-size:11px; color:#fff;">
+            <input type="checkbox" id="prof-enable-push-chk" checked style="width:16px; height:16px; accent-color:#00e676;">
+            <span>📲 <b>Разрешить отправку уведомлений сайта на устройство</b> (новости Kas, @упоминания в чате, праки)</span>
+          </label>
+        ` : ''}
+
+        <div id="prof-form-status-msg" style="display:none; padding:10px 12px; border-radius:9px; border:1px solid #ff5263; font-size:11.5px; font-weight:700; margin-bottom:12px;"></div>
+
+        <button type="button" id="prof-save-submit-btn" class="btn-glitch" onclick="window.saveMyUserProfile()">
           <i class="fas fa-check-circle" style="margin-right:8px;"></i> СОХРАНИТЬ ПРОФИЛЬ И ВОЙТИ НА ПОРТАЛ [C6E]
         </button>
       </div>
@@ -3334,8 +3431,18 @@ window.openMyProfileModal = (forceRegistrationGate = false, rejectedMessage = nu
 window.toggleProfileClanFields = (claimsC6E) => {
   const guestFields = document.getElementById('prof-guest-clan-fields');
   const notice = document.getElementById('prof-c6e-notice');
+  const lblNo = document.getElementById('lbl-c6e-no');
+  const lblYes = document.getElementById('lbl-c6e-yes');
   if (guestFields) guestFields.style.display = claimsC6E ? 'none' : 'grid';
   if (notice) notice.style.display = claimsC6E ? 'block' : 'none';
+  if (lblNo) {
+    lblNo.style.borderColor = !claimsC6E ? 'var(--accent-light)' : 'rgba(255,255,255,0.1)';
+    lblNo.style.background = !claimsC6E ? 'var(--accent-dim)' : 'rgba(0,0,0,0.4)';
+  }
+  if (lblYes) {
+    lblYes.style.borderColor = claimsC6E ? '#ffb300' : 'rgba(255,255,255,0.1)';
+    lblYes.style.background = claimsC6E ? 'rgba(255,179,0,0.15)' : 'rgba(0,0,0,0.4)';
+  }
 };
 
 window.updateLiveCountryFlag = (val) => {
@@ -3344,8 +3451,10 @@ window.updateLiveCountryFlag = (val) => {
   if (el) el.innerText = info.flag;
 };
 
+// НАДЁЖНОЕ СОХРАНЕНИЕ ПРОФИЛЯ (БЕЗ ЗАВИСАНИЙ, С СИНХРОННЫМ PUSH-ЗАПРОСОМ И ЗАПИСЬЮ В FIREBASE)
 window.saveMyUserProfile = async () => {
   if (checkIfCurrentUserBanned()) return;
+
   const nick = (document.getElementById('prof-nick-inp')?.value || '').trim().replace(/^\[[^\]]+\]\s*/, '');
   const gameId = (document.getElementById('prof-gameid-inp')?.value || '').trim();
   const kdRaw = parseFloat(String(document.getElementById('prof-kd-inp')?.value || '1.0').replace(',', '.')) || 1.0;
@@ -3361,39 +3470,49 @@ window.saveMyUserProfile = async () => {
   const claimsC6E = Boolean(radioYes && radioYes.checked);
   const rawClanTag = (document.getElementById('prof-clantag-inp')?.value || '').replace(/[\[\]]/g, '').trim();
   const rawClanName = (document.getElementById('prof-clanname-inp')?.value || '').trim();
+  const pushChk = document.getElementById('prof-enable-push-chk');
 
-  if (!nick || nick.length < 2) return window.showNotify("Введите ваш игровой никнейм!", "error");
-  if (!gameId || gameId.length < 4) return window.showNotify("Введите корректный игровой ID Standoff 2!", "error");
-  if (isNaN(ageVal) || ageVal < 12) return window.showNotify("Регистрация доступна строго для игроков от 12 лет (12+)!", "error");
+  if (!nick || nick.length < 2) {
+    return showProfileFormStatus("⚠️ Введите ваш игровой никнейм в Standoff 2 (минимум 2 символа)!", true);
+  }
+  if (!gameId || gameId.length < 3) {
+    return showProfileFormStatus("⚠️ Введите ваш игровой ID Standoff 2!", true);
+  }
+  if (isNaN(ageVal) || ageVal < 12) {
+    return showProfileFormStatus("⚠️ Регистрация доступна строго для игроков от 12 лет (12+)!", true);
+  }
 
   if (containsSpam(nick) || containsSpam(bio) || containsSpam(rawClanName)) {
     const bad = findMatchedSpamWord(`${nick} ${bio} ${rawClanName}`);
-    await logSecurityAction('🚨 ТРЕВОГА: Запрещенное слово в профиле', nick, `Слово «${bad}»`, true);
-    return window.showNotify("В профиле обнаружены недопустимые слова!", "error");
+    logSecurityEvent('🚨 ТРЕВОГА: Запрещенное слово в профиле', nick, `Слово «${bad}»`, true);
+    return showProfileFormStatus("🛡 В профиле обнаружены запрещённые слова!", true);
   }
 
-  // Если гость не из [C6E], не даем вручную вписать чужой тег C6E в поле гостя
   if (!claimsC6E && /^c6e|с6е$/i.test(rawClanTag)) {
-    return window.showNotify("Тег [C6E] выдается только после одобрения заявки администрацией! Выберите «Да, я боец [C6E]» или укажите свой клан.", "error");
+    return showProfileFormStatus("⚠️ Тег [C6E] выдается только после одобрения заявки администрацией! Выберите «Да, я боец [C6E]» или укажите свой клан.", true);
   }
+
+  // ВАЖНО: Запрашиваем системное разрешение на Push-уведомления СИНХРОННО в момент клика (до первого await!)
+  if (pushChk && pushChk.checked && ('Notification' in window) && Notification.permission === 'default') {
+    window.requestDevicePushPermission();
+  }
+
+  const saveBtn = document.getElementById('prof-save-submit-btn');
+  if (saveBtn) {
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> СОХРАНЕНИЕ ПРОФИЛЯ В БАЗУ [C6E]...';
+  }
+  showProfileFormStatus("⏳ Синхронизация профиля с сервером CYBER 6 ESPORTS...", false);
 
   const countryInfo = resolveCountryInfo(countryRaw);
-  await resolveVisitorIp();
-
-  const ref = doc(db, DB_COLLECTION, "profiles");
-  const snap = await getDoc(ref);
-  let list = (snap.exists() && Array.isArray(snap.data().list)) ? [...snap.data().list] : [];
-
-  const existingIdx = list.findIndex(item => item.profileId === clientSecurityMeta.deviceId);
-  const prevProf = existingIdx >= 0 ? list[existingIdx] : null;
+  const existingMem = allProfilesList.find(item => item.profileId === clientSecurityMeta.deviceId) || myLocalProfile;
 
   let c6eStatus = 'guest';
   let finalClanTag = rawClanTag;
   let finalClanName = rawClanName || 'Свободный агент';
 
   if (claimsC6E) {
-    // Если уже был одобрен ранее — сохраняем одобрение, иначе отправляем заявку в админку (pending)
-    if (prevProf && prevProf.c6eStatus === 'approved') {
+    if (existingMem && existingMem.c6eStatus === 'approved') {
       c6eStatus = 'approved';
     } else {
       c6eStatus = 'pending';
@@ -3418,37 +3537,65 @@ window.saveMyUserProfile = async () => {
     avatar: avatarUrl,
     banner: bannerPreset === 'custom' ? (bannerCustom || 'banner-crimson') : bannerPreset,
     frameStyle,
-    likes: prevProf ? (parseInt(prevProf.likes, 10) || 0) : 0,
-    likedBy: (prevProf && Array.isArray(prevProf.likedBy)) ? prevProf.likedBy : [],
-    activityPts: (prevProf ? (parseInt(prevProf.activityPts, 10) || 10) : 15) + 5,
+    likes: existingMem ? (parseInt(existingMem.likes, 10) || 0) : 0,
+    likedBy: (existingMem && Array.isArray(existingMem.likedBy)) ? existingMem.likedBy : [],
+    activityPts: (existingMem ? (parseInt(existingMem.activityPts, 10) || 10) : 15) + 5,
     lastSeen: Date.now(),
-    ip: clientSecurityMeta.ip,
+    ip: clientSecurityMeta.ip || 'Определяется...',
     device: clientSecurityMeta.deviceInfo,
     rejectionHandled: c6eStatus !== 'rejected'
   };
 
-  if (existingIdx >= 0) {
-    list[existingIdx] = newProf;
-  } else {
-    list.push(newProf);
-  }
-
-  await setDoc(ref, { list }, { merge: true });
+  // 1. Мгновенно сохраняем локально и разблокируем портал, чтобы интерфейс работал без единой задержки
   saveLocalProfileCache(newProf);
+  const memIdx = allProfilesList.findIndex(x => x.profileId === newProf.profileId);
+  if (memIdx >= 0) allProfilesList[memIdx] = newProf;
+  else allProfilesList.unshift(newProf);
+  renderCommunityRadarOnHome();
 
-  if (c6eStatus === 'pending' && (!prevProf || prevProf.c6eStatus !== 'pending')) {
-    await logSecurityAction('🛡️ Заявка на профиль бойца [C6E]', `${nick} (ID: ${gameId})`, `Игрок утверждает, что состоит в [C6E]. Ожидает проверки в админке!`);
-    addPersonalNotification("⏳ Заявка на тег [C6E] отправлена!", "Администратор Kas проверит ваш профиль в панели управления. После одобрения вы получите значок бойца [C6E].", "info");
-    window.showNotify("Профиль создан! Заявка на принадлежность к клану [C6E] отправлена в админку.", "success");
-  } else {
-    window.showNotify("✅ Игровой профиль сохранен! Добро пожаловать на портал [C6E].", "success");
-  }
+  // 2. Сохраняем профиль в коллекцию Firestore siteData/profiles для отображения у всех гостей и в админке Kas
+  try {
+    await Promise.race([
+      resolveClientIp(),
+      new Promise(res => setTimeout(res, 750))
+    ]);
+    newProf.ip = clientSecurityMeta.ip || 'Не определен';
 
-  document.getElementById('c6e-profile-gate-modal')?.classList.remove('active');
+    const ref = doc(db, DB_COLLECTION, "profiles");
+    const snap = await getDoc(ref);
+    let list = (snap.exists() && Array.isArray(snap.data().list)) ? [...snap.data().list] : [];
+    const idx = list.findIndex(item => item.profileId === clientSecurityMeta.deviceId);
+    const prevProf = idx >= 0 ? list[idx] : null;
 
-  // Предлагаем включить уведомления на устройство при первой регистрации
-  if ('Notification' in window && Notification.permission === 'default') {
-    setTimeout(() => { window.requestDevicePushPermission(); }, 900);
+    if (claimsC6E && prevProf && prevProf.c6eStatus === 'approved') {
+      newProf.c6eStatus = 'approved';
+    }
+    if (idx >= 0) {
+      list[idx] = newProf;
+    } else {
+      list.push(newProf);
+    }
+
+    await setDoc(ref, { list }, { merge: true });
+    saveLocalProfileCache(newProf);
+
+    if (newProf.c6eStatus === 'pending' && (!prevProf || prevProf.c6eStatus !== 'pending')) {
+      logSecurityEvent('🛡️ Заявка на профиль бойца [C6E]', `${nick} (ID: ${gameId})`, `Игрок утверждает, что состоит в [C6E]. Ожидает проверки в админке!`);
+      addPersonalNotification("⏳ Заявка на тег [C6E] отправлена!", "Администратор Kas проверит ваш профиль в панели управления. После одобрения вы получите значок бойца [C6E].", "info");
+      window.showNotify("Профиль создан! Заявка на тег [C6E] отправлена в админку Kas.", "success");
+    } else {
+      window.showNotify("✅ Игровой профиль сохранен! Добро пожаловать на портал [C6E].", "success");
+    }
+  } catch (err) {
+    console.warn("Ошибка синхронизации профиля с Firestore:", err);
+    window.showNotify("Профиль сохранён! Синхронизация с облаком выполнится автоматически.", "success");
+  } finally {
+    setGateLockState(false);
+    const modal = document.getElementById('c6e-profile-gate-modal');
+    if (modal) {
+      modal.classList.remove('active');
+      modal.classList.remove('gate-fullscreen');
+    }
   }
 };
 
@@ -3571,25 +3718,56 @@ window.likeUserProfile = async (targetProfileId) => {
   } catch (e) {}
 };
 
+// ФИЛЬТРАЦИЯ И РЕНДЕР СООБЩЕСТВА И ОНЛАЙНА НА ГЛАВНОЙ
+window.setHomeCommunityFilter = (flt) => {
+  currentHomeCommFilter = flt || 'all';
+  ['all', 'c6e', 'guest', 'top'].forEach(k => {
+    const btn = document.getElementById('comm-flt-' + k);
+    if (btn) {
+      btn.style.borderColor = (k === currentHomeCommFilter) ? 'var(--accent-light)' : 'var(--glass-border)';
+      btn.style.color = (k === currentHomeCommFilter) ? '#fff' : 'var(--silver)';
+    }
+  });
+  renderCommunityRadarOnHome();
+};
+
 function renderCommunityRadarOnHome() {
   const grid = document.getElementById('home-online-profiles-grid');
   const onlineEl = document.getElementById('comm-online-count');
   const totalEl = document.getElementById('comm-total-count');
+  const statProfEl = document.getElementById('home-stat-profiles-count');
   if (!grid) return;
 
   const now = Date.now();
-  const list = [...allProfilesList].sort((a, b) => (b.lastSeen || 0) - (a.lastSeen || 0));
-  const onlineCount = Math.max(1, list.filter(p => (now - (p.lastSeen || 0)) < 15 * 60 * 1000).length);
+  let sourceList = [...allProfilesList];
+  if (myLocalProfile && myLocalProfile.nick && !sourceList.some(p => p.profileId === myLocalProfile.profileId)) {
+    sourceList.unshift(myLocalProfile);
+  }
+
+  const onlineCount = Math.max(1, sourceList.filter(p => (now - (p.lastSeen || 0)) < 15 * 60 * 1000).length);
+  const totalCount = Math.max(1, sourceList.length);
 
   if (onlineEl) onlineEl.innerText = String(onlineCount);
-  if (totalEl) totalEl.innerText = String(Math.max(1, list.length));
+  if (totalEl) totalEl.innerText = String(totalCount);
+  if (statProfEl) statProfEl.innerText = String(totalCount);
 
-  if (list.length === 0) {
-    grid.innerHTML = `<div style="font-size:11px; color:var(--silver-muted); padding:16px; text-align:center; grid-column:1/-1;">Стань первым зарегистрированным участником обновлённого портала [C6E]!</div>`;
+  let filtered = [...sourceList];
+  if (currentHomeCommFilter === 'c6e') {
+    filtered = filtered.filter(p => p.c6eStatus === 'approved');
+  } else if (currentHomeCommFilter === 'guest') {
+    filtered = filtered.filter(p => p.c6eStatus !== 'approved');
+  } else if (currentHomeCommFilter === 'top') {
+    filtered.sort((a, b) => (parseInt(b.likes, 10) || 0) - (parseInt(a.likes, 10) || 0));
+  } else {
+    filtered.sort((a, b) => (b.lastSeen || 0) - (a.lastSeen || 0));
+  }
+
+  if (filtered.length === 0) {
+    grid.innerHTML = `<div style="font-size:11px; color:var(--silver-muted); padding:16px; text-align:center; grid-column:1/-1;">В этой категории пока нет профилей.</div>`;
     return;
   }
 
-  grid.innerHTML = list.slice(0, 12).map(p => {
+  grid.innerHTML = filtered.slice(0, 12).map(p => {
     const info = getDisplayTagAndBadge(p);
     const isOnline = (now - (p.lastSeen || 0)) < 15 * 60 * 1000;
     const isPresetBanner = ['banner-crimson','banner-gold','banner-emerald','banner-sapphire'].includes(p.banner);
@@ -3628,35 +3806,115 @@ function renderCommunityRadarOnHome() {
   }).join('');
 }
 
-// Слушатель базы профилей + проверка обязательной регистрации + проверка ответа админа по заявке в [C6E]
+// ЖИВЫЕ ВИДЖЕТЫ НА ГЛАВНОМ ЭКРАНЕ: ТОП-3 ПАНТЕОНА + ПОСЛЕДНИЙ МАТЧ С ТАБОМ
+function renderHomeInnovationsWidgets() {
+  // 1. Мини-подиум Топ-3 Пантеона
+  const miniPanth = document.getElementById('home-pantheon-mini-grid');
+  if (miniPanth) {
+    const standings = buildPantheonStandings();
+    if (!standings.length) {
+      miniPanth.innerHTML = `<div style="font-size:11px; color:var(--silver-muted); padding:10px;">Загрузка рейтинга бойцов [C6E]...</div>`;
+    } else {
+      const prizes = ['🥇 500 GOLD', '🥈 250 GOLD', '🥉 150 GOLD'];
+      const rankCls = ['top-1', 'top-2', 'top-3'];
+      miniPanth.innerHTML = standings.slice(0, 3).map((item, idx) => {
+        const safeNick = escapeHTML(item.player.nick).replace(/'/g, "\\'");
+        return `
+          <div class="home-podium-mini-item ${rankCls[idx]}">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-family:var(--font-tech); font-size:9px; font-weight:900; color:#ffb300;">${prizes[idx]}</span>
+              <span style="font-family:var(--font-tech); font-size:12px; font-weight:900; color:#fff;">${item.pts} <span style="font-size:8.5px; color:#ffb300;">PTS</span></span>
+            </div>
+            <div style="display:flex; align-items:center; gap:10px; margin:4px 0;">
+              <img src="${item.player.img || 'logo.png'}" onerror="this.src='logo.png'" style="width:40px; height:40px; border-radius:9px; object-fit:cover; border:1px solid rgba(255,255,255,0.2);">
+              <div style="min-width:0; flex:1;">
+                <div style="font-family:var(--font-tech); font-size:12.5px; font-weight:900; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                  [C6E] ${escapeHTML(item.player.nick)}
+                </div>
+                <div style="font-size:9.5px; color:var(--silver-muted);">
+                  LIVE K/D: <b style="color:var(--success);">${item.analytics.effectiveKd.toFixed(2)}</b> • Бустов: 🔥 ${item.boostCount}
+                </div>
+              </div>
+            </div>
+            <button type="button" class="boost-btn" style="padding:7px 10px; font-size:9.5px;" onclick="window.boostPantheonPlayer('${safeNick}')">
+              🔥 ДАТЬ БУСТ (+25 PTS)
+            </button>
+          </div>
+        `;
+      }).join('');
+    }
+  }
+
+  // 2. Виджет последнего сыгранного матча [C6E] в Match Center
+  const latestBox = document.getElementById('home-latest-match-box');
+  if (latestBox) {
+    if (!allHistoryData || allHistoryData.length === 0) {
+      latestBox.innerHTML = '';
+    } else {
+      const lastM = allHistoryData[allHistoryData.length - 1];
+      const win = parseInt(lastM.our, 10) > parseInt(lastM.their, 10);
+      latestBox.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; background:rgba(0,0,0,0.42); border:1px solid rgba(255,255,255,0.07); border-left:3px solid ${win ? 'var(--success)' : '#ff5263'}; border-radius:10px; padding:10px 14px;">
+          <div>
+            <div style="font-family:var(--font-tech); font-size:9px; color:var(--silver-muted); letter-spacing:1px;">
+              ПОСЛЕДНИЙ ЗАВЕРШЕННЫЙ МАТЧ • ${escapeHTML(lastM.map || 'КАРТА')}
+            </div>
+            <div style="font-family:var(--font-tech); font-size:13px; font-weight:900; color:#fff; margin-top:3px;">
+              [C6E] <span style="color:${win ? 'var(--success)' : '#ff5263'};">${escapeHTML(lastM.our)} : ${escapeHTML(lastM.their)}</span> ${escapeHTML(lastM.enemy)}
+            </div>
+          </div>
+          <button type="button" class="chip-btn" style="border-color:var(--accent-light); color:#fff;" onclick="selectTab('history', document.getElementById('btn-history'))">
+            <i class="fas fa-table text-accent"></i> Смотреть Таб и скрин ➔
+          </button>
+        </div>
+      `;
+    }
+  }
+}
+
+// Запускаем обновление виджетов Главного экрана
+setInterval(renderHomeInnovationsWidgets, 2500);
+setTimeout(renderHomeInnovationsWidgets, 600);
+
+// СИНХРОННЫЙ ПЕРВИЧНЫЙ ГЕЙТ ПРИ ЗАГРУЗКЕ САЙТА (БЕЗ ОЖИДАНИЯ СЕТИ И БЕЗ ПРОКРУТКИ ЗАДНЕГО ФОНА)
+if (!myLocalProfile || !myLocalProfile.nick) {
+  setGateLockState(true);
+  setTimeout(() => {
+    window.openMyProfileModal(true);
+  }, 50);
+} else {
+  setGateLockState(false);
+}
+
+// Слушатель базы профилей + проверка ответа админа по заявке в [C6E]
 onSnapshot(doc(db, DB_COLLECTION, "profiles"), (snap) => {
   allProfilesList = (snap.exists() && Array.isArray(snap.data().list)) ? snap.data().list : [];
   const remoteMe = allProfilesList.find(x => x.profileId === clientSecurityMeta.deviceId);
 
   if (remoteMe) {
-    // Проверяем, не изменил ли админ статус заявки в клан [C6E]
     if (myLocalProfile && myLocalProfile.c6eStatus === 'pending' && remoteMe.c6eStatus === 'approved') {
       addPersonalNotification("🛡️ Вы приняты в [C6E] на сайте!", "Основатель Kas подтвердил вашу принадлежность к клану CYBER 6 ESPORTS!", "success");
       window.showNotify("🛡️ Администрация подтвердила ваш профиль бойца [C6E]!", "success");
     }
     if (remoteMe.c6eStatus === 'rejected') {
       saveLocalProfileCache(remoteMe);
+      setGateLockState(true);
       addPersonalNotification("❌ Отказ в регистрации под тегом [C6E]", "Администратор отклонил заявку на статус бойца [C6E]. Укажите ваш реальный клан в профиле.", "error");
       window.openMyProfileModal(true, "Вы не числитесь в основном или резервном составе CYBER 6 ESPORTS.");
     } else {
-      // Проверяем новые лайки профиля
       if (myLocalProfile && (remoteMe.likes || 0) > (myLocalProfile.likes || 0)) {
         addPersonalNotification("❤️ Новый лайк профиля!", `Вашему игровому профилю поставили лайк! Всего лайков: ${remoteMe.likes}`, "info");
       }
       saveLocalProfileCache(remoteMe);
     }
   } else if (!myLocalProfile || !myLocalProfile.nick) {
-    // Обязательная регистрация при входе на сайт (без профиля сайт закрыт модальным гейтом)
-    setTimeout(() => {
-      if (!myLocalProfile || !myLocalProfile.nick) {
-        window.openMyProfileModal(true);
-      }
-    }, 850);
+    setGateLockState(true);
+    window.openMyProfileModal(true);
+  } else {
+    // Если профиль уже создан локально, но еще не записался в облако — автоматически синхронизируем его в Firestore
+    const ref = doc(db, DB_COLLECTION, "profiles");
+    const updatedList = [...allProfilesList, myLocalProfile];
+    setDoc(ref, { list: updatedList }, { merge: true }).catch(() => {});
   }
 
   renderCommunityRadarOnHome();
@@ -3713,11 +3971,17 @@ window.mentionUserInChat = (nick) => {
 
 function renderGlobalChatSection() {
   const root = document.getElementById('global-chat-root');
+  const now = Date.now();
+  const validMsgs = globalChatMessages.filter(m => (now - (m.ts || 0)) < CHAT_RETENTION_MS);
+
+  const chatLivePill = document.getElementById('home-chat-live-pill');
+  if (chatLivePill) {
+    chatLivePill.innerText = validMsgs.length > 0 ? `${validMsgs.length} СООБЩ.` : '12Ч ЧАТ';
+  }
+
   if (!root) return;
 
   const existingInputVal = document.getElementById('global-chat-input')?.value || '';
-  const now = Date.now();
-  const validMsgs = globalChatMessages.filter(m => (now - (m.ts || 0)) < CHAT_RETENTION_MS);
   const myCleanNick = myLocalProfile ? myLocalProfile.nick.toLowerCase() : '';
 
   root.innerHTML = `
@@ -3738,7 +4002,6 @@ function renderGlobalChatSection() {
         </div>
       </div>
 
-      <!-- Быстрая панель онлайн-игроков для @упоминания в 1 клик -->
       <div style="padding:7px 12px; background:rgba(0,0,0,0.45); border-bottom:1px solid rgba(255,255,255,0.05); display:flex; align-items:center; gap:6px; overflow-x:auto; white-space:nowrap;">
         <span style="font-size:9px; font-family:var(--font-tech); color:var(--silver-muted);">УПОМЯНУТЬ:</span>
         ${allProfilesList.slice(0, 10).map(p => {
@@ -3817,7 +4080,7 @@ window.sendGlobalChatMessage = async (e) => {
 
   if (containsSpam(text)) {
     const bad = findMatchedSpamWord(text);
-    await logSecurityAction('🚨 ТРЕВОГА: Запрещенное слово в чате', myLocalProfile.nick, `Слово «${bad}»: "${text.slice(0, 50)}"`, true);
+    logSecurityEvent('🚨 ТРЕВОГА: Запрещенное слово в чате', myLocalProfile.nick, `Слово «${bad}»: "${text.slice(0, 50)}"`, true);
     return window.showNotify("🛡 C6E Shield: Сообщение заблокировано анти-мат фильтром!", "error");
   }
 
@@ -3830,7 +4093,6 @@ window.sendGlobalChatMessage = async (e) => {
     let messages = (snap.exists() && Array.isArray(snap.data().messages)) ? snap.data().messages : [];
     let lastPurgeTs = (snap.exists() && snap.data().lastPurgeTs) ? snap.data().lastPurgeTs : now;
 
-    // Авто-очистка сообщений старше 12 часов
     messages = messages.filter(m => (now - (m.ts || 0)) < CHAT_RETENTION_MS);
     if (now - lastPurgeTs >= CHAT_RETENTION_MS) {
       messages = [];
@@ -3868,7 +4130,6 @@ onSnapshot(doc(db, DB_COLLECTION, "global_chat"), (snap) => {
     globalChatLastPurge = snap.data().lastPurgeTs || now;
     globalChatMessages = rawMsgs.filter(m => (now - (m.ts || 0)) < CHAT_RETENTION_MS);
 
-    // Проверяем, не упомянули ли текущего пользователя в новом сообщении через @Ник
     if (myLocalProfile && myLocalProfile.nick && globalChatMessages.length > 0) {
       const latest = globalChatMessages[globalChatMessages.length - 1];
       if (latest.id !== lastProcessedChatMsgId && latest.ts > sessionBootTime && latest.senderId !== myLocalProfile.profileId) {
@@ -3906,7 +4167,7 @@ function renderShopSection() {
 
   const teaserItems = [
     { icon: 'fa-coins', color: '#ffb300', badge: 'LOCKED // SOON', title: 'ПАКИ ГОЛДЫ & GOLD PASS', desc: 'Мгновенное пополнение Голды и боевых пропусков Standoff 2 по закрытому курсу для участников портала [C6E].' },
-    { icon: 'fa-Sliders-h', color: '#00e676', badge: 'PRO CONFIGS', title: 'ПРИВАТНЫЕ НАСТРОЙКИ БОЙЦОВ [C6E]', desc: 'Эксклюзивные паки кастомной раскладки, точной сенсы, прицелов и секретов оттяжки от основы Cyber 6 Esports.' },
+    { icon: 'fa-sliders-h', color: '#00e676', badge: 'PRO CONFIGS', title: 'ПРИВАТНЫЕ НАСТРОЙКИ БОЙЦОВ [C6E]', desc: 'Эксклюзивные паки кастомной раскладки, точной сенсы, прицелов и секретов оттяжки от основы Cyber 6 Esports.' },
     { icon: 'fa-crown', color: '#ff5263', badge: 'VIP STATUS', title: 'КАСТОМНЫЕ VIP-РАМКИ И БАННЕРЫ', desc: 'Уникальные анимированные рамки профиля, золотой ник в Общем чате и приоритетный слот на праках.' },
     { icon: 'fa-trophy', color: '#3b82f6', badge: 'TOURNAMENT SLOTS', title: 'БИЛЕТЫ НА ЗАКРЫТЫЕ ТУРНИРЫ C6E', desc: 'Прямые инвайты на еженедельные дуэли 1v1, 2v2 и 5v5 с гарантированным призовым фондом в Голде.' }
   ];
@@ -3996,5 +4257,6 @@ onSnapshot(doc(db, DB_COLLECTION, "shop_config"), (snap) => {
 
 // Инициализация UI при старте
 updateHeaderProfileChipUI();
-setTimeout(autoFillFormsWithProfile, 500);
+setTimeout(autoFillFormsWithProfile, 400);
+renderCommunityRadarOnHome();
 renderShopSection();
