@@ -19,7 +19,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
-  <link rel="stylesheet" href="style.css?v=7">
+  <link rel="stylesheet" href="style.css?v=8">
   <script>
     (function() {
       try {
@@ -116,9 +116,9 @@
 
   <div class="nav-dropdown" id="navDropdown">
     <button class="menu-item active-tab" id="btn-home" onclick="selectTab('home', this)"><i class="fas fa-home"></i> Главная</button>
-    <button class="menu-item" id="btn-pantheon" onclick="selectTab('pantheon', this)" style="color: #ffb300;"><i class="fas fa-crown" style="color: #ffb300;"></i> Пантеон</button>
-    <button class="menu-item" id="btn-chat" onclick="selectTab('chat', this)" style="color: #00e676;"><i class="fas fa-comments" style="color: #00e676;"></i> Общий чат</button>
-    <button class="menu-item" id="btn-shop" onclick="selectTab('shop', this)" style="color: #ff6b7a;"><i class="fas fa-shopping-bag" style="color: #ff6b7a;"></i> Магазин</button>
+    <button class="menu-item" id="btn-pantheon" onclick="selectTab('pantheon', this)"><i class="fas fa-crown"></i> Пантеон</button>
+    <button class="menu-item" id="btn-chat" onclick="selectTab('chat', this)"><i class="fas fa-comments"></i> Общий чат</button>
+    <button class="menu-item" id="btn-shop" onclick="selectTab('shop', this)"><i class="fas fa-shopping-bag"></i> Магазин</button>
     <button class="menu-item" id="btn-team" onclick="selectTab('team', this)"><i class="fas fa-users"></i> Состав</button>
     <button class="menu-item" id="btn-practice" onclick="selectTab('practice', this)"><i class="fas fa-crosshairs"></i> Праки</button>
     <button class="menu-item" id="btn-schedule" onclick="selectTab('schedule', this)"><i class="far fa-calendar-alt"></i> Расписание</button>
@@ -134,111 +134,97 @@
 
 <div class="container">
 
-    <!-- 1. ИННОВАЦИОННЫЙ ГЛАВНЫЙ ЭКРАН v0.5.0 (CYBER COMMAND HUB) -->
+      <!-- 1. ИННОВАЦИОННЫЙ ГЛАВНЫЙ ЭКРАН v0.5.0 (MIRROR COMMAND HUB) -->
   <section id="home" class="active" style="display: block; opacity: 1; transform: translateY(0);">
     <div class="card cyber-hero-v5">
       <div class="hero-top-meta">
-        <span class="hero-live-pill"><span class="online-dot-pulse"></span> PORTAL v0.5.0 • ЗАЩИТА C6E SHIELD</span>
-        <span class="hero-dev-pill" onclick="if(window.openSiteReleaseModal) window.openSiteReleaseModal()"><i class="fas fa-code"></i> DEV: KAS (@kas_0ff) • ПАТЧ-НОУТ</span>
+        <span class="hero-live-pill"><span class="online-dot-pulse"></span> PORTAL v0.5.0 • C6E SHIELD</span>
+        <span class="hero-dev-pill" onclick="if(window.openSiteReleaseModal) window.openSiteReleaseModal()">
+          <span class="c6e-dev-verified-badge" style="width:13px; height:13px; font-size:7.5px;">✓</span> DEV: KAS (@kas_0ff) • ОБНОВЛЕНИЕ
+        </span>
       </div>
 
       <img src="logo.png" alt="Cyber 6 Esports" class="hero-logo-badge" onerror="this.style.display='none'">
       <h2 class="hero-title">CYBER <span>6</span> ESPORTS</h2>
-      <div id="typing-text" style="margin-bottom: 14px;">STANDOFF 2 PROFESSIONAL TEAM</div>
+      <div id="typing-text" style="margin-bottom: 12px;">STANDOFF 2 PROFESSIONAL TEAM</div>
 
-      <div style="max-width: 640px; margin: 0 auto 16px auto; font-size: 12px; color: var(--silver-muted); line-height: 1.55;">
-        Официальная киберспортивная экосистема <b>[C6E]</b>. Соревнуйся в еженедельном <b>Пантеоне за 900 GOLD</b>, общайся с игроками в <b>Общем чате</b>, бронируй <b>Праки (CW)</b> и создай свой верифицированный игровой профиль!
+      <div style="max-width: 600px; margin: 0 auto 14px auto; font-size: 12px; color: var(--silver-muted); line-height: 1.55;">
+        Официальная киберспортивная платформа <b>[C6E]</b>. Еженедельная гонка в <b>Пантеоне за 900 GOLD</b>, верифицированные игровые профили, живой <b>Общий чат</b> и вызовы на <b>Праки (CW)</b>.
       </div>
 
-      <!-- БАННЕР ВКЛЮЧЕНИЯ УВЕДОМЛЕНИЙ НА УСТРОЙСТВО В 1 КЛИК -->
-      <div id="home-push-optin-bar" class="push-optin-banner" style="display:none;">
-        <div style="display:flex; align-items:center; gap:10px;">
-          <span style="width:34px; height:34px; border-radius:9px; background:rgba(0,230,118,0.16); border:1px solid var(--success); color:var(--success); display:inline-flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0;">
-            <i class="fas fa-bell"></i>
-          </span>
-          <div>
-            <div style="font-family:var(--font-tech); font-size:10.5px; font-weight:900; color:#fff;">ВКЛЮЧИ СИСТЕМНЫЕ УВЕДОМЛЕНИЯ ПОРТАЛА [C6E] НА УСТРОЙСТВО</div>
-            <div style="font-size:10px; color:var(--silver-muted);">Мгновенные оповещения о новых обновлениях от Kas, @упоминаниях в чате и статусе заявки в [C6E]</div>
-          </div>
-        </div>
-        <button type="button" class="chip-btn" style="background:var(--success); color:#000; border-color:var(--success); font-weight:900; padding:8px 14px; font-size:10px;" onclick="window.requestDevicePushPermission()">
-          📲 РАЗРЕШИТЬ УВЕДОМЛЕНИЯ
-        </button>
-      </div>
-
-      <!-- 4 ИННОВАЦИОННЫЕ КИБЕР-КАРТОЧКИ БЫСТРОГО ДОСТУПА -->
+      <!-- 4 ЗЕРКАЛЬНЫЕ КИБЕР-КАРТОЧКИ БЫСТРОГО ДОСТУПА (В ЕДИНОМ СТИЛЕ ХРОМ + АКЦЕНТ) -->
       <div class="hero-portal-cards-grid">
-        <div class="hero-portal-tile" style="border-left-color:#ffb300;" onclick="selectTab('pantheon', document.getElementById('btn-pantheon'))">
+        <div class="hero-portal-tile" onclick="selectTab('pantheon', document.getElementById('btn-pantheon'))">
           <div class="hero-tile-top">
-            <span class="hero-tile-icon" style="color:#ffb300; border-color:rgba(255,179,0,0.4);"><i class="fas fa-crown"></i></span>
-            <span class="hero-tile-badge" style="background:rgba(255,179,0,0.16); color:#ffb300; border:1px solid rgba(255,179,0,0.4);">500 / 250 / 150G</span>
+            <span class="hero-tile-icon"><i class="fas fa-crown"></i></span>
+            <span class="hero-tile-badge">900 GOLD</span>
           </div>
           <div class="hero-tile-title">ПАНТЕОН [C6E]</div>
-          <div class="hero-tile-sub">Еженедельная гонка бойцов за 900 Голды и бусты зрителей</div>
+          <div class="hero-tile-sub">Гонка бойцов за 500 / 250 / 150G и бусты зрителей</div>
         </div>
 
-        <div class="hero-portal-tile" style="border-left-color:#00e676;" onclick="selectTab('chat', document.getElementById('btn-chat'))">
+        <div class="hero-portal-tile" onclick="selectTab('chat', document.getElementById('btn-chat'))">
           <div class="hero-tile-top">
-            <span class="hero-tile-icon" style="color:#00e676; border-color:rgba(0,230,118,0.4);"><i class="fas fa-comments"></i></span>
-            <span class="hero-tile-badge" id="home-chat-live-pill" style="background:rgba(0,230,118,0.14); color:#00e676; border:1px solid rgba(0,230,118,0.35);">12Ч ЧАТ</span>
+            <span class="hero-tile-icon"><i class="fas fa-comments"></i></span>
+            <span class="hero-tile-badge" id="home-chat-live-pill">12Ч ЧАТ</span>
           </div>
-          <div class="hero-tile-title">ОБЩИЙ ЧАТ ИГРОКОВ</div>
-          <div class="hero-tile-sub">Живое общение гостей и бойцов [C6E] с тегами @Ник</div>
+          <div class="hero-tile-title">ОБЩИЙ ЧАТ</div>
+          <div class="hero-tile-sub">Живое общение гостей и состава с тегами @Ник</div>
         </div>
 
-        <div class="hero-portal-tile" style="border-left-color:var(--accent-light);" onclick="selectTab('practice', document.getElementById('btn-practice'))">
+        <div class="hero-portal-tile" onclick="selectTab('practice', document.getElementById('btn-practice'))">
           <div class="hero-tile-top">
-            <span class="hero-tile-icon" style="color:var(--accent-light); border-color:var(--accent-light);"><i class="fas fa-crosshairs"></i></span>
-            <span class="hero-tile-badge" id="home-prac-live-pill" style="background:var(--accent-dim); color:#fff; border:1px solid var(--accent-light);">CW SLOTS</span>
+            <span class="hero-tile-icon"><i class="fas fa-crosshairs"></i></span>
+            <span class="hero-tile-badge" id="home-prac-live-pill">CW SLOTS</span>
           </div>
-          <div class="hero-tile-title">ВЫЗОВ НА ПРАК (CW)</div>
-          <div class="hero-tile-sub">Бронируй свободный слот и сыграй против состава [C6E]</div>
+          <div class="hero-tile-title">ПРАКИ (CW)</div>
+          <div class="hero-tile-sub">Бронируй слот и сыграй против состава [C6E]</div>
         </div>
 
-        <div class="hero-portal-tile" style="border-left-color:#3b82f6;" onclick="selectTab('shop', document.getElementById('btn-shop'))">
+        <div class="hero-portal-tile" onclick="selectTab('shop', document.getElementById('btn-shop'))">
           <div class="hero-tile-top">
-            <span class="hero-tile-icon" style="color:#60a5fa; border-color:rgba(59,130,246,0.4);"><i class="fas fa-shopping-bag"></i></span>
-            <span class="hero-tile-badge" style="background:rgba(59,130,246,0.16); color:#93c5fd; border:1px solid rgba(59,130,246,0.4);">SECRET MARKET</span>
+            <span class="hero-tile-icon"><i class="fas fa-shopping-bag"></i></span>
+            <span class="hero-tile-badge">MARKET</span>
           </div>
           <div class="hero-tile-title">МАГАЗИН [C6E]</div>
-          <div class="hero-tile-sub">Эксклюзивные паки Голды, приватные конфиги и VIP-рамки</div>
+          <div class="hero-tile-sub">Паки Голды, приватные конфиги и VIP-рамки</div>
         </div>
       </div>
     </div>
 
-    <!-- 4 ПЛИТКИ ЖИВОЙ ТЕЛЕМЕТРИИ ОРГАНИЗАЦИИ -->
+    <!-- 4 ЗЕРКАЛЬНЫЕ ПЛИТКИ ЖИВОЙ ТЕЛЕМЕТРИИ ОРГАНИЗАЦИИ -->
     <div class="stats-row-v5">
-      <div class="stat-card-v5" style="border-bottom-color:var(--success);">
-        <div class="val" id="win-rate-display" style="color:var(--success);">0%</div>
+      <div class="stat-card-v5">
+        <div class="val" id="win-rate-display">0%</div>
         <div class="lbl">WIN RATE (СЕЗОН)</div>
       </div>
-      <div class="stat-card-v5" style="border-bottom-color:var(--accent-light);">
+      <div class="stat-card-v5">
         <div class="val" id="total-games-display">0</div>
         <div class="lbl">СЫГРАНО МАТЧЕЙ</div>
       </div>
-      <div class="stat-card-v5" style="border-bottom-color:#ffb300; cursor:pointer;" onclick="selectTab('pantheon', document.getElementById('btn-pantheon'))">
-        <div class="val" style="color:#ffb300;">900 G</div>
-        <div class="lbl">ФОНД ПАНТЕОНА / НЕД</div>
+      <div class="stat-card-v5" style="cursor:pointer;" onclick="selectTab('pantheon', document.getElementById('btn-pantheon'))">
+        <div class="val">900 G</div>
+        <div class="lbl">ФОНД ПАНТЕОНА</div>
       </div>
-      <div class="stat-card-v5" style="border-bottom-color:#3b82f6; cursor:pointer;" onclick="document.getElementById('home-community-hub')?.scrollIntoView({behavior:'smooth'})">
-        <div class="val" id="home-stat-profiles-count" style="color:#93c5fd;">1</div>
-        <div class="lbl">ПРОФИЛЕЙ НА ПОРТАЛЕ</div>
+      <div class="stat-card-v5" style="cursor:pointer;" onclick="document.getElementById('home-community-hub')?.scrollIntoView({behavior:'smooth'})">
+        <div class="val" id="home-stat-profiles-count">1</div>
+        <div class="lbl">ИГРОКОВ В БАЗЕ</div>
       </div>
     </div>
 
-    <!-- ЖИВОЙ МИНИ-ПОДИУМ ТОП-3 ПАНТЕОНА ПРЯМО НА ГЛАВНОЙ -->
+    <!-- ЖИВОЙ МИНИ-ПОДИУМ ТОП-3 ПАНТЕОНА НА ГЛАВНОЙ -->
     <div class="card home-pantheon-widget" id="home-pantheon-mini-card">
       <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; padding-bottom:12px; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.08);">
         <div>
-          <div style="font-family:var(--font-tech); font-size:13px; font-weight:900; color:#fff; display:flex; align-items:center; gap:8px;">
-            <i class="fas fa-crown" style="color:#ffb300;"></i> ЛИДЕРЫ ГОНКИ ЗА 900 GOLD (ТОП-3 ПАНТЕОНА)
+          <div style="font-family:var(--font-tech); font-size:12.5px; font-weight:900; color:var(--silver); display:flex; align-items:center; gap:8px;">
+            <i class="fas fa-crown text-accent"></i> ТОП-3 ПАНТЕОНА // ГОНКА ЗА 900 GOLD
           </div>
           <div style="font-size:10px; color:var(--silver-muted); margin-top:2px;">
-            Очки считаются автоматически по K/D из официальных Табов матчей + бусты зрителей (+25 PTS)
+            Рейтинг считается автоматически по K/D из официальных Табов матчей + бусты зрителей (+25 PTS)
           </div>
         </div>
-        <button type="button" class="chip-btn" style="border-color:#ffb300; color:#ffb300; font-weight:800;" onclick="selectTab('pantheon', document.getElementById('btn-pantheon'))">
-          ОТКРЫТЬ ВЕСЬ ПАНТЕОН ➔
+        <button type="button" class="chip-btn" style="border-color:var(--mirror-border-bright); color:#fff;" onclick="selectTab('pantheon', document.getElementById('btn-pantheon'))">
+          ВЕСЬ ПАНТЕОН ➔
         </button>
       </div>
       <div id="home-pantheon-mini-grid" class="home-podium-mini-grid">
@@ -246,15 +232,15 @@
       </div>
     </div>
 
-    <!-- ЖИВОЙ РАДАР ОНЛАЙНА И ИГРОВЫХ ПРОФИЛЕЙ ГОСТЕЙ И БОЙЦОВ С ФИЛЬТРАМИ -->
+    <!-- РАДАР ОНЛАЙНА И ИГРОВЫХ ПРОФИЛЕЙ ГОСТЕЙ И БОЙЦОВ -->
     <div class="card community-radar-card" id="home-community-hub">
       <div class="community-radar-header">
         <div>
-          <div style="font-family:var(--font-tech); font-size:13px; font-weight:900; color:#fff; display:flex; align-items:center; gap:8px;">
-            <span class="online-dot-pulse"></span> ИГРОКИ ОНЛАЙН И СООБЩЕСТВО ПОРТАЛА [C6E]
+          <div style="font-family:var(--font-tech); font-size:12.5px; font-weight:900; color:var(--silver); display:flex; align-items:center; gap:8px;">
+            <span class="online-dot-pulse"></span> ИГРОКИ ОНЛАЙН И ПРОФИЛИ СООБЩЕСТВА [C6E]
           </div>
           <div style="font-size:10px; color:var(--silver-muted); margin-top:3px;">
-            Нажми на профиль любого гостя или бойца, чтобы увидеть его баннер, K/D, страну, биографию и поставить ❤️ лайк!
+            Нажми на карточку игрока, чтобы открыть его зеркальный профиль, баннер, K/D и поставить ❤️ лайк
           </div>
         </div>
         <div class="community-counters-strip">
@@ -263,20 +249,20 @@
             <span class="val" id="comm-online-count">1</span>
           </div>
           <div class="comm-counter-pill total">
-            <span class="lbl">ВСЕГО ПРОФИЛЕЙ</span>
+            <span class="lbl">ВСЕГО</span>
             <span class="val" id="comm-total-count">1</span>
           </div>
-          <button type="button" class="chip-btn" style="border-color:var(--accent-light); color:#fff;" onclick="if(window.openMyProfileModal) window.openMyProfileModal(false)">
-            <i class="fas fa-user-edit text-accent"></i> Мой профиль
+          <button type="button" class="chip-btn" style="border-color:var(--mirror-border-bright); color:#fff;" onclick="if(window.openMyProfileModal) window.openMyProfileModal(false)">
+            <i class="fas fa-sliders-h text-accent"></i> Настроить профиль
           </button>
         </div>
       </div>
 
       <div style="display:flex; gap:6px; overflow-x:auto; padding-bottom:10px; margin-bottom:10px;">
-        <button type="button" class="chip-btn comm-filter-btn active" id="comm-flt-all" style="border-color:var(--accent-light); color:#fff;" onclick="window.setHomeCommunityFilter('all')">🌐 Все профили</button>
-        <button type="button" class="chip-btn comm-filter-btn" id="comm-flt-c6e" onclick="window.setHomeCommunityFilter('c6e')">🛡️ Бойцы [C6E]</button>
-        <button type="button" class="chip-btn comm-filter-btn" id="comm-flt-guest" onclick="window.setHomeCommunityFilter('guest')">💎 Гости портала</button>
-        <button type="button" class="chip-btn comm-filter-btn" id="comm-flt-top" onclick="window.setHomeCommunityFilter('top')">❤️ По лайкам</button>
+        <button type="button" class="chip-btn comm-filter-btn active" id="comm-flt-all" style="border-color:var(--accent-light); color:#fff;" onclick="window.setHomeCommunityFilter('all')">Все профили</button>
+        <button type="button" class="chip-btn comm-filter-btn" id="comm-flt-c6e" onclick="window.setHomeCommunityFilter('c6e')">Состав [C6E]</button>
+        <button type="button" class="chip-btn comm-filter-btn" id="comm-flt-guest" onclick="window.setHomeCommunityFilter('guest')">Гости портала</button>
+        <button type="button" class="chip-btn comm-filter-btn" id="comm-flt-top" onclick="window.setHomeCommunityFilter('top')">По лайкам ❤️</button>
       </div>
 
       <div id="home-online-profiles-grid" class="online-profiles-showcase">
@@ -288,7 +274,7 @@
     <div class="card match-card">
       <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 10px; margin-bottom: 15px;">
         <span class="font-tech text-silver" style="font-size: 11px;"><i class="fas fa-satellite-dish text-accent"></i> MATCH CENTER // ТЕЛЕМЕТРИЯ МАТЧЕЙ</span>
-        <span id="match-status" style="font-size: 9px; font-family: var(--font-tech); color: #fff; background: #333; padding: 3px 8px; border-radius: 4px;">OFFLINE</span>
+        <span id="match-status" style="font-size: 9px; font-family: var(--font-tech); color: #fff; background: rgba(255,255,255,0.08); border: 1px solid var(--mirror-border); padding: 3px 8px; border-radius: 4px;">OFFLINE</span>
       </div>
       
       <div class="match-teams" style="display: flex; align-items: center; justify-content: space-between;">
@@ -311,7 +297,7 @@
     </div>
 
     <div class="card">
-      <h3 class="font-tech" style="font-size: 14px; margin-top: 0; margin-bottom: 15px; color: var(--silver);">
+      <h3 class="font-tech" style="font-size: 13px; margin-top: 0; margin-bottom: 15px; color: var(--silver);">
         <i class="fas fa-bolt text-accent"></i> ПОСЛЕДНИЕ СОБЫТИЯ И ОБНОВЛЕНИЯ
       </h3>
       <div id="home-news-feed">
@@ -689,6 +675,6 @@
   };
 </script>
 
-<script type="module" src="app.js?v=7"></script>
+<script type="module" src="app.js?v=8"></script>
 </body>
 </html>
