@@ -1775,15 +1775,15 @@ onSnapshot(doc(db, DB_COLLECTION, "roster_reserve"), (s) => {
 // АВТО-СИСТЕМА ОБНОВЛЕНИЙ САЙТА И УВЕДОМЛЕНИЙ ОТ РАЗРАБОТЧИКА KAS (@kas_0ff)
 // ============================================================================
 const DEFAULT_KAS_RELEASE = {
-  id: 1763000450000,
-  versionId: "c6e_release_v0_5_0_global",
-  versionLabel: "v0.5.0 // PROFILES, CHAT, SHOP & THEMES",
+  id: 1763050000500,
+  versionId: "c6e_release_v0_5_0_official",
+  versionLabel: "v0.5.0 // PROFILES, 12H CHAT, SHOP, THEMES & COMMAND HUB",
   date: "13.11.2026",
   tag: "ОБНОВЛЕНИЕ",
   author: "Kas (@kas_0ff)",
-  title: "🚀 МЕГА-ОБНОВЛЕНИЕ ПОРТАЛА v0.5.0 ОТ KAS: ИГРОВЫЕ ПРОФИЛИ, ОБЩИЙ ЧАТ, МАГАЗИН [C6E], ТЕМЫ И ПАНТЕОН 900 GOLD!",
+  title: "🚀 ГЛОБАЛЬНОЕ ОБНОВЛЕНИЕ САЙТА v0.5.0 ОТ KAS: ИГРОВЫЕ ПРОФИЛИ [C6E], ОБЩИЙ ЧАТ 12Ч, МАГАЗИН, ТЕМЫ И НОВЫЙ COMMAND HUB!",
   text: `
-    <div style="margin:0 0 16px 0; border-radius:12px; overflow:hidden; border:1px solid rgba(255,179,0,0.45); background:linear-gradient(135deg, rgba(158,27,40,0.35) 0%, rgba(10,11,15,0.98) 60%, rgba(255,179,0,0.16) 100%); padding:18px; position:relative; box-shadow:0 12px 32px rgba(0,0,0,0.65);">
+    <div style="margin:0 0 16px 0; border-radius:12px; overflow:hidden; border:1px solid rgba(255,179,0,0.45); background:linear-gradient(135deg, rgba(158,27,40,0.38) 0%, rgba(10,11,15,0.98) 58%, rgba(255,179,0,0.18) 100%); padding:18px; position:relative; box-shadow:0 12px 32px rgba(0,0,0,0.65);">
       <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
         <img src="logo.png" alt="C6E" onerror="this.style.display='none'" style="width:68px; height:68px; object-fit:contain; border-radius:14px; border:1px solid rgba(255,179,0,0.5); background:rgba(0,0,0,0.5); padding:6px;">
         <div style="flex:1; min-width:200px;">
@@ -1791,56 +1791,60 @@ const DEFAULT_KAS_RELEASE = {
             ⚡ OFFICIAL PORTAL UPDATE v0.5.0 • BY KAS
           </div>
           <div style="font-family:'Orbitron',sans-serif; font-size:16px; font-weight:900; color:#ffffff; letter-spacing:0.5px;">
-            CYBER <span style="color:#d42638;">6</span> ESPORTS // <span style="color:#ffb300;">PANTHEON ERA</span>
+            CYBER <span style="color:#d42638;">6</span> ESPORTS // <span style="color:#ffb300;">UPDATE 0.5.0 LIVE</span>
           </div>
           <div style="font-size:11px; color:#aaa; margin-top:3px;">
-            Разработчик и Основатель: <strong style="color:#fff;">Kas (Джораев Неджи)</strong> • <em>Официальный релиз для игроков и гостей портала</em>
+            Разработчик и Основатель: <strong style="color:#fff;">Kas (Джораев Неджи)</strong> • <em>Официальный патч-ноут портала для состава и гостей</em>
           </div>
         </div>
       </div>
     </div>
 
     <p style="margin:0 0 12px 0; font-size:13.5px; color:#e4e4e2; line-height:1.7;">
-      Салам всем бойцам нашего состава и гостям портала! На связи <strong>Kas</strong> — основатель и главный разработчик <strong>CYBER 6 ESPORTS <code>[C6E]</code></strong>. Сегодня на нашем официальном сайте вышло крупное обновление <code style="background:rgba(212,38,56,0.18); border:1px solid rgba(212,38,56,0.45); padding:2px 7px; border-radius:4px; color:#ff6b7a; font-family:'Orbitron',sans-serif; font-size:11px;">v0.5.0</code>, которое выводит соревновательную систему клана на совершенно новый уровень!
+      Салам всем бойцам и гостям нашего портала! На связи <strong>Kas (<code>@kas_0ff</code>)</strong> — основатель и главный разработчик <strong>CYBER 6 ESPORTS <code>[C6E]</code></strong>. Сегодня на сайте установлено масштабное обновление <code style="background:rgba(212,38,56,0.18); border:1px solid rgba(212,38,56,0.45); padding:2px 7px; border-radius:4px; color:#ff6b7a; font-family:'Orbitron',sans-serif; font-size:11px;">v0.5.0</code>, которое превращает наш сайт в полноценную социальную и турнирную кибер-платформу!
     </p>
 
-    <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:14px 16px; margin:14px 0;">
-      <div style="font-family:'Orbitron',sans-serif; font-size:12px; font-weight:800; color:#ffb300; margin-bottom:10px; letter-spacing:1px;">
-        👑 1. НОВЫЙ РАЗДЕЛ «ПАНТЕОН [C6E]» — ГОНКА ЗА 900 ГОЛДЫ КАЖДУЮ НЕДЕЛЮ
+    <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-left:3px solid #ffb300; border-radius:10px; padding:14px 16px; margin:14px 0;">
+      <div style="font-family:'Orbitron',sans-serif; font-size:12px; font-weight:800; color:#ffb300; margin-bottom:8px; letter-spacing:0.8px;">
+        🆔 1. ЛИЧНЫЕ ИГРОВЫЕ ПРОФИЛИ (12+), ПРОВЕРКА ТЕГА [C6E], РАМКИ И БАННЕРЫ
       </div>
       <p style="margin:0 0 8px 0; font-size:13px; color:#ccc; line-height:1.65;">
-        На сайте открыт элитный зал славы и еженедельной гонки <strong>«ПАНТЕОН»</strong>! Каждое воскресенье в <code style="background:rgba(255,255,255,0.08); padding:2px 6px; border-radius:4px; color:#fff;">23:59 (МСК)</code> тройка лучших бойцов недели получает личный <em>Бонус от Основателя Kas</em>:
+        Теперь у каждого посетителя есть свой игровой профиль без паролей и почты! Укажи свой <strong>Ник</strong>, <strong>Standoff 2 ID</strong>, действующий <code>K/D</code>, возраст (<code>12+</code>) и страну — система сама подставит флаг твоей страны (<code>🇷🇺</code>, <code>🇰🇬</code>, <code>🇰🇿</code>, <code>🇮🇩</code> и др.).
       </p>
-      <div style="display:flex; gap:8px; flex-wrap:wrap; margin:10px 0;">
-        <span style="background:rgba(255,179,0,0.16); border:1px solid #ffb300; color:#ffb300; font-family:'Orbitron',sans-serif; font-size:11px; font-weight:800; padding:5px 11px; border-radius:6px;">🥇 1 МЕСТО — 500 GOLD</span>
-        <span style="background:rgba(228,228,226,0.12); border:1px solid #e4e4e2; color:#ffffff; font-family:'Orbitron',sans-serif; font-size:11px; font-weight:800; padding:5px 11px; border-radius:6px;">🥈 2 МЕСТО — 250 GOLD</span>
-        <span style="background:rgba(205,127,50,0.16); border:1px solid #cd7f32; color:#ffb074; font-family:'Orbitron',sans-serif; font-size:11px; font-weight:800; padding:5px 11px; border-radius:6px;">🥉 3 МЕСТО — 150 GOLD</span>
-      </div>
-      <p style="margin:6px 0 0 0; font-size:12.5px; color:#bbb; line-height:1.6;">
-        Рейтинг считается автоматически по умной формуле <code style="background:rgba(255,179,0,0.15); padding:2px 6px; border-radius:4px; color:#ffb300;">PTS</code>: учитывается твой <strong>LIVE K/D</strong>, <em>еженедельный прирост скилла (<code>Δ K/D</code>)</em>, сыгранные матчи и награды <code>MVP</code> в Табах, а также поддержка на сайте!
+      <p style="margin:0; font-size:12.5px; color:#bbb; line-height:1.6;">
+        Бойцы нашего состава проходят верификацию и получают официальный статус <strong>🛡️ Боец <code>[C6E]</code></strong>, а гости из других команд — стильный значок <strong>💎 Гость портала</strong> со своим клан-тегом. Выбирай гексагональную рамку в стиле логотипа <code>[C6E]</code>, загружай аватарку и баннер с телефона, ставь ❤️ лайки чужим профилям, а твои данные будут <em>автоматически подставляться</em> при записи на прак и отправке отзывов!
       </p>
     </div>
 
-    <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:14px 16px; margin:14px 0;">
-      <div style="font-family:'Orbitron',sans-serif; font-size:12px; font-weight:800; color:#00e676; margin-bottom:8px; letter-spacing:1px;">
-        🔥 2. КНОПКА «БУСТ БОЙЦА (+25 PTS)» И АКТИВНОСТЬ НА ПОРТАЛЕ
+    <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-left:3px solid #00e676; border-radius:10px; padding:14px 16px; margin:14px 0;">
+      <div style="font-family:'Orbitron',sans-serif; font-size:12px; font-weight:800; color:#00e676; margin-bottom:8px; letter-spacing:0.8px;">
+        💬 2. ОБЩИЙ ЧАТ ИГРОКОВ (АВТО-ОЧИСТКА 12Ч) И СИСТЕМНЫЕ УВЕДОМЛЕНИЯ 🔔
       </div>
       <p style="margin:0; font-size:13px; color:#ccc; line-height:1.65;">
-        Теперь каждый игрок и болельщик клана может напрямую влиять на исход гонки за Голду! Заходи в раздел <strong>«Пантеон»</strong> или <strong>«Состав»</strong> и нажимай кнопку <code style="background:rgba(255,179,0,0.2); border:1px solid #ffb300; padding:2px 7px; border-radius:4px; color:#ffb300; font-weight:700;">🔥 БУСТ БОЙЦА (+25 PTS)</code> каждые <em>6 часов</em>, чтобы продвинуть своего фаворита на подиум.
+        Открыт живой <strong>«Общий чат»</strong> для общения между гостями и составом <code>[C6E]</code>! Чтобы не засорять память, чат автоматически очищается каждые <code style="background:rgba(0,230,118,0.15); padding:2px 6px; border-radius:4px; color:#00e676;">12 часов</code>. Нажми на любого игрока или введи его <code>@Ник</code> — и ему мгновенно прилетит персональное уведомление в колокольчик <strong>🔔</strong> в шапке сайта и прямо на экран телефона!
       </p>
     </div>
 
-    <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:14px 16px; margin:14px 0;">
-      <div style="font-family:'Orbitron',sans-serif; font-size:12px; font-weight:800; color:#5294ff; margin-bottom:8px; letter-spacing:1px;">
-        📊 3. ЖИВАЯ СТАТИСТИКА LIVE K/D, ДОСЬЕ ИГРОКОВ И ДВОЙНОЙ ТАБ 5v5
+    <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-left:3px solid #d42638; border-radius:10px; padding:14px 16px; margin:14px 0;">
+      <div style="font-family:'Orbitron',sans-serif; font-size:12px; font-weight:800; color:#ff6b7a; margin-bottom:8px; letter-spacing:0.8px;">
+        🛒 3. ЗАКРЫТЫЙ «МАГАЗИН [C6E]» И 4 ЦВЕТОВЫЕ ТЕМЫ САЙТА 🎨
       </div>
       <p style="margin:0; font-size:13px; color:#ccc; line-height:1.65;">
-        Карточки всех бойцов основы и резерва теперь работают в режиме <em>реального времени</em>: после каждого официального прака или турнира сайт сам пересчитывает <code>LIVE K/D</code>, динамику формы (<strong>🔥 В ОГНЕ</strong>) и винрейт. А в разделе <strong>«Матчи»</strong> доступен полный разворот <strong>Двойного Таба Standoff 2</strong> с точной статистикой <code>У / П / С / K/D / Счёт / Пинг</code> обоих составов и оригинальным скриншотом-пруфом.
+        В меню появился новый раздел <strong>«Магазин»</strong> — закрытый кибер-маркет, где скоро откроется доступ к проверенным пакам Голды, приватным конфигам прицела и сенсы наших топ-бойцов, кастомным VIP-рамкам и слотам на закрытые турниры. А по нажатию на иконку палитры <strong>🎨</strong> в шапке ты можешь в 1 клик переключать тему оформления сайта: <em>Кровавый Рубин</em>, <em>Изумруд</em>, <em>Золото Пантеона</em> или <em>Ледяной Сапфир</em>!
+      </p>
+    </div>
+
+    <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-left:3px solid #3b82f6; border-radius:10px; padding:14px 16px; margin:14px 0;">
+      <div style="font-family:'Orbitron',sans-serif; font-size:12px; font-weight:800; color:#60a5fa; margin-bottom:8px; letter-spacing:0.8px;">
+        ⚡ 4. НОВЫЙ ГЛАВНЫЙ ЭКРАН (COMMAND HUB), РАДАР ОНЛАЙНА И 120 FPS НА ТЕЛЕФОНАХ
+      </div>
+      <p style="margin:0; font-size:13px; color:#ccc; line-height:1.65;">
+        Главный экран полностью переработан: теперь здесь расположен живой радар игроков онлайн с фильтрами (<code>Все профили</code> / <code>Бойцы [C6E]</code> / <code>Гости</code>), интерактивный мини-подиум лидеров <strong>Пантеона (500 / 250 / 150 GOLD)</strong> и карточка последнего сыгранного матча с быстрым переходом к <strong>Двойному Табу Standoff 2</strong>. Весь интерфейс оптимизирован под мобильные экраны для плавной работы без лагов!
       </p>
     </div>
 
     <blockquote style="margin:16px 0 8px 0; padding:14px 18px; border-left:4px solid #ffb300; background:rgba(255,179,0,0.07); color:#e4e4e2; font-style:italic; border-radius:0 10px 10px 0; line-height:1.65;">
-      «Я разработал это обновление специально для того, чтобы каждый боец <strong>[C6E]</strong> видел свой реальный прогресс от игры к игре, а старание на праках и турнирах вознаграждалось звонкой Голдой. Заходите на сайт каждый день, прожимайте бусты, разрывайте соперников в Табе и забирайте <code>500</code>, <code>250</code> и <code>150 GOLD</code> в конце недели!»
+      «Каждое обновление портала <strong>CYBER 6 ESPORTS [C6E]</strong> создаётся для того, чтобы нашим бойцам и гостям было максимально кайфово находиться внутри экосистемы клана. Создавайте свои профили, общайтесь в чате, голосуйте бустами в Пантеоне за <code>900 GOLD</code> и следите за новыми релизами!»
       <div style="margin-top:8px; font-style:normal; font-family:'Orbitron',sans-serif; font-size:10px; font-weight:800; color:#ffb300; letter-spacing:1px;">
         — KAS (@kas_0ff) // ОСНОВАТЕЛЬ И ГЛАВНЫЙ РАЗРАБОТЧИК CYBER 6 ESPORTS [C6E]
       </div>
@@ -1853,20 +1857,41 @@ let cachedFirestoreNewsList = [];
 
 function getMergedNewsFeedList() {
   const list = Array.isArray(cachedFirestoreNewsList) ? [...cachedFirestoreNewsList] : [];
-  const hasCurrentRelease = list.some(n =>
-    (n.versionId && n.versionId === currentActiveRelease.versionId) ||
-    (n.title && currentActiveRelease.title && n.title.trim() === currentActiveRelease.title.trim())
+
+  // 1. Всегда гарантируем, что встроенный актуальный релиз кода (DEFAULT_KAS_RELEASE v0.5.0) есть в ленте новостей
+  const hasBuiltInRelease = list.some(n =>
+    (n.versionId && n.versionId === DEFAULT_KAS_RELEASE.versionId) ||
+    (n.title && DEFAULT_KAS_RELEASE.title && n.title.trim() === DEFAULT_KAS_RELEASE.title.trim())
   );
-  if (!hasCurrentRelease && currentActiveRelease && currentActiveRelease.title) {
+  if (!hasBuiltInRelease) {
     list.push({
-      id: currentActiveRelease.id || 1763000450000,
-      versionId: currentActiveRelease.versionId,
-      title: currentActiveRelease.title,
-      text: currentActiveRelease.text,
-      date: currentActiveRelease.date || new Date().toLocaleDateString('ru-RU'),
-      tag: currentActiveRelease.tag || 'ОБНОВЛЕНИЕ'
+      id: DEFAULT_KAS_RELEASE.id,
+      versionId: DEFAULT_KAS_RELEASE.versionId,
+      title: DEFAULT_KAS_RELEASE.title,
+      text: DEFAULT_KAS_RELEASE.text,
+      date: DEFAULT_KAS_RELEASE.date,
+      tag: DEFAULT_KAS_RELEASE.tag || 'ОБНОВЛЕНИЕ'
     });
   }
+
+  // 2. Если из админки был опубликован еще более новый релиз в site_release — добавляем и его
+  if (currentActiveRelease && currentActiveRelease.versionId && currentActiveRelease.versionId !== DEFAULT_KAS_RELEASE.versionId) {
+    const hasCustomRelease = list.some(n =>
+      (n.versionId && n.versionId === currentActiveRelease.versionId) ||
+      (n.title && currentActiveRelease.title && n.title.trim() === currentActiveRelease.title.trim())
+    );
+    if (!hasCustomRelease && currentActiveRelease.title) {
+      list.push({
+        id: currentActiveRelease.id || Date.now(),
+        versionId: currentActiveRelease.versionId,
+        title: currentActiveRelease.title,
+        text: currentActiveRelease.text,
+        date: currentActiveRelease.date || new Date().toLocaleDateString('ru-RU'),
+        tag: currentActiveRelease.tag || 'ОБНОВЛЕНИЕ'
+      });
+    }
+  }
+
   list.sort((a, b) => (a.id || 0) - (b.id || 0));
   return list;
 }
@@ -1946,46 +1971,41 @@ window.openSiteReleaseModal = (relObj = null) => {
   const modal = document.getElementById('c6e-release-modal');
   if (!modal) return;
 
-  const heroBtn = document.getElementById('hero-patch-btn');
-  if (heroBtn && rel.versionLabel) {
-    heroBtn.innerHTML = `<i class="fas fa-bolt" style="margin-right: 8px;"></i> ОБНОВА ${escapeHTML(rel.versionLabel.split(' ')[0])} ОТ KAS`;
-  }
-
   modal.innerHTML = `
-    <div class="c6e-modal-card" style="max-width:650px; border-top:3px solid #ffb300; box-shadow:0 25px 75px rgba(0,0,0,0.95), 0 0 40px rgba(255,179,0,0.18);">
-      <div class="c6e-modal-head" style="background:linear-gradient(135deg, rgba(255,179,0,0.16), rgba(158,27,40,0.22));">
-        <div style="display:flex; align-items:center; gap:10px;">
-          <span style="background:#ffb300; color:#000; font-family:var(--font-tech); font-size:9px; font-weight:900; padding:4px 9px; border-radius:6px; letter-spacing:1px;">
-            🚀 НОВОЕ ОБНОВЛЕНИЕ САЙТА
+    <div class="c6e-release-box">
+      <div class="c6e-release-top">
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <span style="background:linear-gradient(135deg, #ffb300, #d42638); color:#000; font-family:var(--font-tech); font-size:9px; font-weight:900; padding:4px 10px; border-radius:20px; letter-spacing:1px;">
+            🔔 НОВОЕ ОБНОВЛЕНИЕ САЙТА
           </span>
-          <span style="font-family:var(--font-tech); font-size:10px; color:#00e676; font-weight:800;">
-            ${escapeHTML(rel.versionLabel || 'v4.5')}
+          <span style="font-family:var(--font-tech); font-size:10px; color:var(--silver); font-weight:700;">
+            ${escapeHTML(rel.versionLabel || 'RELEASE UPDATE')} • ${escapeHTML(rel.date || '')}
           </span>
         </div>
-        <button type="button" class="c6e-modal-close" onclick="window.closeSiteReleaseModal(true)">✕</button>
+        <button class="chip-btn" onclick="window.closeSiteReleaseModal(true)" style="padding:5px 10px;">✕</button>
       </div>
 
-      <div class="c6e-modal-body" style="max-height:70vh; overflow-y:auto;">
-        <h3 style="font-family:var(--font-tech); font-size:16px; color:#fff; margin:0 0 12px 0; line-height:1.35;">
+      <div class="c6e-release-body">
+        <h2 style="font-family:var(--font-tech); font-size:clamp(16px, 3.8vw, 21px); color:#fff; margin:0 0 14px 0; line-height:1.35;">
           ${escapeHTML(rel.title)}
-        </h3>
+        </h2>
         <div style="font-size:13px; color:#ccc; line-height:1.65;">
           ${rel.text}
         </div>
       </div>
 
-      <div style="padding:14px 18px; background:rgba(10,11,15,0.96); border-top:1px solid rgba(255,255,255,0.08); display:flex; gap:8px; flex-wrap:wrap; justify-content:space-between; align-items:center;">
+      <div class="c6e-release-footer">
+        <div style="font-size:10px; color:var(--silver-muted);">
+          <i class="fas fa-check-circle" style="color:var(--success);"></i> Официальный патч-ноут от разработчика <b style="color:#fff;">Kas (@kas_0ff)</b>
+        </div>
         <div style="display:flex; gap:8px; flex-wrap:wrap;">
-          <button type="button" class="boost-btn" style="width:auto; padding:10px 14px;" onclick="window.closeSiteReleaseModal(true); selectTab('pantheon', document.getElementById('btn-pantheon'));">
-            <i class="fas fa-crown"></i> ОТКРЫТЬ ПАНТЕОН (900G)
+          <button class="chip-btn" style="border-color:#ffb300; color:#ffb300; padding:9px 14px; font-weight:800;" onclick="window.closeSiteReleaseModal(true); selectTab('news', document.getElementById('btn-news'));">
+            <i class="fas fa-newspaper"></i> ЧИТАТЬ В НОВОСТЯХ
           </button>
-          <button type="button" class="report-mini-btn" style="padding:10px 14px;" onclick="window.closeSiteReleaseModal(true); selectTab('news', document.getElementById('btn-news'));">
-            <i class="fas fa-newspaper"></i> В НОВОСТИ
+          <button class="btn-glitch" style="width:auto; padding:9px 18px; font-size:10px;" onclick="window.closeSiteReleaseModal(true);">
+            ПОНЯТНО, ОЦЕНИТЬ ОБНОВУ! 🚀
           </button>
         </div>
-        <button type="button" class="report-mini-btn" style="padding:10px 16px; border-color:#00e676; color:#00e676;" onclick="window.closeSiteReleaseModal(true);">
-          <i class="fas fa-check"></i> ПРИНЯТО, KAS!
-        </button>
       </div>
     </div>
   `;
@@ -1998,48 +2018,67 @@ window.closeSiteReleaseModal = (markSeen = true) => {
   if (modal) modal.classList.remove('active');
   if (markSeen && currentActiveRelease && currentActiveRelease.versionId) {
     try {
-      localStorage.setItem('c6e_seen_release_v', currentActiveRelease.versionId);
+      localStorage.setItem('c6e_seen_release_ver', currentActiveRelease.versionId);
     } catch (e) {}
   }
 };
 
+let releasePopupTimer = null;
 function checkAndShowReleaseNotification() {
   if (!currentActiveRelease || !currentActiveRelease.versionId) return;
-  let seenVer = null;
+  let seenVer = '';
   try {
-    seenVer = localStorage.getItem('c6e_seen_release_v');
+    seenVer = localStorage.getItem('c6e_seen_release_ver') || '';
   } catch (e) {}
 
-  const heroBtn = document.getElementById('hero-patch-btn');
-  if (heroBtn && currentActiveRelease.versionLabel) {
-    heroBtn.innerHTML = `<i class="fas fa-bolt" style="margin-right: 8px;"></i> ОБНОВА ${escapeHTML(currentActiveRelease.versionLabel.split(' ')[0])} ОТ KAS`;
-  }
-
   if (seenVer !== currentActiveRelease.versionId) {
-    setTimeout(() => {
-      if (!checkIfCurrentUserBanned()) {
+    const btnNews = document.getElementById('btn-news');
+    if (btnNews) btnNews.classList.add('has-update');
+
+    // Добавляем также в колокольчик уведомлений (если еще не добавлено)
+    try {
+      const bellKey = 'c6e_bell_rel_' + currentActiveRelease.versionId;
+      if (!localStorage.getItem(bellKey) && typeof addPersonalNotification === 'function') {
+        localStorage.setItem(bellKey, '1');
+        addPersonalNotification(
+          `🚀 Вышло обновление ${currentActiveRelease.versionLabel || 'v0.5.0'}!`,
+          currentActiveRelease.title,
+          'info',
+          'news'
+        );
+      }
+    } catch (e) {}
+
+    if (releasePopupTimer) clearTimeout(releasePopupTimer);
+    releasePopupTimer = setTimeout(() => {
+      if (!document.documentElement.classList.contains('c6e-gate-locked')) {
         window.openSiteReleaseModal(currentActiveRelease);
         if (window.showNotify) {
-          window.showNotify(`🚀 Вышло обновление сайта от Kas: ${currentActiveRelease.versionLabel || 'v4.5'}!`, 'success');
+          window.showNotify("🚀 Вышло обновление сайта от Kas! Пост уже опубликован в разделе «Новости».", "success");
         }
       }
-    }, 1350);
+    }, 1100);
   }
 }
 
+// Сразу рендерим ленту новостей со встроенным постом v0.5.0 без ожидания ответа сети
+renderPublicNewsFeeds();
+
 onSnapshot(doc(db, DB_COLLECTION, "site_release"), (snap) => {
   if (snap.exists() && snap.data().versionId && snap.data().title) {
-    currentActiveRelease = {
-      ...DEFAULT_KAS_RELEASE,
-      ...snap.data()
-    };
+    const remoteRel = snap.data();
+    // Если в базе лежит старый релиз (например v4.5), а в коде уже вышел новый DEFAULT_KAS_RELEASE (v0.5.0) — приоритет у нового релиза!
+    if ((remoteRel.id || 0) > (DEFAULT_KAS_RELEASE.id || 0)) {
+      currentActiveRelease = { ...DEFAULT_KAS_RELEASE, ...remoteRel };
+    } else {
+      currentActiveRelease = { ...DEFAULT_KAS_RELEASE };
+    }
   } else {
     currentActiveRelease = { ...DEFAULT_KAS_RELEASE };
   }
   renderPublicNewsFeeds();
   checkAndShowReleaseNotification();
 }, () => {
-  // Если документ site_release еще не создан в базе, показываем встроенный релиз v4.5 от Kas
   currentActiveRelease = { ...DEFAULT_KAS_RELEASE };
   renderPublicNewsFeeds();
   checkAndShowReleaseNotification();
@@ -2047,6 +2086,8 @@ onSnapshot(doc(db, DB_COLLECTION, "site_release"), (snap) => {
 
 onSnapshot(doc(db, DB_COLLECTION, "news"), (snap) => {
   cachedFirestoreNewsList = (snap.exists() && snap.data().list) ? snap.data().list : [];
+  renderPublicNewsFeeds();
+}, () => {
   renderPublicNewsFeeds();
 });
 
@@ -3608,6 +3649,7 @@ window.saveMyUserProfile = async () => {
     window.showNotify("Профиль сохранён!", "success");
   } finally {
     setGateLockState(false);
+    setTimeout(checkAndShowReleaseNotification, 800);
     const modal = document.getElementById('c6e-profile-gate-modal');
     if (modal) {
       modal.classList.remove('active');
