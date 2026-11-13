@@ -3702,6 +3702,38 @@
       }).join('');
     });
 
+    // СИНХРОНИЗАЦИЯ ПРОФИЛЕЙ ГОСТЕЙ, ЗАЯВОК В [C6E], ЧАТА И МАГАЗИНА v0.5.0
+    listenToDoc(DB_COLLECTION, "profiles", (data) => {
+      const list = Array.isArray(data.list) ? data.list : [];
+      renderAdminProfilesPanel(list);
+    });
+
+    listenToDoc(DB_COLLECTION, "global_chat", (data) => {
+      const cont = document.getElementById('adminChatMessagesList');
+      if (!cont) return;
+      const msgs = Array.isArray(data.messages) ? data.messages : [];
+      cont.innerHTML = msgs.length === 0
+        ? '<span class="item-sub">Сообщений в чате пока нет</span>'
+        : msgs.slice().reverse().map(m => `
+            <div class="list-item">
+              <div class="item-info">
+                <b>${m.countryFlag || '🌍'} ${m.clanTag ? '[' + m.clanTag + '] ' : ''}${m.nick} <span style="font-size:9px; color:var(--silver-muted);">${m.timeStr || ''}</span></b>
+                <span class="item-sub" style="color:#eee;">${m.text}</span>
+              </div>
+              <button class="btn-icon del" onclick="window.deleteSingleChatMsg(${m.id})"><i class="fas fa-trash"></i></button>
+            </div>
+          `).join('');
+    });
+
+    listenToDoc(DB_COLLECTION, "shop_config", (data) => {
+      const tInp = document.getElementById('admShopTitle');
+      const hInp = document.getElementById('admShopHype');
+      const wEl  = document.getElementById('admShopWaitCount');
+      if (tInp && !tInp.value && data.title) tInp.value = data.title;
+      if (hInp && !hInp.value && data.hypeText) hInp.value = data.hypeText;
+      if (wEl) wEl.innerText = String(Array.isArray(data.waitlist) ? data.waitlist.length : 0);
+    });
+
     listenToDoc(DB_COLLECTION, "reviews", (data) => {
       const list = data.list || [];
       document.getElementById('reviewsList').innerHTML = list.slice().reverse().map(r => {
