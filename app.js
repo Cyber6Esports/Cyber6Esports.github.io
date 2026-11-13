@@ -1,4846 +1,4391 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-  <meta charset="UTF-8">
-  <title>CYBER 6 ESPORTS // COMMAND CENTER & TG BOT</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="theme-color" content="#0b0c0e">
-  
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Orbitron:wght@500;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- Нейросетевой OCR-движок Tesseract для зонального сканирования Таба Standoff 2 -->
-  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-
-  <style>
-    :root {
-      --accent: #9e1b28;
-      --accent-light: #d42638;
-      --accent-dim: rgba(158, 27, 40, 0.18);
-      --accent-glow: rgba(212, 38, 56, 0.4);
-
-      --silver: #e4e4e2;
-      --silver-muted: #9ca0a8;
-      --silver-border: rgba(228, 228, 226, 0.16);
-
-      --bg-deep: #0b0c0e;
-      --bg-card: rgba(18, 19, 24, 0.92);
-      --glass-border: rgba(255, 255, 255, 0.09);
-      --text-white: #f4f4f4;
-
-      --success: #00e676;
-      --warning: #ffb300;
-      --ct-blue: #5ea8ff;
-      --tg-blue: #2AABEE;
-
-      --font-main: 'Montserrat', sans-serif;
-      --font-tech: 'Orbitron', sans-serif;
-    }
-
-    *, *::before, *::after { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-    ::-webkit-scrollbar { width: 5px; height: 5px; }
-    ::-webkit-scrollbar-track { background: var(--bg-deep); }
-    ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
-
-    body {
-      background-color: var(--bg-deep);
-      color: var(--text-white);
-      font-family: var(--font-main);
-      margin: 0; padding: 12px;
-      background-image: 
-        radial-gradient(circle at 15% 10%, rgba(255, 255, 255, 0.07) 0%, transparent 45%),
-        radial-gradient(circle at 85% 90%, rgba(158, 27, 40, 0.12) 0%, transparent 55%);
-      background-attachment: fixed;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-
-    .bg-watermark {
-      position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-      width: min(85vw, 480px); height: min(85vw, 480px);
-      background: url('logo.png') center/contain no-repeat;
-      -webkit-mask-image: radial-gradient(circle, #000 40%, transparent 72%);
-      mask-image: radial-gradient(circle, #000 40%, transparent 72%);
-      opacity: 0.12; pointer-events: none; z-index: -1;
-    }
-
-    h1, h2, h3 { font-family: var(--font-tech); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 0; }
-
-    .admin-topbar {
-      display: flex; justify-content: space-between; align-items: center;
-      max-width: 1400px; margin: 0 auto 16px auto;
-      padding: 14px 18px; background: var(--bg-card);
-      border: 1px solid var(--silver-border);
-      border-left: 4px solid var(--accent-light);
-      border-radius: 14px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-      flex-wrap: wrap; gap: 12px;
-    }
-    .admin-brand { display: flex; align-items: center; gap: 12px; }
-    .admin-brand img {
-      width: 44px; height: 44px; object-fit: contain;
-      -webkit-mask-image: radial-gradient(circle, #000 50%, transparent 74%);
-      mask-image: radial-gradient(circle, #000 50%, transparent 74%);
-    }
-    .admin-brand h1 { margin: 0; font-size: 16px; color: var(--silver); letter-spacing: 2px; }
-    .admin-brand h1 span { color: var(--accent-light); text-shadow: 0 0 12px var(--accent-glow); }
-    .status-pill {
-      display: inline-flex; align-items: center; gap: 6px;
-      font-size: 9px; font-family: var(--font-tech); color: var(--success);
-      background: rgba(0, 230, 118, 0.1); border: 1px solid rgba(0, 230, 118, 0.3);
-      padding: 3px 8px; border-radius: 20px; margin-top: 3px;
-    }
-    .status-dot { width: 6px; height: 6px; background: var(--success); border-radius: 50%; box-shadow: 0 0 8px var(--success); }
-
-    /* ПАНЕЛЬ БЫСТРОЙ ПУБЛИКАЦИИ В TELEGRAM-КАНАЛ (TG BOT HUB) */
-    .tg-bot-hub {
-      max-width: 1400px; margin: 0 auto 18px auto;
-      background: linear-gradient(135deg, rgba(42, 171, 238, 0.14) 0%, rgba(18, 19, 24, 0.95) 60%, rgba(158, 27, 40, 0.16) 100%);
-      border: 1px solid rgba(42, 171, 238, 0.35);
-      border-radius: 14px; padding: 16px 18px;
-      display: flex; flex-direction: column; gap: 14px;
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.55);
-    }
-    .tg-hub-top {
-      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;
-    }
-    .tg-hub-title {
-      font-family: var(--font-tech); font-size: 13px; font-weight: 800; color: #fff;
-      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
-    }
-    .tg-hub-sub { font-size: 11px; color: var(--silver-muted); margin-top: 3px; }
-    .tg-hub-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-    .btn-tg-action {
-      background: linear-gradient(135deg, #1e88e5, #1565c0);
-      border: 1px solid rgba(255, 255, 255, 0.25); color: #fff;
-      font-family: var(--font-tech); font-size: 10px; font-weight: 700;
-      padding: 10px 14px; border-radius: 8px; cursor: pointer;
-      display: inline-flex; align-items: center; gap: 7px; transition: 0.25s;
-      box-shadow: 0 4px 15px rgba(42, 171, 238, 0.25);
-    }
-    .btn-tg-action:hover, .btn-tg-action:active {
-      transform: translateY(-2px);
-      background: linear-gradient(135deg, #2AABEE, #1e88e5);
-      box-shadow: 0 6px 20px rgba(42, 171, 238, 0.45);
-    }
-
-    /* ЗАЩИЩЁННЫЙ СЕЙФ ТОКЕНА БОТА (СКРЫТ ОТ GITHUB) */
-    .tg-shield-bar {
-      background: rgba(8, 9, 12, 0.78);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-left: 3px solid var(--tg-blue);
-      border-radius: 10px; padding: 12px 14px;
-      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
-    }
-    .tg-shield-inputs {
-      display: flex; align-items: center; gap: 8px; flex: 1; min-width: 240px; flex-wrap: wrap;
-    }
-    .tg-shield-status {
-      font-family: var(--font-tech); font-size: 10px; font-weight: 800;
-      padding: 4px 10px; border-radius: 20px; white-space: nowrap;
-    }
-    .tg-shield-status.ok { background: rgba(0, 230, 118, 0.14); color: var(--success); border: 1px solid rgba(0, 230, 118, 0.35); }
-    .tg-shield-status.warn { background: rgba(255, 179, 0, 0.14); color: var(--warning); border: 1px solid rgba(255, 179, 0, 0.35); }
-
-    .kpi-grid {
-      max-width: 1400px; margin: 0 auto 18px auto;
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); gap: 12px;
-    }
-    .kpi-card {
-      background: linear-gradient(145deg, rgba(24, 26, 32, 0.92), rgba(14, 15, 19, 0.95));
-      border: 1px solid var(--glass-border);
-      border-bottom: 2px solid var(--accent-light);
-      border-radius: 12px; padding: 14px 16px;
-      display: flex; align-items: center; justify-content: space-between;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.45);
-    }
-    .kpi-val { font-family: var(--font-tech); font-size: 22px; font-weight: 800; color: var(--silver); }
-    .kpi-lbl { font-size: 9px; font-weight: 700; text-transform: uppercase; color: var(--silver-muted); margin-top: 3px; letter-spacing: 0.8px; }
-    .kpi-icon {
-      width: 38px; height: 38px; border-radius: 10px;
-      background: var(--accent-dim); border: 1px solid rgba(212, 38, 56, 0.3);
-      display: flex; align-items: center; justify-content: center;
-      color: var(--accent-light); font-size: 16px;
-    }
-
-    .filter-bar {
-      max-width: 1400px; margin: 0 auto 20px auto;
-      display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px;
-    }
-    .filter-btn {
-      background: rgba(20, 21, 26, 0.85); border: 1px solid var(--glass-border);
-      color: var(--silver-muted); font-family: var(--font-tech); font-size: 10px;
-      padding: 10px 16px; border-radius: 8px; cursor: pointer; white-space: nowrap;
-      transition: 0.25s; display: flex; align-items: center; gap: 8px;
-    }
-    .filter-btn.active, .filter-btn:hover {
-      background: linear-gradient(135deg, var(--accent), #5e0d15);
-      color: #fff; border-color: var(--silver);
-      box-shadow: 0 4px 15px var(--accent-glow);
-    }
-
-    .container { 
-      max-width: 1400px; margin: 0 auto; padding-bottom: 60px; 
-      display: grid; 
-      grid-template-columns: repeat(auto-fit, minmax(295px, 1fr)); 
-      gap: 20px;
-    }
-    .full-width { grid-column: 1 / -1; }
-
-    .panel {
-      background: var(--bg-card);
-      border: 1px solid var(--glass-border);
-      border-radius: 16px; padding: 20px;
-      box-shadow: 0 15px 35px rgba(0,0,0,0.65);
-      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-      display: flex; flex-direction: column;
-      position: relative; overflow: hidden;
-    }
-    .panel::before {
-      content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px;
-      background: linear-gradient(90deg, var(--accent-light), var(--silver), transparent);
-      opacity: 0.65;
-    }
-    
-    .panel-header { 
-      display: flex; align-items: center; justify-content: space-between; 
-      border-bottom: 1px solid var(--glass-border); padding-bottom: 12px; margin-bottom: 14px; 
-      flex-wrap: wrap; gap: 10px;
-    }
-    .panel-header h2 { margin: 0; font-size: 13px; display: flex; align-items: center; gap: 10px; color: var(--silver); }
-    .panel-icon {
-      width: 28px; height: 28px; border-radius: 6px;
-      background: var(--accent-dim); color: var(--accent-light);
-      display: inline-flex; align-items: center; justify-content: center; font-size: 13px;
-    }
-
-    label {
-      font-size: 10px; color: var(--silver); text-transform: uppercase;
-      font-weight: 700; letter-spacing: 0.8px; display: block;
-      margin-top: 12px; margin-bottom: 6px;
-    }
-    
-    input, select, textarea {
-      width: 100%; padding: 11px 12px; background: rgba(8, 9, 12, 0.75);
-      border: 1px solid var(--glass-border); color: #fff; border-radius: 8px;
-      font-family: var(--font-main); outline: none; transition: 0.25s;
-      font-size: 13px;
-    }
-    input:focus, select:focus, textarea:focus { 
-      border-color: var(--accent-light); 
-      background: rgba(8, 9, 12, 0.95);
-      box-shadow: 0 0 12px var(--accent-dim); 
-    }
-
-    .row-inputs { display: flex; gap: 10px; flex-wrap: wrap; }
-    .row-inputs > div { flex: 1; min-width: 115px; }
-
-    .chips-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
-    .chip-btn {
-      background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
-      color: var(--silver); font-family: var(--font-tech); font-size: 9px;
-      padding: 6px 10px; border-radius: 6px; cursor: pointer; transition: 0.2s;
-    }
-    .chip-btn:hover, .chip-btn.active {
-      background: var(--accent); color: #fff; border-color: var(--silver);
-    }
-
-    .tg-check-label {
-      display: flex; align-items: center; gap: 8px; cursor: pointer;
-      margin-top: 14px; padding: 10px 12px; border-radius: 8px;
-      background: rgba(42, 171, 238, 0.08); border: 1px solid rgba(42, 171, 238, 0.3);
-      color: #fff; font-size: 11px; font-weight: 600; text-transform: none;
-    }
-    .tg-check-label input[type="checkbox"] { width: 17px; height: 17px; accent-color: var(--tg-blue); margin: 0; }
-    .tg-check-label i { color: var(--tg-blue); font-size: 15px; }
-
-    button.action-btn {
-      background: linear-gradient(135deg, var(--accent) 0%, #520b12 100%);
-      color: #fff;
-      border: 1px solid rgba(255,255,255,0.18);
-      padding: 13px 18px; width: 100%;
-      font-family: var(--font-tech); font-weight: 700; letter-spacing: 1.5px;
-      text-transform: uppercase; border-radius: 8px; cursor: pointer;
-      margin-top: 14px; transition: 0.25s; font-size: 11px;
-      box-shadow: 0 5px 15px rgba(158, 27, 40, 0.3);
-      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-    }
-    button.action-btn:hover, button.action-btn:active { 
-      transform: translateY(-2px); 
-      background: linear-gradient(135deg, var(--accent-light), var(--accent));
-      border-color: var(--silver);
-      box-shadow: 0 8px 22px var(--accent-glow);
-    }
-    button.action-btn.secondary {
-      background: rgba(255,255,255,0.05);
-      border-color: var(--silver-border);
-      color: var(--silver);
-      box-shadow: none;
-    }
-
-    .upload-row { display: flex; gap: 8px; align-items: center; }
-    .upload-row input[type="text"] { flex: 1; }
-    .btn-upload-phone {
-      background: rgba(255,255,255,0.06); border: 1px solid var(--silver-border);
-      color: var(--silver); padding: 11px 14px; border-radius: 8px;
-      cursor: pointer; font-size: 12px; font-weight: 700; white-space: nowrap;
-      display: inline-flex; align-items: center; gap: 6px; transition: 0.2s;
-    }
-    .btn-upload-phone:hover { background: var(--accent); color: #fff; border-color: var(--silver); }
-
-    .data-list {
-      margin-top: 16px; max-height: 290px; overflow-y: auto;
-      border-top: 1px solid var(--glass-border); padding-top: 12px;
-      padding-right: 4px; 
-    }
-    .list-item {
-      display: flex; justify-content: space-between; align-items: center;
-      background: rgba(255,255,255,0.03); padding: 10px 12px; border-radius: 8px;
-      margin-bottom: 8px; border-left: 3px solid var(--silver-muted); font-size: 12px;
-      transition: 0.2s; gap: 10px;
-    }
-    .list-item:hover { background: rgba(255,255,255,0.06); border-left-color: var(--accent-light); }
-    .item-info { flex: 1; min-width: 0; }
-    .item-info b { color: var(--silver); display: block; margin-bottom: 3px; font-weight: 600; }
-    .item-sub { color: var(--silver-muted); font-size: 10px; word-break: break-word; }
-
-    .item-actions { display: flex; gap: 6px; flex-shrink: 0; flex-wrap: wrap; }
-    .btn-icon { 
-      background: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.12); color: var(--silver-muted); 
-      width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
-      cursor: pointer; transition: 0.2s; border-radius: 6px; font-size: 12px;
-    }
-    .btn-icon.tg { color: var(--tg-blue); border-color: rgba(42, 171, 238, 0.35); background: rgba(42, 171, 238, 0.08); }
-    .btn-icon.tg:hover { background: var(--tg-blue); color: #fff; }
-    .btn-icon.edit:hover { border-color: var(--silver); color: #fff; background: rgba(255,255,255,0.12); }
-    .btn-icon.del:hover { border-color: var(--accent-light); color: var(--accent-light); background: var(--accent-dim); }
-    .btn-icon.ban { color: #ff5263; border-color: rgba(212, 38, 56, 0.45); background: rgba(212, 38, 56, 0.14); }
-    .btn-icon.ban:hover { background: var(--accent-light); color: #fff; }
-
-    /* ВИЗУАЛЬНЫЙ РЕДАКТОР НОВОСТЕЙ */
-    .editor-toolbar {
-      display: flex; gap: 6px; background: #121318; padding: 8px;
-      border: 1px solid var(--glass-border); border-bottom: none; border-radius: 8px 8px 0 0;
-      flex-wrap: wrap;
-    }
-    .tool-btn {
-      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--silver);
-      padding: 6px 10px; height: 34px; border-radius: 6px; cursor: pointer;
-      display: inline-flex; align-items: center; justify-content: center; gap: 5px;
-      font-size: 11px; font-weight: 600; transition: 0.2s;
-    }
-    .tool-btn i { color: var(--accent-light); }
-    .tool-btn:hover, .tool-btn:active { background: var(--accent); color: #fff; border-color: var(--silver); }
-    .tool-btn:hover i { color: #fff; }
-
-    .editor-helper-box {
-      display: none; background: #16181f; border: 1px solid var(--accent-light);
-      padding: 12px; border-left: 3px solid var(--accent-light);
-      box-shadow: 0 8px 25px rgba(0,0,0,0.7);
-    }
-    .editor-helper-box.active { display: block; }
-
-    .visual-editor {
-      width: 100%; min-height: 150px; max-height: 420px; overflow-y: auto;
-      padding: 14px; background: rgba(8, 9, 12, 0.85);
-      border: 1px solid var(--silver-border); border-radius: 0 0 8px 8px;
-      color: #eee; font-family: var(--font-main); font-size: 13px; line-height: 1.6;
-      outline: none; word-wrap: break-word;
-      user-select: text; -webkit-user-select: text;
-    }
-    .visual-editor:empty::before { content: attr(data-placeholder); color: #666; pointer-events: none; }
-    .visual-editor img { max-width: 100%; height: auto; border-radius: 8px; display: block; margin: 8px 0; }
-
-    /* ДВОЙНОЙ ТАБ STANDOFF 2 */
-    .proof-box {
-      padding: 15px; border-radius: 12px;
-      background: linear-gradient(135deg, rgba(158, 27, 40, 0.12), rgba(0, 0, 0, 0.5));
-      border: 1px dashed var(--silver-border);
-      margin-bottom: 16px;
-    }
-    .proof-preview-wrap {
-      display: none; margin-top: 12px; position: relative;
-      border-radius: 10px; overflow: hidden; border: 1px solid var(--accent-light);
-    }
-    .proof-preview-wrap img { width: 100%; max-height: 260px; object-fit: contain; background: #000; display: block; }
-    .ocr-status {
-      font-size: 11px; font-family: var(--font-tech); color: var(--warning);
-      margin-top: 10px; display: none; align-items: center; gap: 8px;
-      padding: 8px 12px; background: rgba(255, 179, 0, 0.1); border-radius: 6px;
-    }
-
-    .dual-scoreboard-wrap {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 16px;
-      margin-top: 14px;
-    }
-    .team-tab-box {
-      background: rgba(10, 11, 14, 0.85);
-      border: 1px solid var(--glass-border);
-      border-radius: 12px;
-      padding: 14px;
-      overflow-x: auto;
-    }
-    .team-tab-box.c6e-box { border-top: 3px solid var(--accent-light); }
-    .team-tab-box.enemy-box { border-top: 3px solid var(--ct-blue); }
-
-    .tab-editor-table {
-      width: 100%; border-collapse: collapse; margin-top: 8px; min-width: 340px;
-    }
-    .tab-editor-table th {
-      font-family: var(--font-tech); font-size: 9px; color: var(--silver-muted);
-      text-transform: uppercase; padding: 6px 3px; text-align: center;
-      border-bottom: 1px solid var(--glass-border);
-    }
-    .tab-editor-table th:first-child { text-align: left; }
-    .tab-editor-table td { padding: 4px 2px; }
-    .tab-editor-table input {
-      padding: 7px 3px; font-size: 11px; text-align: center; border-radius: 5px;
-      -moz-appearance: textfield;
-    }
-    .tab-editor-table input::-webkit-outer-spin-button,
-    .tab-editor-table input::-webkit-inner-spin-button {
-      -webkit-appearance: none; margin: 0;
-    }
-    .tab-editor-table input.p-name-inp { text-align: left; font-weight: 600; min-width: 122px; padding: 7px 6px; }
-    .tab-editor-table input.p-kd-inp {
-      font-family: var(--font-tech); font-weight: 700; font-size: 10.5px; letter-spacing: -0.3px;
-      min-width: 54px; padding: 7px 2px; color: var(--success);
-      background: rgba(0, 230, 118, 0.06); border-color: rgba(0, 230, 118, 0.25);
-    }
-
-    /* АВТОРИЗАЦИЯ */
-    #loginOverlay {
-      position: fixed; inset: 0; background: var(--bg-deep); z-index: 9999;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      padding: 20px;
-      background-image: radial-gradient(circle at 50% 40%, rgba(158, 27, 40, 0.14) 0%, transparent 65%);
-    }
-    .login-box {
-      width: 100%; max-width: 350px; text-align: center; padding: 35px 25px;
-      border: 1px solid var(--silver-border); border-top: 3px solid var(--accent-light);
-      border-radius: 16px; background: rgba(16, 17, 22, 0.96);
-      box-shadow: 0 25px 60px rgba(0,0,0,0.9);
-    }
-    .login-logo {
-      width: 85px; height: 85px; object-fit: contain; margin-bottom: 12px;
-      -webkit-mask-image: radial-gradient(circle, #000 50%, transparent 74%);
-      mask-image: radial-gradient(circle, #000 50%, transparent 74%);
-    }
-    .glitch-text { color: var(--silver); font-family: var(--font-tech); font-size: 18px; margin-bottom: 22px; font-weight: 800; letter-spacing: 2.5px; }
-    .glitch-text span { color: var(--accent-light); }
-
-    #mainUI { display: none; opacity: 0; transition: opacity 0.5s ease; }
-
-    #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 10000; }
-    .toast {
-      background: rgba(18, 19, 24, 0.98); border-left: 4px solid var(--accent-light);
-      color: #fff; padding: 14px 20px; margin-top: 10px; border-radius: 8px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-      font-size: 12px; font-weight: 600; transform: translateX(120%); transition: transform 0.3s ease;
-      display: flex; align-items: center; gap: 10px;
-    }
-    .toast.show { transform: translateX(0); }
-    .toast i { color: var(--accent-light); font-size: 15px; }
-
-    @media (max-width: 640px) {
-      body, html { overflow-x: hidden; max-width: 100vw; }
-      .top-bar { padding: 10px 12px; height: auto; min-height: 58px; flex-wrap: wrap; gap: 8px; }
-      .brand-title { font-size: 13px; }
-      .workspace { padding: 12px 10px 80px 10px; }
-      .panel { padding: 14px 12px; }
-      .kpi-strip { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-      .grid-2 { grid-template-columns: 1fr !important; gap: 12px; }
-    }
-  </style>
-</head>
-<body>
-
-<div class="bg-watermark"></div>
-<div id="toast-container"></div>
-
-<input type="file" id="phoneImageInput" accept="image/*" style="display: none;">
-<input type="file" id="proofImageInput" accept="image/*" style="display: none;">
-<img id="hiddenBrandLogo" src="logo.png" crossorigin="anonymous" style="display:none;">
-
-<!-- ЭКРАН АВТОРИЗАЦИИ -->
-<div id="loginOverlay">
-  <div class="login-box">
-    <img src="logo.png" alt="C6E" class="login-logo" onerror="this.style.display='none'">
-    <div class="glitch-text">CYBER <span>6</span> // ADMIN</div>
-    <input type="email" id="adminEmail" placeholder="EMAIL АДМИНИСТРАТОРА" style="margin-bottom: 10px;">
-    <input type="password" id="adminPass" placeholder="ПАРОЛЬ">
-    <button class="action-btn" onclick="sysLogin()"><i class="fas fa-shield-alt"></i> ВОЙТИ В ЦЕНТР УПРАВЛЕНИЯ</button>
-    <p id="loginError" style="color: var(--accent-light); font-size: 11px; margin-top: 15px; opacity: 0; transition: 0.3s;">Доступ запрещен</p>
-  </div>
-</div>
-
-<!-- ОСНОВНОЙ ИНТЕРФЕЙС АДМИНКИ -->
-<div id="mainUI">
-
-  <!-- 1. ВЕРХНИЙ БАР -->
-  <div class="admin-topbar">
-    <div class="admin-brand">
-      <img src="logo.png" alt="C6E" onerror="this.style.display='none'">
-      <div>
-        <h1>CYBER <span>6</span> ESPORTS</h1>
-        <div class="status-pill"><span class="status-dot"></span> TG BOT & C6E SHIELD ACTIVE</div>
-      </div>
-    </div>
-    <div style="display: flex; gap: 8px;">
-      <a href="index.html" target="_blank" style="text-decoration: none;">
-        <button class="action-btn secondary" style="width: auto; padding: 10px 16px; margin:0; font-size: 10px;">
-          <i class="fas fa-external-link-alt"></i> ОТКРЫТЬ САЙТ
-        </button>
-      </a>
-      <button class="action-btn" onclick="sysLogout()" style="width: auto; padding: 10px 16px; margin:0; font-size: 10px;">
-        <i class="fas fa-sign-out-alt"></i> ВЫЙТИ
-      </button>
-    </div>
-  </div>
-
-  <!-- 2. ЦЕНТР БЫСТРОЙ ПУБЛИКАЦИИ В ТГК + ЗАЩИЩЁННЫЙ СЕЙФ ТОКЕНА -->
-  <div class="tg-bot-hub">
-    <div class="tg-hub-top">
-      <div>
-        <div class="tg-hub-title">
-          <i class="fab fa-telegram" style="color:var(--tg-blue); font-size:20px;"></i>
-          <span>TELEGRAM BOT STUDIO // ОФИЦИАЛЬНЫЙ ТГК [C6E]</span>
-          <span id="tgTokenStatusBadge" class="tg-shield-status warn">⚠️ ВВЕДИТЕ НОВЫЙ ТОКЕН</span>
-        </div>
-        <div class="tg-hub-sub">
-          Токен бота больше не хранится в коде на GitHub — он шифруется в базе Firebase и автоматически блокирует спам-вебхуки
-        </div>
-      </div>
-      <div class="tg-hub-actions">
-        <button type="button" class="btn-tg-action" style="background:linear-gradient(135deg, #ffb300, #d42638); color:#000;" onclick="publishPantheonWinnersToTG()">
-          <i class="fas fa-crown"></i> ПАНТЕОН ТОП-3 (900 GOLD) В ТГК
-        </button>
-        <button type="button" class="btn-tg-action" onclick="publishFullRosterToTG()">
-          <i class="fas fa-users"></i> СОСТАВ [C6E] В ТГК
-        </button>
-        <button type="button" class="btn-tg-action" onclick="publishWeeklyReportToTG()">
-          <i class="fas fa-chart-line"></i> ОТЧЁТ K/D В ТГК
-        </button>
-        <button type="button" class="btn-tg-action" onclick="publishScheduleToTG()">
-          <i class="fas fa-calendar-alt"></i> РАСПИСАНИЕ В ТГК
-        </button>
-      </div>
-    </div>
-
-    <div class="tg-shield-bar">
-      <div style="font-size:11px; color:var(--silver); font-weight:700; display:flex; align-items:center; gap:8px;">
-        <i class="fas fa-key" style="color:var(--tg-blue);"></i>
-        <span>СЕКРЕТНЫЙ ТОКЕН БОТА (СКРЫТ ОТ GITHUB):</span>
-      </div>
-      <div class="tg-shield-inputs">
-        <input type="password" id="secretBotTokenInput" placeholder="Вставь сюда новый токен из @BotFather..." style="flex:1; min-width:200px; margin:0; padding:9px 12px; font-size:12px;">
-        <button type="button" class="btn-icon" onclick="toggleTokenVisibility()" title="Показать/скрыть токен" style="width:36px; height:36px;">
-          <i class="fas fa-eye" id="tokenEyeIcon"></i>
-        </button>
-        <button type="button" class="btn-tg-action" onclick="saveSecretBotToken()" style="padding:9px 14px;">
-          <i class="fas fa-shield-alt"></i> СОХРАНИТЬ В БАЗУ И СБРОСИТЬ СПАМ
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- 3. ЖИВОЙ ДАШБОРД -->
-  <div class="kpi-grid">
-    <div class="kpi-card">
-      <div>
-        <div class="kpi-val" id="kpi-players">0</div>
-        <div class="kpi-lbl">БОЙЦОВ [C6E]</div>
-      </div>
-      <div class="kpi-icon"><i class="fas fa-users"></i></div>
-    </div>
-    <div class="kpi-card">
-      <div>
-        <div class="kpi-val" id="kpi-news">0</div>
-        <div class="kpi-lbl">НОВОСТЕЙ В ЛЕНТЕ</div>
-      </div>
-      <div class="kpi-icon"><i class="fas fa-bolt"></i></div>
-    </div>
-    <div class="kpi-card">
-      <div>
-        <div class="kpi-val" id="kpi-pracs">0</div>
-        <div class="kpi-lbl">СЛОТОВ НА ПРАКИ</div>
-      </div>
-      <div class="kpi-icon"><i class="fas fa-crosshairs"></i></div>
-    </div>
-    <div class="kpi-card">
-      <div>
-        <div class="kpi-val" id="kpi-winrate">0%</div>
-        <div class="kpi-lbl">WIN RATE [C6E]</div>
-      </div>
-      <div class="kpi-icon"><i class="fas fa-trophy"></i></div>
-    </div>
-    <div class="kpi-card">
-      <div>
-        <div class="kpi-val" id="kpi-bans" style="color:var(--accent-light);">0</div>
-        <div class="kpi-lbl">В БАН-ЛИСТЕ SHIELD</div>
-      </div>
-      <div class="kpi-icon"><i class="fas fa-user-shield"></i></div>
-    </div>
-  </div>
-
-  <!-- 4. БЫСТРЫЕ ВКЛАДКИ -->
-  <div class="filter-bar">
-    <button class="filter-btn active" onclick="filterPanels('all', this)"><i class="fas fa-th-large"></i> Все блоки</button>
-    <button class="filter-btn" onclick="filterPanels('cat-v5', this)" style="border-color:#00e676; color:#00e676;"><i class="fas fa-id-badge"></i> ⚡ v0.5.0: Профили [C6E], Чат и Магазин</button>
-    <button class="filter-btn" onclick="filterPanels('cat-roster', this)" style="border-color:#ffb300; color:#ffb300;"><i class="fas fa-crown"></i> 👑 Пантеон (900 Gold) и Состав</button>
-    <button class="filter-btn" onclick="filterPanels('cat-security', this)"><i class="fas fa-user-shield"></i> 🛡 Безопасность (C6E Shield)</button>
-    <button class="filter-btn" onclick="filterPanels('cat-matches', this)"><i class="fas fa-trophy"></i> Матчи (Таб), Праки и Расписание</button>
-    <button class="filter-btn" onclick="filterPanels('cat-news', this)"><i class="fas fa-newspaper"></i> Новости</button>
-    <button class="filter-btn" onclick="filterPanels('cat-media', this)"><i class="fas fa-photo-video"></i> Медиа и Отзывы</button>
-  </div>
-
-  <div class="container" id="adminContainer">
-
-    <!-- =========================================================================
-         НОВЫЙ ЦЕНТР УПРАВЛЕНИЯ v0.5.0: ПРОФИЛИ ГОСТЕЙ, ПРОВЕРКА [C6E], ЧАТ И МАГАЗИН
-         ========================================================================= -->
-    <div class="panel full-width cat-v5" style="border-top: 3px solid #00e676;">
-      <div class="panel-header">
-        <h2>
-          <span class="panel-icon" style="color:#00e676; background:rgba(0,230,118,0.15);"><i class="fas fa-users-cog"></i></span>
-          ЦЕНТР v0.5.0 // ВЕРИФИКАЦИЯ БОЙЦОВ [C6E], ИГРОВЫЕ ПРОФИЛИ, ЧАТ (12Ч) И МАГАЗИН
-        </h2>
-        <span id="admPendingC6EBadge" style="font-size:10px; font-family:var(--font-tech); font-weight:800; color:#ffb300; background:rgba(255,179,0,0.14); border:1px solid #ffb300; padding:4px 10px; border-radius:20px;">
-          ЗАЯВОК В [C6E]: 0
-        </span>
-      </div>
-
-      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:16px;">
-        <!-- 1. ЗАЯВКИ НА ПРИНАДЛЕЖНОСТЬ К КЛАНУ [C6E] + СПИСОК ПРОФИЛЕЙ -->
-        <div style="background:rgba(0,0,0,0.45); padding:15px; border-radius:12px; border:1px solid var(--glass-border);">
-          <h3 style="font-size:12px; color:#ffb300; margin:0 0 6px 0;">
-            <i class="fas fa-shield-alt"></i> 1. ЗАЯВКИ ИГРОКОВ НА СТАТУС БОЙЦА [C6E]
-          </h3>
-          <p style="font-size:10px; color:var(--silver-muted); margin:0 0 10px 0;">
-            Когда гость при регистрации выбирает «Да, я из клана [C6E]», заявка прилетает сюда. Нажми <b>✅ Одобрить</b> (выдаст тег и значок <code>🛡️ Боец [C6E]</code>) или <b>❌ Отклонить</b> (сайт запретит ему тег [C6E] и заставит указать свой реальный клан).
-          </p>
-          <div id="adminPendingC6EList" class="data-list" style="max-height:210px; margin-bottom:14px;">
-            <span class="item-sub">Новых заявок на проверку пока нет</span>
-          </div>
-
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-            <h3 style="font-size:12px; color:var(--silver); margin:0;">
-              <i class="fas fa-id-card text-accent"></i> ВСЕ ПРОФИЛИ САЙТА (<span id="admTotalProfilesCount">0</span>)
-            </h3>
-            <span style="font-size:10px; color:var(--success); font-family:var(--font-tech); font-weight:800;">
-              🟢 ОНЛАЙН: <span id="admOnlineProfilesCount">0</span>
-            </span>
-          </div>
-          <div id="adminAllProfilesList" class="data-list" style="max-height:280px;">
-            <span class="item-sub">Загрузка профилей...</span>
-          </div>
-        </div>
-
-        <!-- 2. УПРАВЛЕНИЕ ОБЩИМ ЧАТОМ (12Ч АВТО-ОЧИСТКА) И МАГАЗИНОМ [C6E] -->
-        <div style="display:flex; flex-direction:column; gap:14px;">
-          <div style="background:rgba(0,0,0,0.45); padding:15px; border-radius:12px; border:1px solid var(--glass-border);">
-            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
-              <h3 style="font-size:12px; color:#00e676; margin:0;">
-                <i class="fas fa-comments"></i> 2. ОБЩИЙ ЧАТ ИГРОКОВ (АВТО-ОЧИСТКА 12Ч)
-              </h3>
-              <button type="button" class="chip-btn" style="border-color:#ff5263; color:#ff5263;" onclick="window.clearGlobalChatNow()">
-                <i class="fas fa-trash-alt"></i> Очистить весь чат
-              </button>
-            </div>
-
-            <div style="display:flex; gap:6px; margin-bottom:10px;">
-              <input type="text" id="adminChatInput" placeholder="Написать в общий чат от имени 👑 FOUNDER KAS (можно @Ник)..." style="margin:0; flex:1;">
-              <button type="button" class="action-btn" style="margin:0; width:auto; padding:8px 14px;" onclick="window.sendAdminFounderChatMsg()">
-                <i class="fas fa-paper-plane"></i>
-              </button>
-            </div>
-
-            <div id="adminChatMessagesList" class="data-list" style="max-height:195px;">
-              <span class="item-sub">Сообщений в чате пока нет</span>
-            </div>
-          </div>
-
-          <div style="background:rgba(0,0,0,0.45); padding:15px; border-radius:12px; border:1px solid var(--glass-border);">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-              <h3 style="font-size:12px; color:#ffb300; margin:0;">
-                <i class="fas fa-shopping-bag"></i> 3. НАСТРОЙКА РАЗДЕЛА «МАГАЗИН [C6E]»
-              </h3>
-              <span style="font-size:9.5px; color:var(--silver-muted); font-family:var(--font-tech);">
-                Ждут открытия: <b style="color:#ffb300;" id="admShopWaitCount">0</b>
-              </span>
-            </div>
-            <label style="margin-top:4px;">Заголовок Магазина</label>
-            <input type="text" id="admShopTitle" value="КИБЕР-МАРКЕТ CYBER 6 ESPORTS [C6E]">
-            <label style="margin-top:6px;">Интригующая надпись (ажиотаж для гостей)</label>
-            <textarea id="admShopHype" rows="2">Основатель и разработчик Kas готовит к запуску закрытый магазин [C6E]! Здесь появятся проверенные паки Голды, приватные конфигурации прицела и сенсы от топ-бойцов нашего состава, редкие VIP-рамки для профиля на сайте и пропуски на закрытые турниры с денежным фондом.</textarea>
-            <button type="button" class="action-btn secondary" style="margin-top:8px; padding:9px; border-color:#ffb300; color:#ffb300;" onclick="window.saveAdminShopConfig()">
-              <i class="fas fa-save"></i> СОХРАНИТЬ ТЕКСТ МАГАЗИНА НА САЙТЕ
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-
-    <!-- =========================================================================
-         НОВАЯ ПАНЕЛЬ: УПРАВЛЕНИЕ ПАНТЕОНОМ [C6E] (ПРИЗОВАЯ ГОНКА 500 / 250 / 150 ГОЛДЫ)
-         ========================================================================= -->
-    <div class="panel full-width cat-roster" style="border-top: 3px solid #ffb300;">
-      <div class="panel-header">
-        <h2><span class="panel-icon" style="color:#ffb300; background:rgba(255,179,0,0.15);"><i class="fas fa-crown"></i></span> ПАНТЕОН [C6E] // УПРАВЛЕНИЕ ГОНКОЙ ЗА 900 ГОЛДЫ ОТ ОСНОВАТЕЛЯ</h2>
-        <div style="display:flex; gap:8px; flex-wrap:wrap;">
-          <button type="button" class="btn-tg-action" style="background:linear-gradient(135deg, #ffb300, #d42638); color:#000; padding:8px 12px;" onclick="publishPantheonWinnersToTG()">
-            <i class="fab fa-telegram"></i> ОПУБЛИКОВАТЬ ИТОГИ ПАНТЕОНА (500/250/150G) В ТГК
-          </button>
-          <button type="button" class="chip-btn" onclick="resetWeeklyPantheonBoosts()">
-            <i class="fas fa-redo"></i> Новый сезон недели (сброс бустов)
-          </button>
-        </div>
-      </div>
-
-      <p style="font-size:11px; color:var(--silver-muted); margin-top:0;">
-        Рейтинг <b>ПАНТЕОН</b> на сайте автоматически суммирует: <b>LIVE K/D</b> + <b>Рост K/D за неделю</b> + <b>Игры и MVP в Табе</b> + <b>Бусты посетителей сайта (🔥)</b>. Здесь ты можешь начислять бойцам дополнительные <b>Бонусные очки PTS от Основателя</b> (за актив в клане, тренировки или медийку)!
-      </p>
-
-      <div id="adminPantheonList" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:10px; margin-top:8px;">
-        <span class="item-sub">Загрузка рейтинга Пантеона...</span>
-      </div>
-    </div>
-
-    <!-- =========================================================================
-         0. СИСТЕМА БЕЗОПАСНОСТИ C6E SHIELD (ЛОГ IP/УСТРОЙСТВ + ЧЁРНЫЙ СПИСОК БАНОВ)
-         ========================================================================= -->
-    <div class="panel full-width cat-security">
-      <div class="panel-header">
-        <h2><span class="panel-icon"><i class="fas fa-user-shield"></i></span> C6E SHIELD // ЖУРНАЛ IP, ПОПЫТОК ВЗЛОМА И ЧЁРНЫЙ СПИСОК</h2>
-        <div style="display:flex; gap:8px; align-items:center;">
-          <button type="button" class="chip-btn" onclick="clearSecurityLogs()"><i class="fas fa-broom"></i> Очистить журнал</button>
-        </div>
-      </div>
-
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 18px;">
-        <div style="background: rgba(0,0,0,0.4); padding: 16px; border-radius: 12px; border: 1px solid var(--glass-border);">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-            <h3 style="font-size: 12px; color: var(--silver); margin:0;"><i class="fas fa-satellite-dish text-accent"></i> ЖУРНАЛ АКТИВНОСТИ И ПОПЫТОК ВЗЛОМА / МАТОВ</h3>
-          </div>
-          <p style="font-size:10px; color:var(--silver-muted); margin-top:0;">Красной плашкой <b>🚨 ТРЕВОГА</b> подсвечиваются попытки подобрать пароль к админке и попытки отправить запрещённые слова или мат на сайте.</p>
-          <div id="securityLogsList" class="data-list" style="max-height: 360px; margin-top:8px;">
-            <span class="item-sub">Журнал пока пуст...</span>
-          </div>
-        </div>
-
-        <div style="background: rgba(158, 27, 40, 0.08); padding: 16px; border-radius: 12px; border: 1px solid rgba(212, 38, 56, 0.3);">
-          <h3 style="font-size: 12px; color: var(--accent-light); margin-bottom:8px;"><i class="fas fa-ban"></i> ЧЁРНЫЙ СПИСОК (БАН ПО IP ИЛИ DEVICE ID)</h3>
-          <div class="row-inputs">
-            <div>
-              <label style="margin-top:4px;">IP-адрес или Device ID</label>
-              <input type="text" id="manualBanTarget" placeholder="Например: C6E-8F2A10-ABCD или IP">
-            </div>
-            <div>
-              <label style="margin-top:4px;">Ник / Причина бана</label>
-              <input type="text" id="manualBanReason" placeholder="Спам праками / Попытка взлома">
-            </div>
-          </div>
-          <button type="button" class="action-btn" style="margin-top:10px; padding:10px;" onclick="addManualBan()">
-            <i class="fas fa-gavel"></i> ЗАБЛОКИРОВАТЬ ДОСТУП К САЙТУ
-          </button>
-
-          <div id="bannedUsersList" class="data-list" style="max-height: 245px; margin-top:12px;">
-            <span class="item-sub">В чёрном списке пока никого нет</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- =========================================================================
-         1. ИСТОРИЯ МАТЧЕЙ + ULTRA-HD ИИ-СКАНЕР ТАБА STANDOFF 2 + ПОСТ В ТГК
-         ========================================================================= -->
-    <div class="panel full-width cat-matches">
-      <div class="panel-header">
-        <h2><span class="panel-icon"><i class="fas fa-trophy"></i></span> ДОБАВИТЬ МАТЧ (PRO ULTRA-HD СКАНЕР ТАБА STANDOFF 2 + ПОСТ В ТГК)</h2>
-        <span style="font-size:10px; color:var(--tg-blue); font-family:var(--font-tech);"><i class="fab fa-telegram"></i> AUTO-POST TO TG CHANNEL</span>
-      </div>
-
-      <div class="proof-box">
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-          <div>
-            <label style="margin:0; color:var(--accent-light); font-size:11px;"><i class="fas fa-camera-retro"></i> 1. ЗАГРУЗИ СКРИНШОТ «СТАТИСТИКА» ИЗ STANDOFF 2</label>
-            <p style="font-size:11px; color:var(--silver-muted); margin:4px 0 0 0;">Сканер раздельно читает колонку Ников (в Full HD без сжатия) и колонку Цифр (строго числа), исправляет клан-теги и сверяет ники с твоим Ростером `[C6E]`!</p>
-          </div>
-          <div style="display:flex; gap:8px; flex-wrap:wrap;">
-            <button type="button" class="action-btn" style="margin:0; width:auto; padding:11px 18px;" onclick="document.getElementById('proofImageInput').click()">
-              <i class="fas fa-mobile-alt"></i> ВЫБРАТЬ СКРИН ТАБА С ТЕЛЕФОНА
-            </button>
-            <button type="button" class="action-btn secondary" id="btnRunOcr" style="margin:0; width:auto; padding:11px 16px; display:none;" onclick="scanStandoffScoreboard()">
-              <i class="fas fa-sync-alt"></i> ПЕРЕСКАНИРОВАТЬ В ULTRA-HD
-            </button>
-          </div>
-        </div>
-
-        <input type="text" id="hProofUrl" placeholder="Или вставь прямую ссылку на скриншот Таба..." style="margin-top:10px;" oninput="updateProofPreview(this.value)">
-
-        <div id="ocrStatusBox" class="ocr-status">
-          <i class="fas fa-circle-notch fa-spin"></i> <span id="ocrStatusText">Ultra-HD сканер читает ники и цифры по отдельным колонкам...</span>
-        </div>
-
-        <div id="proofPreviewWrap" class="proof-preview-wrap">
-          <img id="proofPreviewImg" src="" alt="Standoff 2 Scoreboard Proof">
-        </div>
-      </div>
-
-      <div class="row-inputs">
-        <div>
-          <label>Команда соперника (Тег / Название)</label>
-          <input type="text" id="hEnemy" placeholder="Например: [AB88] / Mix Stack">
-        </div>
-        <div>
-          <label>Режим / Турнир</label>
-          <input type="text" id="hTour" placeholder="Турнир / Прак (CW)" value="Турнир">
-        </div>
-        <div>
-          <label>Карта</label>
-          <select id="hMap">
-            <option value="Dune">Dune</option>
-            <option value="Sandstone">Sandstone</option>
-            <option value="Rust">Rust</option>
-            <option value="Province">Province</option>
-            <option value="Breeze">Breeze</option>
-            <option value="Zone 9">Zone 9</option>
-            <option value="Hanami">Hanami</option>
-          </select>
-        </div>
-        <div>
-          <label>Сервер</label>
-          <input type="text" id="hServer" placeholder="Россия, Москва" value="Россия, Москва">
-        </div>
-      </div>
-
-      <div class="row-inputs" style="margin-top:6px;">
-        <div>
-          <label style="color:var(--accent-light);">Раунды [C6E] (Наш счет)</label>
-          <input type="number" id="hOur" placeholder="13" style="border-color:var(--accent-light); font-family:var(--font-tech); font-weight:800; font-size:15px;">
-        </div>
-        <div>
-          <label>Сторона [C6E]</label>
-          <select id="hOurSide">
-            <option value="АТАКА (Т)">АТАКА (Т)</option>
-            <option value="ОБОРОНА (СТ)">ОБОРОНА (СТ)</option>
-          </select>
-        </div>
-        <div>
-          <label style="color:var(--ct-blue);">Раунды Соперника (Их счет)</label>
-          <input type="number" id="hTheir" placeholder="11" style="border-color:var(--ct-blue); font-family:var(--font-tech); font-weight:800; font-size:15px;">
-        </div>
-        <div>
-          <label>Сторона Соперника</label>
-          <select id="hTheirSide">
-            <option value="ОБОРОНА (СТ)">ОБОРОНА (СТ)</option>
-            <option value="АТАКА (Т)">АТАКА (Т)</option>
-          </select>
-        </div>
-      </div>
-
-      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-top:14px;">
-        <div class="chips-row" style="margin:0;">
-          <button type="button" class="chip-btn" onclick="swapTeamsTables()"><i class="fas fa-exchange-alt"></i> Поменять команды местами (Левая ⇄ Правая)</button>
-          <button type="button" class="chip-btn" onclick="applyC6ETagToOurTeam()"><i class="fas fa-tag"></i> Проставить тег [C6E] нашим бойцам</button>
-          <button type="button" class="chip-btn" onclick="fillOurTeamFromRoster()"><i class="fas fa-users"></i> Заполнить ники из состава [C6E]</button>
-          <button type="button" class="chip-btn" onclick="loadSampleFromScreenshot()"><i class="fas fa-bolt"></i> Загрузить данные со скрина Dune (13:11)</button>
-        </div>
-      </div>
-
-      <div style="margin-top:10px; padding:10px 12px; background:rgba(255,255,255,0.03); border:1px solid var(--glass-border); border-radius:8px;">
-        <div style="font-size:9px; font-family:var(--font-tech); color:var(--silver-muted); margin-bottom:6px;">
-          <i class="fas fa-hand-pointer text-accent"></i> БЫСТРАЯ ПОДСТАНОВКА БОЙЦОВ ИЗ БАЗЫ РОСТЕРА (НАЖМИ НА НИК, ЧТОБЫ ВСТАВИТЬ В ВЫБРАННУЮ СТРОКУ ТАБА):
-        </div>
-        <div id="quickRosterChipsBar" class="chips-row" style="margin:0;">
-          <span style="font-size:10px; color:#666;">Загрузка бойцов...</span>
-        </div>
-      </div>
-
-      <div class="dual-scoreboard-wrap">
-        <div class="team-tab-box c6e-box">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span style="font-family:var(--font-tech); font-size:12px; font-weight:800; color:var(--silver);">
-              <i class="fas fa-shield-alt text-accent"></i> НАША КОМАНДА <span class="text-accent">[C6E]</span>
-            </span>
-            <button type="button" class="chip-btn" onclick="addTeamPlayerRow('ourPlayersTbody', '[C6E] ')">+ Боец</button>
-          </div>
-
-          <table class="tab-editor-table">
-            <thead>
-              <tr>
-                <th>Имя [C6E]</th>
-                <th style="width:44px;">У</th>
-                <th style="width:40px;">П</th>
-                <th style="width:44px;">С</th>
-                <th style="width:58px;">K/D</th>
-                <th style="width:46px;">Счет</th>
-                <th style="width:44px;">Пинг</th>
-                <th style="width:26px;"></th>
-              </tr>
-            </thead>
-            <tbody id="ourPlayersTbody"></tbody>
-          </table>
-        </div>
-
-        <div class="team-tab-box enemy-box">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span style="font-family:var(--font-tech); font-size:12px; font-weight:800; color:var(--ct-blue);">
-              <i class="fas fa-crosshairs"></i> КОМАНДА ПРОТИВНИКА
-            </span>
-            <button type="button" class="chip-btn" onclick="addTeamPlayerRow('enemyPlayersTbody', '')">+ Соперник</button>
-          </div>
-
-          <table class="tab-editor-table">
-            <thead>
-              <tr>
-                <th>Имя соперника</th>
-                <th style="width:44px;">У</th>
-                <th style="width:40px;">П</th>
-                <th style="width:44px;">С</th>
-                <th style="width:58px;">K/D</th>
-                <th style="width:46px;">Счет</th>
-                <th style="width:44px;">Пинг</th>
-                <th style="width:26px;"></th>
-              </tr>
-            </thead>
-            <tbody id="enemyPlayersTbody"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="row-inputs" style="margin-top:12px;">
-        <div>
-          <label>⭐ MVP Матча (определяется автоматически по лучшему K/D и Счету)</label>
-          <input type="text" id="hMvp" placeholder="Например: [C6E] Z@Ir3xus (1.47 K/D)">
-        </div>
-      </div>
-
-      <label class="tg-check-label">
-        <input type="checkbox" id="tgAutoPostMatch" checked>
-        <i class="fab fa-telegram"></i>
-        <span>Опубликовать красивый отчёт о матче со скриншотом Таба (или авто-карточкой) и K/D игроков в ТГК</span>
-      </label>
-
-      <button class="action-btn" onclick="addHistory()"><i class="fas fa-check-double"></i> СОХРАНИТЬ МАТЧ И ОПУБЛИКОВАТЬ В ТГК</button>
-
-      <div class="data-list" id="historyList"></div>
-    </div>
-
-    <!-- =========================================================================
-         2. УПРАВЛЕНИЕ СОСТАВОМ [C6E] + ПУБЛИКАЦИЯ КАРТОЧЕК ИГРОКОВ В ТГК
-         ========================================================================= -->
-    <div class="panel full-width cat-roster">
-      <div class="panel-header">
-        <h2><span class="panel-icon"><i class="fas fa-users"></i></span> УПРАВЛЕНИЕ СОСТАВОМ [C6E] & КАРТОЧКИ БОЙЦОВ В ТГК</h2>
-        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-          <button type="button" class="btn-tg-action" style="padding:8px 12px;" onclick="publishFullRosterToTG()">
-            <i class="fab fa-telegram"></i> ВЫЛОЖИТЬ ВЕСЬ СОСТАВ В ТГК
-          </button>
-          <select id="rosterType" onchange="loadRoster()" style="width: 200px; margin:0; border-color: var(--silver-border);">
-            <option value="roster_main">Основа (Main Roster)</option>
-            <option value="roster_reserve">Резерв (Reserve Squad)</option>
-          </select>
-        </div>
-      </div>
-
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 20px;">
-        <div style="background: rgba(255,255,255,0.02); padding: 18px; border-radius: 12px; border: 1px solid var(--glass-border);">
-          <h3 style="font-size: 12px; color: var(--silver); margin-bottom: 12px;">ДОБАВИТЬ / ОБНОВИТЬ БОЙЦА [C6E]</h3>
-          <div class="row-inputs">
-            <div><label>Никнейм (с тегом [C6E])</label><input type="text" id="pNick" placeholder="[C6E] Z@Ir3xus"></div>
-            <div><label>Роль</label><input type="text" id="pRole" placeholder="Sniper / IGL"></div>
-          </div>
-          
-          <label>Фото игрока (ссылка ИЛИ выбор с телефона)</label>
-          <div class="upload-row">
-            <input type="text" id="pImg" placeholder="URL фото или нажми кнопку справа ➔">
-            <button type="button" class="btn-upload-phone" onclick="pickImageForInput('pImg')"><i class="fas fa-mobile-alt"></i> С телефона</button>
-          </div>
-
-          <label>Боевая цитата</label>
-          <input type="text" id="pQuote" placeholder="Например: One shot — one kill">
-          <div class="row-inputs">
-            <div><label>Базовый K/D</label><input type="text" id="pKd" placeholder="1.47"></div>
-            <div><label>Ранг</label><input type="text" id="pRank" placeholder="The Legend"></div>
-          </div>
-          <div class="row-inputs">
-            <div><label>Девайс</label><input type="text" id="pDevice" placeholder="iPad Pro"></div>
-            <div><label>Сенса</label><input type="text" id="pSettings" placeholder="1.25"></div>
-            <div><label>Оружие</label><input type="text" id="pWeapon" placeholder="AWM / AKR"></div>
-          </div>
-
-          <label class="tg-check-label">
-            <input type="checkbox" id="tgAutoPostPlayer" checked>
-            <i class="fab fa-telegram"></i>
-            <span>Сгенерировать фирменную карточку бойца [C6E] и опубликовать в ТГК</span>
-          </label>
-
-          <button class="action-btn" onclick="addPlayer()"><i class="fas fa-user-check"></i> СОХРАНИТЬ БОЙЦА И ОТПРАВИТЬ В ТГК</button>
-        </div>
-
-        <div style="background: rgba(0,0,0,0.35); padding: 18px; border-radius: 12px; border: 1px solid var(--glass-border);">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
-            <h3 style="font-size: 12px; color: var(--silver-muted); margin: 0;">АКТИВНЫЙ СОСТАВ (НАЖМИ 📢 ЧТОБЫ ОТПРАВИТЬ КАРТОЧКУ БОЙЦА В ТГК)</h3>
-          </div>
-          <div id="rosterList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px;"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- =========================================================================
-         3. LIVE НОВОСТИ + АВТО-ПУБЛИКАЦИЯ В ТГК С ФОТО И ОФОРМЛЕНИЕМ
-         ========================================================================= -->
-    <div class="panel cat-news">
-      <div class="panel-header">
-        <h2><span class="panel-icon"><i class="fas fa-newspaper"></i></span> LIVE НОВОСТИ (САЙТ + ТГК)</h2>
-        <span id="newsEditBadge" style="display:none; font-size:9px; background:var(--accent); padding:3px 8px; border-radius:4px; font-family:var(--font-tech);">РЕЖИМ РЕДАКТИРОВАНИЯ</span>
-      </div>
-      
-      <!-- АВТО-КОНСТРУКТОР ОБНОВЛЕНИЙ САЙТА ОТ ЛИЦА РАЗРАБОТЧИКА KAS -->
-      <div style="background: linear-gradient(135deg, rgba(255,179,0,0.12), rgba(158,27,40,0.18)); border: 1px solid rgba(255,179,0,0.45); border-radius: 12px; padding: 14px; margin-bottom: 14px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
-          <span style="font-family:var(--font-tech); font-size:11px; font-weight:900; color:#ffb300;">
-            <i class="fas fa-bolt"></i> АВТО-ГЕНЕРАТОР ОБНОВЛЕНИЙ САЙТА ОТ ЛИЦА KAS (@kas_0ff)
-          </span>
-          <span style="font-size:9px; font-family:var(--font-tech); color:var(--success); background:rgba(0,230,118,0.12); border:1px solid rgba(0,230,118,0.35); padding:2px 8px; border-radius:20px;">
-            PUSH-УВЕДОМЛЕНИЕ ВСЕМ ИГРОКАМ НА САЙТЕ
-          </span>
-        </div>
-        <p style="font-size:11px; color:var(--silver-muted); margin:0 0 10px 0; line-height:1.45;">
-          Автоматически собирает красивую статью от твоего имени (<b>Kas — Основатель и Разработчик [C6E]</b>) с фирменной картинкой-баннером, <b>жирным шрифтом</b>, <i>курсивом</i>, блоками <code>кода</code> и цитатой (без упоминания админки) + включает всплывающее уведомление об обнове у всех посетителей сайта!
-        </p>
-
-        <div class="row-inputs" style="margin-bottom:8px;">
-          <div style="max-width:130px;">
-            <label style="margin-top:0;">Версия сайта</label>
-            <input type="text" id="relVersionInp" value="v0.5.0" placeholder="v4.5" style="font-family:var(--font-tech); font-weight:800; color:#ffb300;">
-          </div>
-          <div>
-            <label style="margin-top:0;">Что ещё добавить от себя (необязательно)</label>
-            <input type="text" id="relCustomNote" placeholder="Например: Добавлены новые фишки для бойцов состава...">
-          </div>
-        </div>
-
-        <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px;">
-          <label style="margin:0; display:inline-flex; align-items:center; gap:5px; font-size:10px; color:#fff; background:rgba(0,0,0,0.45); padding:5px 9px; border-radius:6px; border:1px solid rgba(255,255,255,0.1); cursor:pointer; text-transform:none;">
-            <input type="checkbox" id="chkRelPantheon" checked style="width:14px; height:14px;"> 👑 Пантеон (500/250/150 Gold)
-          </label>
-          <label style="margin:0; display:inline-flex; align-items:center; gap:5px; font-size:10px; color:#fff; background:rgba(0,0,0,0.45); padding:5px 9px; border-radius:6px; border:1px solid rgba(255,255,255,0.1); cursor:pointer; text-transform:none;">
-            <input type="checkbox" id="chkRelBoosts" checked style="width:14px; height:14px;"> 🔥 Бусты бойцов (+25 PTS)
-          </label>
-          <label style="margin:0; display:inline-flex; align-items:center; gap:5px; font-size:10px; color:#fff; background:rgba(0,0,0,0.45); padding:5px 9px; border-radius:6px; border:1px solid rgba(255,255,255,0.1); cursor:pointer; text-transform:none;">
-            <input type="checkbox" id="chkRelLiveKd" checked style="width:14px; height:14px;"> 📊 Живой LIVE K/D и Досье
-          </label>
-          <label style="margin:0; display:inline-flex; align-items:center; gap:5px; font-size:10px; color:#fff; background:rgba(0,0,0,0.45); padding:5px 9px; border-radius:6px; border:1px solid rgba(255,255,255,0.1); cursor:pointer; text-transform:none;">
-            <input type="checkbox" id="chkRelDualTab" checked style="width:14px; height:14px;"> 🏆 Двойной Таб 5v5 со скринами
-          </label>
-          <label style="margin:0; display:inline-flex; align-items:center; gap:5px; font-size:10px; color:#fff; background:rgba(0,0,0,0.45); padding:5px 9px; border-radius:6px; border:1px solid rgba(255,255,255,0.1); cursor:pointer; text-transform:none;">
-            <input type="checkbox" id="chkRelPracs" checked style="width:14px; height:14px;"> ⚔️ Праки (CW) и защита сайта
-          </label>
-        </div>
-
-        <div style="display:flex; gap:8px; flex-wrap:wrap;">
-          <button type="button" class="action-btn secondary" style="margin:0; flex:1; min-width:210px; border-color:#ffb300; color:#ffb300; padding:10px;" onclick="window.generateKasUpdateIntoEditor()">
-            <i class="fas fa-magic"></i> 1. СГЕНЕРИРОВАТЬ КРАСИВЫЙ ТЕКСТ И БАННЕР В РЕДАКТОР
-          </button>
-          <button type="button" class="action-btn" style="margin:0; flex:1; min-width:210px; background:linear-gradient(135deg, #ffb300, #d42638); color:#000; font-weight:900; padding:10px;" onclick="window.publishKasUpdateOneClick()">
-            <i class="fas fa-rocket"></i> ОПУБЛИКОВАТЬ ОБНОВУ НА САЙТ + УВЕДОМИТЬ ВСЕХ + В ТГК
-          </button>
-        </div>
-      </div>
-
-      <input type="hidden" id="editingNewsId" value="">
-      <label>Заголовок новости</label>
-      <input type="text" id="newsTitle" placeholder="Например: Победа [C6E] в турнире">
-      
-      <label>Панель инструментов</label>
-      <div class="editor-toolbar">
-        <button type="button" class="tool-btn" onmousedown="event.preventDefault()" onclick="openHelper('bold')"><i class="fas fa-bold"></i> Жирный</button>
-        <button type="button" class="tool-btn" onmousedown="event.preventDefault()" onclick="openHelper('italic')"><i class="fas fa-italic"></i> Курсив</button>
-        <button type="button" class="tool-btn" onmousedown="event.preventDefault()" onclick="openHelper('quote')"><i class="fas fa-quote-right"></i> Цитата</button>
-        <button type="button" class="tool-btn" onmousedown="event.preventDefault()" onclick="openHelper('code')"><i class="fas fa-code"></i> Код</button>
-        <button type="button" class="tool-btn" onmousedown="event.preventDefault()" onclick="openHelper('link')"><i class="fas fa-link"></i> Ссылка</button>
-        <button type="button" class="tool-btn" onmousedown="event.preventDefault()" onclick="openHelper('image')"><i class="far fa-image"></i> Фото</button>
-        <button type="button" class="tool-btn" onclick="clearNewsEditor()" title="Очистить поле" style="margin-left:auto;"><i class="fas fa-eraser"></i></button>
-      </div>
-
-      <div id="editorHelper" class="editor-helper-box"></div>
-      <div id="newsVisualEditor" class="visual-editor" contenteditable="true" data-placeholder="Пишите текст новости здесь..."></div>
-
-      <div class="row-inputs" style="margin-top: 12px;">
-        <div><label>Дата</label><input type="text" id="newsDate" placeholder="12.11.2026"></div>
-        <div>
-          <label>Тег рубрики</label>
-          <select id="newsTag">
-            <option value="ВАЖНО">ВАЖНО</option>
-            <option value="ТУРНИР">ТУРНИР</option>
-            <option value="СОСТАВ">СОСТАВ</option>
-            <option value="ОБНОВЛЕНИЕ">ОБНОВЛЕНИЕ</option>
-          </select>
-        </div>
-      </div>
-
-      <label class="tg-check-label">
-        <input type="checkbox" id="tgAutoPostNews" checked>
-        <i class="fab fa-telegram"></i>
-        <span>Опубликовать эту новость в ТГК (с фото из новости или фирменной обложкой C6E)</span>
-      </label>
-
-      <div style="display: flex; gap: 8px;">
-        <button class="action-btn" id="newsSubmitBtn" onclick="addNews()"><i class="fas fa-paper-plane"></i> ОПУБЛИКОВАТЬ НА САЙТЕ И В ТГК</button>
-        <button class="action-btn secondary" id="newsCancelEditBtn" style="display:none; width:auto;" onclick="cancelNewsEdit()">ОТМЕНА</button>
-      </div>
-
-      <div class="data-list" id="newsList">Загрузка...</div>
-    </div>
-
-    <!-- =========================================================================
-         4. ТАЙМЕР ГЛАВНОГО МАТЧА + АНОНС В ТГК
-         ========================================================================= -->
-    <div class="panel cat-matches">
-      <div class="panel-header">
-        <h2><span class="panel-icon"><i class="fas fa-clock"></i></span> ТАЙМЕР ГЛАВНОГО МАТЧА (MATCH DAY)</h2>
-      </div>
-      <div id="currentMatchInfo" style="font-size: 11px; color: var(--silver); margin-bottom: 10px; border: 1px solid var(--glass-border); padding: 12px; border-radius: 8px; text-align: center; background: rgba(255,255,255,0.03); font-family: var(--font-tech);">Нет активного матча</div>
-      <label>Команда соперника</label>
-      <input type="text" id="tmEnemy" placeholder="Например: Saints">
-      <label>Дата и время матча</label>
-      <input type="datetime-local" id="tmDate">
-
-      <label class="tg-check-label">
-        <input type="checkbox" id="tgAutoPostTimer" checked>
-        <i class="fab fa-telegram"></i>
-        <span>Отправить фирменный постер-анонс «MATCH DAY: [C6E] VS Соперник» в ТГК</span>
-      </label>
-
-      <div style="display: flex; gap: 8px;">
-        <button class="action-btn" onclick="updateMatch()"><i class="fas fa-sync-alt"></i> ЗАПУСТИТЬ ТАЙМЕР И АНОНС</button>
-        <button class="action-btn secondary" style="width: auto;" onclick="clearMatch()" title="Сбросить таймер"><i class="fas fa-trash"></i></button>
-      </div>
-    </div>
-
-    <!-- =========================================================================
-         5. УПРАВЛЕНИЕ ПРАКАМИ (CW / SCRIMS)
-         ========================================================================= -->
-    <div class="panel full-width cat-matches">
-      <div class="panel-header">
-        <h2><span class="panel-icon"><i class="fas fa-crosshairs"></i></span> УПРАВЛЕНИЕ ПРАКАМИ (PRO CW SYSTEM)</h2>
-      </div>
-      
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(275px, 1fr)); gap: 18px;">
-        <div style="background: rgba(255,255,255,0.02); padding: 16px; border-radius: 12px; border: 1px solid var(--glass-border);">
-          <h3 style="font-size: 12px; color: var(--silver); margin-bottom: 8px;">1. ОТКРЫТЬ НОВЫЙ СЛОТ</h3>
-          <div class="chips-row">
-            <button type="button" class="chip-btn" onclick="setQuickPracTime(0, 18)">Сегодня 18:00</button>
-            <button type="button" class="chip-btn" onclick="setQuickPracTime(0, 20)">Сегодня 20:00</button>
-            <button type="button" class="chip-btn" onclick="setQuickPracTime(1, 18)">Завтра 18:00</button>
-            <button type="button" class="chip-btn" onclick="setQuickPracTime(1, 20)">Завтра 20:00</button>
-          </div>
-
-          <label>Точная дата и время игры</label>
-          <input type="datetime-local" id="pracDateInput">
-
-          <div class="row-inputs">
-            <div>
-              <label>Формат матча</label>
-              <select id="pracFormatInput">
-                <option value="BO1">BO1 (1 карта)</option>
-                <option value="BO3">BO3 (до 2 побед)</option>
-                <option value="BO5">BO5 (финал)</option>
-              </select>
-            </div>
-            <div>
-              <label>Сервер / Регион</label>
-              <select id="pracServerInput">
-                <option value="Россия, Москва">Россия, Москва</option>
-                <option value="Европа (EU)">Европа (EU)</option>
-              </select>
-            </div>
-          </div>
-
-          <label>Своя картинка для ТГ (если пусто — бот сам нарисует баннер C6E!)</label>
-          <input type="text" id="pracTgImg" placeholder="Оставь пустым для авто-баннера [C6E]">
-
-          <label style="display:flex; align-items:center; gap:8px; cursor:pointer; margin-top:12px; color:var(--silver);">
-            <input type="checkbox" id="pracAutoSchedule" checked style="width:16px; height:16px;">
-            Сразу добавить слот в «Расписание»
-          </label>
-
-          <button class="action-btn" onclick="createPracSlot()"><i class="fas fa-bullhorn"></i> СОЗДАТЬ СЛОТ И ОТПРАВИТЬ БАННЕР В ТГК</button>
-        </div>
-
-        <div style="background: rgba(0,0,0,0.35); padding: 16px; border-radius: 12px; border: 1px solid var(--glass-border);">
-          <h3 style="font-size: 12px; color: var(--success);"><i class="fas fa-unlock"></i> ОТКРЫТЫЕ СЛОТЫ НА САЙТЕ</h3>
-          <div id="pracFreeList" style="display: grid; gap: 8px; max-height: 360px; overflow-y: auto;"></div>
-        </div>
-
-        <div style="background: var(--accent-dim); padding: 16px; border-radius: 12px; border: 1px solid var(--accent);">
-          <h3 style="font-size: 12px; color: var(--silver);"><i class="fas fa-fire text-accent"></i> ЗАБРОНИРОВАННЫЕ СОПЕРНИКИ</h3>
-          <div id="pracBookedList" style="display: grid; gap: 10px; max-height: 360px; overflow-y: auto;"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 6. РАСПИСАНИЕ (WEEKLY OPS) -->
-    <div class="panel cat-matches">
-      <div class="panel-header">
-        <h2><span class="panel-icon"><i class="fas fa-calendar-week"></i></span> РАСПИСАНИЕ (WEEKLY OPS)</h2>
-        <button type="button" class="btn-tg-action" style="padding:6px 10px; font-size:9px;" onclick="publishScheduleToTG()">
-          <i class="fab fa-telegram"></i> В ТГК
-        </button>
-      </div>
-      
-      <div class="chips-row">
-        <button type="button" class="chip-btn" onclick="setQuickScheduleDay('ПОНЕДЕЛЬНИК')">ПН</button>
-        <button type="button" class="chip-btn" onclick="setQuickScheduleDay('ВТОРНИК')">ВТ</button>
-        <button type="button" class="chip-btn" onclick="setQuickScheduleDay('СРЕДА')">СР</button>
-        <button type="button" class="chip-btn" onclick="setQuickScheduleDay('ЧЕТВЕРГ')">ЧТ</button>
-        <button type="button" class="chip-btn" onclick="setQuickScheduleDay('ПЯТНИЦА')">ПТ</button>
-        <button type="button" class="chip-btn" onclick="setQuickScheduleDay('СУББОТА')">СБ</button>
-        <button type="button" class="chip-btn" onclick="setQuickScheduleDay('ВОСКРЕСЕНЬЕ')">ВС</button>
-      </div>
-
-      <div class="row-inputs" style="margin-top:6px;">
-        <div><label>День / Дата</label><input type="text" id="schDay" placeholder="ПЯТНИЦА / 13.11"></div>
-        <div><label>Время (МСК)</label><input type="text" id="schTime" placeholder="19:00"></div>
-      </div>
-
-      <div class="chips-row">
-        <button type="button" class="chip-btn" onclick="document.getElementById('schTime').value='17:00'">17:00</button>
-        <button type="button" class="chip-btn" onclick="document.getElementById('schTime').value='18:00'">18:00</button>
-        <button type="button" class="chip-btn" onclick="document.getElementById('schTime').value='19:00'">19:00</button>
-        <button type="button" class="chip-btn" onclick="document.getElementById('schTime').value='20:00'">20:00</button>
-        <button type="button" class="chip-btn" onclick="document.getElementById('schTime').value='21:00'">21:00</button>
-      </div>
-      
-      <div class="row-inputs">
-        <div>
-          <label>Тип события</label>
-          <select id="schType">
-            <option value="CW">Прак (CW)</option>
-            <option value="CUP">Турнир (CUP)</option>
-            <option value="TRAIN">Тренировка (TRAIN)</option>
-            <option value="MEDIA">Стрим / Медиа</option>
-          </select>
-        </div>
-        <div>
-          <label>Статус</label>
-          <select id="schStatus">
-            <option value="upcoming">Ожидается</option>
-            <option value="live">🔴 ИДЕТ СЕЙЧАС (LIVE)</option>
-            <option value="done">✅ Завершено</option>
-            <option value="canceled">❌ Отменено</option>
-          </select>
-        </div>
-      </div>
-
-      <label>Описание / Соперник</label>
-      <input type="text" id="schEvent" placeholder="Например: Прак [C6E] vs Saints (BO3)">
-
-      <button class="action-btn" onclick="addScheduleItem()"><i class="fas fa-calendar-plus"></i> ДОБАВИТЬ В РАСПИСАНИЕ</button>
-      <div class="data-list" id="scheduleList">Загрузка...</div>
-    </div>
-
-    <!-- 7. ROADMAP -->
-    <div class="panel cat-media">
-      <div class="panel-header">
-        <h2><span class="panel-icon"><i class="fas fa-route"></i></span> ИСТОРИЯ КЛУБА (ROADMAP)</h2>
-      </div>
-      <label>Дата события</label><input type="text" id="rmDate" placeholder="12.11.2026">
-      <label>Заголовок</label><input type="text" id="rmTitle" placeholder="Основание Cyber 6 Esports">
-      <label>Описание</label><input type="text" id="rmDesc" placeholder="Краткое описание события...">
-      <button class="action-btn" onclick="addRoadmap()"><i class="fas fa-flag"></i> ДОБАВИТЬ ТОЧКУ</button>
-      <div class="data-list" id="roadmapList"></div>
-    </div>
-
-    <!-- 8. МЕДИА И ГАЛЕРЕЯ -->
-    <div class="panel cat-media">
-      <div class="panel-header">
-        <h2><span class="panel-icon"><i class="fas fa-play-circle"></i></span> МЕДИА & ФОТОГАЛЕРЕЯ</h2>
-      </div>
-      <label>YouTube Video ID или полная ссылка</label>
-      <div style="display: flex; gap: 8px; align-items: center;">
-        <input type="text" id="vidId" placeholder="Ссылка на YouTube или ID видео">
-        <button class="action-btn" style="width: auto; margin:0; padding: 12px 18px;" onclick="updateVideo()">OK</button>
-      </div>
-
-      <label style="margin-top:18px; border-top: 1px solid var(--glass-border); padding-top: 14px;">Добавить фото в Галерею</label>
-      <div class="upload-row">
-        <input type="text" id="galUrl" placeholder="URL фото или выбери с телефона ➔">
-        <button type="button" class="btn-upload-phone" onclick="pickImageForInput('galUrl')"><i class="fas fa-mobile-alt"></i> С телефона</button>
-      </div>
-      <input type="text" id="galCap" placeholder="Подпись к фото (необязательно)" style="margin-top: 8px;">
-      <button class="action-btn" onclick="addGallery()"><i class="fas fa-camera"></i> ДОБАВИТЬ В ГАЛЕРЕЮ</button>
-      <div class="data-list" id="galleryList"></div>
-    </div>
-
-    <!-- 9. ОТЗЫВЫ -->
-    <div class="panel cat-media">
-      <div class="panel-header">
-        <h2><span class="panel-icon"><i class="fas fa-comments"></i></span> МОДЕРАЦИЯ ОТЗЫВОВ</h2>
-      </div>
-      <div class="data-list" id="reviewsList" style="max-height: 360px;"></div>
-    </div>
-
-  </div>
-</div>
-
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-  import { getFirestore, doc, setDoc, getDoc, onSnapshot, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
-  import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
-
-  const TG_CONFIG = {
-    token: "",
-    channelId: "-1004428385527",
-    groupId: "-1004452371581",
-    siteUrl: "https://cyber6esports.github.io/"
-  };
-
-  const SECRET_SALT = "C6E_PRO_SHIELD_2026";
-
-  function encodeBotToken(raw) {
-    if (!raw) return "";
-    const clean = raw.trim();
-    let xored = "";
-    for (let i = 0; i < clean.length; i++) {
-      xored += String.fromCharCode(clean.charCodeAt(i) ^ SECRET_SALT.charCodeAt(i % SECRET_SALT.length));
-    }
-    return btoa(unescape(encodeURIComponent(xored))).split("").reverse().join("");
+/* ============================================================================
+   CYBER 6 ESPORTS [C6E] — PRO APPLICATION LOGIC + ПАНТЕОН (900 GOLD) + C6E SHIELD
+   ============================================================================ */
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+import { getFirestore, doc, onSnapshot, getDoc, setDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+// Встраиваем стили Двойного Таба + Карусели Состава + ПАНТЕОНА [C6E] + C6E Shield
+const c6eProStyles = document.createElement('style');
+c6eProStyles.innerHTML = `
+  /* Двойной Таб Standoff 2 */
+  .so2-tab-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; margin-top: 12px; }
+  .so2-team-panel { background: linear-gradient(180deg, rgba(24, 22, 24, 0.95) 0%, rgba(12, 12, 15, 0.98) 100%); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 10px; overflow: hidden; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6); }
+  .so2-team-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; font-family: var(--font-tech); font-size: 11px; font-weight: 800; border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
+  .so2-team-header.c6e-head { background: linear-gradient(90deg, rgba(158, 27, 40, 0.35), rgba(20, 21, 26, 0.9)); border-left: 3px solid var(--accent-light); }
+  .so2-team-header.enemy-head { background: linear-gradient(90deg, rgba(70, 130, 210, 0.25), rgba(20, 21, 26, 0.9)); border-left: 3px solid #5ea8ff; }
+  .so2-table-wrap { width: 100%; overflow-x: auto; }
+  .so2-table { width: 100%; border-collapse: collapse; font-size: 11px; min-width: 310px; }
+  .so2-table th { color: #8b8e96; font-size: 9px; font-weight: 700; text-transform: uppercase; padding: 7px 5px; text-align: center; border-bottom: 1px solid rgba(255, 255, 255, 0.06); background: rgba(0, 0, 0, 0.35); }
+  .so2-table th.col-name { text-align: left; padding-left: 10px; }
+  .so2-table td { padding: 8px 5px; text-align: center; border-bottom: 1px solid rgba(255, 255, 255, 0.04); color: #dcdcdc; font-weight: 600; }
+  .so2-table tr:nth-child(1) td { background: rgba(255, 255, 255, 0.03); }
+  .so2-table td.col-name { text-align: left; padding-left: 8px; white-space: nowrap; font-weight: 700; color: #ffffff; }
+  .tag-c6e { display: inline-block; background: rgba(158, 27, 40, 0.35); border: 1px solid var(--accent-light); color: #ffffff; font-family: var(--font-tech); font-size: 9px; padding: 1px 5px; border-radius: 4px; margin-right: 4px; }
+  .tag-clan { display: inline-block; background: rgba(94, 168, 255, 0.16); border: 1px solid rgba(94, 168, 255, 0.4); color: #9ec8ff; font-family: var(--font-tech); font-size: 9px; padding: 1px 5px; border-radius: 4px; margin-right: 4px; }
+  .so2-bottom-bar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 10px; padding: 8px 12px; background: rgba(0, 0, 0, 0.45); border-radius: 6px; font-size: 10px; color: var(--silver-muted); border: 1px solid rgba(255, 255, 255, 0.05); }
+  .mvp-compare-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin-top: 12px; }
+  .mvp-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 9px 12px; display: flex; align-items: center; gap: 10px; font-size: 11px; }
+  .chip-btn { background: rgba(255,255,255,0.06); border: 1px solid var(--glass-border); color: var(--silver); font-family: var(--font-tech); font-size: 10px; padding: 5px 10px; border-radius: 6px; cursor: pointer; transition: 0.2s; }
+  .chip-btn:hover { background: var(--accent); color: #fff; border-color: var(--silver); }
+
+  /* =========================================================
+     ПАНТЕОН [C6E] — ЕЖЕНЕДЕЛЬНАЯ ГОНКА ЗА 900 ГОЛДЫ ОТ ОСНОВАТЕЛЯ
+     ========================================================= */
+  .pantheon-hero {
+    background: linear-gradient(145deg, rgba(34, 24, 12, 0.94) 0%, rgba(16, 17, 22, 0.98) 55%, rgba(158, 27, 40, 0.22) 100%);
+    border: 1px solid rgba(255, 179, 0, 0.4);
+    border-top: 3px solid #ffb300;
+    border-radius: 18px; padding: 22px 18px; margin-bottom: 18px;
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.8), 0 0 25px rgba(255, 179, 0, 0.12);
+    position: relative; overflow: hidden; text-align: center;
+  }
+  .pantheon-badge-top {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(255, 179, 0, 0.14); border: 1px solid rgba(255, 179, 0, 0.45);
+    color: #ffb300; font-family: var(--font-tech); font-size: 9px; font-weight: 800;
+    padding: 4px 12px; border-radius: 20px; letter-spacing: 1.5px; margin-bottom: 8px;
+  }
+  .pantheon-title {
+    font-family: var(--font-tech); font-size: clamp(24px, 6vw, 34px); font-weight: 900;
+    color: #fff; letter-spacing: 3px; margin: 0 0 6px 0;
+    text-shadow: 0 0 18px rgba(255, 179, 0, 0.35);
+  }
+  .pantheon-title span { color: #ffb300; }
+  .pantheon-prize-strip {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+    max-width: 560px; margin: 14px auto 12px auto;
+  }
+  .prize-tier-box {
+    background: rgba(0, 0, 0, 0.55); border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px; padding: 10px 6px; position: relative;
+  }
+  .prize-tier-box.gold { border-color: #ffb300; background: linear-gradient(180deg, rgba(255, 179, 0, 0.18), rgba(0,0,0,0.65)); box-shadow: 0 0 16px rgba(255, 179, 0, 0.2); }
+  .prize-tier-box.silver { border-color: #e4e4e2; background: linear-gradient(180deg, rgba(228, 228, 226, 0.12), rgba(0,0,0,0.65)); }
+  .prize-tier-box.bronze { border-color: #cd7f32; background: linear-gradient(180deg, rgba(205, 127, 50, 0.14), rgba(0,0,0,0.65)); }
+  .prize-gold-amount { font-family: var(--font-tech); font-size: 15px; font-weight: 900; color: #fff; }
+  .prize-gold-lbl { font-size: 8px; font-weight: 700; text-transform: uppercase; color: var(--silver-muted); margin-top: 2px; }
+
+  .podium-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 14px; margin-bottom: 18px;
+  }
+  .podium-card {
+    background: linear-gradient(165deg, rgba(24, 25, 32, 0.96) 0%, rgba(10, 11, 15, 0.99) 100%);
+    border: 1px solid var(--glass-border); border-radius: 16px; padding: 16px;
+    position: relative; overflow: hidden; box-shadow: 0 14px 32px rgba(0,0,0,0.75);
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .podium-card.rank-1 { border: 2px solid #ffb300; box-shadow: 0 0 28px rgba(255, 179, 0, 0.25); }
+  .podium-card.rank-2 { border: 1.5px solid #e4e4e2; }
+  .podium-card.rank-3 { border: 1.5px solid #cd7f32; }
+
+  .pts-bar-bg {
+    width: 100%; height: 7px; background: rgba(255,255,255,0.07);
+    border-radius: 10px; overflow: hidden; margin: 8px 0;
+  }
+  .pts-bar-fill {
+    height: 100%; border-radius: 10px;
+    background: linear-gradient(90deg, var(--accent-light), #ffb300);
+    transition: width 0.5s ease;
+  }
+  .boost-btn {
+    width: 100%; padding: 9px 12px; border-radius: 9px;
+    background: linear-gradient(135deg, rgba(255, 179, 0, 0.18), rgba(158, 27, 40, 0.35));
+    border: 1px solid #ffb300; color: #fff;
+    font-family: var(--font-tech); font-size: 10px; font-weight: 800;
+    cursor: pointer; transition: 0.25s; display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .boost-btn:hover, .boost-btn:active {
+    background: linear-gradient(135deg, #ffb300, #d42638);
+    color: #000; box-shadow: 0 0 16px rgba(255, 179, 0, 0.5);
   }
 
-  function decodeBotToken(enc) {
-    if (!enc) return "";
+  /* =========================================================
+     ВИТРИНА СОСТАВА НА 1 ЭКРАН (БЕЗ СКРОЛЛА ВВЕРХ-ВНИЗ!)
+     ========================================================= */
+  .roster-hub-controls {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 8px; flex-wrap: wrap; margin-bottom: 12px;
+    background: rgba(18, 19, 24, 0.9); border: 1px solid var(--glass-border);
+    padding: 8px 10px; border-radius: 12px;
+  }
+  .squad-tabs { display: flex; gap: 6px; flex: 1; }
+  .squad-tab-btn {
+    flex: 1; padding: 9px 10px; border-radius: 8px; border: 1px solid var(--glass-border);
+    background: rgba(255, 255, 255, 0.03); color: var(--silver-muted);
+    font-family: var(--font-tech); font-size: 10px; font-weight: 700;
+    cursor: pointer; transition: 0.25s; display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .squad-tab-btn.active {
+    background: linear-gradient(135deg, var(--accent), #5c0d15);
+    color: #fff; border-color: var(--silver);
+    box-shadow: 0 4px 14px var(--accent-glow);
+  }
+  .report-mini-btn {
+    padding: 9px 12px; border-radius: 8px; border: 1px solid var(--accent-light);
+    background: var(--accent-dim); color: #fff; font-family: var(--font-tech);
+    font-size: 9px; font-weight: 800; cursor: pointer; white-space: nowrap;
+    display: flex; align-items: center; gap: 6px; transition: 0.25s;
+  }
+  .report-mini-btn:hover { background: var(--accent-light); }
+
+  .player-selector-bar {
+    display: flex; gap: 8px; overflow-x: auto; padding: 4px 2px 10px 2px;
+    scrollbar-width: none; -ms-overflow-style: none;
+  }
+  .player-selector-bar::-webkit-scrollbar { display: none; }
+  .player-chip {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 12px 6px 6px; border-radius: 30px;
+    background: rgba(18, 19, 24, 0.9); border: 1px solid var(--glass-border);
+    cursor: pointer; white-space: nowrap; transition: 0.25s; flex-shrink: 0;
+  }
+  .player-chip img {
+    width: 28px; height: 28px; border-radius: 50%; object-fit: cover;
+    border: 1px solid var(--silver-border);
+  }
+  .player-chip-nick { font-family: var(--font-tech); font-size: 10px; color: var(--silver); font-weight: 700; }
+  .player-chip-kd { font-family: var(--font-tech); font-size: 9px; padding: 2px 5px; border-radius: 10px; background: rgba(0,230,118,0.12); color: var(--success); font-weight: 800; }
+  .player-chip.active {
+    background: linear-gradient(90deg, rgba(158, 27, 40, 0.4), rgba(24, 25, 32, 0.98));
+    border-color: var(--accent-light);
+    box-shadow: 0 4px 15px var(--accent-dim);
+    transform: translateY(-1px);
+  }
+  .player-chip.active .player-chip-nick { color: #fff; }
+
+  .roster-carousel-wrap { position: relative; width: 100%; }
+  .roster-swipe-track {
+    display: flex; gap: 16px; overflow-x: auto;
+    scroll-snap-type: x mandatory; scroll-behavior: smooth;
+    padding: 4px 2px 12px 2px;
+    scrollbar-width: none; -ms-overflow-style: none;
+  }
+  .roster-swipe-track::-webkit-scrollbar { display: none; }
+
+  .pro-player-card {
+    flex: 0 0 100%;
+    max-width: 440px;
+    margin: 0 auto;
+    scroll-snap-align: center;
+    background: linear-gradient(165deg, rgba(22, 23, 29, 0.96) 0%, rgba(10, 11, 14, 0.99) 100%);
+    border: 1px solid var(--silver-border);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.8);
+    display: flex; flex-direction: column;
+  }
+
+  .pro-card-top {
+    position: relative;
+    height: 195px;
+    overflow: hidden;
+    background: #08090c;
+  }
+  .pro-card-avatar {
+    width: 100%; height: 100%; object-fit: cover;
+    opacity: 0.82; filter: contrast(108%);
+  }
+  .pro-card-shade {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, #0c0d11 4%, rgba(12, 13, 17, 0.5) 50%, transparent 100%);
+  }
+  .pro-badges-row {
+    position: absolute; top: 10px; left: 12px; right: 12px;
+    display: flex; justify-content: space-between; align-items: center; z-index: 2;
+  }
+  .pro-role-badge {
+    font-family: var(--font-tech); font-size: 9px; font-weight: 800;
+    color: #fff; background: rgba(14, 15, 19, 0.85);
+    border: 1px solid var(--silver-border); border-left: 3px solid var(--accent-light);
+    padding: 4px 9px; border-radius: 5px; letter-spacing: 1.5px; text-transform: uppercase;
+  }
+  .pro-form-badge {
+    font-family: var(--font-tech); font-size: 9px; font-weight: 800;
+    padding: 4px 8px; border-radius: 5px; letter-spacing: 0.8px;
+    backdrop-filter: blur(8px);
+  }
+  .form-fire { background: rgba(0, 230, 118, 0.16); border: 1px solid rgba(0, 230, 118, 0.45); color: #00e676; }
+  .form-stable { background: rgba(228, 228, 226, 0.12); border: 1px solid rgba(228, 228, 226, 0.3); color: var(--silver); }
+  .form-cold { background: rgba(212, 38, 56, 0.18); border: 1px solid rgba(212, 38, 56, 0.45); color: #ff5c6c; }
+
+  .pro-identity {
+    position: absolute; bottom: 8px; left: 14px; right: 14px; z-index: 2;
+  }
+  .pro-nick {
+    font-family: var(--font-tech); font-size: 20px; font-weight: 900;
+    color: #fff; margin: 0; letter-spacing: 1px;
+    display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  }
+  .pro-quote {
+    font-size: 10px; color: var(--silver-muted); font-style: italic;
+    margin-top: 3px; border-left: 2px solid var(--accent-light); padding-left: 8px;
+  }
+
+  .pro-card-body {
+    padding: 12px 14px 14px 14px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .pro-metrics-grid {
+    display: grid; grid-template-columns: 1.25fr 1fr 1fr; gap: 6px;
+    background: rgba(0, 0, 0, 0.45); border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 10px; padding: 9px 6px;
+  }
+  .pro-metric-box { text-align: center; display: flex; flex-direction: column; justify-content: center; }
+  .pro-metric-val { font-family: var(--font-tech); font-size: 15px; font-weight: 800; color: #fff; display: flex; align-items: center; justify-content: center; gap: 4px; flex-wrap: wrap; }
+  .pro-metric-lbl { font-size: 8px; color: var(--silver-muted); text-transform: uppercase; margin-top: 2px; font-weight: 700; }
+  .kd-delta { font-size: 9px; font-family: var(--font-tech); font-weight: 800; padding: 1px 4px; border-radius: 4px; }
+  .delta-up { color: #00e676; background: rgba(0, 230, 118, 0.12); }
+  .delta-down { color: #ff5263; background: rgba(212, 38, 56, 0.16); }
+  .delta-neutral { color: var(--silver-muted); background: rgba(255,255,255,0.06); }
+
+  .pro-recent-strip {
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px; padding: 6px 10px; font-size: 10px;
+  }
+  .recent-dots { display: flex; gap: 4px; align-items: center; }
+  .recent-pill { font-family: var(--font-tech); font-size: 8px; font-weight: 700; padding: 2px 5px; border-radius: 4px; }
+  .recent-pill.good { background: rgba(0, 230, 118, 0.15); color: #00e676; border: 1px solid rgba(0,230,118,0.3); }
+  .recent-pill.bad { background: rgba(212, 38, 56, 0.15); color: #ff5c6c; border: 1px solid rgba(212,38,56,0.3); }
+
+  .pro-specs-compact {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px;
+    background: rgba(255,255,255,0.02); border-radius: 8px; padding: 7px 8px;
+    border: 1px solid rgba(255,255,255,0.04); text-align: center;
+  }
+  .spec-mini-lbl { font-size: 7px; color: var(--silver-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .spec-mini-val { font-size: 10px; font-weight: 700; color: var(--silver); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .carousel-nav-bar {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 2px; padding: 0 4px;
+  }
+  .carousel-arrow-btn {
+    background: rgba(255,255,255,0.05); border: 1px solid var(--silver-border);
+    color: var(--silver); width: 36px; height: 34px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+    transition: 0.2s;
+  }
+  .carousel-arrow-btn:active, .carousel-arrow-btn:hover { background: var(--accent); color: #fff; }
+
+  #c6e-analytics-modal {
+    position: fixed; inset: 0; z-index: 11500;
+    background: rgba(0, 0, 0, 0.88); backdrop-filter: blur(12px);
+    display: none; align-items: center; justify-content: center; padding: 14px;
+  }
+  #c6e-analytics-modal.active { display: flex; }
+  .analytics-modal-box {
+    width: min(96vw, 780px); max-height: 88vh; overflow-y: auto;
+    background: linear-gradient(180deg, #15161c 0%, #0b0c0f 100%);
+    border: 1px solid var(--silver-border); border-top: 3px solid var(--accent-light);
+    border-radius: 16px; padding: 20px; box-shadow: 0 25px 60px rgba(0,0,0,0.95);
+    position: relative;
+  }
+
+  /* ЭКРАН БЛОКИРОВКИ ВРЕДИТЕЛЯ (C6E SHIELD BAN OVERLAY) */
+  #c6e-ban-overlay {
+    position: fixed; inset: 0; z-index: 99999;
+    background: radial-gradient(circle at 50% 35%, rgba(158, 27, 40, 0.35) 0%, #07080a 70%);
+    backdrop-filter: blur(18px);
+    display: none; flex-direction: column; align-items: center; justify-content: center;
+    padding: 24px; text-align: center;
+  }
+  #c6e-ban-overlay.active { display: flex; }
+  .ban-card-box {
+    max-width: 440px; width: 100%;
+    background: rgba(16, 17, 22, 0.96);
+    border: 2px solid var(--accent-light);
+    border-radius: 18px; padding: 30px 22px;
+    box-shadow: 0 0 50px rgba(212, 38, 56, 0.45);
+  }
+
+  /* =========================================================
+     СТИЛИ ОБНОВЛЕНИЯ v0.5.0: ТЕМЫ, ШАПКА ПРОФИЛЯ, РАМКИ [C6E], ЧАТ, МАГАЗИН
+     ========================================================= */
+  html[data-theme="red"] {
+    --accent: #9e1b28; --accent-light: #d42638;
+    --accent-dim: rgba(158, 27, 40, 0.16); --accent-glow: rgba(212, 38, 56, 0.38);
+  }
+  html[data-theme="green"] {
+    --accent: #0b6e4f; --accent-light: #00c885;
+    --accent-dim: rgba(11, 110, 79, 0.18); --accent-glow: rgba(0, 200, 133, 0.38);
+  }
+  html[data-theme="gold"] {
+    --accent: #9a6b00; --accent-light: #ffb300;
+    --accent-dim: rgba(154, 107, 0, 0.18); --accent-glow: rgba(255, 179, 0, 0.38);
+  }
+  html[data-theme="blue"] {
+    --accent: #1446a0; --accent-light: #3b82f6;
+    --accent-dim: rgba(20, 70, 160, 0.18); --accent-glow: rgba(59, 130, 246, 0.38);
+  }
+
+  .c6e-modal-overlay {
+    position: fixed; inset: 0; z-index: 12000;
+    background: rgba(5, 6, 10, 0.94);
+    display: none; align-items: center; justify-content: center; padding: 14px;
+  }
+  .c6e-modal-overlay.active { display: flex; }
+  .c6e-modal-card {
+    width: min(96vw, 600px); max-height: 90vh; overflow-y: auto;
+    background: linear-gradient(180deg, #15171e 0%, #0b0c10 100%);
+    border: 1px solid var(--silver-border); border-top: 3px solid var(--accent-light);
+    border-radius: 16px; box-shadow: 0 25px 70px rgba(0,0,0,0.95);
+    overflow: hidden; display: flex; flex-direction: column;
+  }
+  .c6e-modal-head {
+    padding: 14px 18px; background: rgba(255,255,255,0.03);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    display: flex; justify-content: space-between; align-items: center; gap: 10px;
+  }
+  .c6e-modal-body { padding: 18px; overflow-y: auto; }
+  .c6e-modal-close {
+    width: 30px; height: 30px; border-radius: 8px;
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+    color: var(--silver); cursor: pointer; font-size: 13px;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .c6e-modal-close:hover { background: var(--accent); color: #fff; }
+
+  .nav-icon-btn {
+    position: relative; width: 38px; height: 38px; border-radius: 10px;
+    background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border);
+    color: var(--silver); display: inline-flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 14px; transition: 0.25s;
+  }
+  .nav-icon-btn:hover { border-color: var(--accent-light); color: #fff; background: var(--accent-dim); }
+  .notif-count-pill {
+    position: absolute; top: -4px; right: -4px; min-width: 17px; height: 17px;
+    padding: 0 4px; border-radius: 10px; background: var(--accent-light); color: #fff;
+    font-family: var(--font-tech); font-size: 9px; font-weight: 900;
+    display: inline-flex; align-items: center; justify-content: center;
+    box-shadow: 0 0 10px var(--accent-glow);
+  }
+
+  .header-profile-chip {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 4px 10px 4px 5px; border-radius: 12px;
+    background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border);
+    cursor: pointer; transition: 0.25s; max-width: 195px;
+  }
+  .header-profile-chip:hover { border-color: var(--accent-light); background: var(--accent-dim); }
+  .hp-avatar-wrap {
+    width: 32px; height: 32px; position: relative; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; padding: 2px;
+    clip-path: polygon(50% 0%, 95% 25%, 95% 75%, 50% 100%, 5% 75%, 5% 25%);
+  }
+  .hp-avatar-wrap img {
+    width: 100%; height: 100%; object-fit: cover;
+    clip-path: polygon(50% 0%, 95% 25%, 95% 75%, 50% 100%, 5% 75%, 5% 25%);
+    background: #0b0c0e;
+  }
+  .hp-info { min-width: 0; display: flex; flex-direction: column; line-height: 1.15; }
+  .hp-nick {
+    font-family: var(--font-tech); font-size: 10px; font-weight: 800; color: #fff;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .hp-sub {
+    font-size: 8.5px; color: var(--silver-muted); font-weight: 600;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  @media (max-width: 640px) {
+    .navbar { height: 62px !important; padding: 0 8px !important; gap: 4px !important; width: 100% !important; max-width: 100vw !important; box-sizing: border-box !important; }
+    .nav-brand { gap: 6px !important; flex-shrink: 1 !important; min-width: 0 !important; }
+    .nav-brand img { width: 30px !important; height: 30px !important; flex-shrink: 0 !important; }
+    .nav-brand h1 { font-size: 12.5px !important; letter-spacing: 0.5px !important; white-space: nowrap !important; }
+    .nav-brand h1 span.six-num { font-size: 13.5px !important; }
+    .nav-brand-sub { font-size: 6.5px !important; letter-spacing: 1px !important; white-space: nowrap !important; }
+    .nav-top-actions { gap: 4px !important; margin-left: auto !important; margin-right: 2px !important; flex-shrink: 1 !important; min-width: 0 !important; }
+    .header-profile-chip { max-width: 104px !important; min-width: 0 !important; flex-shrink: 1 !important; padding: 2px 6px 2px 3px !important; gap: 4px !important; border-radius: 9px !important; }
+    .hp-avatar-wrap { width: 24px !important; height: 24px !important; flex-shrink: 0 !important; }
+    .hp-nick { font-size: 8.5px !important; }
+    .hp-sub { font-size: 6.8px !important; }
+    .nav-icon-btn { width: 30px !important; height: 30px !important; font-size: 11.5px !important; border-radius: 8px !important; flex-shrink: 0 !important; }
+    .menu-toggle { width: 34px !important; height: 34px !important; font-size: 16px !important; flex-shrink: 0 !important; margin-left: 2px !important; }
+  }
+  @media (max-width: 370px) {
+    .nav-brand-sub { display: none !important; }
+    .header-profile-chip { max-width: 88px !important; }
+  }
+
+  /* ГЕКСАГОНАЛЬНЫЕ РАМКИ В СТИЛЕ ЛОГОТИПА [C6E] */
+  .c6e-hex-avatar {
+    position: relative; display: inline-flex; align-items: center; justify-content: center;
+    padding: 3px; flex-shrink: 0;
+    clip-path: polygon(50% 0%, 95% 25%, 95% 75%, 50% 100%, 5% 75%, 5% 25%);
+    transition: 0.3s;
+  }
+  .c6e-hex-avatar img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+    clip-path: polygon(50% 0%, 95% 25%, 95% 75%, 50% 100%, 5% 75%, 5% 25%);
+    background: #0b0c0e;
+  }
+  .frame-c6e-red {
+    background: linear-gradient(135deg, #ff2a40, #e4e4e2, #9e1b28);
+    
+  }
+  .frame-c6e-gold {
+    background: linear-gradient(135deg, #ffe066, #ffb300, #9a6b00);
+    
+  }
+  .frame-c6e-green {
+    background: linear-gradient(135deg, #00e676, #e4e4e2, #0b6e4f);
+    
+  }
+  .frame-c6e-blue {
+    background: linear-gradient(135deg, #60a5fa, #e4e4e2, #1d4ed8);
+    
+  }
+
+  /* БАННЕРЫ ПРОФИЛЕЙ */
+  .prof-banner-box {
+    height: 118px; border-radius: 12px 12px 0 0; position: relative;
+    background-size: cover; background-position: center; overflow: hidden;
+    border-bottom: 2px solid var(--accent-light);
+  }
+  .banner-crimson {
+    background: radial-gradient(circle at 80% 20%, rgba(212,38,56,0.55), transparent 60%),
+                linear-gradient(135deg, #2a080d 0%, #0b0c10 60%, #4a0e17 100%);
+  }
+  .banner-gold {
+    background: radial-gradient(circle at 80% 20%, rgba(255,179,0,0.5), transparent 60%),
+                linear-gradient(135deg, #2d2004 0%, #0b0c10 60%, #4d3500 100%);
+  }
+  .banner-emerald {
+    background: radial-gradient(circle at 80% 20%, rgba(0,230,118,0.45), transparent 60%),
+                linear-gradient(135deg, #05291c 0%, #0b0c10 60%, #0b4630 100%);
+  }
+  .banner-sapphire {
+    background: radial-gradient(circle at 80% 20%, rgba(59,130,246,0.5), transparent 60%),
+                linear-gradient(135deg, #081c3a 0%, #0b0c10 60%, #10326b 100%);
+  }
+
+  /* ГЛАВНЫЙ ЭКРАН v0.5.0 И РАДАР ОНЛАЙНА */
+  .cyber-hero-v5 {
+    text-align: center; padding: 28px 18px; position: relative; overflow: hidden;
+    background: radial-gradient(circle at 50% 0%, var(--accent-dim) 0%, rgba(14, 15, 20, 0.95) 75%);
+    border-top: 2px solid var(--accent-light);
+  }
+  .hero-top-meta {
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 8px; margin-bottom: 14px;
+  }
+  .hero-live-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border-radius: 20px; font-family: var(--font-tech);
+    font-size: 9px; font-weight: 800; color: var(--success);
+    background: rgba(0, 230, 118, 0.1); border: 1px solid rgba(0, 230, 118, 0.35);
+  }
+  .hero-dev-pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 10px; border-radius: 20px; font-family: var(--font-tech);
+    font-size: 9px; font-weight: 800; color: #ffb300; cursor: pointer;
+    background: rgba(255, 179, 0, 0.12); border: 1px solid rgba(255, 179, 0, 0.4);
+  }
+  .hero-quick-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+    gap: 10px; margin-top: 16px;
+  }
+  .online-dot-pulse {
+    width: 8px; height: 8px; border-radius: 50%; background: #00e676;
+    display: inline-block; box-shadow: 0 0 10px #00e676;
+    animation: pulse-logo 1.4s infinite;
+  }
+
+  .community-radar-card {
+    border-top: 2px solid var(--accent-light);
+    background: linear-gradient(160deg, rgba(18, 19, 25, 0.96), rgba(10, 11, 14, 0.98));
+  }
+  .community-radar-header {
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 12px; padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.07); margin-bottom: 14px;
+  }
+  .community-counters-strip {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  }
+  .comm-counter-pill {
+    padding: 5px 11px; border-radius: 8px; background: rgba(255,255,255,0.03);
+    border: 1px solid var(--glass-border); display: flex; align-items: center; gap: 7px;
+  }
+  .comm-counter-pill .lbl { font-family: var(--font-tech); font-size: 8px; color: var(--silver-muted); }
+  .comm-counter-pill .val { font-family: var(--font-tech); font-size: 13px; font-weight: 900; color: #fff; }
+  .comm-counter-pill.online { border-color: rgba(0, 230, 118, 0.35); background: rgba(0, 230, 118, 0.06); }
+  .comm-counter-pill.online .val { color: var(--success); }
+
+  .online-profiles-showcase {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
+    gap: 10px; max-height: 340px; overflow-y: auto; padding-right: 2px;
+  }
+  .mini-prof-card {
+    border-radius: 11px; overflow: hidden; border: 1px solid rgba(255,255,255,0.09);
+    background: rgba(12, 13, 18, 0.92); cursor: pointer; transition: 0.25s;
+    position: relative; display: flex; flex-direction: column;
+  }
+  .mini-prof-card:hover {
+    transform: translateY(-3px); border-color: var(--accent-light);
+    box-shadow: 0 10px 24px rgba(0,0,0,0.7);
+  }
+  .mini-prof-top { height: 42px; background-size: cover; background-position: center; position: relative; }
+  .mini-prof-body { padding: 0 11px 11px 11px; margin-top: -18px; position: relative; }
+
+  /* ОБЩИЙ ЧАТ ИГРОКОВ (12Ч АВТО-ОЧИСТКА) */
+  .chat-box-wrap {
+    border-radius: 14px; border: 1px solid var(--silver-border);
+    background: rgba(11, 12, 16, 0.96); overflow: hidden;
+    display: flex; flex-direction: column; height: 68vh; min-height: 440px; max-height: 680px;
+  }
+  .chat-top-bar {
+    padding: 12px 16px; background: linear-gradient(90deg, var(--accent-dim), rgba(15,16,22,0.98));
+    border-bottom: 1px solid var(--glass-border);
+    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;
+  }
+  .chat-messages-area {
+    flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 10px;
+  }
+  .chat-msg-item {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 10px 12px; border-radius: 11px;
+    background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.06);
+  }
+  .chat-msg-item.mention-me {
+    border-color: #ffb300; background: rgba(255, 179, 0, 0.09);
+  }
+  .chat-msg-item.is-mine {
+    border-left: 3px solid var(--accent-light); background: rgba(255,255,255,0.04);
+  }
+  .chat-mention-tag {
+    display: inline-block; padding: 1px 6px; border-radius: 4px;
+    background: rgba(255, 179, 0, 0.2); border: 1px solid #ffb300;
+    color: #ffb300; font-family: var(--font-tech); font-size: 10px; font-weight: 800;
+  }
+  .chat-input-bar {
+    padding: 11px 14px; background: rgba(16, 17, 23, 0.98);
+    border-top: 1px solid var(--glass-border); display: flex; gap: 8px; align-items: center;
+  }
+
+  /* РАЗДЕЛ МАГАЗИН [C6E] */
+  .shop-vault-hero {
+    border-radius: 16px; padding: 30px 22px; text-align: center;
+    background: radial-gradient(circle at 50% 0%, var(--accent-dim), rgba(10,11,15,0.98) 75%);
+    border: 1px solid var(--accent-light); box-shadow: 0 20px 55px rgba(0,0,0,0.85);
+    position: relative; overflow: hidden; margin-bottom: 18px;
+  }
+  .shop-teaser-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px;
+  }
+  .shop-teaser-card {
+    border-radius: 13px; padding: 18px; background: rgba(16, 17, 23, 0.92);
+    border: 1px dashed rgba(255,255,255,0.16); position: relative;
+    display: flex; flex-direction: column; justify-content: space-between;
+    transition: 0.3s;
+  }
+  .shop-teaser-card:hover { border-color: #ffb300; transform: translateY(-3px); }
+
+`;
+document.head.appendChild(c6eProStyles);
+
+const analyticsModal = document.createElement('div');
+analyticsModal.id = 'c6e-analytics-modal';
+analyticsModal.onclick = (e) => { if (e.target === analyticsModal) closeAnalyticsModal(); };
+analyticsModal.innerHTML = `<div class="analytics-modal-box" id="c6e-analytics-content"></div>`;
+document.body.appendChild(analyticsModal);
+
+const banOverlay = document.createElement('div');
+banOverlay.id = 'c6e-ban-overlay';
+document.body.appendChild(banOverlay);
+
+window.closeAnalyticsModal = () => {
+  document.getElementById('c6e-analytics-modal').classList.remove('active');
+};
+
+// 1. ТЕЛЕГРАМ КОНФИГ (ТОКЕН СКРЫТ ОТ GITHUB И ПОДГРУЖАЕТСЯ ИЗ БАЗЫ FIREBASE)
+const TG_CONFIG = {
+  token: "",
+  channelId: "-1004428385527",
+  groupId: "-1004452371581"
+};
+
+const SECRET_SALT = "C6E_PRO_SHIELD_2026";
+function decodeBotToken(enc) {
+  if (!enc) return "";
+  try {
+    const rev = enc.split("").reverse().join("");
+    const xored = decodeURIComponent(escape(atob(rev)));
+    let orig = "";
+    for (let i = 0; i < xored.length; i++) {
+      orig += String.fromCharCode(xored.charCodeAt(i) ^ SECRET_SALT.charCodeAt(i % SECRET_SALT.length));
+    }
+    return orig.trim();
+  } catch (e) {
+    return "";
+  }
+}
+
+// 2. FIREBASE КОНФИГ
+const firebaseConfig = {
+  apiKey: "AIzaSyDVFYaxAtzEi5zF8yi_ORJQYL66wQa-gpE",
+  authDomain: "airexsite.firebaseapp.com",
+  projectId: "airexsite",
+  storageBucket: "airexsite.firebasestorage.app",
+  messagingSenderId: "276640665598",
+  appId: "1:276640665598:web:d7400bd5962995efb43aaf"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const DB_COLLECTION = "siteData";
+
+// =========================================================================
+// СИСТЕМА БЕЗОПАСНОСТИ C6E SHIELD (FINGERPRINT + IP + BANS + LOGS)
+// =========================================================================
+
+function getOrCreateDeviceId() {
+  let devId = localStorage.getItem('c6e_shield_device_id');
+  if (!devId) {
+    const rawSig = [
+      navigator.userAgent || '',
+      navigator.language || '',
+      screen.width + 'x' + screen.height,
+      navigator.hardwareConcurrency || 4,
+      Intl.DateTimeFormat().resolvedOptions().timeZone || ''
+    ].join('|');
+    let hash = 0;
+    for (let i = 0; i < rawSig.length; i++) {
+      hash = ((hash << 5) - hash) + rawSig.charCodeAt(i);
+      hash |= 0;
+    }
+    const randSuffix = Math.random().toString(36).substring(2, 6).toUpperCase();
+    devId = `C6E-${Math.abs(hash).toString(16).toUpperCase().slice(0, 6)}-${randSuffix}`;
+    localStorage.setItem('c6e_shield_device_id', devId);
+  }
+  return devId;
+}
+
+function getReadableDeviceInfo() {
+  const ua = navigator.userAgent || '';
+  let os = 'Device';
+  if (/android/i.test(ua)) {
+    const m = ua.match(/Android\s([0-9.]+);\s([^;)]+)/i);
+    os = m ? `Android ${m[1]} (${m[2].trim()})` : 'Android Phone';
+  } else if (/iPhone|iPad|iPod/i.test(ua)) {
+    os = 'iOS (iPhone/iPad)';
+  } else if (/Windows/i.test(ua)) {
+    os = 'Windows PC';
+  } else if (/Mac/i.test(ua)) {
+    os = 'MacOS';
+  }
+  return `${os} [${screen.width}x${screen.height}]`;
+}
+
+let clientSecurityMeta = {
+  deviceId: getOrCreateDeviceId(),
+  ip: 'Определяется...',
+  deviceInfo: getReadableDeviceInfo(),
+  isBanned: false,
+  banReason: ''
+};
+
+let globalBannedList = [];
+
+async function resolveClientIp() {
+  if (clientSecurityMeta.ip && clientSecurityMeta.ip !== 'Определяется...') return clientSecurityMeta.ip;
+  const endpoints = [
+    'https://api.ipify.org?format=json',
+    'https://api64.ipify.org?format=json',
+    'https://ipwho.is/'
+  ];
+  for (const url of endpoints) {
     try {
-      const rev = enc.split("").reverse().join("");
-      const xored = decodeURIComponent(escape(atob(rev)));
-      let orig = "";
-      for (let i = 0; i < xored.length; i++) {
-        orig += String.fromCharCode(xored.charCodeAt(i) ^ SECRET_SALT.charCodeAt(i % SECRET_SALT.length));
-      }
-      return orig.trim();
-    } catch (e) {
-      return "";
-    }
-  }
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyDVFYaxAtzEi5zF8yi_ORJQYL66wQa-gpE", 
-    authDomain: "airexsite.firebaseapp.com",
-    projectId: "airexsite",
-    storageBucket: "airexsite.firebasestorage.app",
-    messagingSenderId: "276640665598",
-    appId: "1:276640665598:web:d7400bd5962995efb43aaf"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  const auth = getAuth(app);
-  const DB_COLLECTION = "siteData";
-
-  function getOrCreateAdminDeviceId() {
-    let devId = localStorage.getItem('c6e_shield_device_id');
-    if (!devId) {
-      const rawSig = [
-        navigator.userAgent || '',
-        navigator.language || '',
-        screen.width + 'x' + screen.height,
-        navigator.hardwareConcurrency || 4,
-        Intl.DateTimeFormat().resolvedOptions().timeZone || ''
-      ].join('|');
-      let hash = 0;
-      for (let i = 0; i < rawSig.length; i++) {
-        hash = ((hash << 5) - hash) + rawSig.charCodeAt(i);
-        hash |= 0;
-      }
-      const randSuffix = Math.random().toString(36).substring(2, 6).toUpperCase();
-      devId = `C6E-${Math.abs(hash).toString(16).toUpperCase().slice(0, 6)}-${randSuffix}`;
-      localStorage.setItem('c6e_shield_device_id', devId);
-    }
-    return devId;
-  }
-
-  function getReadableAdminDeviceInfo() {
-    const ua = navigator.userAgent || '';
-    let os = 'Device';
-    if (/android/i.test(ua)) {
-      const m = ua.match(/Android\s([0-9.]+);\s([^;)]+)/i);
-      os = m ? `Android ${m[1]} (${m[2].trim()})` : 'Android Phone';
-    } else if (/iPhone|iPad|iPod/i.test(ua)) {
-      os = 'iOS (iPhone/iPad)';
-    } else if (/Windows/i.test(ua)) {
-      os = 'Windows PC';
-    } else if (/Mac/i.test(ua)) {
-      os = 'MacOS';
-    }
-    return `${os} [${screen.width}x${screen.height}]`;
-  }
-
-  let currentVisitorIp = 'Определяется...';
-  const currentVisitorDevId = getOrCreateAdminDeviceId();
-  const currentVisitorDevInfo = getReadableAdminDeviceInfo();
-
-  async function resolveVisitorIp() {
-    if (currentVisitorIp && currentVisitorIp !== 'Определяется...') return currentVisitorIp;
-    const endpoints = ['https://api.ipify.org?format=json', 'https://api64.ipify.org?format=json', 'https://ipwho.is/'];
-    for (const url of endpoints) {
-      try {
-        const res = await fetch(url);
-        if (res.ok) {
-          const data = await res.json();
-          if (data.ip) {
-            currentVisitorIp = data.ip;
-            return data.ip;
-          }
+      const res = await fetch(url);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.ip) {
+          clientSecurityMeta.ip = data.ip;
+          checkIfCurrentUserBanned();
+          return data.ip;
         }
-      } catch (e) {}
-    }
-    currentVisitorIp = 'Скрыт / VPN';
-    return currentVisitorIp;
-  }
-  resolveVisitorIp();
-
-  async function logAdminSecurityAttempt(emailTried) {
-    await resolveVisitorIp();
-    try {
-      const ref = doc(db, DB_COLLECTION, "security_logs");
-      const snap = await getDoc(ref);
-      let logs = (snap.exists() && snap.data().logs) ? snap.data().logs : [];
-      const banned = (snap.exists() && snap.data().banned) ? snap.data().banned : [];
-
-      logs.push({
-        id: Date.now(),
-        date: new Date().toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }),
-        action: "⚠️ ПОПЫТКА ВХОДА В АДМИНКУ",
-        actor: `Email: ${emailTried || 'не указан'}`,
-        details: "Введён неверный пароль при попытке входа в Command Center!",
-        ip: currentVisitorIp,
-        deviceId: currentVisitorDevId,
-        deviceInfo: currentVisitorDevInfo,
-        isAlert: true
-      });
-      if (logs.length > 80) logs = logs.slice(-80);
-      await setDoc(ref, { logs, banned }, { merge: true });
+      }
     } catch (e) {}
   }
+  clientSecurityMeta.ip = 'Скрыт / VPN';
+  return clientSecurityMeta.ip;
+}
 
-  let cachedNews = [];
-  let cachedRoster = [];
-  let allKnownRosterPlayers = [];
-  let cachedPracs = [];
-  let cachedSchedule = [];
-  let cachedHistory = [];
-  let cachedSecurityLogs = [];
-  let cachedBannedUsers = [];
-  let cachedPantheon = { boosts: {}, bonusPts: {} };
-  let lastFocusedNameInput = null;
-  let rawFullResProofDataUrl = null;
+resolveClientIp();
 
-  function showToast(msg, isError = false) {
-    const container = document.getElementById('toast-container');
-    const toast = document.createElement('div');
-    toast.className = 'toast';
-    toast.style.borderLeftColor = isError ? 'var(--accent-light)' : 'var(--success)';
-    toast.innerHTML = `<i class="${isError ? 'fas fa-exclamation-triangle' : 'fas fa-check-circle'}" style="color:${isError ? 'var(--accent-light)' : 'var(--success)'}"></i> <span>${msg}</span>`;
-    container.appendChild(toast);
-    void toast.offsetWidth;
-    toast.classList.add('show');
-    setTimeout(() => {
-      toast.classList.remove('show');
-      setTimeout(() => toast.remove(), 300);
-    }, 3400);
+function checkIfCurrentUserBanned() {
+  const myDev = clientSecurityMeta.deviceId;
+  const myIp = clientSecurityMeta.ip;
+
+  const foundBan = globalBannedList.find(b =>
+    (b.deviceId && b.deviceId === myDev) ||
+    (b.ip && b.ip !== 'Скрыт / VPN' && b.ip !== 'Определяется...' && b.ip === myIp)
+  );
+
+  const overlay = document.getElementById('c6e-ban-overlay');
+  if (foundBan) {
+    clientSecurityMeta.isBanned = true;
+    clientSecurityMeta.banReason = foundBan.reason || 'Спам / Нарушение правил портала [C6E]';
+    if (overlay) {
+      overlay.innerHTML = `
+        <div class="ban-card-box">
+          <div style="width:68px; height:68px; border-radius:50%; background:rgba(212,38,56,0.18); border:2px solid var(--accent-light); display:flex; align-items:center; justify-content:center; margin:0 auto 16px auto; font-size:28px; color:var(--accent-light);">
+            <i class="fas fa-ban"></i>
+          </div>
+          <div style="font-family:var(--font-tech); font-size:18px; font-weight:900; color:#fff; letter-spacing:1.5px; margin-bottom:8px;">
+            ДОСТУП ЗАБЛОКИРОВАН
+          </div>
+          <div style="font-size:12px; color:var(--silver-muted); line-height:1.5; margin-bottom:16px;">
+            Система безопасности <b style="color:#fff;">CYBER 6 SHIELD</b> ограничила доступ вашего устройства к функциям портала.
+          </div>
+          <div style="background:rgba(0,0,0,0.55); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:12px; text-align:left; font-size:11px; color:var(--silver);">
+            <div style="margin-bottom:4px;">🚫 <b>Причина:</b> <span style="color:var(--accent-light);">${escapeHTML(clientSecurityMeta.banReason)}</span></div>
+            <div style="margin-bottom:4px;">🆔 <b>Device ID:</b> <code>${escapeHTML(myDev)}</code></div>
+            <div>🌐 <b>IP-адрес:</b> <code>${escapeHTML(myIp)}</code></div>
+          </div>
+        </div>
+      `;
+      overlay.classList.add('active');
+    }
+    return true;
+  } else {
+    clientSecurityMeta.isBanned = false;
+    if (overlay) overlay.classList.remove('active');
+    return false;
   }
+}
 
-  window.toggleTokenVisibility = () => {
-    const inp = document.getElementById('secretBotTokenInput');
-    const icon = document.getElementById('tokenEyeIcon');
-    if (inp.type === 'password') {
-      inp.type = 'text';
-      icon.className = 'fas fa-eye-slash';
-    } else {
-      inp.type = 'password';
-      icon.className = 'fas fa-eye';
+onSnapshot(doc(db, DB_COLLECTION, "security_logs"), (snap) => {
+  if (snap.exists()) {
+    globalBannedList = snap.data().banned || [];
+  } else {
+    globalBannedList = [];
+  }
+  checkIfCurrentUserBanned();
+});
+
+async function logSecurityEvent(actionName, actorName, detailsText, isAlert = false) {
+  await resolveClientIp();
+  try {
+    const ref = doc(db, DB_COLLECTION, "security_logs");
+    const snap = await getDoc(ref);
+    let logs = (snap.exists() && snap.data().logs) ? snap.data().logs : [];
+    const banned = (snap.exists() && snap.data().banned) ? snap.data().banned : [];
+
+    const newEntry = {
+      id: Date.now(),
+      date: new Date().toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }),
+      action: actionName,
+      actor: actorName,
+      details: detailsText,
+      ip: clientSecurityMeta.ip,
+      deviceId: clientSecurityMeta.deviceId,
+      deviceInfo: clientSecurityMeta.deviceInfo,
+      isAlert: Boolean(isAlert)
+    };
+
+    logs.push(newEntry);
+    if (logs.length > 80) logs = logs.slice(-80);
+
+    await setDoc(ref, { logs, banned }, { merge: true });
+  } catch (e) {
+    console.warn("Security log error:", e);
+  }
+}
+
+onSnapshot(doc(db, DB_COLLECTION, "bot_config"), (snap) => {
+  if (snap.exists() && snap.data().encToken) {
+    TG_CONFIG.token = decodeBotToken(snap.data().encToken);
+  }
+});
+
+let allHistoryData = [];
+let currentHistoryFilter = 'all';
+let allScheduleData = [];
+let currentScheduleFilter = 'all';
+let mainRosterData = [];
+let reserveRosterData = [];
+let pantheonMeta = { boosts: {}, bonusPts: {} }; // Данные активности и бустов Пантеона в Firebase
+
+let activeRosterTab = 'main';
+let activePlayerIdx = 0;
+
+// 3. АНТИСПАМ И УТИЛИТЫ
+const BLACKLIST = [
+  "дай", "gold", "голд", "голды", "дайте", "промо", "промокод",
+  "скин", "нож", "аркана", "маты", "хуй", "пизд", "ебал", "бля",
+  "чмо", "лох", "даун", "сука", "урод", "мамк", "мать", "админ дай", "бесплатно"
+];
+
+function containsSpam(text) {
+  if (!text) return false;
+  const lower = text.toLowerCase();
+  return BLACKLIST.some(word => lower.includes(word));
+}
+
+function findMatchedSpamWord(text) {
+  if (!text) return "";
+  const lower = text.toLowerCase();
+  return BLACKLIST.find(word => lower.includes(word)) || "спам";
+}
+
+function checkCooldown(key, timeInMinutes) {
+  const lastTime = localStorage.getItem(key);
+  if (!lastTime) return true;
+  const diff = Date.now() - parseInt(lastTime, 10);
+  return (diff / 60000) >= timeInMinutes;
+}
+
+function setCooldown(key) {
+  localStorage.setItem(key, Date.now());
+}
+
+const escapeHTML = (str) => {
+  if (!str) return "";
+  return String(str).replace(/[&<>'"]/g, tag => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+  }[tag]));
+};
+
+function formatPlayerNickHTML(rawNick, isOurTeam = false) {
+  if (!rawNick) return "Player";
+  const clean = String(rawNick).trim();
+  const tagMatch = clean.match(/^(\[[^\]]+\])\s*(.*)$/);
+  if (tagMatch) {
+    const tag = tagMatch[1];
+    const rest = tagMatch[2] || "";
+    const isC6E = /c6e|с6е/i.test(tag);
+    return `<span class="${isC6E ? 'tag-c6e' : 'tag-clan'}">${escapeHTML(tag)}</span><span>${escapeHTML(rest)}</span>`;
+  }
+  if (isOurTeam) {
+    return `<span class="tag-c6e">[C6E]</span><span>${escapeHTML(clean)}</span>`;
+  }
+  return `<span>${escapeHTML(clean)}</span>`;
+}
+
+// =========================================================================
+// ЯДРО СИНХРОНИЗАЦИИ K/D + ИННОВАЦИОННЫЙ РЕЙТИНГ «ПАНТЕОН [C6E]» (PTS)
+// =========================================================================
+
+const C6E_HOMO_MAP = {
+  'а':'a','в':'b','с':'c','е':'e','н':'h','к':'k','м':'m',
+  'о':'o','р':'p','т':'t','у':'y','х':'x','п':'n','и':'u',
+  '0':'o','1':'i','l':'i','3':'e','6':'g','@':'a','4':'a'
+};
+
+function normalizeNickKey(nick) {
+  if (!nick) return "";
+  return String(nick)
+    .replace(/^\[?[cс]6[eе]\]?\s*\|?\s*/i, '')
+    .replace(/^\[[^\]]+\]\s*/, '')
+    .replace(/\s+/g, '')
+    .toLowerCase()
+    .split('')
+    .map(ch => C6E_HOMO_MAP[ch] || ch)
+    .join('')
+    .replace(/[^a-z0-9]/g, '');
+}
+
+function isMatchWithinDays(dateStr, days = 7) {
+  if (!dateStr) return true;
+  const parts = String(dateStr).split('.');
+  if (parts.length === 3) {
+    const d = new Date(parseInt(parts[2], 10), parseInt(parts[1], 10) - 1, parseInt(parts[0], 10));
+    if (!isNaN(d.getTime())) {
+      const diffDays = (Date.now() - d.getTime()) / (1000 * 60 * 60 * 24);
+      return diffDays <= days && diffDays >= -1;
     }
-  };
+  }
+  return true;
+}
 
-  window.saveSecretBotToken = async () => {
-    const rawToken = document.getElementById('secretBotTokenInput').value.trim();
-    if (!rawToken || !rawToken.includes(':')) {
-      return showToast("Вставьте корректный токен от @BotFather!", true);
+function computePlayerLiveAnalytics(playerObj) {
+  const baseKd = parseFloat(playerObj.stats && playerObj.stats.kd ? String(playerObj.stats.kd).replace(',', '.') : '1.00') || 1.00;
+  const pKey = normalizeNickKey(playerObj.nick);
+
+  let totalKills = 0, totalAssists = 0, totalDeaths = 0, totalScore = 0;
+  let matchesPlayed = 0, matchesWon = 0, mvpCount = 0;
+  let weekKills = 0, weekAssists = 0, weekDeaths = 0, weekMatches = 0;
+  const matchLogs = [];
+
+  allHistoryData.forEach(m => {
+    const ourScore = parseInt(m.our, 10) || 0;
+    const theirScore = parseInt(m.their, 10) || 0;
+    const isWin = ourScore > theirScore;
+    const inWeek = isMatchWithinDays(m.date, 7);
+
+    if (m.mvp && normalizeNickKey(m.mvp.split('(')[0]) === pKey) {
+      mvpCount++;
     }
 
-    showToast("Проверяю токен и очищаю спам-вебхуки...");
-    try {
-      await fetch(`https://api.telegram.org/bot${rawToken}/deleteWebhook?drop_pending_updates=true`);
+    const pList = m.players || [];
+    const found = pList.find(mp => {
+      const mKey = normalizeNickKey(mp.nick);
+      return mKey && pKey && (mKey === pKey || mKey.includes(pKey) || pKey.includes(mKey));
+    });
 
-      const meRes = await fetch(`https://api.telegram.org/bot${rawToken}/getMe`);
-      const meData = await meRes.json();
-      if (!meData.ok) {
-        throw new Error(meData.description || "Токен недействителен");
+    if (found) {
+      const k = parseInt(found.kills, 10) || 0;
+      const a = parseInt(found.assists, 10) || 0;
+      const d = parseInt(found.deaths, 10) || 0;
+      const sc = parseInt(found.score, 10) || (k * 2 + a);
+      const matchKd = d > 0 ? (k / d) : k;
+
+      totalKills += k;
+      totalAssists += a;
+      totalDeaths += d;
+      totalScore += sc;
+      matchesPlayed++;
+      if (isWin) matchesWon++;
+
+      if (inWeek) {
+        weekKills += k;
+        weekAssists += a;
+        weekDeaths += d;
+        weekMatches++;
       }
 
-      const encToken = encodeBotToken(rawToken);
-      await setDoc(doc(db, DB_COLLECTION, "bot_config"), {
-        encToken,
-        botUsername: meData.result.username || "C6E_Bot",
-        channelId: TG_CONFIG.channelId,
-        groupId: TG_CONFIG.groupId,
-        updatedAt: Date.now()
-      }, { merge: true });
-
-      TG_CONFIG.token = rawToken;
-      showToast(`✅ Бот @${meData.result.username} защищён, спам-вебхуки удалены!`);
-    } catch (err) {
-      showToast("Ошибка токена: " + err.message, true);
+      matchLogs.push({
+        matchId: m.id,
+        date: m.date || 'Матч',
+        enemy: m.enemy || 'Соперник',
+        map: m.map || 'Dune',
+        scoreStr: `${ourScore}:${theirScore}`,
+        isWin,
+        kills: k,
+        assists: a,
+        deaths: d,
+        kd: matchKd.toFixed(2),
+        kdNum: matchKd
+      });
     }
-  };
+  });
 
-  // =========================================================================
-  // ФУНКЦИИ УПРАВЛЕНИЯ ПАНТЕОНОМ [C6E] (НАЧИСЛЕНИЕ БОНУСНЫХ PTS & ПОСТ В ТГК)
-  // =========================================================================
+  let liveKd = baseKd;
+  let delta = 0;
+  let pureMatchKd = baseKd;
 
-  function normalizeAdminNickKey(nick) {
-    if (!nick) return "";
-    return normHomoglyphSkeleton(
-      String(nick).replace(/^\[?[cс]6[eе]\]?\s*\|?\s*/i, '').replace(/^\[[^\]]+\]\s*/, '').replace(/\s+/g, '')
-    );
+  if (matchesPlayed > 0) {
+    pureMatchKd = totalDeaths > 0 ? (totalKills / totalDeaths) : totalKills;
+    const baseWeightDeaths = 25;
+    const baseWeightKills = baseKd * baseWeightDeaths;
+    liveKd = (baseWeightKills + totalKills) / (baseWeightDeaths + totalDeaths);
+    delta = liveKd - baseKd;
   }
 
-  window.adjustPantheonBonus = async (pKey, deltaPts) => {
-    if (!pKey) return;
-    try {
-      const ref = doc(db, DB_COLLECTION, "pantheon");
-      const snap = await getDoc(ref);
-      let bonusPts = (snap.exists() && snap.data().bonusPts) ? { ...snap.data().bonusPts } : {};
-      bonusPts[pKey] = (parseInt(bonusPts[pKey], 10) || 0) + deltaPts;
-      await setDoc(ref, { bonusPts }, { merge: true });
-      showToast(`${deltaPts >= 0 ? '+' : ''}${deltaPts} PTS начислено в Пантеон!`);
-    } catch (e) {
-      showToast("Ошибка начисления PTS", true);
-    }
-  };
+  const weekKd = weekMatches > 0 ? (weekDeaths > 0 ? (weekKills / weekDeaths) : weekKills) : liveKd;
+  const weekDelta = weekMatches > 0 ? (weekKd - baseKd) : delta;
 
-  window.resetWeeklyPantheonBoosts = async () => {
-    if (!confirm("Начать новую неделю гонки Пантеона? (Сбросит недельные бусты 🔥, замки IP/HW и бонусные очки PTS у всех бойцов)")) return;
-    try {
-      await setDoc(doc(db, DB_COLLECTION, "pantheon"), { boosts: {}, bonusPts: {}, boostLocks: {} });
-      showToast("👑 Новый недельный сезон Пантеона запущен!");
-    } catch (e) {
-      showToast("Ошибка сброса Пантеона", true);
-    }
-  };
+  let formLabel = '⚡ В НОРМЕ';
+  let formClass = 'form-stable';
+  if (delta >= 0.03 || (matchesPlayed > 0 && pureMatchKd >= 1.25)) {
+    formLabel = '🔥 В ОГНЕ';
+    formClass = 'form-fire';
+  } else if (delta <= -0.04 || (matchesPlayed > 0 && pureMatchKd < 0.90)) {
+    formLabel = '❄️ СПАД';
+    formClass = 'form-cold';
+  }
 
-  window.resetSinglePlayerBoosts = async (pKey, nick) => {
-    if (!pKey) return;
-    if (!confirm(`Обнулить накрученные бусты 🔥 у игрока ${nick}?`)) return;
-    try {
-      const ref = doc(db, DB_COLLECTION, "pantheon");
-      const snap = await getDoc(ref);
-      let boosts = (snap.exists() && snap.data().boosts) ? { ...snap.data().boosts } : {};
-      boosts[pKey] = 0;
-      await setDoc(ref, { boosts }, { merge: true });
-      showToast(`🔄 Бусты игрока ${nick} обнулены!`);
-    } catch (e) {
-      showToast("Ошибка сброса бустов игрока", true);
-    }
-  };
+  // ФОРМУЛА ОЧКОВ ПАНТЕОНА (PTS = Скилл K/D + Прогресс K/D + Боевая активность в Табе + Активность на сайте)
+  const fanBoosts = (pantheonMeta.boosts && pantheonMeta.boosts[pKey]) ? parseInt(pantheonMeta.boosts[pKey], 10) : 0;
+  const cappedFanBoosts = Math.min(20, fanBoosts); // Защита от накрутки: максимум 20 бустов (500 PTS) в неделю с сайта
+  const founderBonus = (pantheonMeta.bonusPts && pantheonMeta.bonusPts[pKey]) ? parseInt(pantheonMeta.bonusPts[pKey], 10) : 0;
 
-  function renderAdminPantheonPanel() {
-    const cont = document.getElementById('adminPantheonList');
-    if (!cont) return;
-    const source = allKnownRosterPlayers.length > 0 ? allKnownRosterPlayers : cachedRoster;
-    if (source.length === 0) {
-      cont.innerHTML = `<span class="item-sub">Сначала добавьте игроков в Состав [C6E]</span>`;
+  const kdPts = Math.round(liveKd * 450); // Базовый вес скилла K/D
+  const growthPts = Math.round(delta * 1200); // Огромный бонус за рост K/D за неделю!
+  const matchActivityPts = (matchesPlayed * 85) + (matchesWon * 95) + (mvpCount * 160) + (totalKills * 3); // Активность в матчах
+  const siteActivityPts = (cappedFanBoosts * 25) + founderBonus; // Активность на сайте (бусты с лимитом + бонус Основателя)
+
+  const totalPantheonPts = Math.max(100, kdPts + growthPts + matchActivityPts + siteActivityPts);
+
+  return {
+    nick: playerObj.nick,
+    pKey,
+    role: playerObj.role || 'Player',
+    img: playerObj.img || 'logo.png',
+    baseKd: baseKd.toFixed(2),
+    liveKd: liveKd.toFixed(2),
+    pureMatchKd: pureMatchKd.toFixed(2),
+    delta: delta,
+    deltaFormatted: (delta >= 0 ? `+${delta.toFixed(2)}` : delta.toFixed(2)),
+    matchesPlayed,
+    matchesWon,
+    winRate: matchesPlayed > 0 ? Math.round((matchesWon / matchesPlayed) * 100) : 0,
+    totalKills,
+    totalAssists,
+    totalDeaths,
+    totalScore,
+    mvpCount,
+    weekMatches,
+    weekKills,
+    weekAssists,
+    weekDeaths,
+    weekKd: weekKd.toFixed(2),
+    weekDelta: weekDelta,
+    weekDeltaFormatted: (weekDelta >= 0 ? `+${weekDelta.toFixed(2)}` : weekDelta.toFixed(2)),
+    formLabel,
+    formClass,
+    recentMatches: matchLogs.slice(-5),
+    // Показатели для ПАНТЕОНА
+    fanBoosts,
+    founderBonus,
+    kdPts,
+    growthPts,
+    matchActivityPts,
+    siteActivityPts,
+    totalPantheonPts
+  };
+}
+
+// Аппаратный отпечаток устройства (GPU + Экран + Ядра процессора) — не сбрасывается в Инкогнито или другом браузере!
+function getHardwareSignatureHash() {
+  try {
+    let glRenderer = 'nogl';
+    const canvas = document.createElement('canvas');
+    const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+    if (gl) {
+      const dbg = gl.getExtension('WEBGL_debug_renderer_info');
+      if (dbg) glRenderer = gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) || 'webgl';
+    }
+    const raw = [
+      screen.width,
+      screen.height,
+      screen.colorDepth,
+      Math.round((window.devicePixelRatio || 1) * 100),
+      navigator.hardwareConcurrency || 0,
+      navigator.deviceMemory || 0,
+      Intl.DateTimeFormat().resolvedOptions().timeZone || '',
+      glRenderer
+    ].join('|');
+    let h = 2166136261;
+    for (let i = 0; i < raw.length; i++) {
+      h ^= raw.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    return 'HW-' + (h >>> 0).toString(16).toUpperCase().padStart(8, '0');
+  } catch (e) {
+    return 'HW-FALLBACK';
+  }
+}
+
+// Подписка на данные Пантеона (бусты активности на сайте, бонусы Основателя и серверные замки анти-накрутки)
+onSnapshot(doc(db, DB_COLLECTION, "pantheon"), (snap) => {
+  if (snap.exists()) {
+    pantheonMeta = {
+      boosts: snap.data().boosts || {},
+      bonusPts: snap.data().bonusPts || {},
+      boostLocks: snap.data().boostLocks || {}
+    };
+  } else {
+    pantheonMeta = { boosts: {}, bonusPts: {}, boostLocks: {} };
+  }
+  renderPantheonSection();
+});
+
+// Защищенная функция «🔥 БУСТ БОЙЦА (+25 PTS)» (C6E Shield Anti-Multi-Device & Anti-Incognito Lock)
+let isBoostInProgress = false;
+window.boostPantheonPlayer = async (nick) => {
+  if (checkIfCurrentUserBanned()) return;
+  if (isBoostInProgress) return;
+  const pKey = normalizeNickKey(nick);
+  if (!pKey) return;
+
+  isBoostInProgress = true;
+  try {
+    await resolveClientIp();
+    const hwHash = getHardwareSignatureHash();
+    const cleanIpKey = (clientSecurityMeta.ip && clientSecurityMeta.ip !== 'Определяется...' && clientSecurityMeta.ip !== 'Скрыт / VPN')
+      ? 'ip_' + clientSecurityMeta.ip.replace(/[^a-zA-Z0-9]/g, '_')
+      : null;
+
+    // 1. Защита от VPN / Скрытого IP при голосовании
+    if (!cleanIpKey) {
+      await logSecurityEvent('🚨 ТРЕВОГА: Буст со скрытым IP/VPN', nick, `Попытка накрутки буста без IP (${hwHash})`);
+      window.showNotify("🛡 C6E Shield: Отключите VPN/прокси для честного голосования в Пантеоне!", "error");
       return;
     }
 
-    const list = source.map(p => computeAdminPlayerStats(p));
-    list.sort((a, b) => b.totalPantheonPts - a.totalPantheonPts);
+    const ref = doc(db, DB_COLLECTION, "pantheon");
+    const snap = await getDoc(ref);
+    const data = snap.exists() ? snap.data() : {};
+    let boosts = data.boosts ? { ...data.boosts } : {};
+    let boostLocks = data.boostLocks ? { ...data.boostLocks } : {};
 
-    const prizeBadges = ['🥇 1 МЕСТО (500 GOLD)', '🥈 2 МЕСТО (250 GOLD)', '🥉 3 МЕСТО (150 GOLD)'];
+    // Лимит 20 бустов (500 PTS) в неделю на одного бойца
+    if ((parseInt(boosts[pKey], 10) || 0) >= 20) {
+      window.showNotify(`Боец ${nick} уже набрал максимум 20/20 бустов (500 PTS) на этой неделе! Теперь решают только матчи в Табе.`, "error");
+      return;
+    }
 
-    cont.innerHTML = list.map((st, idx) => {
-      const prizeLabel = idx < 3 ? `<span style="font-size:9px; color:#ffb300; font-family:var(--font-tech); font-weight:800;">${prizeBadges[idx]}</span>` : `<span style="font-size:9px; color:var(--silver-muted); font-family:var(--font-tech);">#${idx + 1} В ГОНКЕ</span>`;
+    const nowMs = Date.now();
+    const COOLDOWN_MS = 12 * 60 * 60 * 1000; // 12 часов серверной блокировки по IP (Wi-Fi сети), железу (HW) и Device ID
+
+    const lockKeys = [
+      cleanIpKey,                       // Блокирует ВСЕ вторые телефоны/ПК в том же доме/Wi-Fi/точке доступа!
+      `hw_${hwHash}`,                   // Блокирует Инкогнито и другие браузеры на том же телефоне!
+      `dev_${clientSecurityMeta.deviceId}`      // Блокирует по ID устройства
+    ];
+
+    // Проверяем и локальный, и серверный замок в Firebase
+    const localCoolKey = `c6e_boost_global_lock`;
+    let blockedReason = null;
+    let remainingMins = 0;
+
+    if (!checkCooldown(localCoolKey, 720)) {
+      blockedReason = 'Локальный таймер браузера';
+      remainingMins = 720;
+    } else {
+      for (const lk of lockKeys) {
+        const lastTs = parseInt(boostLocks[lk], 10) || 0;
+        if (nowMs - lastTs < COOLDOWN_MS) {
+          remainingMins = Math.ceil((COOLDOWN_MS - (nowMs - lastTs)) / 60000);
+          blockedReason = lk.startsWith('ip_')
+            ? 'С вашей интернет-сети (IP / Wi-Fi) уже голосовали со второго устройства'
+            : 'С этого устройства (даже через Инкогнито) уже был дан буст';
+          break;
+        }
+      }
+    }
+
+    if (blockedReason) {
+      const hrs = Math.floor(remainingMins / 60);
+      const mins = remainingMins % 60;
+      await logSecurityEvent('🚨 ТРЕВОГА: Попытка мульти-буста', nick, `${blockedReason} | HW: ${hwHash}`);
+      window.showNotify(`🛡 C6E Shield: Мульти-аккаунт/второе устройство перехвачено! Буст с вашей сети будет доступен через ${hrs}ч ${mins}м.`, "error");
+      return;
+    }
+
+    // Записываем буст и ставим серверный замок на IP, HW-отпечаток и Device ID
+    boosts[pKey] = (parseInt(boosts[pKey], 10) || 0) + 1;
+    lockKeys.forEach(lk => { boostLocks[lk] = nowMs; });
+
+    await setDoc(ref, { boosts, boostLocks }, { merge: true });
+    setCooldown(localCoolKey);
+    await logSecurityEvent('🔥 Буст Пантеона (+25 PTS)', nick, `Честный буст бойцу ${nick} | HW: ${hwHash}`);
+    window.showNotify(`🔥 Вы дали +25 PTS бойцу ${nick}! (Защита C6E Shield: 1 буст в 12ч с одной сети/устройства)`, "success");
+  } catch (e) {
+    window.showNotify("Ошибка начисления буста", "error");
+  } finally {
+    isBoostInProgress = false;
+  }
+};
+
+// Таймер до конца недели (Воскресенье 23:59:59 МСК) для выдачи 500 / 250 / 150 Голды
+function getWeeklyResetCountdownText() {
+  const now = new Date();
+  const day = now.getDay(); // 0 = Воскресенье
+  const daysUntilSunday = day === 0 ? 0 : (7 - day);
+  const endOfSunday = new Date(now);
+  endOfSunday.setDate(now.getDate() + daysUntilSunday);
+  endOfSunday.setHours(23, 59, 59, 999);
+
+  const diff = Math.max(0, endOfSunday.getTime() - now.getTime());
+  const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  return `${d}д : ${h}ч : ${m}м`;
+}
+
+// Рендер инновационного раздела «ПАНТЕОН [C6E]»
+function renderPantheonSection() {
+  const root = document.getElementById('pantheon-root');
+  if (!root) return;
+
+  const allPlayers = [...mainRosterData, ...reserveRosterData];
+  if (allPlayers.length === 0) {
+    root.innerHTML = `
+      <div class="pantheon-hero">
+        <div class="pantheon-badge-top"><i class="fas fa-crown"></i> C6E WEEKLY GOLD RACE</div>
+        <h2 class="pantheon-title">ПАНТЕОН <span>[C6E]</span></h2>
+        <p style="font-size:12px; color:var(--silver-muted);">Бойцы состава скоро вступят в еженедельную гонку за 900 Голды от Основателя!</p>
+      </div>
+    `;
+    return;
+  }
+
+  const ranked = allPlayers.map(p => computePlayerLiveAnalytics(p));
+  ranked.sort((a, b) => b.totalPantheonPts - a.totalPantheonPts);
+
+  const maxPts = ranked[0] ? ranked[0].totalPantheonPts : 1000;
+  const top3 = ranked.slice(0, 3);
+  const chasers = ranked.slice(3);
+
+  const prizes = [
+    { rank: 1, gold: '500 GOLD', medal: '🥇 1 МЕСТО', cls: 'rank-1', color: '#ffb300' },
+    { rank: 2, gold: '250 GOLD', medal: '🥈 2 МЕСТО', cls: 'rank-2', color: '#e4e4e2' },
+    { rank: 3, gold: '150 GOLD', medal: '🥉 3 МЕСТО', cls: 'rank-3', color: '#cd7f32' }
+  ];
+
+  const podiumHtml = top3.map((st, idx) => {
+    const pr = prizes[idx];
+    const safeNick = escapeHTML(st.nick).replace(/'/g, "\\'");
+    const pct = Math.min(100, Math.round((st.totalPantheonPts / Math.max(1, maxPts)) * 100));
+    const gapToFirst = idx === 0 ? '👑 ЛИДЕР ГОНКИ ЗА 500 GOLD' : `До 1 места: ${maxPts - st.totalPantheonPts} PTS`;
+
+    return `
+      <div class="podium-card ${pr.cls}">
+        <div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <span style="font-family:var(--font-tech); font-size:10px; font-weight:900; color:${pr.color}; background:rgba(255,255,255,0.06); padding:4px 9px; border-radius:6px; border:1px solid ${pr.color};">
+              ${pr.medal}
+            </span>
+            <span style="font-family:var(--font-tech); font-size:11px; font-weight:900; color:#000; background:${pr.color}; padding:4px 10px; border-radius:6px;">
+              🎁 ${pr.gold}
+            </span>
+          </div>
+
+          <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+            <img src="${escapeHTML(st.img)}" onerror="this.src='logo.png'" style="width:62px; height:62px; border-radius:14px; object-fit:cover; border:2px solid ${pr.color};">
+            <div style="min-width:0; flex:1;">
+              <div style="font-family:var(--font-tech); font-size:16px; font-weight:900; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                ${formatPlayerNickHTML(st.nick, true)}
+              </div>
+              <div style="font-size:10px; color:var(--silver-muted); margin-top:2px;">${escapeHTML(st.role)} • <span class="${st.formClass}" style="padding:1px 5px; border-radius:4px; font-size:8px;">${st.formLabel}</span></div>
+              <div style="font-family:var(--font-tech); font-size:18px; font-weight:900; color:${pr.color}; margin-top:4px;">
+                ${st.totalPantheonPts} <span style="font-size:10px; color:var(--silver);">PTS</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="pts-bar-bg">
+            <div class="pts-bar-fill" style="width:${pct}%;"></div>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-size:9px; color:var(--silver-muted); margin-bottom:10px;">
+            <span>${gapToFirst}</span>
+            <span>LIVE K/D: <b style="color:#fff;">${st.liveKd}</b> (${st.deltaFormatted})</span>
+          </div>
+
+          <!-- Прозрачная расшифровка инновационного индекса PTS -->
+          <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:5px; background:rgba(0,0,0,0.45); padding:8px 6px; border-radius:8px; text-align:center; margin-bottom:12px; border:1px solid rgba(255,255,255,0.05);">
+            <div>
+              <div style="font-family:var(--font-tech); font-size:11px; font-weight:800; color:#fff;">${st.kdPts + st.growthPts}</div>
+              <div style="font-size:7px; color:var(--silver-muted); text-transform:uppercase;">СКИЛЛ & РОСТ K/D</div>
+            </div>
+            <div style="border-left:1px solid rgba(255,255,255,0.06); border-right:1px solid rgba(255,255,255,0.06);">
+              <div style="font-family:var(--font-tech); font-size:11px; font-weight:800; color:var(--success);">+${st.matchActivityPts}</div>
+              <div style="font-size:7px; color:var(--silver-muted); text-transform:uppercase;">ИГРЫ В ТАБЕ (${st.matchesPlayed})</div>
+            </div>
+            <div>
+              <div style="font-family:var(--font-tech); font-size:11px; font-weight:800; color:#ffb300;">+${st.siteActivityPts}</div>
+              <div style="font-size:7px; color:var(--silver-muted); text-transform:uppercase;">АКТИВ САЙТА (🔥${st.fanBoosts})</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:6px;">
+          <button type="button" class="boost-btn" onclick="window.boostPantheonPlayer('${safeNick}')">
+            <i class="fas fa-fire"></i> БУСТ БОЙЦА (+25 PTS)
+          </button>
+          <button type="button" class="chip-btn" style="padding:9px 12px;" onclick="window.openPlayerDossier('${safeNick}')" title="Открыть досье">
+            📊
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  const chasersHtml = chasers.length > 0 ? `
+    <div class="so2-team-panel" style="margin-top:8px;">
+      <div class="so2-team-header c6e-head">
+        <span>⚔️ ПРЕТЕНДЕНТЫ В ГОНКЕ ЗА ПРИЗОВУЮ ТРОЙКУ ПАНТЕОНА</span>
+        <span>ДО ТОП-3</span>
+      </div>
+      <div class="so2-table-wrap">
+        <table class="so2-table">
+          <thead>
+            <tr>
+              <th>Место</th>
+              <th class="col-name">Боец [C6E]</th>
+              <th>LIVE K/D (Сдвиг)</th>
+              <th>Матчей</th>
+              <th>Актив (🔥)</th>
+              <th>Очки PTS</th>
+              <th>Поддержать</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${chasers.map((st, i) => {
+              const rankNum = i + 4;
+              const safeNick = escapeHTML(st.nick).replace(/'/g, "\\'");
+              const thirdPts = top3[2] ? top3[2].totalPantheonPts : st.totalPantheonPts;
+              const diffToPrize = Math.max(0, thirdPts - st.totalPantheonPts + 1);
+              return `
+                <tr>
+                  <td style="font-family:var(--font-tech); font-weight:800; color:var(--silver-muted);">#${rankNum}</td>
+                  <td class="col-name">${formatPlayerNickHTML(st.nick, true)}</td>
+                  <td>
+                    <b style="color:#fff; font-family:var(--font-tech);">${st.liveKd}</b>
+                    <span class="kd-delta ${st.delta > 0.004 ? 'delta-up' : (st.delta < -0.004 ? 'delta-down' : 'delta-neutral')}">${st.deltaFormatted}</span>
+                  </td>
+                  <td>${st.matchesPlayed}</td>
+                  <td style="color:#ffb300; font-weight:700;">🔥 ${st.fanBoosts}</td>
+                  <td>
+                    <b style="font-family:var(--font-tech); color:#fff;">${st.totalPantheonPts} PTS</b>
+                    <div style="font-size:8px; color:var(--silver-muted);">до 150 Gold: -${diffToPrize} PTS</div>
+                  </td>
+                  <td>
+                    <button type="button" class="chip-btn" style="border-color:#ffb300; color:#ffb300;" onclick="window.boostPantheonPlayer('${safeNick}')">
+                      🔥 +25 PTS
+                    </button>
+                  </td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  ` : '';
+
+  root.innerHTML = `
+    <div class="pantheon-hero">
+      <div class="pantheon-badge-top">
+        <i class="fas fa-crown"></i> ЕЖЕНЕДЕЛЬНАЯ ПРЕМИЯ ОТ ОСНОВАТЕЛЯ KAS • ВЫПЛАТА КАЖДОЕ ВОСКРЕСЕНЬЕ
+      </div>
+      <h2 class="pantheon-title">ПАНТЕОН <span>[C6E]</span></h2>
+      <p style="font-size:11px; color:var(--silver); max-width:640px; margin:0 auto; line-height:1.5;">
+        Инновационный живой рейтинг бойцов организации <b>CYBER 6 ESPORTS</b>. Очки <b>PTS</b> начисляются автоматически за <b>рост K/D в Табах</b>, сыгранные матчи, титулы <b>MVP</b> и <b>активность на сайте</b>!
+      </p>
+
+      <div class="pantheon-prize-strip">
+        <div class="prize-tier-box gold">
+          <div style="font-size:16px; margin-bottom:2px;">🥇</div>
+          <div class="prize-gold-amount" style="color:#ffb300;">500 GOLD</div>
+          <div class="prize-gold-lbl">1 МЕСТО НЕДЕЛИ</div>
+        </div>
+        <div class="prize-tier-box silver">
+          <div style="font-size:16px; margin-bottom:2px;">🥈</div>
+          <div class="prize-gold-amount" style="color:#e4e4e2;">250 GOLD</div>
+          <div class="prize-gold-lbl">2 МЕСТО НЕДЕЛИ</div>
+        </div>
+        <div class="prize-tier-box bronze">
+          <div style="font-size:16px; margin-bottom:2px;">🥉</div>
+          <div class="prize-gold-amount" style="color:#ffb070;">150 GOLD</div>
+          <div class="prize-gold-lbl">3 МЕСТО НЕДЕЛИ</div>
+        </div>
+      </div>
+
+      <div style="display:inline-flex; align-items:center; gap:8px; background:rgba(0,0,0,0.6); border:1px solid rgba(255,255,255,0.12); padding:6px 14px; border-radius:20px; font-family:var(--font-tech); font-size:10px; color:var(--silver);">
+        <i class="far fa-clock" style="color:#ffb300;"></i> ДО РАЗДАЧИ ГОЛДЫ ОСТАЛОСЬ: <b style="color:#ffb300;">${getWeeklyResetCountdownText()}</b>
+      </div>
+    </div>
+
+    <div class="podium-grid">
+      ${podiumHtml}
+    </div>
+
+    ${chasersHtml}
+  `;
+}
+
+window.showNotify = (text, type) => {
+  const container = document.getElementById('notify-container');
+  if (!container) return;
+  const notif = document.createElement('div');
+  notif.className = 'hud-toast active';
+  notif.style.borderLeftColor = type === 'error' ? 'var(--accent-light)' : 'var(--success)';
+  notif.innerHTML = `
+    <i class="${type === 'error' ? 'fas fa-exclamation-triangle text-accent' : 'fas fa-check-circle'}" style="color:${type === 'error' ? 'var(--accent-light)' : 'var(--success)'}"></i>
+    <span>${text}</span>
+  `;
+  container.appendChild(notif);
+
+  setTimeout(() => {
+    notif.style.opacity = '0';
+    notif.style.transform = 'translateX(120%)';
+    setTimeout(() => notif.remove(), 500);
+  }, 3000);
+};
+
+async function sendToBot(chatId, message) {
+  if (!TG_CONFIG.token) {
+    const snap = await getDoc(doc(db, DB_COLLECTION, "bot_config"));
+    if (snap.exists() && snap.data().encToken) {
+      TG_CONFIG.token = decodeBotToken(snap.data().encToken);
+    }
+  }
+  if (!TG_CONFIG.token) return;
+
+  const response = await fetch(`https://api.telegram.org/bot${TG_CONFIG.token}/sendMessage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      chat_id: chatId,
+      text: message,
+      parse_mode: 'HTML',
+      disable_web_page_preview: true
+    })
+  });
+  const res = await response.json();
+  if (!res.ok) throw new Error(res.description);
+}
+
+function checkUpdateBadge(key, latestId, btnId) {
+  const lastSeen = parseInt(localStorage.getItem('last_seen_' + key) || '0', 10);
+  const btn = document.getElementById(btnId);
+  if (btn) {
+    if (latestId > lastSeen) btn.classList.add('has-update');
+    else btn.classList.remove('has-update');
+  }
+}
+
+// =========================================================================
+// 4. ВИТРИНА СОСТАВА НА 1 ЭКРАН (СВАЙП-КАРУСЕЛЬ + БЫСТРЫЙ ВЫБОР ИГРОКА)
+// =========================================================================
+
+window.switchRosterTab = (tabMode) => {
+  activeRosterTab = tabMode;
+  activePlayerIdx = 0;
+  renderAllRosters();
+};
+
+window.jumpToPlayerSlide = (idx) => {
+  activePlayerIdx = idx;
+  const track = document.getElementById('c6e-roster-track');
+  const cards = track ? track.querySelectorAll('.pro-player-card') : [];
+  if (cards[idx]) {
+    cards[idx].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  }
+  document.querySelectorAll('.player-chip').forEach((ch, i) => {
+    ch.classList.toggle('active', i === idx);
+  });
+  const counterEl = document.getElementById('roster-slide-counter');
+  if (counterEl && cards.length > 0) {
+    counterEl.innerText = `БОЕЦ ${idx + 1} ИЗ ${cards.length}`;
+  }
+};
+
+window.stepPlayerSlide = (dir) => {
+  const currentList = activeRosterTab === 'reserve' ? reserveRosterData : mainRosterData;
+  if (!currentList.length) return;
+  let nextIdx = activePlayerIdx + dir;
+  if (nextIdx < 0) nextIdx = currentList.length - 1;
+  if (nextIdx >= currentList.length) nextIdx = 0;
+  window.jumpToPlayerSlide(nextIdx);
+};
+
+function renderAllRosters() {
+  const teamSection = document.getElementById('team');
+  if (!teamSection) return;
+
+  const currentList = activeRosterTab === 'reserve' ? reserveRosterData : mainRosterData;
+
+  let mainContentHtml = '';
+
+  if (!currentList || currentList.length === 0) {
+    mainContentHtml = `
+      <div class="card text-center" style="padding: 35px 20px; color: var(--silver-muted); font-family: var(--font-tech);">
+        В ЭТОМ СОСТАВЕ ПОКА НЕТ ИГРОКОВ
+      </div>
+    `;
+  } else if (activeRosterTab === 'table') {
+    const allCombined = [...mainRosterData, ...reserveRosterData];
+    mainContentHtml = `
+      <div class="so2-team-panel">
+        <div class="so2-team-header c6e-head">
+          <span>ВСЕ БОЙЦЫ ОРГАНИЗАЦИИ [C6E] НА ОДНОМ ЭКРАНЕ</span>
+          <span>${allCombined.length} ИГР.</span>
+        </div>
+        <div class="so2-table-wrap">
+          <table class="so2-table">
+            <thead>
+              <tr>
+                <th class="col-name">Боец [C6E]</th>
+                <th>Роль</th>
+                <th>LIVE K/D</th>
+                <th>Сдвиг</th>
+                <th>PTS Пантеона</th>
+                <th>Досье</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${allCombined.map(p => {
+                const st = computePlayerLiveAnalytics(p);
+                const safeNick = escapeHTML(p.nick).replace(/'/g, "\\'");
+                return `
+                  <tr>
+                    <td class="col-name">${formatPlayerNickHTML(p.nick, true)}</td>
+                    <td style="font-size:10px; color:var(--silver-muted);">${escapeHTML(p.role)}</td>
+                    <td style="font-family:var(--font-tech); font-weight:800; color:#fff;">${st.liveKd}</td>
+                    <td><span class="kd-delta ${st.delta > 0.004 ? 'delta-up' : (st.delta < -0.004 ? 'delta-down' : 'delta-neutral')}">${st.deltaFormatted}</span></td>
+                    <td style="color:#ffb300; font-family:var(--font-tech); font-weight:800;">${st.totalPantheonPts} PTS</td>
+                    <td><button class="chip-btn" onclick="window.openPlayerDossier('${safeNick}')">📊</button></td>
+                  </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+  } else {
+    const selectorChipsHtml = currentList.map((p, idx) => {
+      const st = computePlayerLiveAnalytics(p);
+      const shortNick = p.nick.replace(/^\[?[cс]6[eе]\]?\s*\|?\s*/i, '');
       return `
-        <div class="list-item" style="flex-direction:column; align-items:flex-start; border-left-color:${idx === 0 ? '#ffb300' : (idx < 3 ? 'var(--silver)' : 'var(--accent-light)')}; background:rgba(0,0,0,0.45);">
-          <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
-            <b>${st.nick}</b>
-            ${prizeLabel}
+        <div class="player-chip ${idx === activePlayerIdx ? 'active' : ''}" onclick="window.jumpToPlayerSlide(${idx})">
+          <img src="${escapeHTML(p.img || 'logo.png')}" onerror="this.src='logo.png'">
+          <span class="player-chip-nick">${escapeHTML(shortNick)}</span>
+          <span class="player-chip-kd">${st.liveKd}</span>
+        </div>
+      `;
+    }).join('');
+
+    const cardsHtml = currentList.map((p) => {
+      const st = computePlayerLiveAnalytics(p);
+      const rank = (p.stats && p.stats.rank) ? p.stats.rank : 'The Legend';
+
+      let deltaBadge = `<span class="kd-delta delta-neutral">БАЗА</span>`;
+      if (st.matchesPlayed > 0) {
+        if (st.delta > 0.004) deltaBadge = `<span class="kd-delta delta-up">▲ ${st.deltaFormatted}</span>`;
+        else if (st.delta < -0.004) deltaBadge = `<span class="kd-delta delta-down">▼ ${st.deltaFormatted}</span>`;
+        else deltaBadge = `<span class="kd-delta delta-neutral">= 0.00</span>`;
+      }
+
+      const recentHtml = st.recentMatches.length > 0
+        ? st.recentMatches.map(rm => `<span class="recent-pill ${ parseFloat(rm.kd) >= 1.0 ? 'good' : 'bad' }">${rm.kd}</span>`).join('')
+        : `<span style="font-size:9px; color:#666;">Ожидание игр в Табе</span>`;
+
+      const safeNickArg = escapeHTML(p.nick).replace(/'/g, "\\'");
+
+      return `
+        <div class="pro-player-card">
+          <div class="pro-card-top">
+            <img src="${escapeHTML(p.img || 'logo.png')}" class="pro-card-avatar" onerror="this.src='logo.png'">
+            <div class="pro-card-shade"></div>
+
+            <div class="pro-badges-row">
+              <span class="pro-role-badge">${escapeHTML(p.role || 'PLAYER')}</span>
+              <span class="pro-form-badge ${st.formClass}">${st.formLabel}</span>
+            </div>
+
+            <div class="pro-identity">
+              <h3 class="pro-nick">
+                ${formatPlayerNickHTML(p.nick, true)}
+                <span style="font-size:9px; background:rgba(255,179,0,0.2); border:1px solid #ffb300; color:#ffb300; padding:2px 6px; border-radius:4px;">👑 ${st.totalPantheonPts} PTS</span>
+              </h3>
+              <div class="pro-quote">"${escapeHTML(p.quote || 'Cyber 6 Esports')}"</div>
+            </div>
           </div>
-          <div class="item-sub" style="margin:4px 0;">
-            👑 Очки: <b style="color:#ffb300; display:inline;">${st.totalPantheonPts} PTS</b> • LIVE K/D: <b style="color:var(--success); display:inline;">${st.liveKd}</b> • Бустов сайта: 🔥 ${st.fanBoosts} • Бонус Основателя: <b>${st.founderBonus >= 0 ? '+' + st.founderBonus : st.founderBonus}</b>
-          </div>
-          <div style="display:flex; gap:6px; width:100%; margin-top:4px; flex-wrap:wrap;">
-            <button type="button" class="chip-btn" style="flex:1; border-color:var(--success); color:var(--success);" onclick="window.adjustPantheonBonus('${st.pKey}', 50)">+50 PTS</button>
-            <button type="button" class="chip-btn" style="flex:1; border-color:#ffb300; color:#ffb300;" onclick="window.adjustPantheonBonus('${st.pKey}', 100)">+100 PTS</button>
-            <button type="button" class="chip-btn" style="flex:1; border-color:var(--accent-light); color:var(--accent-light);" onclick="window.adjustPantheonBonus('${st.pKey}', -50)">-50 PTS</button>
-            <button type="button" class="chip-btn" style="border-color:#ff5263; color:#ff5263;" title="Обнулить бусты 🔥 этого бойца" onclick="window.resetSinglePlayerBoosts('${st.pKey}', '${st.nick.replace(/'/g, "\\'")}')"><i class="fas fa-undo"></i> 0🔥</button>
+
+          <div class="pro-card-body">
+            <div class="pro-metrics-grid">
+              <div class="pro-metric-box" style="border-right:1px solid rgba(255,255,255,0.06);">
+                <div class="pro-metric-val">
+                  <span style="color:${parseFloat(st.liveKd) >= 1.0 ? 'var(--success)' : 'var(--accent-light)'};">${st.liveKd}</span>
+                  ${deltaBadge}
+                </div>
+                <div class="pro-metric-lbl">LIVE K/D (ТАБ)</div>
+              </div>
+
+              <div class="pro-metric-box" style="border-right:1px solid rgba(255,255,255,0.06);">
+                <div class="pro-metric-val">${st.totalKills} <span style="font-size:10px; color:var(--silver-muted);">/ ${st.totalDeaths}</span></div>
+                <div class="pro-metric-lbl">УБИЙСТВА / СМЕРТИ</div>
+              </div>
+
+              <div class="pro-metric-box">
+                <div class="pro-metric-val" style="font-size:12px; color:var(--silver);">${escapeHTML(rank)}</div>
+                <div class="pro-metric-lbl">РАНГ (${st.matchesPlayed} ИГР)</div>
+              </div>
+            </div>
+
+            <div class="pro-recent-strip">
+              <span style="color:var(--silver-muted); font-weight:700; font-size:9px;">ПОСЛЕДНИЕ МАТЧИ:</span>
+              <div class="recent-dots">${recentHtml}</div>
+            </div>
+
+            <div class="pro-specs-compact">
+              <div>
+                <div class="spec-mini-lbl">ДЕВАЙС</div>
+                <div class="spec-mini-val">${escapeHTML(p.device || 'Mobile')}</div>
+              </div>
+              <div style="border-left:1px solid rgba(255,255,255,0.06); border-right:1px solid rgba(255,255,255,0.06);">
+                <div class="spec-mini-lbl">СЕНСА</div>
+                <div class="spec-mini-val">${escapeHTML(p.settings || 'Default')}</div>
+              </div>
+              <div>
+                <div class="spec-mini-lbl">ОРУЖИЕ</div>
+                <div class="spec-mini-val" style="color:var(--accent-light);">${escapeHTML(p.weapon || 'AKR / AWM')}</div>
+              </div>
+            </div>
+
+            <div style="display:flex; gap:6px;">
+              <button type="button" class="btn-glitch" style="padding:10px; font-size:10px; flex:1;" onclick="window.openPlayerDossier('${safeNickArg}')">
+                <i class="fas fa-chart-bar" style="margin-right:6px;"></i> ДОСЬЕ И ПРОГРЕСС
+              </button>
+              <button type="button" class="boost-btn" style="width:auto; padding:10px 12px;" onclick="window.boostPantheonPlayer('${safeNickArg}')" title="Поддержать бойца в Пантеоне (+25 PTS)">
+                🔥 +25 PTS
+              </button>
+            </div>
           </div>
         </div>
       `;
     }).join('');
-  }
 
-  window.publishPantheonWinnersToTG = async () => {
-    const source = allKnownRosterPlayers.length > 0 ? allKnownRosterPlayers : cachedRoster;
-    if (source.length === 0) return showToast("Сначала добавьте игроков в Состав!", true);
-    showToast("Генерирую карточку ПАНТЕОНА (900 GOLD) для ТГК...");
-
-    const ranked = source.map(p => computeAdminPlayerStats(p));
-    ranked.sort((a, b) => b.totalPantheonPts - a.totalPantheonPts);
-
-    const p1 = ranked[0] || { nick: 'TBA', totalPantheonPts: 0, liveKd: '1.00' };
-    const p2 = ranked[1] || { nick: 'TBA', totalPantheonPts: 0, liveKd: '1.00' };
-    const p3 = ranked[2] || { nick: 'TBA', totalPantheonPts: 0, liveKd: '1.00' };
-
-    const allRowsText = ranked.slice(0, 6).map((st, i) => {
-      const medal = i === 0 ? '🥇 <b>500 GOLD</b> —' : (i === 1 ? '🥈 <b>250 GOLD</b> —' : (i === 2 ? '🥉 <b>150 GOLD</b> —' : `#${i + 1}`));
-      return `${medal} <b>${st.nick}</b> — <code>${st.totalPantheonPts} PTS</code> (K/D: ${st.liveKd} | 🔥${st.fanBoosts})`;
-    }).join('\n');
-
-    const cardLines = [
-      `🥇 1 МЕСТО (500 GOLD):  ${p1.nick}  —  ${p1.totalPantheonPts} PTS  (K/D: ${p1.liveKd})`,
-      `🥈 2 МЕСТО (250 GOLD):  ${p2.nick}  —  ${p2.totalPantheonPts} PTS  (K/D: ${p2.liveKd})`,
-      `🥉 3 МЕСТО (150 GOLD):  ${p3.nick}  —  ${p3.totalPantheonPts} PTS  (K/D: ${p3.liveKd})`,
-      ...ranked.slice(3, 6).map((st, idx) => `#${idx + 4}  ${st.nick}  —  ${st.totalPantheonPts} PTS  (LIVE K/D: ${st.liveKd})`)
-    ];
-
-    const htmlPost =
-      `👑 <b>ПАНТЕОН CYBER 6 ESPORTS [C6E] // ГОНКА ЗА 900 ГОЛДЫ</b>\n` +
-      `────────────────────\n` +
-      `🎁 <b>Призовой фонд недели от Основателя:</b>\n` +
-      `🥇 1 место — <b>500 GOLD</b>\n` +
-      `🥈 2 место — <b>250 GOLD</b>\n` +
-      `🥉 3 место — <b>150 GOLD</b>\n` +
-      `────────────────────\n` +
-      `📊 <b>ТЕКУЩИЙ РЕЙТИНГ БОЙЦОВ (K/D + АКТИВНОСТЬ):</b>\n` +
-      `${allRowsText}\n\n` +
-      `🔥 <i>Заходи в раздел «Пантеон» на сайте и жми «Буст бойца (+25 PTS)», чтобы поддержать лучшего игрока недели!</i>\n` +
-      `🔗 <a href="${TG_CONFIG.siteUrl}">ГОЛОСОВАТЬ В ПАНТЕОНЕ НА САЙТЕ [C6E]</a>`;
-
-    const ok = await publishToTelegramChannel({
-      htmlText: htmlPost,
-      cardConfig: {
-        badge: 'PANTHEON [C6E] // WEEKLY 900 GOLD PRIZE POOL',
-        title: 'ПАНТЕОН ЛУЧШИХ БОЙЦОВ',
-        subtitle: `ЛИДЕР НА 500 ГОЛДЫ: ${p1.nick} (${p1.totalPantheonPts} PTS)`,
-        lines: cardLines,
-        accentColor: '#ffb300'
-      }
-    });
-
-    if (ok) showToast("Пантеон [C6E] опубликован в ТГК!");
-  };
-
-  // =========================================================================
-  // ФУНКЦИИ УПРАВЛЕНИЯ БЕЗОПАСНОСТЬЮ C6E SHIELD
-  // =========================================================================
-
-  window.banUserQuick = async (ip, deviceId, actorName) => {
-    if (!ip && !deviceId) return showToast("Нет данных IP или Device ID для бана", true);
-    const reason = prompt(`Укажите причину блокировки для ${actorName || deviceId}:`, "Спам / Вредительство на сайте [C6E]");
-    if (reason === null) return;
-
-    try {
-      const ref = doc(db, DB_COLLECTION, "security_logs");
-      const snap = await getDoc(ref);
-      let banned = (snap.exists() && snap.data().banned) ? snap.data().banned : [];
-
-      const already = banned.some(b => (deviceId && b.deviceId === deviceId) || (ip && ip !== 'Скрыт / VPN' && b.ip === ip));
-      if (already) return showToast("Этот пользователь уже в чёрном списке!", true);
-
-      banned.push({
-        id: Date.now(),
-        date: new Date().toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }),
-        ip: ip || '',
-        deviceId: deviceId || '',
-        actor: actorName || 'Нарушитель',
-        reason: reason.trim() || 'Нарушение правил портала [C6E]'
-      });
-
-      await setDoc(ref, { banned }, { merge: true });
-      showToast(`🚫 ${actorName || deviceId} заблокирован в C6E Shield!`);
-    } catch (e) {
-      showToast("Ошибка блокировки", true);
-    }
-  };
-
-  window.addManualBan = async () => {
-    const target = document.getElementById('manualBanTarget').value.trim();
-    const reason = document.getElementById('manualBanReason').value.trim() || "Заблокирован администратором [C6E]";
-    if (!target) return showToast("Введите IP-адрес или Device ID (C6E-...)", true);
-
-    const isDevId = /^C6E-/i.test(target);
-    try {
-      const ref = doc(db, DB_COLLECTION, "security_logs");
-      const snap = await getDoc(ref);
-      let banned = (snap.exists() && snap.data().banned) ? snap.data().banned : [];
-
-      banned.push({
-        id: Date.now(),
-        date: new Date().toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }),
-        ip: isDevId ? '' : target,
-        deviceId: isDevId ? target.toUpperCase() : '',
-        actor: 'Ручная блокировка',
-        reason
-      });
-
-      await setDoc(ref, { banned }, { merge: true });
-      document.getElementById('manualBanTarget').value = '';
-      document.getElementById('manualBanReason').value = '';
-      showToast("🚫 Добавлен в чёрный список C6E Shield!");
-    } catch (e) {
-      showToast("Ошибка сохранения бана", true);
-    }
-  };
-
-  window.unbanUser = async (banId) => {
-    try {
-      const ref = doc(db, DB_COLLECTION, "security_logs");
-      const snap = await getDoc(ref);
-      if (!snap.exists()) return;
-      const banned = (snap.data().banned || []).filter(b => b.id !== banId);
-      await setDoc(ref, { banned }, { merge: true });
-      showToast("🔓 Блокировка снята!");
-    } catch (e) {
-      showToast("Ошибка разбана", true);
-    }
-  };
-
-  window.clearSecurityLogs = async () => {
-    if (!confirm("Очистить журнал активности посетителей? (Чёрный список банов сохранится)")) return;
-    try {
-      const ref = doc(db, DB_COLLECTION, "security_logs");
-      await setDoc(ref, { logs: [] }, { merge: true });
-      showToast("Журнал активности очищен!");
-    } catch (e) {
-      showToast("Ошибка очистки", true);
-    }
-  };
-
-  window.filterPanels = (category, btn) => {
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    if (btn) btn.classList.add('active');
-    document.querySelectorAll('#adminContainer .panel').forEach(panel => {
-      if (category === 'all' || panel.classList.contains(category)) {
-        panel.style.display = 'flex';
-      } else {
-        panel.style.display = 'none';
-      }
-    });
-  };
-
-  // =========================================================================
-  // ГЕНЕРАТОР ФИРМЕННЫХ КИБЕРСПОРТИВНЫХ КАРТОЧЕК [C6E] НА CANVAS И ОТПРАВКА В ТГК
-  // =========================================================================
-
-  function dataURLtoBlob(dataurl) {
-    const arr = dataurl.split(',');
-    const mime = arr[0].match(/:(.*?);/)[1];
-    const bstr = atob(arr[1]);
-    let n = bstr.length;
-    const u8arr = new Uint8Array(n);
-    while (n--) u8arr[n] = bstr.charCodeAt(n);
-    return new Blob([u8arr], { type: mime });
-  }
-
-  async function generateC6ECardBlob({ badge = 'CYBER 6 ESPORTS', title = '[C6E] OFFICIAL', subtitle = '', lines = [], accentColor = '#d42638' }) {
-    const canvas = document.createElement('canvas');
-    canvas.width = 1280;
-    canvas.height = 720;
-    const ctx = canvas.getContext('2d');
-
-    const bgGrad = ctx.createLinearGradient(0, 0, 1280, 720);
-    bgGrad.addColorStop(0, '#121318');
-    bgGrad.addColorStop(0.5, '#0b0c0e');
-    bgGrad.addColorStop(1, '#180a0e');
-    ctx.fillStyle = bgGrad;
-    ctx.fillRect(0, 0, 1280, 720);
-
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
-    ctx.lineWidth = 1;
-    for (let x = 0; x < 1280; x += 64) {
-      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 720); ctx.stroke();
-    }
-    for (let y = 0; y < 720; y += 64) {
-      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(1280, y); ctx.stroke();
-    }
-
-    ctx.fillStyle = accentColor;
-    ctx.fillRect(0, 0, 1280, 8);
-    ctx.fillRect(45, 55, 6, 610);
-
-    const logoImg = document.getElementById('hiddenBrandLogo');
-    if (logoImg && logoImg.complete && logoImg.naturalWidth > 0) {
-      ctx.save();
-      ctx.globalAlpha = 0.16;
-      ctx.drawImage(logoImg, 760, 90, 460, 460);
-      ctx.globalAlpha = 1.0;
-      ctx.drawImage(logoImg, 1080, 48, 130, 130);
-      ctx.restore();
-    }
-
-    ctx.fillStyle = 'rgba(212, 38, 56, 0.2)';
-    ctx.fillRect(75, 58, 420, 38);
-    ctx.strokeStyle = accentColor;
-    ctx.lineWidth = 2;
-    ctx.strokeRect(75, 58, 420, 38);
-
-    ctx.fillStyle = '#e4e4e2';
-    ctx.font = 'bold 18px Orbitron, Montserrat, sans-serif';
-    ctx.fillText(badge.toUpperCase(), 92, 83);
-
-    ctx.fillStyle = '#ffffff';
-    ctx.font = '900 46px Orbitron, Montserrat, sans-serif';
-    ctx.fillText(title.slice(0, 36), 75, 160);
-
-    if (subtitle) {
-      ctx.fillStyle = accentColor;
-      ctx.font = 'bold 24px Montserrat, sans-serif';
-      ctx.fillText(subtitle.slice(0, 55), 75, 202);
-    }
-
-    let startY = 265;
-    lines.slice(0, 7).forEach((line, idx) => {
-      ctx.fillStyle = idx % 2 === 0 ? 'rgba(255, 255, 255, 0.045)' : 'rgba(255, 255, 255, 0.02)';
-      ctx.fillRect(75, startY - 32, 1080, 46);
-      ctx.fillStyle = accentColor;
-      ctx.fillRect(75, startY - 32, 4, 46);
-
-      ctx.fillStyle = '#f4f4f4';
-      ctx.font = '600 22px Montserrat, sans-serif';
-      ctx.fillText(String(line).slice(0, 72), 95, startY - 2);
-      startY += 56;
-    });
-
-    ctx.fillStyle = '#8b8e96';
-    ctx.font = 'bold 16px Orbitron, Montserrat, sans-serif';
-    ctx.fillText('CYBER 6 ESPORTS [C6E] // OFFICIAL COMMAND CENTER', 75, 680);
-
-    return new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.88));
-  }
-
-  async function ensureBotTokenLoaded() {
-    if (TG_CONFIG.token) return TG_CONFIG.token;
-    try {
-      const snap = await getDoc(doc(db, DB_COLLECTION, "bot_config"));
-      if (snap.exists() && snap.data().encToken) {
-        TG_CONFIG.token = decodeBotToken(snap.data().encToken);
-      }
-    } catch (e) {}
-    return TG_CONFIG.token;
-  }
-
-  async function publishToTelegramChannel({ htmlText, imageSource = null, cardConfig = null }) {
-    try {
-      const activeToken = await ensureBotTokenLoaded();
-      if (!activeToken) {
-        showToast("Сначала вставьте новый токен от @BotFather в верхнем блоке!", true);
-        return false;
-      }
-
-      let photoBlob = null;
-      let externalPhotoUrl = null;
-
-      if (imageSource && imageSource.startsWith('data:image')) {
-        photoBlob = dataURLtoBlob(imageSource);
-      } else if (imageSource && /^https?:\/\//i.test(imageSource)) {
-        externalPhotoUrl = imageSource;
-      } else if (cardConfig) {
-        photoBlob = await generateC6ECardBlob(cardConfig);
-      }
-
-      if (photoBlob) {
-        const formData = new FormData();
-        formData.append('chat_id', TG_CONFIG.channelId);
-        formData.append('photo', photoBlob, 'c6e_post.jpg');
-        formData.append('caption', htmlText.slice(0, 1020));
-        formData.append('parse_mode', 'HTML');
-
-        const res = await fetch(`https://api.telegram.org/bot${activeToken}/sendPhoto`, {
-          method: 'POST',
-          body: formData
-        });
-        const data = await res.json();
-        if (!data.ok) throw new Error(data.description || 'TG sendPhoto error');
-        return true;
-      }
-
-      if (externalPhotoUrl) {
-        const res = await fetch(`https://api.telegram.org/bot${activeToken}/sendPhoto`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            chat_id: TG_CONFIG.channelId,
-            photo: externalPhotoUrl,
-            caption: htmlText.slice(0, 1020),
-            parse_mode: 'HTML'
-          })
-        });
-        const data = await res.json();
-        if (data.ok) return true;
-      }
-
-      const res = await fetch(`https://api.telegram.org/bot${activeToken}/sendMessage`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          chat_id: TG_CONFIG.channelId,
-          text: htmlText,
-          parse_mode: 'HTML',
-          disable_web_page_preview: false
-        })
-      });
-      const data = await res.json();
-      if (!data.ok) throw new Error(data.description || 'TG sendMessage error');
-      return true;
-    } catch (err) {
-      console.error("Ошибка публикации в ТГК:", err);
-      showToast("Ошибка ТГ-бота: " + err.message, true);
-      return false;
-    }
-  }
-
-  function formatNewsHtmlForTelegram(rawHtml) {
-    if (!rawHtml) return "";
-    let txt = rawHtml
-      .replace(/<div[^>]*>\s*<br\s*\/?>\s*<\/div>/gi, '\n')
-      .replace(/<br\s*\/?>/gi, '\n')
-      .replace(/<\/div>/gi, '\n')
-      .replace(/<\/p>/gi, '\n');
-
-    txt = txt.replace(/<div[^>]*border-left[^>]*>([\s\S]*?)<\/div>/gi, (_, inner) => {
-      const cleanInner = inner.replace(/<[^>]+>/g, '').trim();
-      return `\n<blockquote>💬 ${cleanInner}</blockquote>\n`;
-    });
-
-    txt = txt.replace(/<(?!\/?(b|strong|i|em|a|code|pre|blockquote)\b)[^>]+>/gi, '');
-    return txt.replace(/\n{3,}/g, '\n\n').trim();
-  }
-
-  // =========================================================================
-  // ЦЕНТРАЛЬНЫЕ ФУНКЦИИ ПУБЛИКАЦИИ В ТГК
-  // =========================================================================
-
-  window.publishMatchItemToTG = async (matchId) => {
-    const m = cachedHistory.find(item => item.id === matchId);
-    if (!m) return;
-    await sendMatchObjectToTG(m);
-  };
-
-  async function sendMatchObjectToTG(m) {
-    showToast("Формирую пост о матче для ТГК...");
-    const ourScore = parseInt(m.our, 10) || 0;
-    const theirScore = parseInt(m.their, 10) || 0;
-    const isWin = ourScore > theirScore;
-
-    const headerEmoji = isWin ? '🏆 <b>ПОБЕДА CYBER 6 ESPORTS [C6E]!</b>' : '⚔️ <b>РЕЗУЛЬТАТ МАТЧА [C6E]</b>';
-    const ourPlayers = m.players || [];
-    const enemyPlayers = m.enemyPlayers || [];
-
-    const ourRowsText = ourPlayers.map((p, i) => {
-      const kd = p.kd || (p.deaths > 0 ? (p.kills / p.deaths).toFixed(2) : p.kills);
-      return `${i + 1}. <b>${p.nick}</b> — <code>${p.kills} У / ${p.assists || 0} П / ${p.deaths} С</code> (K/D: <b>${kd}</b>)`;
-    }).join('\n');
-
-    let enemyTopText = '';
-    if (enemyPlayers.length > 0) {
-      const topE = [...enemyPlayers].sort((a, b) => (parseFloat(b.kd) || 0) - (parseFloat(a.kd) || 0))[0];
-      if (topE) enemyTopText = `\n🎯 <b>Лидер соперника:</b> ${topE.nick} (${topE.kills} У / ${topE.deaths} С • K/D: ${topE.kd})`;
-    }
-
-    const htmlPost =
-      `${headerEmoji}\n` +
-      `────────────────────\n` +
-      `🛡 <b>[C6E] CYBER 6</b>  <code>${ourScore} : ${theirScore}</code>  <b>${m.enemy}</b>\n` +
-      `🗺 <b>Карта:</b> ${m.map || 'Dune'} | 🎮 <b>Режим:</b> ${m.tour || 'Турнир'}\n` +
-      `🌍 <b>Сервер:</b> ${m.server || 'Россия, Москва'}\n` +
-      (m.mvp ? `⭐ <b>MVP матча:</b> <code>${m.mvp}</code>\n` : '') +
-      `────────────────────\n` +
-      (ourRowsText ? `📊 <b>СТАТИСТИКА БОЙЦОВ [C6E]:</b>\n${ourRowsText}\n` : '') +
-      enemyTopText +
-      `\n\n🔗 <a href="${TG_CONFIG.siteUrl}">Открыть полный Таб и доказательство на сайте [C6E]</a>`;
-
-    const cardLines = ourPlayers.map(p => `${p.nick}  |  У: ${p.kills}   П: ${p.assists || 0}   С: ${p.deaths}   |   K/D: ${p.kd}`);
-
-    const ok = await publishToTelegramChannel({
-      htmlText: htmlPost,
-      imageSource: m.proofImg || null,
-      cardConfig: {
-        badge: `${m.tour || 'STANDOFF 2'} • ${m.map || 'DUNE'}`,
-        title: `[C6E]  ${ourScore} : ${theirScore}  ${m.enemy}`,
-        subtitle: isWin ? 'VICTORY // OFFICIAL MATCH REPORT' : 'MATCH REPORT // TAB STATS',
-        lines: cardLines.length ? cardLines : [`MVP: ${m.mvp || 'Cyber 6 Esports'}`],
-        accentColor: isWin ? '#00e676' : '#d42638'
-      }
-    });
-
-    if (ok) showToast("Отчёт о матче опубликован в ТГК!");
-  }
-
-  window.publishSinglePlayerToTG = async (nick) => {
-    const p = cachedRoster.find(item => item.nick === nick);
-    if (!p) return;
-    await sendPlayerCardToTG(p);
-  };
-
-  async function sendPlayerCardToTG(p) {
-    showToast(`Отправляю карточку ${p.nick} в ТГК...`);
-    const st = computeAdminPlayerStats(p);
-    const deltaSign = st.delta >= 0 ? `▲ +${st.delta.toFixed(2)}` : `▼ ${st.delta.toFixed(2)}`;
-
-    const htmlPost =
-      `🛡 <b>ПРОФИЛЬ БОЙЦА CYBER 6 ESPORTS [C6E]</b>\n` +
-      `────────────────────\n` +
-      `👤 <b>Игрок:</b> <code>${p.nick}</code>\n` +
-      `🎯 <b>Роль:</b> ${p.role || 'Player'}\n` +
-      `📊 <b>LIVE K/D (с учетом Таба):</b> <code>${st.liveKd}</code> (${deltaSign})\n` +
-      `👑 <b>Рейтинг Пантеона:</b> <code>${st.totalPantheonPts} PTS</code>\n` +
-      `🏆 <b>Ранг:</b> ${p.stats ? p.stats.rank : 'The Legend'}\n` +
-      `────────────────────\n` +
-      `📱 <b>Девайс:</b> ${p.device || 'Mobile'}\n` +
-      `⚙️ <b>Сенса:</b> <code>${p.settings || 'Default'}</code>\n` +
-      `🔫 <b>Оружие:</b> ${p.weapon || 'AKR / AWM'}\n` +
-      `💬 <i>«${p.quote || 'Cyber 6 Esports'}»</i>\n\n` +
-      `🔗 <a href="${TG_CONFIG.siteUrl}">Профиль и досье на сайте [C6E]</a>`;
-
-    const ok = await publishToTelegramChannel({
-      htmlText: htmlPost,
-      imageSource: (p.img && p.img !== 'logo.png') ? p.img : null,
-      cardConfig: {
-        badge: 'CYBER 6 ESPORTS // ROSTER CARD',
-        title: p.nick,
-        subtitle: `РОЛЬ: ${p.role}  |  LIVE K/D: ${st.liveKd}  |  ${st.totalPantheonPts} PTS`,
-        lines: [
-          `Ранг: ${p.stats ? p.stats.rank : 'The Legend'}   |   Матчей в Табе: ${st.matchesPlayed}`,
-          `Статистика Таба: ${st.kills} Убийств / ${st.deaths} Смертей`,
-          `Девайс: ${p.device || 'Mobile'}   |   Сенса: ${p.settings || 'Default'}`,
-          `Любимое оружие: ${p.weapon || 'AKR / AWM'}`,
-          `Цитата: "${p.quote || 'No mercy.'}"`
-        ]
-      }
-    });
-
-    if (ok) showToast(`Карточка ${p.nick} опубликована в ТГК!`);
-  }
-
-  window.publishFullRosterToTG = async () => {
-    if (cachedRoster.length === 0) return showToast("В составе пока нет игроков!", true);
-    showToast("Генерирую карточку состава [C6E] для ТГК...");
-
-    const rosterLinesText = cachedRoster.map((p, idx) => {
-      const st = computeAdminPlayerStats(p);
-      return `${idx + 1}. <b>${p.nick}</b> — ${p.role} | LIVE K/D: <code>${st.liveKd}</code> | <code>${st.totalPantheonPts} PTS</code>`;
-    }).join('\n');
-
-    const cardLines = cachedRoster.map((p, idx) => {
-      const st = computeAdminPlayerStats(p);
-      return `#${idx + 1}  ${p.nick}   —   ${p.role}   |   LIVE K/D: ${st.liveKd}   |   ${st.totalPantheonPts} PTS`;
-    });
-
-    const htmlPost =
-      `🔥 <b>АКТУАЛЬНЫЙ СОСТАВ CYBER 6 ESPORTS [C6E]</b>\n` +
-      `────────────────────\n` +
-      `${rosterLinesText}\n` +
-      `────────────────────\n` +
-      `📊 <i>K/D каждого бойца синхронизирован с послематчевыми Табами!</i>\n` +
-      `🔗 <a href="${TG_CONFIG.siteUrl}">Смотреть карточки и настройки игроков на сайте [C6E]</a>`;
-
-    const ok = await publishToTelegramChannel({
-      htmlText: htmlPost,
-      cardConfig: {
-        badge: 'STANDOFF 2 DIVISION // OFFICIAL LINEUP',
-        title: 'СОСТАВ CYBER 6 ESPORTS',
-        subtitle: `АКТИВНЫЙ РОСТЕР ОРГАНИЗАЦИИ [C6E]`,
-        lines: cardLines
-      }
-    });
-
-    if (ok) showToast("Полный состав [C6E] опубликован в ТГК!");
-  };
-
-  window.publishWeeklyReportToTG = async () => {
-    if (cachedRoster.length === 0) return showToast("Сначала добавьте игроков в Состав!", true);
-    showToast("Формирую Еженедельный отчёт K/D для ТГК...");
-
-    const statsList = cachedRoster.map(p => computeAdminPlayerStats(p));
-    statsList.sort((a, b) => parseFloat(b.liveKd) - parseFloat(a.liveKd));
-
-    const topP = statsList[0];
-    const bestGain = [...statsList].sort((a, b) => b.delta - a.delta)[0];
-
-    const reportRows = statsList.map((st, i) => {
-      const arrow = st.delta > 0.004 ? `🟢 ▲ +${st.delta.toFixed(2)}` : (st.delta < -0.004 ? `🔴 ▼ ${st.delta.toFixed(2)}` : `⚪ 0.00`);
-      return `${i + 1}. <b>${st.nick}</b> — LIVE K/D: <code>${st.liveKd}</code> (${arrow}) | <code>${st.totalPantheonPts} PTS</code>`;
-    }).join('\n');
-
-    const cardLines = statsList.map((st, i) => {
-      const sign = st.delta >= 0 ? `+${st.delta.toFixed(2)}` : st.delta.toFixed(2);
-      return `#${i + 1} ${st.nick}  |  LIVE K/D: ${st.liveKd} (${sign})  |  ${st.totalPantheonPts} PTS`;
-    });
-
-    const htmlPost =
-      `📈 <b>ЕЖЕНЕДЕЛЬНЫЙ ОТЧЁТ ПРОГРЕССА [C6E]</b>\n` +
-      `────────────────────\n` +
-      `🏆 <b>Лидер рейтинга:</b> <code>${topP.nick}</code> (${topP.liveKd} K/D)\n` +
-      `🚀 <b>Главный рост K/D:</b> <code>${bestGain.nick}</code> (${bestGain.delta >= 0 ? '+' : ''}${bestGain.delta.toFixed(2)})\n` +
-      `────────────────────\n` +
-      `📊 <b>ДИНАМИКА БОЙЦОВ ПО ИТОГАМ МАТЧЕЙ:</b>\n` +
-      `${reportRows}\n\n` +
-      `🔗 <a href="${TG_CONFIG.siteUrl}">Открыть подробное досье каждого игрока на сайте</a>`;
-
-    const ok = await publishToTelegramChannel({
-      htmlText: htmlPost,
-      cardConfig: {
-        badge: 'WEEKLY ANALYTICS // LIVE K/D SYNC',
-        title: 'ОТЧЁТ ПРОГРЕССА [C6E]',
-        subtitle: `ЛИДЕР НЕДЕЛИ: ${topP.nick} (${topP.liveKd} K/D)`,
-        lines: cardLines,
-        accentColor: '#00e676'
-      }
-    });
-
-    if (ok) showToast("Еженедельный отчёт опубликован в ТГК!");
-  };
-
-  window.publishScheduleToTG = async () => {
-    if (cachedSchedule.length === 0) return showToast("Расписание пока пусто!", true);
-    showToast("Отправляю Расписание в ТГК...");
-
-    const linesText = cachedSchedule.map(s => {
-      const icon = s.status === 'live' ? '🔴 LIVE' : (s.status === 'done' ? '✅' : '⏰');
-      return `${icon} <b>${s.day} | ${s.time} МСК</b> — [${s.type || 'OPS'}] ${s.event}`;
-    }).join('\n');
-
-    const cardLines = cachedSchedule.slice(0, 6).map(s => `${s.day} (${s.time} МСК)  —  ${s.event}`);
-
-    const htmlPost =
-      `📅 <b>ОПЕРАТИВНОЕ РАСПИСАНИЕ CYBER 6 ESPORTS [C6E]</b>\n` +
-      `────────────────────\n` +
-      `${linesText}\n` +
-      `────────────────────\n` +
-      `🔗 <a href="${TG_CONFIG.siteUrl}">Следить за расписанием и матчами на сайте [C6E]</a>`;
-
-    const ok = await publishToTelegramChannel({
-      htmlText: htmlPost,
-      cardConfig: {
-        badge: 'WEEKLY OPS // SCHEDULE',
-        title: 'РАСПИСАНИЕ ИГР [C6E]',
-        subtitle: 'ОФИЦИАЛЬНЫЙ ГРАФИК МАТЧЕЙ И ТРЕНИРОВОК (МСК)',
-        lines: cardLines
-      }
-    });
-
-    if (ok) showToast("Расписание опубликовано в ТГК!");
-  };
-
-  window.publishNewsItemToTG = async (newsId) => {
-    const n = cachedNews.find(item => item.id === newsId);
-    if (!n) return;
-    await sendNewsObjectToTG(n);
-  };
-
-  async function sendNewsObjectToTG(n) {
-    showToast("Публикую новость в ТГК...");
-    const imgMatch = (n.text || '').match(/<img[^>]+src=["']([^"']+)["']/i);
-    const extractedImg = imgMatch ? imgMatch[1] : null;
-    const cleanBody = formatNewsHtmlForTelegram(n.text);
-
-    const htmlPost =
-      `⚡ <b>[${n.tag || 'НОВОСТИ C6E'}] ${n.title}</b>\n` +
-      `📅 <i>${n.date}</i>\n` +
-      `────────────────────\n` +
-      `${cleanBody}\n\n` +
-      `🔗 <a href="${TG_CONFIG.siteUrl}">CYBER 6 ESPORTS | Официальный сайт</a>`;
-
-    const plainPreview = cleanBody.replace(/<[^>]+>/g, '').split('\n').filter(Boolean);
-
-    const ok = await publishToTelegramChannel({
-      htmlText: htmlPost,
-      imageSource: (extractedImg && extractedImg !== 'logo.png') ? extractedImg : null,
-      cardConfig: {
-        badge: `CYBER 6 ESPORTS // ${n.tag || 'NEWS'}`,
-        title: n.title,
-        subtitle: `ОФИЦИАЛЬНЫЙ ПРЕСС-ЦЕНТР [C6E] • ${n.date}`,
-        lines: plainPreview.length ? plainPreview : ['Подробности читайте в нашем официальном портале Cyber 6 Esports.']
-      }
-    });
-
-    if (ok) showToast("Новость опубликована в ТГК!");
-  }
-
-  function computeAdminPlayerStats(p) {
-    const baseKd = parseFloat(p.stats && p.stats.kd ? String(p.stats.kd).replace(',', '.') : '1.00') || 1.00;
-    const pKey = normalizeAdminNickKey(p.nick);
-    let kills = 0, deaths = 0, matchesPlayed = 0, matchesWon = 0, mvpCount = 0;
-
-    cachedHistory.forEach(m => {
-      const isWin = (parseInt(m.our, 10) || 0) > (parseInt(m.their, 10) || 0);
-      if (m.mvp && normalizeAdminNickKey(m.mvp.split('(')[0]) === pKey) mvpCount++;
-
-      (m.players || []).forEach(mp => {
-        const mKey = normalizeAdminNickKey(mp.nick);
-        if (pKey && mKey && (mKey === pKey || mKey.includes(pKey) || pKey.includes(mKey))) {
-          kills += parseInt(mp.kills, 10) || 0;
-          deaths += parseInt(mp.deaths, 10) || 0;
-          matchesPlayed++;
-          if (isWin) matchesWon++;
-        }
-      });
-    });
-
-    let liveKd = baseKd;
-    let delta = 0;
-    if (matchesPlayed > 0) {
-      liveKd = (baseKd * 25 + kills) / (25 + deaths);
-      delta = liveKd - baseKd;
-    }
-
-    const rawFanBoosts = (cachedPantheon.boosts && cachedPantheon.boosts[pKey]) ? parseInt(cachedPantheon.boosts[pKey], 10) : 0;
-    const fanBoosts = Math.min(20, rawFanBoosts);
-    const founderBonus = (cachedPantheon.bonusPts && cachedPantheon.bonusPts[pKey]) ? parseInt(cachedPantheon.bonusPts[pKey], 10) : 0;
-    const kdPts = Math.round(liveKd * 450);
-    const growthPts = Math.round(delta * 1200);
-    const matchActivityPts = (matchesPlayed * 85) + (matchesWon * 95) + (mvpCount * 160) + (kills * 3);
-    const siteActivityPts = (fanBoosts * 25) + founderBonus;
-    const totalPantheonPts = Math.max(100, kdPts + growthPts + matchActivityPts + siteActivityPts);
-
-    return {
-      nick: p.nick,
-      pKey,
-      baseKd: baseKd.toFixed(2),
-      liveKd: liveKd.toFixed(2),
-      delta,
-      kills,
-      deaths,
-      matchesPlayed,
-      fanBoosts,
-      founderBonus,
-      totalPantheonPts
-    };
-  }
-
-  // =========================================================================
-  // PRO ULTRA-HD ИИ-СКАНЕР ТАБА STANDOFF 2
-  // =========================================================================
-
-  let imageTargetCallback = null;
-  const phoneInput = document.getElementById('phoneImageInput');
-  const proofInput = document.getElementById('proofImageInput');
-
-  function compressImageFile(file, maxWidth = 1050, quality = 0.82) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          let w = img.width;
-          let h = img.height;
-          if (w > maxWidth) {
-            h = Math.round((h * maxWidth) / w);
-            w = maxWidth;
-          }
-          canvas.width = w;
-          canvas.height = h;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, w, h);
-          resolve(canvas.toDataURL('image/jpeg', quality));
-        };
-        img.onerror = reject;
-        img.src = e.target.result;
-      };
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-  }
-
-  function readFileAsRawDataUrl(file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = (e) => resolve(e.target.result);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-  }
-
-  phoneInput.addEventListener('change', async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    showToast("Обработка фото...");
-    try {
-      const dataUrl = await compressImageFile(file, 820, 0.78);
-      if (imageTargetCallback) imageTargetCallback(dataUrl);
-      showToast("Фото загружено!");
-    } catch (err) {
-      showToast("Ошибка обработки фото", true);
-    }
-    phoneInput.value = '';
-  });
-
-  window.pickImageForInput = (inputId) => {
-    imageTargetCallback = (dataUrl) => {
-      document.getElementById(inputId).value = dataUrl;
-    };
-    phoneInput.click();
-  };
-
-  proofInput.addEventListener('change', async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    showToast("Загружаю скриншот Таба в Ultra-HD...");
-    try {
-      rawFullResProofDataUrl = await readFileAsRawDataUrl(file);
-      const compressedUrl = await compressImageFile(file, 1180, 0.85);
-      document.getElementById('hProofUrl').value = compressedUrl;
-      updateProofPreview(compressedUrl);
-      await scanStandoffScoreboard();
-    } catch (err) {
-      showToast("Не удалось обработать скриншот", true);
-    }
-    proofInput.value = '';
-  });
-
-  window.updateProofPreview = (url) => {
-    const wrap = document.getElementById('proofPreviewWrap');
-    const img = document.getElementById('proofPreviewImg');
-    const ocrBtn = document.getElementById('btnRunOcr');
-    if (url && url.trim().length > 5) {
-      img.src = normalizeImageUrl(url);
-      wrap.style.display = 'block';
-      ocrBtn.style.display = 'inline-flex';
-    } else {
-      wrap.style.display = 'none';
-      ocrBtn.style.display = 'none';
-    }
-  };
-
-  // ============================================================================
-  // PRO ULTRA-HD СКАНЕР ТАБА STANDOFF 2 V4 (ПОСТРОЧНЫЙ И ПОКЛЕТОЧНЫЙ ДВИЖОК)
-  // 100% отсечение звезд ★ и значков ранга, авто-центровка экрана и консенсус тегов
-  // ============================================================================
-  const DEFAULT_C6E_ROSTER = [
-    "[C6E] Kas",
-    "[C6E] mART1N",
-    "[C6E] Z@Ir3xus",
-    "[C6E] w1nsezyy",
-    "[C6E] krozz777",
-    "[C6E] Tr1ller",
-    "[C6E] ツBerkutツ",
-    "[C6E] Неппи"
-  ];
-
-  const HOMO_CHAR_MAP = {
-    'а':'a','в':'b','с':'c','е':'e','н':'h','к':'k','м':'m',
-    'о':'o','р':'p','т':'t','у':'y','х':'x','п':'n','и':'u',
-    '0':'o','1':'i','l':'i','3':'e','6':'g','@':'a','4':'a'
-  };
-
-  function normHomoglyphSkeleton(str) {
-    return String(str || '')
-      .toLowerCase()
-      .split('')
-      .map(ch => HOMO_CHAR_MAP[ch] || ch)
-      .join('')
-      .replace(/[^a-z0-9]/g, '');
-  }
-
-  function levenshteinDistance(a, b) {
-    const s1 = String(a || '');
-    const s2 = String(b || '');
-    if (s1 === s2) return 0;
-    if (!s1.length) return s2.length;
-    if (!s2.length) return s1.length;
-    const prev = Array.from({ length: s2.length + 1 }, (_, j) => j);
-    for (let i = 0; i < s1.length; i++) {
-      const curr = [i + 1];
-      for (let j = 0; j < s2.length; j++) {
-        const cost = s1[i] === s2[j] ? 0 : 1;
-        curr.push(Math.min(prev[j + 1] + 1, curr[j] + 1, prev[j] + cost));
-      }
-      for (let j = 0; j <= s2.length; j++) prev[j] = curr[j];
-    }
-    return prev[s2.length];
-  }
-
-  function getCombinedKnownRosterNicks() {
-    const map = new Map();
-    // Приоритет отдаем реальным никам из твоего Ростера в Firebase!
-    if (Array.isArray(allKnownRosterPlayers)) {
-      allKnownRosterPlayers.forEach(p => {
-        if (p && p.nick) {
-          const clean = p.nick.trim();
-          const full = clean.includes('[') ? clean : `[C6E] ${clean}`;
-          const sk = normalizeAdminNickKey(full);
-          if (sk && !map.has(sk)) map.set(sk, full);
-        }
-      });
-    }
-    DEFAULT_C6E_ROSTER.forEach(nick => {
-      const sk = normalizeAdminNickKey(nick);
-      if (sk && !map.has(sk)) map.set(sk, nick);
-    });
-    return Array.from(map.values());
-  }
-
-  function parseRawTagAndName(rawLine) {
-    let s = String(rawLine || '')
-      .replace(/[\r\n]+/g, ' ')
-      .replace(/^[.,;:'"`~*\-_|/\\]+/, '')
-      .trim();
-    s = s.replace(/^[fI1|l{(\[]+([\[({])/, '$1');
-    s = s.replace(/\s*[>)\\]+\s*$/, '').trim();
-
-    let m = s.match(/^[\[({|I1]+([A-Za-zА-Яа-яЁё0-9]{2,6})\s*[\])}|I1!]+[\s|]*(.+)$/);
-    if (!m) {
-      m = s.match(/^[\[({|]+([A-Za-zА-Яа-яЁё0-9]{2,5})\s+(.+)$/);
-    }
-    if (m) {
-      return [m[1].trim(), m[2].trim()];
-    }
-    return [null, s];
-  }
-
-  function cleanClanTagToken(tag) {
-    if (!tag) return null;
-    let t = tag.trim();
-    const cyrMap = { 'С':'C', 'В':'B', 'Е':'E', 'с':'c', 'в':'b', 'е':'e' };
-    const tUp = t.split('').map(c => cyrMap[c] || c).join('').toUpperCase();
-    if (/^C[6GBS8]{1,2}[EF]$/.test(tUp) || ['C6E','CGE','CBE','CSE','CG6E','CB6E','CBF'].includes(tUp)) {
-      return 'C6E';
-    }
-    if (t.length >= 4 && (t[0] === 'S' || t[0] === 's') && (t[1] === '9' || t[1] === '3')) {
-      t = t.slice(1);
-    }
-    const up = t.toUpperCase();
-    if (up === 'SFORZ' || up === 'S3FORZ') return '3FORZ';
-    if (['SVO','9VO','9V0','SV0','9V00','S9VO','SV0O'].includes(up)) return '9v0';
-    if (['VSY','V9Y','V9V','VGV','USU'].includes(up)) return 'v9y';
-    if (['DOGA','DGA','OCA'].includes(up)) return 'DGA';
-    if (['RHDI','RHD','RADI','RRD','RED'].includes(up)) return 'RHD';
-    return t;
-  }
-
-  function unifyTeamClanTags(parsedRows) {
-    const tags = parsedRows.map(([t]) => cleanClanTagToken(t));
-    const validTags = tags.filter(Boolean);
-    if (!validTags.length) return parsedRows;
-
-    let bestCluster = [];
-    for (const t1 of validTags) {
-      const sk1 = normHomoglyphSkeleton(t1);
-      const cluster = validTags.filter(t2 => levenshteinDistance(sk1, normHomoglyphSkeleton(t2)) <= 1);
-      if (cluster.length > bestCluster.length) bestCluster = cluster;
-    }
-
-    if (bestCluster.length >= 2) {
-      const sorted = [...bestCluster].sort((a, b) => {
-        const digA = (a.match(/\d/g) || []).length;
-        const digB = (b.match(/\d/g) || []).length;
-        if (digB !== digA) return digB - digA;
-        const cntA = bestCluster.filter(x => x === a).length;
-        const cntB = bestCluster.filter(x => x === b).length;
-        return cntB - cntA;
-      });
-      const consensus = sorted[0];
-      const conSkel = normHomoglyphSkeleton(consensus);
-      for (let i = 0; i < parsedRows.length; i++) {
-        if (tags[i] && levenshteinDistance(normHomoglyphSkeleton(tags[i]), conSkel) <= 1) {
-          parsedRows[i][0] = consensus;
-        } else if (tags[i]) {
-          parsedRows[i][0] = tags[i];
-        }
-      }
-    } else {
-      for (let i = 0; i < parsedRows.length; i++) {
-        if (tags[i]) parsedRows[i][0] = tags[i];
-      }
-    }
-    return parsedRows;
-  }
-
-  function cleanPlayerNameWithRoster(tag, rawName, knownRoster) {
-    let name = String(rawName || '').trim();
-    if (/berkut/i.test(name)) {
-      return (tag === 'C6E' || !tag) ? '[C6E] ツBerkutツ' : `[${tag}] ツBerkutツ`;
-    }
-
-    const nameSkel = normHomoglyphSkeleton(name);
-    let bestMatch = null;
-    let bestSim = 0;
-
-    for (const kr of knownRoster) {
-      const krBase = kr.replace(/^\[.*?\]\s*/, '').trim();
-      const krSkel = normHomoglyphSkeleton(krBase);
-      if (!krSkel || !nameSkel) continue;
-      const dist = levenshteinDistance(nameSkel, krSkel);
-      const sim = 1 - dist / Math.max(nameSkel.length, krSkel.length);
-      if (sim > bestSim) {
-        bestSim = sim;
-        bestMatch = krBase;
-      }
-    }
-
-    if (bestMatch && bestSim >= 0.62) {
-      return tag ? `[${tag}] ${bestMatch}` : bestMatch;
-    }
-
-    // Убираем ложные пробелы вокруг единицы/символов внутри одного слова
-    name = name.replace(/([A-Za-z0-9])\s+(1[A-Za-z0-9_])/g, '$1$2');
-    name = name.replace(/([A-Za-z]1)\s+([a-z0-9_])/g, '$1$2');
-    name = name.replace(/^7\s*@/, 'Z@');
-
-    // Точечные исправления частых геймерских паттернов шрифта Standoff 2
-    if (/npob1/i.test(name)) name = 'проб1тый';
-    if (/^matvor$/i.test(name)) name = 'ma1vor';
-    if (/^shtrobtw$/i.test(name)) name = 'sh1robtw';
-    if (/^retz$/i.test(name)) name = 're1z';
-    if (/^DtagNOz66$/i.test(name)) name = 'D1agNOz66';
-    if (/^astrixxX$/i.test(name)) name = 'astrixX';
-    if (/^qly$/i.test(name)) name = 'qlv';
-    if (/^maqistr\s+yo$/i.test(name)) name = 'magistr yo';
-    if (/^prokl[ae]t[iy1]+$/i.test(name)) name = 'proklatii';
-    if (/r3vo[li1t]+u?t+[17tI\s]*[0O]n_?/i.test(name)) name = '@r3volut10n_';
-    if (/s[1Il]mplecs[gq]od/i.test(name)) name = 's1mplecsgod';
-
-    return tag ? `[${tag}] ${name}`.trim() : name.trim();
-  }
-
-  // Авто-определение сдвига экрана (зависит от стороны выреза камеры на телефоне)
-  function detectScoreboardDividerDx(fullData, W, H) {
-    const y0 = Math.round(0.68 * H);
-    const y1 = Math.round(0.90 * H);
-    const xL = Math.round(0.45 * W);
-    const xR = Math.round(0.55 * W);
-    let bestX = Math.round(0.5165 * W);
-    let bestGrad = -1;
-
-    for (let x = xL; x <= xR; x++) {
-      let sum = 0;
-      for (let y = y0; y < y1; y += 2) {
-        const idxR = (y * W + Math.min(W - 1, x + 1)) * 4;
-        const idxL = (y * W + Math.max(0, x - 2)) * 4;
-        const gR = (fullData[idxR] + fullData[idxR + 1] + fullData[idxR + 2]) / 3;
-        const gL = (fullData[idxL] + fullData[idxL + 1] + fullData[idxL + 2]) / 3;
-        sum += Math.abs(gR - gL);
-      }
-      if (sum > bestGrad) {
-        bestGrad = sum;
-        bestX = x;
-      }
-    }
-    return (bestX / W) - 0.5165;
-  }
-
-  function percentileFloat(arr, p) {
-    if (!arr.length) return 0;
-    const sorted = Float32Array.from(arr).sort();
-    const idx = Math.min(sorted.length - 1, Math.max(0, Math.floor((p / 100) * (sorted.length - 1))));
-    return sorted[idx];
-  }
-
-  // Извлечение 10 полос никнеймов строго без нижней линии звезд ★ и без значков ранга
-  function buildNamesCompositeCanvas(srcCanvas, fullData, W, H, dx) {
-    const sideBases = [0.1065, 0.5875];
-    const stripCanvases = [];
-
-    for (const sideBase of sideBases) {
-      for (let r = 0; r < 5; r++) {
-        const y0 = Math.max(0, Math.round((0.258 + r * 0.0872) * H));
-        const y1 = Math.min(H, Math.round((0.294 + r * 0.0872) * H));
-        const yMid0 = Math.max(0, Math.round((0.289 + r * 0.0872) * H));
-        const yMid1 = Math.min(H, Math.round((0.297 + r * 0.0872) * H));
-        const yBot0 = Math.max(0, Math.round((0.297 + r * 0.0872) * H));
-        const yBot1 = Math.min(H, Math.round((0.318 + r * 0.0872) * H));
-
-        const x0 = Math.max(0, Math.round((sideBase + dx) * W));
-        const x1 = Math.min(W, Math.round((sideBase + dx + 0.176) * W));
-        const sw = Math.max(16, x1 - x0);
-        const sh = Math.max(8, y1 - y0);
-
-        // Оцениваем цвет фона строки по верхней и нижней 2px границе полосы
-        const borderR = [], borderG = [], borderB = [];
-        for (let x = x0; x < x1; x++) {
-          for (const by of [y0, y0 + 1, y1 - 2, y1 - 1]) {
-            const p = (Math.min(H - 1, Math.max(0, by)) * W + x) * 4;
-            borderR.push(fullData[p]);
-            borderG.push(fullData[p + 1]);
-            borderB.push(fullData[p + 2]);
-          }
-        }
-        const bgR = percentileFloat(borderR, 50);
-        const bgG = percentileFloat(borderG, 50);
-        const bgB = percentileFloat(borderB, 50);
-
-        // Детектор значка ранга справа от ника (активность одновременно в top, mid и bot)
-        const topAct = new Float32Array(sw);
-        const midAct = new Float32Array(sw);
-        const botAct = new Float32Array(sw);
-
-        for (let cx = 0; cx < sw; cx++) {
-          const gx = x0 + cx;
-          let tCnt = 0, mCnt = 0, bCnt = 0;
-          for (let y = y0; y < y1; y++) {
-            const p = (y * W + gx) * 4;
-            const dMax = Math.max(fullData[p] - bgR, fullData[p + 1] - bgG, fullData[p + 2] - bgB);
-            if (dMax > 24) tCnt++;
-          }
-          topAct[cx] = tCnt / Math.max(1, y1 - y0);
-
-          for (let y = yMid0; y < yMid1; y++) {
-            const p = (y * W + gx) * 4;
-            const dAbs = Math.max(Math.abs(fullData[p] - bgR), Math.abs(fullData[p + 1] - bgG), Math.abs(fullData[p + 2] - bgB));
-            if (dAbs > 25) mCnt++;
-          }
-          midAct[cx] = mCnt / Math.max(1, yMid1 - yMid0);
-
-          for (let y = yBot0; y < yBot1; y++) {
-            const p = (y * W + gx) * 4;
-            const dAbs = Math.max(Math.abs(fullData[p] - bgR), Math.abs(fullData[p + 1] - bgG), Math.abs(fullData[p + 2] - bgB));
-            if (dAbs > 25) bCnt++;
-          }
-          botAct[cx] = bCnt / Math.max(1, yBot1 - yBot0);
-        }
-
-        const win = Math.max(6, Math.round(0.015 * W));
-        const gapPx = Math.max(2, Math.round(0.003 * W));
-        let cutX = sw;
-
-        for (let cx = Math.round(0.024 * W); cx < sw - Math.floor(win / 2); cx++) {
-          let gapSum = 0;
-          const gStart = Math.max(0, cx - gapPx);
-          for (let k = gStart; k < cx; k++) gapSum += topAct[k];
-          const gapMean = gapSum / Math.max(1, cx - gStart);
-
-          if (gapMean < 0.09) {
-            let mSum = 0, bSum = 0, tSum = 0;
-            const wEnd = Math.min(sw, cx + win);
-            for (let k = cx; k < wEnd; k++) {
-              mSum += midAct[k];
-              bSum += botAct[k];
-              tSum += topAct[k];
-            }
-            const span = Math.max(1, wEnd - cx);
-            if (mSum / span > 0.20 && bSum / span > 0.20 && tSum / span > 0.16) {
-              cutX = Math.max(12, cx - 1);
-              break;
-            }
-          }
-        }
-
-        let lastActive = 0;
-        for (let cx = 0; cx < cutX; cx++) {
-          if (topAct[cx] > 0.08) lastActive = cx;
-        }
-        if (lastActive > 0) {
-          cutX = Math.min(cutX, lastActive + Math.max(4, Math.round(0.004 * W)));
-        }
-
-        // Строим карту сигнала с локальным выравниванием яркости (чтобы серый клан-тег [C6E] был таким же четким, как ник)
-        const sig = new Float32Array(cutX * sh);
-        const colP98 = new Float32Array(cutX);
-
-        for (let cx = 0; cx < cutX; cx++) {
-          const colVals = new Float32Array(sh);
-          const gx = x0 + cx;
-          for (let cy = 0; cy < sh; cy++) {
-            const p = ((y0 + cy) * W + gx) * 4;
-            const dr = Math.max(0, fullData[p] - bgR);
-            const dg = Math.max(0, fullData[p + 1] - bgG);
-            const db = Math.max(0, fullData[p + 2] - bgB);
-            const lumDiff = Math.max(dr, dg, db);
-            const rgbDist = Math.sqrt(dr * dr + dg * dg + db * db) / 1.5;
-            const val = 0.65 * lumDiff + 0.35 * rgbDist;
-            sig[cy * cutX + cx] = val;
-            colVals[cy] = val;
-          }
-          colP98[cx] = percentileFloat(colVals, 98);
-        }
-
-        const win0 = Math.max(6, Math.round(0.015 * W));
-        const rawCanv = document.createElement('canvas');
-        rawCanv.width = cutX;
-        rawCanv.height = sh;
-        const rawCtx = rawCanv.getContext('2d');
-        const imgD = rawCtx.createImageData(cutX, sh);
-
-        for (let cx = 0; cx < cutX; cx++) {
-          let locMax = 32.0;
-          const k0 = Math.max(0, cx - win0);
-          const k1 = Math.min(cutX - 1, cx + win0);
-          for (let k = k0; k <= k1; k++) {
-            if (colP98[k] > locMax) locMax = colP98[k];
-          }
-          for (let cy = 0; cy < sh; cy++) {
-            const norm = Math.min(1, Math.max(0, sig[cy * cutX + cx] / locMax));
-            const ink = Math.min(1, Math.max(0, (norm - 0.14) / 0.76));
-            const gVal = Math.round(255 * (1 - ink));
-            const di = (cy * cutX + cx) * 4;
-            imgD.data[di] = gVal;
-            imgD.data[di + 1] = gVal;
-            imgD.data[di + 2] = gVal;
-            imgD.data[di + 3] = 255;
-          }
-        }
-        rawCtx.putImageData(imgD, 0, 0);
-
-        const targetH = 64;
-        const targetW = Math.max(24, Math.round(cutX * (targetH / sh)));
-        const upCanv = document.createElement('canvas');
-        upCanv.width = targetW;
-        upCanv.height = targetH;
-        const upCtx = upCanv.getContext('2d');
-        upCtx.imageSmoothingEnabled = true;
-        upCtx.imageSmoothingQuality = 'high';
-        upCtx.drawImage(rawCanv, 0, 0, targetW, targetH);
-        stripCanvases.push(upCanv);
-      }
-    }
-
-    const maxW = Math.max(...stripCanvases.map(c => c.width), 200) + 80;
-    const slotH = 104;
-    const comp = document.createElement('canvas');
-    comp.width = maxW;
-    comp.height = slotH * 10;
-    const cCtx = comp.getContext('2d');
-    cCtx.fillStyle = '#ffffff';
-    cCtx.fillRect(0, 0, comp.width, comp.height);
-
-    stripCanvases.forEach((sc, idx) => {
-      cCtx.drawImage(sc, 30, idx * slotH + 20);
-    });
-    return comp.toDataURL('image/png');
-  }
-
-  // Поклеточное выделение всех 50 ячеек цифр (10 игроков × 5 колонок: У, П, С, Счет, Пинг)
-  function buildStatsGridCanvas(srcCanvas, fullData, W, H, dx) {
-    const leftCols = [0.3095, 0.3525, 0.3960, 0.4395, 0.4835];
-    const rightCols = [0.7905, 0.8335, 0.8770, 0.9205, 0.9645];
-    const cellW = 130;
-    const cellH = 84;
-
-    const gridCanv = document.createElement('canvas');
-    gridCanv.width = cellW * 5 + 40;
-    gridCanv.height = cellH * 10 + 40;
-    const gCtx = gridCanv.getContext('2d');
-    gCtx.fillStyle = '#ffffff';
-    gCtx.fillRect(0, 0, gridCanv.width, gridCanv.height);
-
-    [leftCols, rightCols].forEach((cols, sideIdx) => {
-      for (let r = 0; r < 5; r++) {
-        const rowGlobal = sideIdx * 5 + r;
-        const y0 = Math.max(0, Math.round((0.269 + r * 0.0872) * H));
-        const y1 = Math.min(H, Math.round((0.305 + r * 0.0872) * H));
-        const sh = Math.max(8, y1 - y0);
-
-        cols.forEach((cPct, cIdx) => {
-          const halfW = 0.0185;
-          const x0 = Math.max(0, Math.round((cPct + dx - halfW) * W));
-          const x1 = Math.min(W, Math.round((cPct + dx + halfW) * W));
-          const sw = Math.max(10, x1 - x0);
-
-          const bR = [], bG = [], bB = [];
-          for (let x = x0; x < x1; x++) {
-            for (const by of [y0, y0 + 1, y1 - 2, y1 - 1]) {
-              const p = (Math.min(H - 1, Math.max(0, by)) * W + x) * 4;
-              bR.push(fullData[p]);
-              bG.push(fullData[p + 1]);
-              bB.push(fullData[p + 2]);
-            }
-          }
-          const bgR = percentileFloat(bR, 50);
-          const bgG = percentileFloat(bG, 50);
-          const bgB = percentileFloat(bB, 50);
-
-          const targetH = 58;
-          const targetW = Math.max(20, Math.round(sw * (targetH / sh)));
-          const cellCanv = document.createElement('canvas');
-          cellCanv.width = targetW;
-          cellCanv.height = targetH;
-          const cCtx = cellCanv.getContext('2d');
-          cCtx.imageSmoothingEnabled = true;
-          cCtx.imageSmoothingQuality = 'high';
-          cCtx.drawImage(srcCanvas, x0, y0, sw, sh, 0, 0, targetW, targetH);
-
-          const cData = cCtx.getImageData(0, 0, targetW, targetH);
-          const d = cData.data;
-          const diff = new Float32Array(targetW * targetH);
-          const coreVals = [];
-
-          for (let py = 0; py < targetH; py++) {
-            for (let px = 0; px < targetW; px++) {
-              const i = (py * targetW + px) * 4;
-              const dv = Math.max(d[i] - bgR, d[i + 1] - bgG, d[i + 2] - bgB);
-              diff[py * targetW + px] = dv;
-              if (py >= 6 && py < targetH - 6 && px >= 6 && px < targetW - 6) {
-                coreVals.push(dv);
-              }
-            }
-          }
-
-          const p98 = Math.max(26.0, percentileFloat(coreVals, 98));
-          const colMax = new Float32Array(targetW);
-          for (let px = 4; px < targetW - 4; px++) {
-            let cm = 0;
-            for (let py = 4; py < targetH - 4; py++) {
-              const nv = Math.min(1, Math.max(0, diff[py * targetW + px] / p98));
-              if (nv > cm) cm = nv;
-            }
-            colMax[px] = cm;
-          }
-
-          let xa = 0, xb = targetW;
-          let firstAct = -1, lastAct = -1;
-          for (let px = 0; px < targetW; px++) {
-            if (colMax[px] > 0.42) {
-              if (firstAct === -1) firstAct = px;
-              lastAct = px;
-            }
-          }
-          if (firstAct !== -1) {
-            xa = Math.max(0, firstAct - 5);
-            xb = Math.min(targetW, lastAct + 6);
-          }
-
-          for (let py = 0; py < targetH; py++) {
-            for (let px = 0; px < targetW; px++) {
-              let nv = 0;
-              if (py >= 4 && py < targetH - 4 && px >= Math.max(4, xa) && px < Math.min(targetW - 4, xb)) {
-                nv = Math.min(1, Math.max(0, diff[py * targetW + px] / p98));
-              }
-              const ink = Math.min(1, Math.max(0, (nv - 0.22) / 0.56));
-              const gVal = Math.round(255 * (1 - ink));
-              const i = (py * targetW + px) * 4;
-              d[i] = gVal;
-              d[i + 1] = gVal;
-              d[i + 2] = gVal;
-              d[i + 3] = 255;
-            }
-          }
-          cCtx.putImageData(cData, 0, 0);
-
-          const pasteX = 20 + cIdx * cellW + Math.floor((cellW - targetW) / 2);
-          const pasteY = 20 + rowGlobal * cellH + Math.floor((cellH - targetH) / 2);
-          gCtx.drawImage(cellCanv, pasteX, pasteY);
-        });
-      }
-    });
-
-    return gridCanv.toDataURL('image/png');
-  }
-
-  function buildBoxContrastDataUrl(srcCanvas, fullData, W, H, x0Pct, x1Pct, y0Pct, y1Pct, targetH = 68) {
-    const x0 = Math.max(0, Math.round(x0Pct * W));
-    const x1 = Math.min(W, Math.round(x1Pct * W));
-    const y0 = Math.max(0, Math.round(y0Pct * H));
-    const y1 = Math.min(H, Math.round(y1Pct * H));
-    const sw = Math.max(10, x1 - x0);
-    const sh = Math.max(8, y1 - y0);
-
-    const rArr = [], gArr = [], bArr = [];
-    for (let y = y0; y < y1; y += 2) {
-      for (let x = x0; x < x1; x += 2) {
-        const p = (y * W + x) * 4;
-        rArr.push(fullData[p]);
-        gArr.push(fullData[p + 1]);
-        bArr.push(fullData[p + 2]);
-      }
-    }
-    const bgR = percentileFloat(rArr, 20);
-    const bgG = percentileFloat(gArr, 20);
-    const bgB = percentileFloat(bArr, 20);
-
-    const diffs = new Float32Array(sw * sh);
-    for (let cy = 0; cy < sh; cy++) {
-      for (let cx = 0; cx < sw; cx++) {
-        const p = ((y0 + cy) * W + (x0 + cx)) * 4;
-        diffs[cy * sw + cx] = Math.max(fullData[p] - bgR, fullData[p + 1] - bgG, fullData[p + 2] - bgB);
-      }
-    }
-    const p99 = Math.max(30.0, percentileFloat(diffs, 99));
-
-    const c0 = document.createElement('canvas');
-    c0.width = sw;
-    c0.height = sh;
-    const ctx0 = c0.getContext('2d');
-    const id0 = ctx0.createImageData(sw, sh);
-    for (let i = 0; i < diffs.length; i++) {
-      const norm = Math.min(1, Math.max(0, (diffs[i] - 0.22 * p99) / (0.65 * p99)));
-      const gVal = Math.round(255 * (1 - norm));
-      id0.data[i * 4] = gVal;
-      id0.data[i * 4 + 1] = gVal;
-      id0.data[i * 4 + 2] = gVal;
-      id0.data[i * 4 + 3] = 255;
-    }
-    ctx0.putImageData(id0, 0, 0);
-
-    const targetW = Math.max(20, Math.round(sw * (targetH / sh)));
-    const up = document.createElement('canvas');
-    up.width = targetW;
-    up.height = targetH;
-    const uCtx = up.getContext('2d');
-    uCtx.imageSmoothingEnabled = true;
-    uCtx.imageSmoothingQuality = 'high';
-    uCtx.drawImage(c0, 0, 0, targetW, targetH);
-    return up;
-  }
-
-  function parseStatsFromTesseractResult(statsRes) {
-    const cellW = 130;
-    const cellH = 84;
-    const mat = Array.from({ length: 10 }, () => [0, 0, 0, 0, 0]);
-    const rowHasBboxWord = Array(10).fill(false);
-
-    const words = [];
-    if (statsRes && statsRes.data) {
-      if (Array.isArray(statsRes.data.words) && statsRes.data.words.length > 0) {
-        words.push(...statsRes.data.words);
-      } else if (Array.isArray(statsRes.data.lines)) {
-        statsRes.data.lines.forEach(ln => {
-          if (Array.isArray(ln.words)) words.push(...ln.words);
-        });
-      }
-    }
-
-    for (const w of words) {
-      const rawTxt = String(w.text || '').replace(/\D/g, '');
-      if (!rawTxt || !w.bbox) continue;
-      const xc = (w.bbox.x0 + w.bbox.x1) / 2;
-      const yc = (w.bbox.y0 + w.bbox.y1) / 2;
-      const rIdx = Math.min(9, Math.max(0, Math.floor((yc - 20) / cellH)));
-      const cIdx = Math.min(4, Math.max(0, Math.floor((xc - 20) / cellW)));
-      let val = parseInt(rawTxt, 10);
-      if (isNaN(val)) continue;
-      if (cIdx < 3 && val > 60 && rawTxt.length >= 2) {
-        const tail = parseInt(rawTxt.slice(-2), 10);
-        val = tail <= 45 ? tail : parseInt(rawTxt[0], 10);
-      }
-      if (cIdx === 3 && val > 140 && rawTxt.length >= 2) {
-        val = parseInt(rawTxt.slice(-2), 10);
-      }
-      mat[rIdx][cIdx] = val;
-      rowHasBboxWord[rIdx] = true;
-    }
-
-    // Fallback по строкам, если в какой-то строке Tesseract не вернул word bbox
-    const rawLines = String((statsRes && statsRes.data && statsRes.data.text) || '')
-      .split('\n')
-      .map(l => l.trim())
-      .filter(Boolean);
-
-    if (rawLines.length === 10) {
-      for (let r = 0; r < 10; r++) {
-        if (rowHasBboxWord[r]) continue;
-        let nums = (rawLines[r].match(/\d+/g) || []).map(n => parseInt(n, 10));
-        if (nums.length === 4) {
-          // Если пропущен 0 в Помощи (П), вставляем 0 на вторую позицию
-          nums = [nums[0], 0, nums[1], nums[2], nums[3]];
-        }
-        for (let c = 0; c < Math.min(5, nums.length); c++) {
-          let val = nums[c];
-          if (c < 3 && val > 60) val = val % 100;
-          if (c === 3 && val > 140) val = val % 100;
-          mat[r][c] = val;
-        }
-      }
-    }
-    return mat;
-  }
-
-  window.scanStandoffScoreboard = async () => {
-    const src = rawFullResProofDataUrl || document.getElementById('hProofUrl').value.trim();
-    if (!src) return showToast("Сначала выберите скриншот Таба!", true);
-
-    const statusBox = document.getElementById('ocrStatusBox');
-    const statusText = document.getElementById('ocrStatusText');
-    statusBox.style.display = 'flex';
-    statusText.innerText = "Шаг 1/3: Калибрую геометрию Таба, отсекаю звёзды ★ и значки ранга...";
-
-    try {
-      const imgEl = new Image();
-      imgEl.crossOrigin = "anonymous";
-      await new Promise((res, rej) => { imgEl.onload = res; imgEl.onerror = rej; imgEl.src = src; });
-
-      const W = imgEl.naturalWidth;
-      const H = imgEl.naturalHeight;
-      const srcCanvas = document.createElement('canvas');
-      srcCanvas.width = W;
-      srcCanvas.height = H;
-      const srcCtx = srcCanvas.getContext('2d');
-      srcCtx.drawImage(imgEl, 0, 0);
-      const fullData = srcCtx.getImageData(0, 0, W, H).data;
-
-      const dx = detectScoreboardDividerDx(fullData, W, H);
-
-      // 1. Счёт команд (CT и T) и нижняя строка карты/сервера
-      const ctBox = buildBoxContrastDataUrl(srcCanvas, fullData, W, H, 0.462 + dx, 0.512 + dx, 0.125, 0.188, 72);
-      const tBox  = buildBoxContrastDataUrl(srcCanvas, fullData, W, H, 0.520 + dx, 0.572 + dx, 0.125, 0.188, 72);
-      const scoresCanv = document.createElement('canvas');
-      scoresCanv.width = 340;
-      scoresCanv.height = 100;
-      const scCtx = scoresCanv.getContext('2d');
-      scCtx.fillStyle = '#ffffff';
-      scCtx.fillRect(0, 0, 340, 100);
-      scCtx.drawImage(ctBox, 20, 14);
-      scCtx.drawImage(tBox, 185, 14);
-      const scoresDataUrl = scoresCanv.toDataURL('image/png');
-
-      const footerCanv = buildBoxContrastDataUrl(srcCanvas, fullData, W, H, 0.010, 0.360, 0.925, 0.988, 56);
-      const footerDataUrl = footerCanv.toDataURL('image/png');
-
-      // 2. Построчный холст из 10 ников (без звёзд и значков ранга) и поклеточная матрица 10×5 цифр
-      const namesDataUrl = buildNamesCompositeCanvas(srcCanvas, fullData, W, H, dx);
-      const statsDataUrl = buildStatsGridCanvas(srcCanvas, fullData, W, H, dx);
-
-      statusText.innerText = "Шаг 2/3: Распознаю 10 ников, клан-теги и сверяю с базой Ростера [C6E]...";
-      const [scoresRes, footerRes, namesRes] = await Promise.all([
-        Tesseract.recognize(scoresDataUrl, 'eng', { tessedit_char_whitelist: '0123456789 ' }),
-        Tesseract.recognize(footerDataUrl, 'rus+eng'),
-        Tesseract.recognize(namesDataUrl, 'eng+rus')
-      ]);
-
-      statusText.innerText = "Шаг 3/3: Поклеточное чтение 50 ячеек (У / П / С / Счёт / Пинг)...";
-      const statsRes = await Tesseract.recognize(statsDataUrl, 'eng', {
-        tessedit_char_whitelist: '0123456789 '
-      });
-
-      // Разбор карты, режима и сервера
-      const footerTxt = (footerRes.data.text || "").trim();
-      const maps = ['Dune', 'Sandstone', 'Rust', 'Province', 'Breeze', 'Zone 9', 'Hanami'];
-      for (const m of maps) {
-        if (footerTxt.toLowerCase().includes(m.toLowerCase())) {
-          document.getElementById('hMap').value = m;
-          break;
-        }
-      }
-      if (/соревн|copen|copes/i.test(footerTxt)) {
-        document.getElementById('hTour').value = 'Соревновательный';
-      } else if (/турнир|typh|typu|typx/i.test(footerTxt)) {
-        document.getElementById('hTour').value = 'Турнир';
-      }
-
-      // Разбор счета CT (левая) и T (правая)
-      const scoreNums = ((scoresRes.data.text || "").match(/\d{1,2}/g) || []).map(n => parseInt(n, 10));
-      let leftScore = 13, rightScore = 11;
-      if (scoreNums.length >= 2) {
-        leftScore = scoreNums[0];
-        rightScore = scoreNums[1];
-      }
-
-      // Разбор 10 строк никнеймов с привязкой к слоту Y (0..9)
-      const slotRawNames = Array(10).fill('');
-      const nameLines = (namesRes.data && Array.isArray(namesRes.data.lines)) ? namesRes.data.lines : [];
-      if (nameLines.length === 10) {
-        for (let i = 0; i < 10; i++) slotRawNames[i] = (nameLines[i].text || '').trim();
-      } else if (nameLines.length > 0) {
-        nameLines.forEach(ln => {
-          const txt = (ln.text || '').trim();
-          if (!txt || !ln.bbox) return;
-          const yc = (ln.bbox.y0 + ln.bbox.y1) / 2;
-          const sIdx = Math.min(9, Math.max(0, Math.floor(yc / 104)));
-          if (!slotRawNames[sIdx]) slotRawNames[sIdx] = txt;
-        });
-      } else {
-        const plainLines = String((namesRes.data && namesRes.data.text) || '')
-          .split('\n')
-          .map(l => l.trim())
-          .filter(Boolean);
-        for (let i = 0; i < Math.min(10, plainLines.length); i++) slotRawNames[i] = plainLines[i];
-      }
-
-      const knownRoster = getCombinedKnownRosterNicks();
-      let leftParsed = slotRawNames.slice(0, 5).map(ln => parseRawTagAndName(ln));
-      let rightParsed = slotRawNames.slice(5, 10).map(ln => parseRawTagAndName(ln));
-
-      leftParsed = unifyTeamClanTags(leftParsed);
-      rightParsed = unifyTeamClanTags(rightParsed);
-
-      // Если на стороне >= 3 бойцов [C6E], выравниваем тег [C6E] для всех узнанных бойцов ростера на этой стороне
-      for (const side of [leftParsed, rightParsed]) {
-        const c6eHits = side.filter(([t, n]) => {
-          if (t === 'C6E') return true;
-          const sk = normHomoglyphSkeleton(n);
-          return knownRoster.some(kr => {
-            const krB = kr.replace(/^\[.*?\]\s*/, '');
-            return levenshteinDistance(sk, normHomoglyphSkeleton(krB)) <= 2;
-          });
-        }).length;
-
-        if (c6eHits >= 3) {
-          side.forEach(row => {
-            if (row[0] && row[0].toLowerCase() !== 'he') {
-              const sk = normHomoglyphSkeleton(row[1]);
-              const isRosterMember = knownRoster.some(kr => {
-                const krB = kr.replace(/^\[.*?\]\s*/, '');
-                return levenshteinDistance(sk, normHomoglyphSkeleton(krB)) <= 2;
-              });
-              if (isRosterMember) row[0] = 'C6E';
-            }
-          });
-        }
-      }
-
-      const leftNicks = leftParsed.map(([t, n], i) => cleanPlayerNameWithRoster(t, n, knownRoster) || `Player ${i + 1}`);
-      const rightNicks = rightParsed.map(([t, n], i) => cleanPlayerNameWithRoster(t, n, knownRoster) || `Player ${i + 1}`);
-
-      const statMat = parseStatsFromTesseractResult(statsRes);
-
-      const leftTeamObj = leftNicks.map((nick, i) => ({
-        nick,
-        kills: statMat[i][0],
-        assists: statMat[i][1],
-        deaths: statMat[i][2],
-        score: statMat[i][3],
-        ping: statMat[i][4]
-      }));
-
-      const rightTeamObj = rightNicks.map((nick, i) => ({
-        nick,
-        kills: statMat[i + 5][0],
-        assists: statMat[i + 5][1],
-        deaths: statMat[i + 5][2],
-        score: statMat[i + 5][3],
-        ping: statMat[i + 5][4]
-      }));
-
-      // Определяем, на какой стороне (CT слева или T справа) играет наша команда [C6E]
-      const countOurSideScore = (teamArr) => teamArr.reduce((acc, p) => {
-        if (/\[C6E\]/i.test(p.nick)) return acc + 3;
-        const sk = normHomoglyphSkeleton(p.nick.replace(/^\[.*?\]\s*/, ''));
-        const inRoster = knownRoster.some(kr => levenshteinDistance(sk, normHomoglyphSkeleton(kr.replace(/^\[.*?\]\s*/, ''))) <= 1);
-        return acc + (inRoster ? 2 : 0);
-      }, 0);
-
-      const leftOurWeight = countOurSideScore(leftTeamObj);
-      const rightOurWeight = countOurSideScore(rightTeamObj);
-
-      let ourPlayers, enemyPlayers;
-      if (rightOurWeight > leftOurWeight) {
-        // Наша команда [C6E] справа (АТАКА T)
-        document.getElementById('hOur').value = rightScore;
-        document.getElementById('hTheir').value = leftScore;
-        document.getElementById('hOurSide').value = 'АТАКА (Т)';
-        document.getElementById('hTheirSide').value = 'ОБОРОНА (СТ)';
-        ourPlayers = rightTeamObj;
-        enemyPlayers = leftTeamObj;
-      } else {
-        // Наша команда [C6E] слева (ОБОРОНА CT)
-        document.getElementById('hOur').value = leftScore;
-        document.getElementById('hTheir').value = rightScore;
-        document.getElementById('hOurSide').value = 'ОБОРОНА (СТ)';
-        document.getElementById('hTheirSide').value = 'АТАКА (Т)';
-        ourPlayers = leftTeamObj;
-        enemyPlayers = rightTeamObj;
-      }
-
-      renderTeamTable('ourPlayersTbody', ourPlayers);
-      renderTeamTable('enemyPlayersTbody', enemyPlayers);
-
-      // Определяем основной клан-тег команды соперника для поля "Команда соперника"
-      const enemyTags = enemyPlayers
-        .map(p => {
-          const m = p.nick.match(/^(\[[^\]]+\])/);
-          return m ? m[1] : null;
-        })
-        .filter(Boolean);
-
-      if (enemyTags.length > 0) {
-        const freq = {};
-        let topTag = enemyTags[0];
-        enemyTags.forEach(t => {
-          freq[t] = (freq[t] || 0) + 1;
-          if (freq[t] > (freq[topTag] || 0)) topTag = t;
-        });
-        document.getElementById('hEnemy').value = freq[topTag] >= 3 ? topTag : `${topTag} / Mix`;
-      } else if (enemyPlayers[0] && enemyPlayers[0].nick) {
-        document.getElementById('hEnemy').value = `${enemyPlayers[0].nick} Stack`;
-      }
-
-      showToast("✅ Таб отсканирован на 100%! Все ники, теги и колонки У/П/С/Счёт/Пинг заполнены.");
-    } catch (err) {
-      console.warn("OCR error:", err);
-      showToast("Скрин прикреплен! Проверь таблицы игроков.");
-    } finally {
-      statusBox.style.display = 'none';
-    }
-  };
-
-  window.insertRosterNickIntoTab = (nick) => {
-    const fullNick = nick.includes('[C6E]') ? nick : `[C6E] ${nick}`;
-    if (lastFocusedNameInput && document.body.contains(lastFocusedNameInput)) {
-      lastFocusedNameInput.value = fullNick;
-      recalcAllTabsKd();
-      showToast(`Вставлен ник: ${fullNick}`);
-      return;
-    }
-    const inputs = Array.from(document.querySelectorAll('#ourPlayersTbody .p-name-inp'));
-    const emptyOrGeneric = inputs.find(inp => !inp.value.trim() || /Player/i.test(inp.value));
-    const targetInp = emptyOrGeneric || inputs[0];
-    if (targetInp) {
-      targetInp.value = fullNick;
-      recalcAllTabsKd();
-      showToast(`Вставлен ник: ${fullNick}`);
-    }
-  };
-
-  function renderQuickRosterChips() {
-    const bar = document.getElementById('quickRosterChipsBar');
-    if (!bar) return;
-    const combinedNicks = getCombinedKnownRosterNicks();
-    bar.innerHTML = combinedNicks.map(nick => {
-      const safe = nick.replace(/'/g, "\\'");
-      return `<button type="button" class="chip-btn" onclick="window.insertRosterNickIntoTab('${safe}')"><i class="fas fa-user-check text-accent"></i> ${nick}</button>`;
-    }).join('');
-  }
-
-  window.loadSampleFromScreenshot = () => {
-    document.getElementById('hEnemy').value = '[AB88] / Mix Stack';
-    document.getElementById('hTour').value = 'Турнир';
-    document.getElementById('hMap').value = 'Dune';
-    document.getElementById('hServer').value = 'Россия, Москва';
-    document.getElementById('hOur').value = 11;
-    document.getElementById('hOurSide').value = 'АТАКА (Т)';
-    document.getElementById('hTheir').value = 13;
-    document.getElementById('hTheirSide').value = 'ОБОРОНА (СТ)';
-
-    renderTeamTable('ourPlayersTbody', [
-      { nick: '[C6E] Z@Ir3xus', kills: 22, assists: 3, deaths: 15, score: 51, ping: 47 },
-      { nick: '[C6E] w1nsezyy', kills: 20, assists: 4, deaths: 18, score: 48, ping: 67 },
-      { nick: '[C6E] Неппи', kills: 18, assists: 2, deaths: 19, score: 48, ping: 41 },
-      { nick: '[C6E] krozz777', kills: 15, assists: 3, deaths: 19, score: 33, ping: 46 },
-      { nick: '[C6E] mART1N', kills: 10, assists: 6, deaths: 20, score: 30, ping: 46 }
-    ]);
-
-    renderTeamTable('enemyPlayersTbody', [
-      { nick: '[AB88] laksy', kills: 22, assists: 7, deaths: 17, score: 67, ping: 33 },
-      { nick: 'fAgEr', kills: 21, assists: 5, deaths: 18, score: 60, ping: 43 },
-      { nick: '[PkS] proklatii', kills: 17, assists: 6, deaths: 17, score: 40, ping: 29 },
-      { nick: '[NgtSV] AsMaB', kills: 17, assists: 2, deaths: 15, score: 36, ping: 48 },
-      { nick: '[YB] COVE', kills: 12, assists: 5, deaths: 20, score: 34, ping: 20 }
-    ]);
-  };
-
-  function renderTeamTable(tbodyId, playersArray) {
-    const tbody = document.getElementById(tbodyId);
-    tbody.innerHTML = '';
-    playersArray.forEach(p => {
-      addTeamPlayerRow(tbodyId, '', p.nick, p.kills, p.assists, p.deaths, p.score, p.ping);
-    });
-    recalcAllTabsKd();
-  }
-
-  window.addTeamPlayerRow = (tbodyId, prefix = '', nick = '', kills = 15, assists = 3, deaths = 12, score = 35, ping = 45) => {
-    const tbody = document.getElementById(tbodyId);
-    const tr = document.createElement('tr');
-    const fullNick = nick || (prefix ? `${prefix}Player` : 'Enemy');
-    const kd = deaths > 0 ? (kills / deaths).toFixed(2) : kills.toFixed(2);
-
-    tr.innerHTML = `
-      <td><input type="text" class="p-name-inp" value="${fullNick}" oninput="recalcAllTabsKd()"></td>
-      <td><input type="number" class="p-k-inp" value="${kills}" min="0" oninput="recalcAllTabsKd()"></td>
-      <td><input type="number" class="p-a-inp" value="${assists}" min="0"></td>
-      <td><input type="number" class="p-d-inp" value="${deaths}" min="0" oninput="recalcAllTabsKd()"></td>
-      <td><input type="text" class="p-kd-inp" value="${kd}" readonly></td>
-      <td><input type="number" class="p-sc-inp" value="${score}" min="0" oninput="recalcAllTabsKd()"></td>
-      <td><input type="number" class="p-pg-inp" value="${ping}" min="0"></td>
-      <td><button type="button" class="btn-icon del" style="width:24px; height:24px;" onclick="this.closest('tr').remove(); recalcAllTabsKd();"><i class="fas fa-times"></i></button></td>
+    mainContentHtml = `
+      <div class="player-selector-bar">${selectorChipsHtml}</div>
+      <div class="roster-carousel-wrap">
+        <div class="roster-swipe-track" id="c6e-roster-track">${cardsHtml}</div>
+        <div class="carousel-nav-bar">
+          <button type="button" class="carousel-arrow-btn" onclick="window.stepPlayerSlide(-1)"><i class="fas fa-chevron-left"></i></button>
+          <span id="roster-slide-counter" style="font-family:var(--font-tech); font-size:10px; color:var(--silver-muted); letter-spacing:1px;">
+            СВАЙПАЙ ВЛЕВО / ВПРАВО (${activePlayerIdx + 1} ИЗ ${currentList.length})
+          </span>
+          <button type="button" class="carousel-arrow-btn" onclick="window.stepPlayerSlide(1)"><i class="fas fa-chevron-right"></i></button>
+        </div>
+      </div>
     `;
-    const nameInp = tr.querySelector('.p-name-inp');
-    if (nameInp) {
-      nameInp.addEventListener('focus', () => { lastFocusedNameInput = nameInp; });
-    }
-    tbody.appendChild(tr);
-    recalcAllTabsKd();
-  };
-
-  window.recalcAllTabsKd = () => {
-    let bestScore = -1;
-    let bestMvpText = '';
-
-    ['ourPlayersTbody', 'enemyPlayersTbody'].forEach(tbId => {
-      document.querySelectorAll(`#${tbId} tr`).forEach(r => {
-        const nick = r.querySelector('.p-name-inp').value.trim();
-        const k = parseInt(r.querySelector('.p-k-inp').value, 10) || 0;
-        const d = parseInt(r.querySelector('.p-d-inp').value, 10) || 0;
-        const sc = parseInt(r.querySelector('.p-sc-inp').value, 10) || 0;
-        const kdVal = d > 0 ? (k / d) : k;
-        const kdInput = r.querySelector('.p-kd-inp');
-        kdInput.value = kdVal.toFixed(2);
-        kdInput.style.color = kdVal >= 1.0 ? 'var(--success)' : 'var(--accent-light)';
-
-        if (tbId === 'ourPlayersTbody' && nick && (kdVal * 10 + sc) > bestScore) {
-          bestScore = kdVal * 10 + sc;
-          bestMvpText = `${nick} (${kdVal.toFixed(2)} K/D • ${k} У / ${d} С)`;
-        }
-      });
-    });
-
-    if (bestMvpText) document.getElementById('hMvp').value = bestMvpText;
-  };
-
-  function readTableData(tbodyId) {
-    const arr = [];
-    document.querySelectorAll(`#${tbodyId} tr`).forEach(r => {
-      const nick = r.querySelector('.p-name-inp').value.trim();
-      const kills = parseInt(r.querySelector('.p-k-inp').value, 10) || 0;
-      const assists = parseInt(r.querySelector('.p-a-inp').value, 10) || 0;
-      const deaths = parseInt(r.querySelector('.p-d-inp').value, 10) || 0;
-      const kd = r.querySelector('.p-kd-inp').value;
-      const score = parseInt(r.querySelector('.p-sc-inp').value, 10) || 0;
-      const ping = parseInt(r.querySelector('.p-pg-inp').value, 10) || 0;
-      if (nick) arr.push({ nick, kills, assists, deaths, kd, score, ping });
-    });
-    return arr;
   }
 
-  window.swapTeamsTables = () => {
-    const ourData = readTableData('ourPlayersTbody');
-    const enemyData = readTableData('enemyPlayersTbody');
-    renderTeamTable('ourPlayersTbody', enemyData);
-    renderTeamTable('enemyPlayersTbody', ourData);
+  teamSection.innerHTML = `
+    <div class="roster-hub-controls">
+      <div class="squad-tabs">
+        <button type="button" class="squad-tab-btn ${activeRosterTab === 'main' ? 'active' : ''}" onclick="window.switchRosterTab('main')">
+          <i class="fas fa-crosshairs"></i> ОСНОВА (${mainRosterData.length})
+        </button>
+        <button type="button" class="squad-tab-btn ${activeRosterTab === 'reserve' ? 'active' : ''}" onclick="window.switchRosterTab('reserve')">
+          <i class="fas fa-shield-alt"></i> РЕЗЕРВ (${reserveRosterData.length})
+        </button>
+        <button type="button" class="squad-tab-btn ${activeRosterTab === 'table' ? 'active' : ''}" onclick="window.switchRosterTab('table')">
+          <i class="fas fa-list"></i> СПИСКОМ
+        </button>
+      </div>
+      <button type="button" class="report-mini-btn" style="border-color:#ffb300; color:#ffb300;" onclick="selectTab('pantheon', document.getElementById('btn-pantheon'))">
+        <i class="fas fa-crown"></i> ПАНТЕОН (900G)
+      </button>
+    </div>
 
-    const sOur = document.getElementById('hOur').value;
-    document.getElementById('hOur').value = document.getElementById('hTheir').value;
-    document.getElementById('hTheir').value = sOur;
-    const sideOur = document.getElementById('hOurSide').value;
-    document.getElementById('hOurSide').value = document.getElementById('hTheirSide').value;
-    document.getElementById('hTheirSide').value = sideOur;
-    showToast("Команды, стороны (CT ⇄ T) и счет поменяны местами!");
-  };
+    ${mainContentHtml}
+  `;
 
-  window.applyC6ETagToOurTeam = () => {
-    document.querySelectorAll('#ourPlayersTbody .p-name-inp').forEach(inp => {
-      let val = inp.value.trim();
-      val = val.replace(/^\[[^\]]+\]\s*/, '');
-      inp.value = `[C6E] ${val}`;
-    });
-    recalcAllTabsKd();
-    showToast("Всем нашим бойцам проставлен тег [C6E]!");
-  };
-
-  window.fillOurTeamFromRoster = () => {
-    const sourceList = allKnownRosterPlayers.length > 0 ? allKnownRosterPlayers : cachedRoster;
-    if (sourceList.length === 0) {
-      loadSampleFromScreenshot();
-      return;
-    }
-    const rows = sourceList.slice(0, 5).map(p => {
-      const cleanNick = p.nick.replace(/^\[?C6E\]?\s*\|?\s*/i, '');
-      return { nick: `[C6E] ${cleanNick}`, kills: 18, assists: 4, deaths: 14, score: 44, ping: 45 };
-    });
-    renderTeamTable('ourPlayersTbody', rows);
-    showToast("Ники из твоего состава [C6E] подтянуты в Таб!");
-  };
-
-  loadSampleFromScreenshot();
-
-  function normalizeImageUrl(url) {
-    if (!url) return "";
-    let clean = url.trim();
-    const imgurMatch = clean.match(/^https?:\/\/(?:www\.)?imgur\.com\/([a-zA-Z0-9]+)$/);
-    if (imgurMatch) return `https://i.imgur.com/${imgurMatch[1]}.jpg`;
-    return clean;
+  const track = document.getElementById('c6e-roster-track');
+  if (track) {
+    track.addEventListener('scroll', () => {
+      const idx = Math.round(track.scrollLeft / track.clientWidth);
+      if (idx !== activePlayerIdx && idx >= 0 && idx < currentList.length) {
+        activePlayerIdx = idx;
+        document.querySelectorAll('.player-chip').forEach((ch, i) => ch.classList.toggle('active', i === idx));
+        const counterEl = document.getElementById('roster-slide-counter');
+        if (counterEl) counterEl.innerText = `СВАЙПАЙ ВЛЕВО / ВПРАВО (${idx + 1} ИЗ ${currentList.length})`;
+      }
+    }, { passive: true });
   }
+}
 
-  window.sysLogin = async () => {
-    const email = document.getElementById('adminEmail').value.trim();
-    const pass = document.getElementById('adminPass').value;
-    const err = document.getElementById('loginError');
-    const btn = document.querySelector('#loginOverlay .action-btn');
-    
-    if (!email || !pass) { err.style.opacity = 1; err.innerText = "Введите Email и пароль"; return; }
+window.openPlayerDossier = (nick) => {
+  const allPlayers = [...mainRosterData, ...reserveRosterData];
+  const p = allPlayers.find(item => item.nick === nick) || allPlayers[0];
+  if (!p) return;
 
-    try {
-      btn.disabled = true; btn.innerText = "ПРОВЕРКА ДОСТУПА...";
-      await resolveVisitorIp();
+  const st = computePlayerLiveAnalytics(p);
+  const content = document.getElementById('c6e-analytics-content');
 
-      const secSnap = await getDoc(doc(db, DB_COLLECTION, "security_logs"));
-      if (secSnap.exists()) {
-        const bannedList = secSnap.data().banned || [];
-        const isBanned = bannedList.some(b =>
-          (b.deviceId && b.deviceId === currentVisitorDevId) ||
-          (b.ip && b.ip !== 'Скрыт / VPN' && b.ip === currentVisitorIp)
-        );
-        if (isBanned) {
-          btn.disabled = false; btn.innerHTML = '<i class="fas fa-shield-alt"></i> ВОЙТИ В ЦЕНТР УПРАВЛЕНИЯ';
-          err.style.opacity = 1;
-          err.innerText = "🚫 Ваше устройство заблокировано C6E Shield!";
-          return;
-        }
-      }
+  const logsHtml = st.recentMatches.length === 0
+    ? `<div style="text-align:center; padding:18px; color:#666; font-size:12px;">Игрок пока не занесен ни в один послематчевый Таб. Добавьте матч с участием <b>${escapeHTML(p.nick)}</b> в админке!</div>`
+    : `<table class="so2-table" style="margin-top:8px;">
+        <thead>
+          <tr>
+            <th class="col-name">Матч / Карта</th>
+            <th>Счет</th>
+            <th>У</th>
+            <th>П</th>
+            <th>С</th>
+            <th>K/D в матче</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${st.recentMatches.slice().reverse().map(m => `
+            <tr>
+              <td class="col-name">VS ${escapeHTML(m.enemy)} <span style="color:var(--silver-muted); font-size:9px;">(${escapeHTML(m.map)})</span></td>
+              <td style="color:${m.isWin ? 'var(--success)' : 'var(--accent-light)'}; font-family:var(--font-tech);">${m.scoreStr}</td>
+              <td>${m.kills}</td>
+              <td>${m.assists}</td>
+              <td>${m.deaths}</td>
+              <td style="font-family:var(--font-tech); font-weight:800; color:${m.kdNum >= st.baseKd ? 'var(--success)' : 'var(--accent-light)'};">
+                ${m.kd} ${m.kdNum >= st.baseKd ? '▲' : '▼'}
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>`;
 
-      await signInWithEmailAndPassword(auth, email, pass);
-    } catch (e) {
-      btn.disabled = false; btn.innerHTML = '<i class="fas fa-shield-alt"></i> ВОЙТИ В ЦЕНТР УПРАВЛЕНИЯ';
-      err.style.opacity = 1;
-      err.innerText = "Неверный Email или пароль (попытка записана в C6E Shield)";
-      await logAdminSecurityAttempt(email);
-    }
-  };
+  content.innerHTML = `
+    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--glass-border); padding-bottom:12px; margin-bottom:16px;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <img src="${escapeHTML(p.img || 'logo.png')}" onerror="this.src='logo.png'" style="width:52px; height:52px; border-radius:10px; object-fit:cover; border:1px solid var(--accent-light);">
+        <div>
+          <div style="font-family:var(--font-tech); font-size:17px; font-weight:900; color:#fff;">${formatPlayerNickHTML(p.nick, true)}</div>
+          <div style="font-size:10px; color:var(--silver-muted);">${escapeHTML(p.role || 'Боец')} • Базовый K/D: ${st.baseKd} • <b style="color:#ffb300;">${st.totalPantheonPts} PTS</b></div>
+        </div>
+      </div>
+      <button class="btn-glitch" style="width:auto; padding:7px 14px; font-size:10px;" onclick="closeAnalyticsModal()">ЗАКРЫТЬ ✕</button>
+    </div>
 
-  window.sysLogout = () => signOut(auth);
-
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      document.getElementById('loginOverlay').style.display = 'none';
-      document.getElementById('mainUI').style.display = 'block';
-      setTimeout(() => { document.getElementById('mainUI').style.opacity = 1; }, 80);
-      initAdminListeners();
-      showToast("Добро пожаловать в Cyber 6 Command Center");
-    } else {
-      document.getElementById('loginOverlay').style.display = 'flex';
-      document.getElementById('mainUI').style.opacity = 0;
-      setTimeout(() => { document.getElementById('mainUI').style.display = 'none'; }, 400);
-    }
-  });
-
-  function listenToDoc(collection, docName, callback) {
-    onSnapshot(doc(db, collection, docName), (snap) => {
-      if (snap.exists()) callback(snap.data());
-      else callback({});
-    });
-  }
-
-  let knownMainList = [];
-  let knownReserveList = [];
-  function syncAllKnownRoster() {
-    const map = new Map();
-    [...knownMainList, ...knownReserveList].forEach(p => {
-      if (p && p.nick) map.set(p.nick.toLowerCase(), p);
-    });
-    allKnownRosterPlayers = Array.from(map.values());
-    renderQuickRosterChips();
-    renderAdminPantheonPanel();
-  }
-
-  function initAdminListeners() {
-    listenToDoc(DB_COLLECTION, "roster_main", (data) => {
-      knownMainList = data.list || [];
-      syncAllKnownRoster();
-    });
-    listenToDoc(DB_COLLECTION, "roster_reserve", (data) => {
-      knownReserveList = data.list || [];
-      syncAllKnownRoster();
-    });
-    listenToDoc(DB_COLLECTION, "pantheon", (data) => {
-      cachedPantheon = {
-        boosts: data.boosts || {},
-        bonusPts: data.bonusPts || {}
-      };
-      renderAdminPantheonPanel();
-    });
-
-    listenToDoc(DB_COLLECTION, "bot_config", (data) => {
-      const badge = document.getElementById('tgTokenStatusBadge');
-      const inp = document.getElementById('secretBotTokenInput');
-      if (data && data.encToken) {
-        const decoded = decodeBotToken(data.encToken);
-        if (decoded) {
-          TG_CONFIG.token = decoded;
-          if (inp && !inp.value) inp.value = decoded;
-          if (badge) {
-            badge.className = 'tg-shield-status ok';
-            badge.innerHTML = `<i class="fas fa-lock"></i> ТОКЕН ЗАЩИЩЁН В БАЗЕ (${data.botUsername ? '@' + data.botUsername : 'OK'})`;
-          }
-          return;
-        }
-      }
-      if (badge) {
-        badge.className = 'tg-shield-status warn';
-        badge.innerHTML = `⚠️ ВВЕДИТЕ НОВЫЙ ТОКЕН В ПОЛЕ НИЖЕ`;
-      }
-    });
-
-    listenToDoc(DB_COLLECTION, "security_logs", (data) => {
-      const logs = data.logs || [];
-      const banned = data.banned || [];
-      cachedSecurityLogs = logs;
-      cachedBannedUsers = banned;
-
-      const kpiBans = document.getElementById('kpi-bans');
-      if (kpiBans) kpiBans.innerText = banned.length;
-
-      const logsCont = document.getElementById('securityLogsList');
-      if (logsCont) {
-        const sortedLogs = [...logs].reverse();
-        logsCont.innerHTML = sortedLogs.length === 0
-          ? '<span class="item-sub" style="padding:8px;">Журнал активности пока пуст</span>'
-          : sortedLogs.map(l => {
-              const isAlreadyBanned = banned.some(b =>
-                (l.deviceId && b.deviceId === l.deviceId) ||
-                (l.ip && l.ip !== 'Скрыт / VPN' && b.ip === l.ip)
-              );
-              const isAlert = Boolean(l.isAlert || (l.action && l.action.includes('⚠️')));
-              const safeIp = (l.ip || '').replace(/'/g, "\\'");
-              const safeDev = (l.deviceId || '').replace(/'/g, "\\'");
-              const safeActor = (l.actor || 'Гость').replace(/'/g, "\\'");
-
-              return `
-                <div class="list-item" style="border-left-color:${isAlert ? 'var(--accent-light)' : (isAlreadyBanned ? 'var(--warning)' : 'var(--tg-blue)')}; background:${isAlert ? 'rgba(212,38,56,0.12)' : 'rgba(255,255,255,0.03)'}; align-items:flex-start;">
-                  <div class="item-info">
-                    <b style="color:${isAlert ? '#ff5263' : 'var(--silver)'};">
-                      ${isAlert ? '<span style="background:var(--accent-light); color:#fff; font-size:8px; padding:2px 5px; border-radius:4px; margin-right:5px; font-family:var(--font-tech);">🚨 ТРЕВОГА</span>' : ''}
-                      [${l.action}] ${l.actor} <span style="font-size:9px; color:var(--silver-muted); font-weight:400;">• ${l.date}</span>
-                    </b>
-                    <div class="item-sub" style="color:#ddd; margin-bottom:4px;">${l.details || ''}</div>
-                    <div class="item-sub" style="font-family:monospace; color:var(--silver);">
-                      🌐 IP: <b>${l.ip || '—'}</b> | 🆔 ID: <b>${l.deviceId || '—'}</b><br>
-                      📱 ${l.deviceInfo || 'Устройство'}
-                    </div>
-                  </div>
-                  <div class="item-actions">
-                    ${isAlreadyBanned
-                      ? `<span style="font-size:9px; color:var(--accent-light); font-family:var(--font-tech); padding:4px 6px; border:1px solid var(--accent-light); border-radius:4px;">В БАНЕ</span>`
-                      : `<button type="button" class="btn-icon ban" title="Забанить по IP и Устройству" onclick="window.banUserQuick('${safeIp}', '${safeDev}', '${safeActor}')"><i class="fas fa-ban"></i></button>`
-                    }
-                  </div>
-                </div>
-              `;
-            }).join('');
-      }
-
-      const bannedCont = document.getElementById('bannedUsersList');
-      if (bannedCont) {
-        const sortedBanned = [...banned].reverse();
-        bannedCont.innerHTML = sortedBanned.length === 0
-          ? '<span class="item-sub" style="padding:8px;">В чёрном списке пока никого нет</span>'
-          : sortedBanned.map(b => `
-              <div class="list-item" style="border-left-color:var(--accent-light); background:rgba(212,38,56,0.1);">
-                <div class="item-info">
-                  <b style="color:#fff;">🚫 ${b.actor || 'Нарушитель'} <span style="font-size:9px; color:var(--silver-muted);">${b.date || ''}</span></b>
-                  <span class="item-sub" style="color:var(--accent-light);">Причина: ${b.reason || 'Спам'}</span>
-                  <span class="item-sub" style="font-family:monospace; display:block; margin-top:2px;">
-                    ${b.ip ? `IP: ${b.ip} ` : ''}${b.deviceId ? `| ID: ${b.deviceId}` : ''}
-                  </span>
-                </div>
-                <div class="item-actions">
-                  <button type="button" class="btn-icon edit" title="Разбанить" onclick="window.unbanUser(${b.id})"><i class="fas fa-unlock"></i></button>
-                </div>
-              </div>
-            `).join('');
-      }
-    });
-
-    listenToDoc(DB_COLLECTION, "news", (data) => {
-      const list = data.list || [];
-      cachedNews = list;
-      document.getElementById('kpi-news').innerText = list.length;
-
-      const sorted = [...list].sort((a,b) => b.id - a.id);
-      document.getElementById('newsList').innerHTML = sorted.length === 0
-        ? '<div class="item-sub" style="padding:10px;">Новостей пока нет</div>'
-        : sorted.map(n => `
-          <div class="list-item">
-            <div class="item-info">
-              <b>${n.title}</b>
-              <span class="item-sub">${n.date} • [${n.tag}]</span>
-            </div>
-            <div class="item-actions">
-              <button class="btn-icon tg" onclick="window.publishNewsItemToTG(${n.id})" title="Опубликовать эту новость в ТГК"><i class="fab fa-telegram-plane"></i></button>
-              <button class="btn-icon edit" onclick="window.editNews(${n.id})" title="Редактировать"><i class="fas fa-pen"></i></button>
-              <button class="btn-icon del" onclick="window.deleteItem('news', ${n.id})" title="Удалить"><i class="fas fa-trash"></i></button>
-            </div>
-          </div>
-        `).join('');
-    });
-
-    listenToDoc(DB_COLLECTION, "schedule", (data) => {
-      const list = data.list || [];
-      cachedSchedule = list;
-      const sorted = [...list].sort((a, b) => a.id - b.id);
-      const container = document.getElementById('scheduleList');
-      container.innerHTML = sorted.length === 0
-        ? '<div class="item-sub" style="padding:10px;">Расписание пусто</div>'
-        : sorted.map(s => {
-            let statusColor = 'var(--silver)';
-            let statusLabel = 'UPCOMING';
-            if (s.status === 'live') { statusColor = 'var(--accent-light)'; statusLabel = '🔴 LIVE'; }
-            if (s.status === 'done') { statusColor = 'var(--success)'; statusLabel = '✅ DONE'; }
-            if (s.status === 'canceled') { statusColor = '#777'; statusLabel = '❌ ОТМЕНА'; }
-            return `
-              <div class="list-item" style="border-left-color:${statusColor};">
-                <div class="item-info">
-                  <b>${s.day} <span style="color:var(--accent-light);">| ${s.time}</span> <span style="font-size:9px; color:${statusColor}; margin-left:6px;">${statusLabel}</span></b>
-                  <span class="item-sub" style="color:#ddd;">[${s.type || 'OPS'}] ${s.event}</span>
-                </div>
-                <div class="item-actions">
-                  <button class="btn-icon edit" onclick="window.cycleScheduleStatus(${s.id})"><i class="fas fa-sync-alt"></i></button>
-                  <button class="btn-icon del" onclick="window.deleteItem('schedule', ${s.id})"><i class="fas fa-trash"></i></button>
-                </div>
-              </div>`;
-          }).join('');
-    });
-
-    listenToDoc(DB_COLLECTION, "match", (data) => {
-      const info = document.getElementById('currentMatchInfo');
-      if (data.enemy && data.date) {
-        const dateObj = new Date(data.date);
-        const readableDate = dateObj.toLocaleString('ru-RU', { month: 'short', day: 'numeric', hour:'2-digit', minute:'2-digit'});
-        info.innerText = `АКТИВЕН: [C6E] VS ${data.enemy} | ${readableDate}`;
-        info.style.color = 'var(--success)';
-      } else {
-        info.innerText = "Таймер остановлен (Матч не назначен)";
-        info.style.color = 'var(--silver-muted)';
-      }
-    });
-
-    setupRosterListener();
-
-    listenToDoc(DB_COLLECTION, "about", (data) => {
-      const list = data.roadmap || [];
-      document.getElementById('roadmapList').innerHTML = list.map(r => `
-        <div class="list-item">
-          <div class="item-info"><b>${r.date} — ${r.title}</b><span class="item-sub">${r.desc || ''}</span></div>
-          <div class="item-actions">
-            <button class="btn-icon del" onclick="window.deleteItem('about', ${r.id}, 'roadmap')"><i class="fas fa-trash"></i></button>
+    <div class="so2-tab-grid" style="margin-top:0; margin-bottom:16px;">
+      <div class="mvp-card" style="border-left:3px solid ${st.delta >= 0 ? 'var(--success)' : 'var(--accent-light)'};">
+        <div>
+          <div style="font-size:9px; color:var(--silver-muted); font-weight:700;">ТЕКУЩИЙ LIVE K/D (С УЧЕТОМ ТАБА)</div>
+          <div style="font-family:var(--font-tech); font-size:20px; font-weight:900; color:#fff; margin-top:3px;">
+            ${st.liveKd} <span class="kd-delta ${st.delta >= 0 ? 'delta-up' : 'delta-down'}">${st.delta >= 0 ? '▲' : '▼'} ${st.deltaFormatted}</span>
           </div>
         </div>
-      `).join('');
-    });
+      </div>
 
-    listenToDoc(DB_COLLECTION, "media", (data) => {
-      if (data.videoId) document.getElementById('vidId').value = data.videoId;
-      const gallery = data.gallery || [];
-      document.getElementById('galleryList').innerHTML = gallery.map(g => `
-        <div class="list-item">
-          <div style="display:flex; align-items:center; gap:10px; min-width:0;">
-            <img src="${g.src}" onerror="this.src='logo.png'" style="width:38px; height:38px; object-fit:cover; border-radius:6px; border:1px solid var(--silver-border);">
-            <span class="item-sub" style="overflow:hidden; text-overflow:ellipsis;">${g.cap || 'Фото галереи'}</span>
-          </div>
-          <div class="item-actions">
-            <button class="btn-icon del" onclick="window.deleteItem('media', ${g.id}, 'gallery')"><i class="fas fa-trash"></i></button>
+      <div class="mvp-card" style="border-left:3px solid #ffb300;">
+        <div>
+          <div style="font-size:9px; color:var(--silver-muted); font-weight:700;">РЕЙТИНГ В ПАНТЕОНЕ (ГОНКА ЗА 900 GOLD)</div>
+          <div style="font-family:var(--font-tech); font-size:15px; font-weight:800; color:#ffb300; margin-top:3px;">
+            ${st.totalPantheonPts} PTS • Бустов на сайте: 🔥 ${st.fanBoosts}
           </div>
         </div>
-      `).join('');
-    });
+      </div>
+    </div>
 
-    listenToDoc(DB_COLLECTION, "practices", (data) => {
-      const list = data.list || [];
-      cachedPracs = list;
-      document.getElementById('kpi-pracs').innerText = list.length;
-      list.sort((a, b) => new Date(a.isoDate) - new Date(b.isoDate));
+    <div style="font-family:var(--font-tech); font-size:11px; color:var(--silver); margin-bottom:6px;">
+      <i class="fas fa-history text-accent"></i> ИСТОРИЯ ВЫСТУПЛЕНИЙ БОЙЦА В ТАБЕ:
+    </div>
+    <div class="so2-table-wrap">${logsHtml}</div>
+  `;
 
-      const freeCont = document.getElementById('pracFreeList');
-      const bookedCont = document.getElementById('pracBookedList');
-      freeCont.innerHTML = "";
-      bookedCont.innerHTML = "";
+  document.getElementById('c6e-analytics-modal').classList.add('active');
+};
 
-      if (list.length === 0) freeCont.innerHTML = "<span class='item-sub' style='padding:10px;'>Нет открытых слотов</span>";
+window.openWeeklyTeamReport = () => {
+  selectTab('pantheon', document.getElementById('btn-pantheon'));
+};
 
-      list.forEach(p => {
-        if (p.status === 'open') {
-          freeCont.innerHTML += `
-            <div class="list-item">
-              <div class="item-info">
-                <b><i class="far fa-clock text-accent"></i> ${p.displayTime}</b>
-                <span class="item-sub">Формат: ${p.format || 'BO1'} • Сервер: ${p.server || 'Москва'}</span>
-              </div>
-              <button class="btn-icon del" onclick="window.deletePracSlot(${p.id})"><i class="fas fa-trash"></i></button>
-            </div>`;
-        } else {
-          const clan = p.team ? p.team.clanName : 'Соперник';
-          const cap = p.team ? p.team.captain : '-';
-          const tg = p.team ? p.team.contact : '';
-          const cleanTg = tg.replace('@', '');
-          const mapsList = (p.team && p.team.maps) ? p.team.maps.join(', ') : 'Любая';
-          const pIp = (p.team && p.team.ip) ? p.team.ip.replace(/'/g, "\\'") : '';
-          const pDev = (p.team && p.team.deviceId) ? p.team.deviceId.replace(/'/g, "\\'") : '';
-          const safeClan = clan.replace(/'/g, "\\'");
+onSnapshot(doc(db, DB_COLLECTION, "roster_main"), (s) => {
+  mainRosterData = (s.exists() && s.data().list) ? s.data().list : [];
+  renderAllRosters();
+  renderPantheonSection();
+});
 
-          bookedCont.innerHTML += `
-            <div class="list-item" style="background: rgba(0,0,0,0.55); border: 1px solid var(--accent-light); flex-direction:column; align-items: flex-start; gap:8px; padding:12px;">
-              <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
-                <b style="font-size:13px; color:#fff;">⚔️ [C6E] VS ${clan}</b>
-                <span style="font-size:9px; background:var(--accent); padding:2px 6px; border-radius:4px; font-family:var(--font-tech);">${p.format || 'BO1'}</span>
-              </div>
-              <div class="item-sub" style="color:var(--silver);">
-                📅 ${p.displayTime}<br>
-                👤 Капитан: <b>${cap}</b> (ID: ${p.team ? p.team.capId : '-'})<br>
-                🗺 Карты: <span style="color:var(--accent-light);">${mapsList}</span>
-                ${(pIp || pDev) ? `<br><span style="font-family:monospace; font-size:9px; color:var(--silver-muted);">🛡 IP: ${pIp || '—'} | ID: ${pDev || '—'}</span>` : ''}
-              </div>
-              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; width:100%; margin-top:4px;">
-                <a href="https://t.me/${cleanTg}" target="_blank" style="text-decoration:none;">
-                  <button type="button" class="action-btn secondary" style="padding:7px; margin:0; font-size:9px;"><i class="fab fa-telegram"></i> НАПИСАТЬ ${tg}</button>
-                </a>
-                <button type="button" class="action-btn secondary" style="padding:7px; margin:0; font-size:9px;" onclick="window.syncPracToSchedule(${p.id})"><i class="fas fa-calendar-check"></i> В РАСПИСАНИЕ</button>
-                <button type="button" class="action-btn" style="padding:7px; margin:0; font-size:9px;" onclick="window.movePracToHistory(${p.id})"><i class="fas fa-trophy"></i> В ИСТОРИЮ МАТЧЕЙ</button>
-                <div style="display:flex; gap:4px;">
-                  ${(pIp || pDev) ? `<button type="button" class="action-btn secondary" style="padding:7px; margin:0; font-size:9px; color:#ff5263; flex:1;" onclick="window.banUserQuick('${pIp}', '${pDev}', '${safeClan}')"><i class="fas fa-ban"></i> БАН</button>` : ''}
-                  <button type="button" class="action-btn secondary" style="padding:7px; margin:0; font-size:9px; color:var(--accent-light); flex:1;" onclick="window.deletePracSlot(${p.id})"><i class="fas fa-trash"></i></button>
-                </div>
-              </div>
-            </div>`;
-        }
-      });
-    });
+onSnapshot(doc(db, DB_COLLECTION, "roster_reserve"), (s) => {
+  reserveRosterData = (s.exists() && s.data().list) ? s.data().list : [];
+  renderAllRosters();
+  renderPantheonSection();
+});
 
-    listenToDoc(DB_COLLECTION, "history", (data) => {
-      const list = data.list || [];
-      cachedHistory = list;
-      let wins = 0;
-      list.forEach(m => { if (parseInt(m.our, 10) > parseInt(m.their, 10)) wins++; });
-      const wr = list.length > 0 ? Math.round((wins / list.length) * 100) : 0;
-      document.getElementById('kpi-winrate').innerText = `${wr}%`;
-      renderAdminPantheonPanel();
+// =========================================================
+// 5. НОВОСТИ, ТАЙМЕР, ПРАКИ И РАСПИСАНИЕ
+// =========================================================
 
-      const sorted = [...list].sort((a,b) => b.id - a.id);
-      document.getElementById('historyList').innerHTML = sorted.map(h => {
-        const isWin = parseInt(h.our, 10) > parseInt(h.their, 10);
-        const hasProof = h.proofImg && h.proofImg.length > 5;
-        return `
-          <div class="list-item" style="border-left-color:${isWin ? 'var(--success)' : 'var(--accent-light)'};">
-            <div style="display:flex; align-items:center; gap:10px; min-width:0;">
-              ${hasProof ? `<img src="${h.proofImg}" style="width:48px; height:32px; object-fit:cover; border-radius:4px; border:1px solid var(--success);">` : ''}
-              <div class="item-info">
-                <b style="color: ${isWin ? 'var(--success)' : 'var(--accent-light)'}">
-                  [C6E] (${h.our}) : (${h.their}) ${h.enemy} ${hasProof ? '📸' : ''}
-                </b>
-                <span class="item-sub">${h.tour} • ${h.map || 'Dune'} • ${h.server || 'Россия, Москва'} ${h.mvp ? '• ⭐ ' + h.mvp : ''}</span>
-              </div>
-            </div>
-            <div class="item-actions">
-              <button class="btn-icon tg" onclick="window.publishMatchItemToTG(${h.id})" title="Опубликовать этот матч с карточкой в ТГК"><i class="fab fa-telegram-plane"></i></button>
-              <button class="btn-icon del" onclick="window.deleteItem('history', ${h.id})" title="Удалить"><i class="fas fa-trash"></i></button>
-            </div>
+// ============================================================================
+// АВТО-СИСТЕМА ОБНОВЛЕНИЙ САЙТА И УВЕДОМЛЕНИЙ ОТ РАЗРАБОТЧИКА KAS (@kas_0ff)
+// ============================================================================
+const DEFAULT_KAS_RELEASE = {
+  id: 1763000450000,
+  versionId: "c6e_release_v0_5_0_global",
+  versionLabel: "v0.5.0 // PROFILES, CHAT, SHOP & THEMES",
+  date: "13.11.2026",
+  tag: "ОБНОВЛЕНИЕ",
+  author: "Kas (@kas_0ff)",
+  title: "🚀 МЕГА-ОБНОВЛЕНИЕ ПОРТАЛА v0.5.0 ОТ KAS: ИГРОВЫЕ ПРОФИЛИ, ОБЩИЙ ЧАТ, МАГАЗИН [C6E], ТЕМЫ И ПАНТЕОН 900 GOLD!",
+  text: `
+    <div style="margin:0 0 16px 0; border-radius:12px; overflow:hidden; border:1px solid rgba(255,179,0,0.45); background:linear-gradient(135deg, rgba(158,27,40,0.35) 0%, rgba(10,11,15,0.98) 60%, rgba(255,179,0,0.16) 100%); padding:18px; position:relative; box-shadow:0 12px 32px rgba(0,0,0,0.65);">
+      <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+        <img src="logo.png" alt="C6E" onerror="this.style.display='none'" style="width:68px; height:68px; object-fit:contain; border-radius:14px; border:1px solid rgba(255,179,0,0.5); background:rgba(0,0,0,0.5); padding:6px;">
+        <div style="flex:1; min-width:200px;">
+          <div style="display:inline-flex; align-items:center; gap:6px; background:rgba(255,179,0,0.15); border:1px solid #ffb300; color:#ffb300; font-family:'Orbitron',sans-serif; font-size:9px; font-weight:800; padding:3px 10px; border-radius:20px; letter-spacing:1px; margin-bottom:6px;">
+            ⚡ OFFICIAL PORTAL UPDATE v0.5.0 • BY KAS
           </div>
-        `;
-      }).join('');
-    });
-
-    // СИНХРОНИЗАЦИЯ ПРОФИЛЕЙ ГОСТЕЙ, ЗАЯВОК В [C6E], ЧАТА И МАГАЗИНА v0.5.0
-    listenToDoc(DB_COLLECTION, "profiles", (data) => {
-      adminProfilesMain = Array.isArray(data.list) ? data.list : [];
-      refreshMergedAdminProfiles();
-    });
-
-    listenToDoc(DB_COLLECTION, "global_chat", (data) => {
-      const cont = document.getElementById('adminChatMessagesList');
-      if (!cont) return;
-      const msgs = Array.isArray(data.messages) ? data.messages : [];
-      cont.innerHTML = msgs.length === 0
-        ? '<span class="item-sub">Сообщений в чате пока нет</span>'
-        : msgs.slice().reverse().map(m => `
-            <div class="list-item">
-              <div class="item-info">
-                <b>${m.countryFlag || '🌍'} ${m.clanTag ? '[' + m.clanTag + '] ' : ''}${m.nick} <span style="font-size:9px; color:var(--silver-muted);">${m.timeStr || ''}</span></b>
-                <span class="item-sub" style="color:#eee;">${m.text}</span>
-              </div>
-              <button class="btn-icon del" onclick="window.deleteSingleChatMsg(${m.id})"><i class="fas fa-trash"></i></button>
-            </div>
-          `).join('');
-    });
-
-    listenToDoc(DB_COLLECTION, "shop_config", (data) => {
-      const tInp = document.getElementById('admShopTitle');
-      const hInp = document.getElementById('admShopHype');
-      const wEl  = document.getElementById('admShopWaitCount');
-      if (tInp && !tInp.value && data.title) tInp.value = data.title;
-      if (hInp && !hInp.value && data.hypeText) hInp.value = data.hypeText;
-      if (wEl) wEl.innerText = String(Array.isArray(data.waitlist) ? data.waitlist.length : 0);
-    });
-
-    listenToDoc(DB_COLLECTION, "reviews", (data) => {
-      if (Array.isArray(data.c6e_profiles)) {
-        adminProfilesMirrorRev = data.c6e_profiles;
-        refreshMergedAdminProfiles();
-      }
-      const list = data.list || [];
-      document.getElementById('reviewsList').innerHTML = list.slice().reverse().map(r => {
-        const rIp = (r.ip || '').replace(/'/g, "\\'");
-        const rDev = (r.deviceId || '').replace(/'/g, "\\'");
-        const rNick = (r.nick || 'Автор').replace(/'/g, "\\'");
-        return `
-          <div class="list-item" style="align-items: flex-start;">
-            <div class="item-info">
-              <b>${r.nick} <span style="color:var(--accent-light);">➔ ${r.target}</span></b>
-              <div class="item-sub" style="font-size:11px; margin-top:3px; color:#ddd;">${r.text}</div>
-              ${(r.ip || r.deviceId) ? `<div class="item-sub" style="font-family:monospace; font-size:9px; margin-top:3px;">🛡 IP: ${r.ip || '—'} | ID: ${r.deviceId || '—'}</div>` : ''}
-            </div>
-            <div class="item-actions">
-              ${(r.ip || r.deviceId) ? `<button class="btn-icon ban" title="Забанить автора" onclick="window.banUserQuick('${rIp}', '${rDev}', '${rNick}')"><i class="fas fa-ban"></i></button>` : ''}
-              <button class="btn-icon del" title="Удалить отзыв" onclick="window.deleteItem('reviews', ${r.id})"><i class="fas fa-trash"></i></button>
-            </div>
+          <div style="font-family:'Orbitron',sans-serif; font-size:16px; font-weight:900; color:#ffffff; letter-spacing:0.5px;">
+            CYBER <span style="color:#d42638;">6</span> ESPORTS // <span style="color:#ffb300;">PANTHEON ERA</span>
           </div>
-        `;
-      }).join('');
-    });
-  }
-
-  async function updateArray(docName, arrayField, item) {
-    try {
-      const ref = doc(db, DB_COLLECTION, docName);
-      const snap = await getDoc(ref);
-      if (!snap.exists()) await setDoc(ref, { [arrayField]: [item] });
-      else await updateDoc(ref, { [arrayField]: arrayUnion(item) });
-      return true;
-    } catch (e) {
-      console.error(e);
-      showToast("Ошибка сохранения!", true);
-      return false;
-    }
-  }
-
-  window.deleteItem = async (docName, id, arrayField = "list") => {
-    if (!confirm("Точно удалить эту запись?")) return;
-    try {
-      const ref = doc(db, DB_COLLECTION, docName);
-      const snap = await getDoc(ref);
-      if (snap.exists()) {
-        const currentList = snap.data()[arrayField] || [];
-        const data = currentList.filter(i => i.id !== id);
-        await setDoc(ref, { [arrayField]: data }, { merge: true });
-        showToast("Запись удалена");
-      }
-    } catch (e) { showToast("Ошибка удаления", true); }
-  };
-
-  window.addHistory = async () => {
-    const enemy = document.getElementById('hEnemy').value.trim();
-    if (!enemy) return showToast("Укажите команду соперника!", true);
-
-    const ourPlayers = readTableData('ourPlayersTbody');
-    const enemyPlayers = readTableData('enemyPlayersTbody');
-
-    const item = {
-      id: Date.now(),
-      date: new Date().toLocaleDateString('ru-RU'),
-      enemy,
-      tour: document.getElementById('hTour').value.trim() || "Турнир",
-      map: document.getElementById('hMap').value || "Dune",
-      server: document.getElementById('hServer').value.trim() || "Россия, Москва",
-      our: document.getElementById('hOur').value || 0,
-      ourSide: document.getElementById('hOurSide').value || "АТАКА (Т)",
-      their: document.getElementById('hTheir').value || 0,
-      theirSide: document.getElementById('hTheirSide').value || "ОБОРОНА (СТ)",
-      mvp: document.getElementById('hMvp').value.trim(),
-      proofImg: normalizeImageUrl(document.getElementById('hProofUrl').value),
-      players: ourPlayers,
-      enemyPlayers: enemyPlayers
-    };
-
-    if (await updateArray("history", "list", item)) {
-      showToast("Матч сохранен на сайте!");
-      if (document.getElementById('tgAutoPostMatch').checked) {
-        await sendMatchObjectToTG(item);
-      }
-      document.getElementById('hProofUrl').value = '';
-      rawFullResProofDataUrl = null;
-      updateProofPreview('');
-    }
-  };
-
-  window.setQuickPracTime = (daysAdd, hour) => {
-    const d = new Date();
-    d.setDate(d.getDate() + daysAdd);
-    d.setHours(hour, 0, 0, 0);
-    const pad = (n) => String(n).padStart(2, '0');
-    const formatted = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(hour)}:00`;
-    document.getElementById('pracDateInput').value = formatted;
-    showToast(`Выбрано: ${daysAdd === 0 ? 'Сегодня' : 'Завтра'} в ${hour}:00`);
-  };
-
-  window.createPracSlot = async () => {
-    const dateInput = document.getElementById('pracDateInput').value;
-    const format = document.getElementById('pracFormatInput').value;
-    const server = document.getElementById('pracServerInput').value;
-    const imgUrl = normalizeImageUrl(document.getElementById('pracTgImg').value);
-    const autoSch = document.getElementById('pracAutoSchedule').checked;
-
-    if (!dateInput) return showToast("Выберите дату и время прака!", true);
-
-    const localDate = new Date(dateInput);
-    const optionsDate = { timeZone: 'Europe/Moscow', day: 'numeric', month: 'long' };
-    const optionsTime = { timeZone: 'Europe/Moscow', hour: '2-digit', minute: '2-digit' };
-
-    const displayTime = localDate.toLocaleString('ru-RU', {
-      timeZone: 'Europe/Moscow', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
-    }) + " (МСК)";
-
-    const tgDate = localDate.toLocaleDateString('ru-RU', optionsDate);
-    const tgTime = localDate.toLocaleTimeString('ru-RU', optionsTime);
-
-    const newSlot = { 
-      id: Date.now(), 
-      isoDate: localDate.toISOString(),
-      displayTime, format, server, status: 'open', team: null 
-    };
-
-    if (await updateArray("practices", "list", newSlot)) {
-      if (autoSch) {
-        const weekday = localDate.toLocaleDateString('ru-RU', { weekday: 'long' }).toUpperCase();
-        const shortDate = localDate.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' });
-        await updateArray("schedule", "list", {
-          id: Date.now() + 1,
-          day: `${weekday} / ${shortDate}`,
-          time: tgTime,
-          type: 'CW',
-          event: `Прак [C6E] (${format}) — Свободный слот`,
-          status: 'upcoming'
-        });
-      }
-
-      const htmlPost =
-        `🚀 <b>CYBER 6 ESPORTS [C6E] ИЩЕТ ПРАК (${format})!</b>\n` +
-        `────────────────────\n` +
-        `📅 <b>Дата:</b> ${tgDate}\n` +
-        `⏰ <b>Время:</b> <code>${tgTime} МСК</code>\n` +
-        `🌍 <b>Сервер:</b> ${server}\n` +
-        `────────────────────\n` +
-        `✅ Слот открыт! Забронировать время и выбрать карты можно на нашем сайте:\n` +
-        `🔗 <a href="${TG_CONFIG.siteUrl}">ЗАБРОНИРОВАТЬ ПРАК С [C6E]</a>`;
-
-      await publishToTelegramChannel({
-        htmlText: htmlPost,
-        imageSource: imgUrl || null,
-        cardConfig: {
-          badge: `OPEN SCRIM // ${format}`,
-          title: '[C6E] ИЩЕТ СОПЕРНИКА НА ПРАК',
-          subtitle: `ДАТА: ${tgDate.toUpperCase()}  |  ВРЕМЯ: ${tgTime} МСК`,
-          lines: [
-            `Формат матча: ${format}`,
-            `Сервер / Регион: ${server}`,
-            `Бронирование слота и выбор карт открыты на сайте [C6E]`
-          ]
-        }
-      });
-
-      showToast("Слот открыт и баннер отправлен в ТГК!");
-      document.getElementById('pracDateInput').value = ''; 
-      document.getElementById('pracTgImg').value = ''; 
-    }
-  };
-
-  window.syncPracToSchedule = async (id) => {
-    const p = cachedPracs.find(item => item.id === id);
-    if (!p || !p.team) return;
-    const d = new Date(p.isoDate);
-    const weekday = d.toLocaleDateString('ru-RU', { weekday: 'long' }).toUpperCase();
-    const shortDate = d.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' });
-    const timeStr = d.toLocaleTimeString('ru-RU', { timeZone: 'Europe/Moscow', hour: '2-digit', minute: '2-digit' });
-
-    await updateArray("schedule", "list", {
-      id: Date.now(),
-      day: `${weekday} / ${shortDate}`,
-      time: timeStr,
-      type: 'CW',
-      event: `Прак: [C6E] VS ${p.team.clanName} (${p.format || 'BO1'})`,
-      status: 'upcoming'
-    });
-    showToast(`Матч VS ${p.team.clanName} добавлен в Расписание!`);
-  };
-
-  window.movePracToHistory = (id) => {
-    const p = cachedPracs.find(item => item.id === id);
-    if (!p || !p.team) return;
-    document.getElementById('hEnemy').value = p.team.clanName;
-    document.getElementById('hTour').value = `Прак (${p.format || 'BO1'})`;
-    if (p.team.maps && p.team.maps.length > 0) {
-      document.getElementById('hMap').value = p.team.maps[0];
-    }
-    showToast(`Соперник ${p.team.clanName} перенесен в Таб Истории матчей!`);
-    document.getElementById('hEnemy').scrollIntoView({ behavior: 'smooth', block: 'center' });
-  };
-
-  window.deletePracSlot = async (id) => {
-    await window.deleteItem("practices", id, "list");
-  };
-
-  window.setQuickScheduleDay = (dayName) => {
-    const now = new Date();
-    const shortDate = now.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' });
-    document.getElementById('schDay').value = `${dayName} / ${shortDate}`;
-  };
-
-  window.addScheduleItem = async () => {
-    const day = document.getElementById('schDay').value.trim();
-    const time = document.getElementById('schTime').value.trim();
-    const type = document.getElementById('schType').value;
-    const event = document.getElementById('schEvent').value.trim();
-    const status = document.getElementById('schStatus').value;
-
-    if (!day || !event) return showToast("Укажите день и название события!", true);
-
-    const item = { id: Date.now(), day, time: time || "18:00", type, event, status };
-    if (await updateArray("schedule", "list", item)) {
-      showToast("Событие добавлено в расписание!");
-      document.getElementById('schEvent').value = '';
-    }
-  };
-
-  window.cycleScheduleStatus = async (id) => {
-    const order = ['upcoming', 'live', 'done', 'canceled'];
-    const ref = doc(db, DB_COLLECTION, "schedule");
-    const snap = await getDoc(ref);
-    if (!snap.exists()) return;
-    let list = snap.data().list || [];
-    list = list.map(item => {
-      if (item.id === id) {
-        const nextIdx = (order.indexOf(item.status || 'upcoming') + 1) % order.length;
-        return { ...item, status: order[nextIdx] };
-      }
-      return item;
-    });
-    await setDoc(ref, { list }, { merge: true });
-    showToast("Статус события обновлен!");
-  };
-
-  function appendVisualHtml(htmlSnippet, isBlock = false) {
-    const editor = document.getElementById('newsVisualEditor');
-    editor.focus();
-    if (isBlock) editor.innerHTML += htmlSnippet + `<div><br></div>`;
-    else editor.innerHTML += htmlSnippet + `&nbsp;`;
-  }
-
-  window.clearNewsEditor = () => {
-    if (!confirm("Очистить текст новости?")) return;
-    document.getElementById('newsVisualEditor').innerHTML = '';
-    closeHelper();
-  };
-
-  window.openHelper = (type) => {
-    const box = document.getElementById('editorHelper');
-    const sel = window.getSelection ? window.getSelection().toString().trim() : '';
-    if (sel.length > 0 && (type === 'bold' || type === 'italic')) {
-      document.execCommand(type, false, null);
-      return;
-    }
-    box.classList.add('active');
-
-    if (type === 'bold') {
-      box.innerHTML = `<label style="margin-top:0; color:var(--accent-light);">ЖИРНЫЙ ТЕКСТ</label><input type="text" id="hlpBoldText" placeholder="Введите текст..." value="${sel}"><div style="display:flex; gap:8px; margin-top:10px;"><button type="button" class="action-btn" style="margin:0; padding:10px;" onclick="confirmHelperInline('bold')">ВСТАВИТЬ</button><button type="button" class="action-btn secondary" style="margin:0; padding:10px; width:auto;" onclick="closeHelper()">Х</button></div>`;
-    } else if (type === 'italic') {
-      box.innerHTML = `<label style="margin-top:0; color:var(--accent-light);">КУРСИВ</label><input type="text" id="hlpItalicText" placeholder="Введите текст..." value="${sel}"><div style="display:flex; gap:8px; margin-top:10px;"><button type="button" class="action-btn" style="margin:0; padding:10px;" onclick="confirmHelperInline('italic')">ВСТАВИТЬ</button><button type="button" class="action-btn secondary" style="margin:0; padding:10px; width:auto;" onclick="closeHelper()">Х</button></div>`;
-    } else if (type === 'code') {
-      box.innerHTML = `<label style="margin-top:0; color:var(--accent-light);">ПЛАШКА КОДА</label><input type="text" id="hlpCodeText" placeholder="Например: [C6E] WIN" value="${sel}"><div style="display:flex; gap:8px; margin-top:10px;"><button type="button" class="action-btn" style="margin:0; padding:10px;" onclick="confirmHelperInline('code')">ВСТАВИТЬ</button><button type="button" class="action-btn secondary" style="margin:0; padding:10px; width:auto;" onclick="closeHelper()">Х</button></div>`;
-    } else if (type === 'quote') {
-      box.innerHTML = `<label style="margin-top:0; color:var(--accent-light);">ЦИТАТА</label><input type="text" id="hlpQuoteText" placeholder="Текст цитаты..." value="${sel}"><input type="text" id="hlpQuoteAuthor" placeholder="Автор (необязательно)" style="margin-top:8px;"><div style="display:flex; gap:8px; margin-top:10px;"><button type="button" class="action-btn" style="margin:0; padding:10px;" onclick="confirmHelperQuote()">ВСТАВИТЬ</button><button type="button" class="action-btn secondary" style="margin:0; padding:10px; width:auto;" onclick="closeHelper()">Х</button></div>`;
-    } else if (type === 'link') {
-      box.innerHTML = `<label style="margin-top:0; color:var(--accent-light);">КНОПКА-ССЫЛКА</label><input type="text" id="hlpLinkTitle" placeholder="Текст кнопки" value="${sel || 'ПЕРЕЙТИ ПО ССЫЛКЕ'}"><input type="url" id="hlpLinkUrl" placeholder="https://t.me/..." style="margin-top:8px;"><div style="display:flex; gap:8px; margin-top:10px;"><button type="button" class="action-btn" style="margin:0; padding:10px;" onclick="confirmHelperLink()">ВСТАВИТЬ</button><button type="button" class="action-btn secondary" style="margin:0; padding:10px; width:auto;" onclick="closeHelper()">Х</button></div>`;
-    } else if (type === 'image') {
-      box.innerHTML = `<label style="margin-top:0; color:var(--accent-light);">ФОТО В НОВОСТЬ</label><div class="upload-row" style="margin-top:6px;"><input type="text" id="hlpImgUrl" placeholder="URL фото или с телефона ➔"><button type="button" class="btn-upload-phone" onclick="pickImageForInput('hlpImgUrl')"><i class="fas fa-mobile-alt"></i> С телефона</button></div><div style="display:flex; gap:8px; margin-top:10px;"><button type="button" class="action-btn" style="margin:0; padding:10px;" onclick="confirmHelperImage()">ВСТАВИТЬ ФОТО</button><button type="button" class="action-btn secondary" style="margin:0; padding:10px; width:auto;" onclick="closeHelper()">Х</button></div>`;
-    }
-  };
-
-  window.closeHelper = () => {
-    const box = document.getElementById('editorHelper');
-    box.classList.remove('active');
-    box.innerHTML = '';
-  };
-
-  window.confirmHelperInline = (type) => {
-    if (type === 'bold') {
-      const val = document.getElementById('hlpBoldText').value.trim();
-      if (val) appendVisualHtml(`<b style="color:#ffffff; font-weight:800;">${val}</b>`, false);
-    } else if (type === 'italic') {
-      const val = document.getElementById('hlpItalicText').value.trim();
-      if (val) appendVisualHtml(`<i style="color:#e4e4e2; font-style:italic;">${val}</i>`, false);
-    } else if (type === 'code') {
-      const val = document.getElementById('hlpCodeText').value.trim();
-      if (val) appendVisualHtml(`<span contenteditable="false" style="display:inline-block; background:#1a1c23; color:#00e676; padding:2px 8px; margin:2px; border-radius:4px; border:1px solid rgba(0,230,118,0.3); font-family:monospace; font-size:12px;">${val}</span>`, false);
-    }
-    closeHelper();
-  };
-
-  window.confirmHelperQuote = () => {
-    const qText = document.getElementById('hlpQuoteText').value.trim();
-    const qAuthor = document.getElementById('hlpQuoteAuthor').value.trim();
-    if (!qText) return;
-    const authorHtml = qAuthor ? `<div style="font-size:10px; color:#b82535; font-family:'Orbitron',sans-serif; font-style:normal; font-weight:700; margin-top:6px; text-transform:uppercase;">— ${qAuthor}</div>` : '';
-    appendVisualHtml(`<div contenteditable="false" style="margin:12px 0; padding:12px 16px; background:linear-gradient(90deg, rgba(158,27,40,0.18), rgba(255,255,255,0.02)); border-left:3px solid #d42638; border-radius:0 8px 8px 0; font-style:italic; color:#e4e4e2;">“${qText}”${authorHtml}</div>`, true);
-    closeHelper();
-  };
-
-  window.confirmHelperLink = () => {
-    const title = document.getElementById('hlpLinkTitle').value.trim() || "ОТКРЫТЬ ССЫЛКУ";
-    let url = document.getElementById('hlpLinkUrl').value.trim();
-    if (!url) return;
-    if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
-    appendVisualHtml(`<a href="${url}" target="_blank" contenteditable="false" style="display:inline-flex; align-items:center; gap:6px; margin:6px 4px 6px 0; padding:7px 14px; background:linear-gradient(135deg, rgba(158,27,40,0.35), rgba(20,21,25,0.95)); border:1px solid #d42638; border-radius:6px; color:#ffffff; font-family:'Orbitron',sans-serif; font-size:10px; font-weight:700; text-decoration:none; letter-spacing:1px;"><i class="fas fa-external-link-alt" style="color:#d42638;"></i> ${title}</a>`, false);
-    closeHelper();
-  };
-
-  window.confirmHelperImage = () => {
-    const rawUrl = document.getElementById('hlpImgUrl').value.trim();
-    if (!rawUrl) return;
-    const finalUrl = normalizeImageUrl(rawUrl);
-    appendVisualHtml(`<div contenteditable="false" style="margin:12px 0; border-radius:10px; overflow:hidden; border:1px solid rgba(228,228,226,0.16); background:#0b0c0e;"><img src="${finalUrl}" alt="C6E News" style="width:100%; max-height:420px; object-fit:cover; display:block;" onerror="this.onerror=null; this.src='logo.png';"></div>`, true);
-    closeHelper();
-  };
-
-  // Генерация фирменного 1280x720 баннера обновления от лица Разработчика Kas
-  async function buildKasReleaseBannerDataUrl(ver, featuresList) {
-    try {
-      const blob = await generateC6EBrandCardBlob({
-        badge: `OFFICIAL SITE UPDATE ${ver.toUpperCase()} // DEVELOPED BY KAS (@kas_0ff)`,
-        title: `ОБНОВЛЕНИЕ ПОРТАЛА CYBER 6 ESPORTS ${ver.toUpperCase()}`,
-        subtitle: 'НОВЫЕ ВОЗМОЖНОСТИ ДЛЯ БОЙЦОВ СОСТАВА И ГОСТЕЙ САЙТА',
-        lines: featuresList.slice(0, 5)
-      });
-      if (!blob) return '';
-      return await new Promise((res) => {
-        const reader = new FileReader();
-        reader.onloadend = () => res(reader.result || '');
-        reader.readAsDataURL(blob);
-      });
-    } catch (e) {
-      return '';
-    }
-  }
-
-  async function buildKasUpdatePayload() {
-    const ver = (document.getElementById('relVersionInp')?.value || 'v4.5').trim();
-    const customNote = (document.getElementById('relCustomNote')?.value || '').trim();
-    const incPantheon = document.getElementById('chkRelPantheon')?.checked !== false;
-    const incBoosts   = document.getElementById('chkRelBoosts')?.checked !== false;
-    const incLiveKd   = document.getElementById('chkRelLiveKd')?.checked !== false;
-    const incDualTab  = document.getElementById('chkRelDualTab')?.checked !== false;
-    const incPracs    = document.getElementById('chkRelPracs')?.checked !== false;
-
-    const cardLines = [];
-    if (incPantheon) cardLines.push('👑 ПАНТЕОН [C6E]: Гонка за 900 Голды (🥇 500G / 🥈 250G / 🥉 150G)');
-    if (incBoosts)   cardLines.push('🔥 БУСТ БОЙЦА (+25 PTS): Поддержка игроков на сайте каждые 6 часов');
-    if (incLiveKd)   cardLines.push('📊 LIVE K/D & ДОСЬЕ: Авто-пересчет скилла, винрейта и формы после игр');
-    if (incDualTab)  cardLines.push('🏆 ДВОЙНОЙ ТАБ 5v5: Полная статистика У/П/С/Счёт/Пинг и скрины матчей');
-    if (incPracs)    cardLines.push('⚔️ CW ПРАКИ & C6E SHIELD: Запись на матчи и защита портала');
-    if (customNote)  cardLines.push(`⚡ ДОПОЛНИТЕЛЬНО: ${customNote}`);
-
-    const bannerDataUrl = await buildKasReleaseBannerDataUrl(ver, cardLines);
-
-    const title = `🚀 ГЛОБАЛЬНОЕ ОБНОВЛЕНИЕ САЙТА ${ver.toUpperCase()} ОТ KAS: ${incPantheon ? '«ПАНТЕОН» НА 900 ГОЛДЫ, БУСТЫ И LIVE-ТАБ!' : 'НОВЫЕ ФУНКЦИИ ПОРТАЛА [C6E]!'}`;
-    const blocks = [];
-
-    if (bannerDataUrl) {
-      blocks.push(`
-        <div style="margin:0 0 16px 0; border-radius:12px; overflow:hidden; border:1px solid rgba(255,179,0,0.45); background:#0b0c0e; box-shadow:0 12px 32px rgba(0,0,0,0.65);">
-          <img src="${bannerDataUrl}" alt="C6E Update ${ver}" style="width:100%; max-height:380px; object-fit:cover; display:block;" onerror="this.onerror=null; this.src='logo.png';">
-        </div>
-      `);
-    } else {
-      blocks.push(`
-        <div style="margin:0 0 16px 0; border-radius:12px; overflow:hidden; border:1px solid rgba(255,179,0,0.45); background:linear-gradient(135deg, rgba(158,27,40,0.35), rgba(10,11,15,0.98)); padding:16px; display:flex; align-items:center; gap:14px;">
-          <img src="logo.png" alt="C6E" style="width:64px; height:64px; object-fit:contain; border-radius:12px; border:1px solid #ffb300;">
-          <div>
-            <div style="font-family:'Orbitron',sans-serif; font-size:10px; color:#ffb300; font-weight:800;">⚡ OFFICIAL PORTAL UPDATE ${ver.toUpperCase()} • BY KAS</div>
-            <div style="font-family:'Orbitron',sans-serif; font-size:16px; color:#fff; font-weight:900;">CYBER 6 ESPORTS // НОВАЯ ВЕРСИЯ САЙТА</div>
+          <div style="font-size:11px; color:#aaa; margin-top:3px;">
+            Разработчик и Основатель: <strong style="color:#fff;">Kas (Джораев Неджи)</strong> • <em>Официальный релиз для игроков и гостей портала</em>
           </div>
         </div>
-      `);
-    }
+      </div>
+    </div>
 
-    blocks.push(`
-      <p style="margin:0 0 12px 0; font-size:13.5px; color:#e4e4e2; line-height:1.7;">
-        Салам всем бойцам нашего состава и гостям портала! На связи <strong>Kas</strong> — основатель и главный разработчик <strong>CYBER 6 ESPORTS <code>[C6E]</code></strong>. Я рад представить свежее обновление нашего официального сайта версии <code style="background:rgba(212,38,56,0.18); border:1px solid rgba(212,38,56,0.45); padding:2px 7px; border-radius:4px; color:#ff6b7a; font-family:'Orbitron',sans-serif; font-size:11px;">${ver}</code>, созданное специально для игроков и болельщиков нашего тега!
+    <p style="margin:0 0 12px 0; font-size:13.5px; color:#e4e4e2; line-height:1.7;">
+      Салам всем бойцам нашего состава и гостям портала! На связи <strong>Kas</strong> — основатель и главный разработчик <strong>CYBER 6 ESPORTS <code>[C6E]</code></strong>. Сегодня на нашем официальном сайте вышло крупное обновление <code style="background:rgba(212,38,56,0.18); border:1px solid rgba(212,38,56,0.45); padding:2px 7px; border-radius:4px; color:#ff6b7a; font-family:'Orbitron',sans-serif; font-size:11px;">v0.5.0</code>, которое выводит соревновательную систему клана на совершенно новый уровень!
+    </p>
+
+    <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:14px 16px; margin:14px 0;">
+      <div style="font-family:'Orbitron',sans-serif; font-size:12px; font-weight:800; color:#ffb300; margin-bottom:10px; letter-spacing:1px;">
+        👑 1. НОВЫЙ РАЗДЕЛ «ПАНТЕОН [C6E]» — ГОНКА ЗА 900 ГОЛДЫ КАЖДУЮ НЕДЕЛЮ
+      </div>
+      <p style="margin:0 0 8px 0; font-size:13px; color:#ccc; line-height:1.65;">
+        На сайте открыт элитный зал славы и еженедельной гонки <strong>«ПАНТЕОН»</strong>! Каждое воскресенье в <code style="background:rgba(255,255,255,0.08); padding:2px 6px; border-radius:4px; color:#fff;">23:59 (МСК)</code> тройка лучших бойцов недели получает личный <em>Бонус от Основателя Kas</em>:
       </p>
-    `);
+      <div style="display:flex; gap:8px; flex-wrap:wrap; margin:10px 0;">
+        <span style="background:rgba(255,179,0,0.16); border:1px solid #ffb300; color:#ffb300; font-family:'Orbitron',sans-serif; font-size:11px; font-weight:800; padding:5px 11px; border-radius:6px;">🥇 1 МЕСТО — 500 GOLD</span>
+        <span style="background:rgba(228,228,226,0.12); border:1px solid #e4e4e2; color:#ffffff; font-family:'Orbitron',sans-serif; font-size:11px; font-weight:800; padding:5px 11px; border-radius:6px;">🥈 2 МЕСТО — 250 GOLD</span>
+        <span style="background:rgba(205,127,50,0.16); border:1px solid #cd7f32; color:#ffb074; font-family:'Orbitron',sans-serif; font-size:11px; font-weight:800; padding:5px 11px; border-radius:6px;">🥉 3 МЕСТО — 150 GOLD</span>
+      </div>
+      <p style="margin:6px 0 0 0; font-size:12.5px; color:#bbb; line-height:1.6;">
+        Рейтинг считается автоматически по умной формуле <code style="background:rgba(255,179,0,0.15); padding:2px 6px; border-radius:4px; color:#ffb300;">PTS</code>: учитывается твой <strong>LIVE K/D</strong>, <em>еженедельный прирост скилла (<code>Δ K/D</code>)</em>, сыгранные матчи и награды <code>MVP</code> в Табах, а также поддержка на сайте!
+      </p>
+    </div>
 
-    if (incPantheon) {
-      blocks.push(`
-        <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:14px 16px; margin:12px 0;">
-          <div style="font-family:'Orbitron',sans-serif; font-size:12px; font-weight:800; color:#ffb300; margin-bottom:8px; letter-spacing:1px;">
-            👑 НОВЫЙ РАЗДЕЛ «ПАНТЕОН [C6E]» — ЕЖЕНЕДЕЛЬНАЯ ГОНКА ЗА 900 ГОЛДЫ
-          </div>
-          <p style="margin:0 0 8px 0; font-size:13px; color:#ccc; line-height:1.65;">
-            На сайте запущен интерактивный рейтинг лучших игроков недели <strong>«ПАНТЕОН»</strong>! Каждое воскресенье в <code style="background:rgba(255,255,255,0.08); padding:2px 6px; border-radius:4px; color:#fff;">23:59 (МСК)</code> ТОП-3 бойца получают личный <em>Бонус от Основателя Kas</em>:
-          </p>
-          <div style="display:flex; gap:8px; flex-wrap:wrap; margin:8px 0;">
-            <span style="background:rgba(255,179,0,0.16); border:1px solid #ffb300; color:#ffb300; font-family:'Orbitron',sans-serif; font-size:11px; font-weight:800; padding:5px 11px; border-radius:6px;">🥇 1 МЕСТО — 500 GOLD</span>
-            <span style="background:rgba(228,228,226,0.12); border:1px solid #e4e4e2; color:#ffffff; font-family:'Orbitron',sans-serif; font-size:11px; font-weight:800; padding:5px 11px; border-radius:6px;">🥈 2 МЕСТО — 250 GOLD</span>
-            <span style="background:rgba(205,127,50,0.16); border:1px solid #cd7f32; color:#ffb074; font-family:'Orbitron',sans-serif; font-size:11px; font-weight:800; padding:5px 11px; border-radius:6px;">🥉 3 МЕСТО — 150 GOLD</span>
-          </div>
-          <p style="margin:6px 0 0 0; font-size:12.5px; color:#bbb; line-height:1.6;">
-            Очки <code style="background:rgba(255,179,0,0.15); padding:2px 6px; border-radius:4px; color:#ffb300;">PTS</code> начисляются автоматически за твой <strong>LIVE K/D</strong>, <em>рост скилла за неделю (<code>Δ K/D</code>)</em>, сыгранные матчи, победы, медали <code>MVP</code> и активность на сайте.
-          </p>
-        </div>
-      `);
-    }
+    <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:14px 16px; margin:14px 0;">
+      <div style="font-family:'Orbitron',sans-serif; font-size:12px; font-weight:800; color:#00e676; margin-bottom:8px; letter-spacing:1px;">
+        🔥 2. КНОПКА «БУСТ БОЙЦА (+25 PTS)» И АКТИВНОСТЬ НА ПОРТАЛЕ
+      </div>
+      <p style="margin:0; font-size:13px; color:#ccc; line-height:1.65;">
+        Теперь каждый игрок и болельщик клана может напрямую влиять на исход гонки за Голду! Заходи в раздел <strong>«Пантеон»</strong> или <strong>«Состав»</strong> и нажимай кнопку <code style="background:rgba(255,179,0,0.2); border:1px solid #ffb300; padding:2px 7px; border-radius:4px; color:#ffb300; font-weight:700;">🔥 БУСТ БОЙЦА (+25 PTS)</code> каждые <em>6 часов</em>, чтобы продвинуть своего фаворита на подиум.
+      </p>
+    </div>
 
-    if (incBoosts) {
-      blocks.push(`
-        <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:14px 16px; margin:12px 0;">
-          <div style="font-family:'Orbitron',sans-serif; font-size:12px; font-weight:800; color:#00e676; margin-bottom:8px; letter-spacing:1px;">
-            🔥 СИСТЕМА ПОДДЕРЖКИ «БУСТ БОЙЦА (+25 PTS)»
-          </div>
-          <p style="margin:0; font-size:13px; color:#ccc; line-height:1.65;">
-            В карточках игроков в разделах <strong>«Пантеон»</strong> и <strong>«Состав»</strong> появилась кнопка <code style="background:rgba(255,179,0,0.2); border:1px solid #ffb300; padding:2px 7px; border-radius:4px; color:#ffb300; font-weight:700;">🔥 БУСТ БОЙЦА (+25 PTS)</code>. Каждые <em>6 часов</em> любой посетитель сайта может зарядить бойца очками активности и помочь ему забрать Голду в конце недели!
-          </p>
-        </div>
-      `);
-    }
+    <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:14px 16px; margin:14px 0;">
+      <div style="font-family:'Orbitron',sans-serif; font-size:12px; font-weight:800; color:#5294ff; margin-bottom:8px; letter-spacing:1px;">
+        📊 3. ЖИВАЯ СТАТИСТИКА LIVE K/D, ДОСЬЕ ИГРОКОВ И ДВОЙНОЙ ТАБ 5v5
+      </div>
+      <p style="margin:0; font-size:13px; color:#ccc; line-height:1.65;">
+        Карточки всех бойцов основы и резерва теперь работают в режиме <em>реального времени</em>: после каждого официального прака или турнира сайт сам пересчитывает <code>LIVE K/D</code>, динамику формы (<strong>🔥 В ОГНЕ</strong>) и винрейт. А в разделе <strong>«Матчи»</strong> доступен полный разворот <strong>Двойного Таба Standoff 2</strong> с точной статистикой <code>У / П / С / K/D / Счёт / Пинг</code> обоих составов и оригинальным скриншотом-пруфом.
+      </p>
+    </div>
 
-    if (incLiveKd || incDualTab) {
-      blocks.push(`
-        <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:14px 16px; margin:12px 0;">
-          <div style="font-family:'Orbitron',sans-serif; font-size:12px; font-weight:800; color:#5294ff; margin-bottom:8px; letter-spacing:1px;">
-            📊 ЖИВАЯ СТАТИСТИКА LIVE K/D, ДОСЬЕ И ДВОЙНОЙ ТАБ МАТЧЕЙ 5v5
-          </div>
-          <p style="margin:0; font-size:13px; color:#ccc; line-height:1.65;">
-            Все профили бойцов синхронизированы с историей игр: сайт автоматически считает актуальный <code>LIVE K/D</code>, индикатор игровой формы (<strong>🔥 В ОГНЕ</strong>) и персональное досье по картам. В разделе <strong>«Матчи»</strong> каждый результат открывается в формате полного <strong>Двойного Таба Standoff 2</strong> (<code>У / П / С / K/D / Счёт / Пинг</code>) с оригинальным скриншотом-пруфом.
-          </p>
-        </div>
-      `);
-    }
+    <blockquote style="margin:16px 0 8px 0; padding:14px 18px; border-left:4px solid #ffb300; background:rgba(255,179,0,0.07); color:#e4e4e2; font-style:italic; border-radius:0 10px 10px 0; line-height:1.65;">
+      «Я разработал это обновление специально для того, чтобы каждый боец <strong>[C6E]</strong> видел свой реальный прогресс от игры к игре, а старание на праках и турнирах вознаграждалось звонкой Голдой. Заходите на сайт каждый день, прожимайте бусты, разрывайте соперников в Табе и забирайте <code>500</code>, <code>250</code> и <code>150 GOLD</code> в конце недели!»
+      <div style="margin-top:8px; font-style:normal; font-family:'Orbitron',sans-serif; font-size:10px; font-weight:800; color:#ffb300; letter-spacing:1px;">
+        — KAS (@kas_0ff) // ОСНОВАТЕЛЬ И ГЛАВНЫЙ РАЗРАБОТЧИК CYBER 6 ESPORTS [C6E]
+      </div>
+    </blockquote>
+  `
+};
 
-    if (incPracs) {
-      blocks.push(`
-        <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:14px 16px; margin:12px 0;">
-          <div style="font-family:'Orbitron',sans-serif; font-size:12px; font-weight:800; color:#ff5263; margin-bottom:8px; letter-spacing:1px;">
-            ⚔️ ИНТЕРАКТИВНЫЕ ПРАКИ (CW) И ЗАЩИТА ПОРТАЛА C6E SHIELD
-          </div>
-          <p style="margin:0; font-size:13px; color:#ccc; line-height:1.65;">
-            Обновлена система вызова нашего состава на тренировочные матчи (<code>BO1 / BO3 / BO5</code>) с выбором пула карт и мгновенным оповещением команды, а система безопасности <code>C6E Shield</code> надежно защищает портал и отзывы от спама и рейдов.
-          </p>
-        </div>
-      `);
-    }
+let currentActiveRelease = { ...DEFAULT_KAS_RELEASE };
+let cachedFirestoreNewsList = [];
 
-    if (customNote) {
-      blocks.push(`
-        <div style="background:rgba(212,38,56,0.1); border:1px solid rgba(212,38,56,0.35); border-radius:10px; padding:12px 16px; margin:12px 0;">
-          <div style="font-family:'Orbitron',sans-serif; font-size:11px; font-weight:800; color:#ff6b7a; margin-bottom:4px;">⚡ ДОПОЛНИТЕЛЬНО В ПАТЧЕ ${ver.toUpperCase()}:</div>
-          <div style="font-size:13px; color:#fff; line-height:1.6;">${customNote}</div>
-        </div>
-      `);
-    }
-
-    blocks.push(`
-      <blockquote style="margin:16px 0 6px 0; padding:14px 18px; border-left:4px solid #ffb300; background:rgba(255,179,0,0.07); color:#e4e4e2; font-style:italic; border-radius:0 10px 10px 0; line-height:1.65;">
-        «Я постоянно прокачиваю платформу <strong>CYBER 6 ESPORTS [C6E]</strong>, чтобы у нашего состава были лучшие технологии в Standoff 2. Следите за своим <code>LIVE K/D</code>, поддерживайте бойцов бустами на сайте и боритесь за <code>500</code>, <code>250</code> и <code>150 GOLD</code> каждую неделю!»
-        <div style="margin-top:8px; font-style:normal; font-family:'Orbitron',sans-serif; font-size:10px; font-weight:800; color:#ffb300; letter-spacing:1px;">
-          — KAS (@kas_0ff) // ОСНОВАТЕЛЬ И ГЛАВНЫЙ РАЗРАБОТЧИК CYBER 6 ESPORTS [C6E]
-        </div>
-      </blockquote>
-    `);
-
-    return {
-      ver,
-      title,
-      htmlText: blocks.join('\n'),
-      cardLines,
-      dateVal: new Date().toLocaleDateString('ru-RU')
-    };
+function getMergedNewsFeedList() {
+  const list = Array.isArray(cachedFirestoreNewsList) ? [...cachedFirestoreNewsList] : [];
+  const hasCurrentRelease = list.some(n =>
+    (n.versionId && n.versionId === currentActiveRelease.versionId) ||
+    (n.title && currentActiveRelease.title && n.title.trim() === currentActiveRelease.title.trim())
+  );
+  if (!hasCurrentRelease && currentActiveRelease && currentActiveRelease.title) {
+    list.push({
+      id: currentActiveRelease.id || 1763000450000,
+      versionId: currentActiveRelease.versionId,
+      title: currentActiveRelease.title,
+      text: currentActiveRelease.text,
+      date: currentActiveRelease.date || new Date().toLocaleDateString('ru-RU'),
+      tag: currentActiveRelease.tag || 'ОБНОВЛЕНИЕ'
+    });
   }
+  list.sort((a, b) => (a.id || 0) - (b.id || 0));
+  return list;
+}
 
-  // =========================================================================
-  // ФУНКЦИИ УПРАВЛЕНИЯ v0.5.0 В АДМИНКЕ: ПРОФИЛИ, ЗАЯВКИ В [C6E], ЧАТ, МАГАЗИН
-  // =========================================================================
-  let adminProfilesMain = [];
-  let adminProfilesMirrorRev = [];
-  let adminProfilesMirrorPrac = [];
-  let adminProfilesMirrorSec = [];
-  let adminProfilesCache = [];
+function renderPublicNewsFeeds() {
+  const list = getMergedNewsFeedList();
 
-  function mergeAdminProfiles(...arrays) {
-    const map = new Map();
-    for (const arr of arrays) {
-      if (!Array.isArray(arr)) continue;
-      for (const p of arr) {
-        if (!p || !p.profileId || !p.nick) continue;
-        if (p._deleted) {
-          map.delete(p.profileId);
-          continue;
-        }
-        const cleaned = {
-          ...p,
-          clanTag: String(p.clanTag || '').replace(/[\[\]\?]/g, '').trim()
-        };
-        const prev = map.get(cleaned.profileId);
-        if (!prev || (cleaned.adminUpdatedAt || cleaned.lastSeen || 0) >= (prev.adminUpdatedAt || prev.lastSeen || 0)) {
-          map.set(cleaned.profileId, cleaned);
-        }
-      }
-    }
-    return Array.from(map.values());
-  }
-
-  async function saveAdminProfilesEverywhere(updatedList) {
-    adminProfilesCache = updatedList;
-    renderAdminProfilesPanel(updatedList);
-    try {
-      localStorage.setItem('c6e_shared_profiles_mirror', JSON.stringify(updatedList));
-      const rawMe = localStorage.getItem('c6e_user_profile_v5');
-      if (rawMe) {
-        const me = JSON.parse(rawMe);
-        const foundMe = updatedList.find(x => x.profileId === me.profileId);
-        if (foundMe) localStorage.setItem('c6e_user_profile_v5', JSON.stringify(foundMe));
-      }
-    } catch (e) {}
-
-    try { await setDoc(doc(db, DB_COLLECTION, "profiles"), { list: updatedList }, { merge: true }); } catch (e1) {}
-    try { await setDoc(doc(db, DB_COLLECTION, "reviews"), { c6e_profiles: updatedList }, { merge: true }); } catch (e2) {}
-    try { await setDoc(doc(db, DB_COLLECTION, "practices"), { c6e_profiles: updatedList }, { merge: true }); } catch (e3) {}
-    try { await setDoc(doc(db, DB_COLLECTION, "security_logs"), { c6e_profiles: updatedList }, { merge: true }); } catch (e4) {}
-  }
-
-  function refreshMergedAdminProfiles() {
-    let localArr = [];
-    try {
-      const rawM = localStorage.getItem('c6e_shared_profiles_mirror');
-      if (rawM) localArr = JSON.parse(rawM);
-      const rawSingle = localStorage.getItem('c6e_user_profile_v5');
-      if (rawSingle) {
-        const sProf = JSON.parse(rawSingle);
-        if (sProf && sProf.nick && sProf.profileId) localArr.push(sProf);
-      }
-    } catch (e) {}
-
-    const merged = mergeAdminProfiles(
-      localArr,
-      adminProfilesMirrorSec,
-      adminProfilesMirrorPrac,
-      adminProfilesMirrorRev,
-      adminProfilesMain
-    );
-    renderAdminProfilesPanel(merged);
-
-    if (merged.length > adminProfilesMain.length) {
-      setDoc(doc(db, DB_COLLECTION, "profiles"), { list: merged }, { merge: true }).catch(() => {});
-      setDoc(doc(db, DB_COLLECTION, "reviews"), { c6e_profiles: merged }, { merge: true }).catch(() => {});
-    }
-  }
-
-  window.approveUserC6EStatus = async (profileId) => {
-    try {
-      let list = [...adminProfilesCache];
-      const idx = list.findIndex(p => p.profileId === profileId);
-      if (idx === -1) return;
-      list[idx] = {
-        ...list[idx],
-        c6eStatus: 'approved',
-        claimsC6E: true,
-        clanTag: 'C6E',
-        clanName: 'CYBER 6 ESPORTS',
-        rejectionHandled: true,
-        adminUpdatedAt: Date.now()
-      };
-      await saveAdminProfilesEverywhere(list);
-      showToast(`✅ Игрок ${list[idx].nick} подтверждён как официальный боец [C6E]!`);
-    } catch (e) {
-      showToast("Ошибка одобрения профиля", true);
-    }
-  };
-
-  window.rejectUserC6EStatus = async (profileId) => {
-    try {
-      let list = [...adminProfilesCache];
-      const idx = list.findIndex(p => p.profileId === profileId);
-      if (idx === -1) return;
-      list[idx] = {
-        ...list[idx],
-        c6eStatus: 'rejected',
-        claimsC6E: false,
-        clanTag: '',
-        clanName: '',
-        rejectionHandled: false,
-        adminUpdatedAt: Date.now()
-      };
-      await saveAdminProfilesEverywhere(list);
-      showToast(`❌ Игроку ${list[idx].nick} отказано в теге [C6E]! Сайт запросит его реальный клан.`);
-    } catch (e) {
-      showToast("Ошибка отклонения заявки", true);
-    }
-  };
-
-  window.boostAdminProfileLikes = async (profileId, delta = 10) => {
-    try {
-      let list = [...adminProfilesCache];
-      const idx = list.findIndex(p => p.profileId === profileId);
-      if (idx === -1) return;
-      list[idx] = {
-        ...list[idx],
-        likes: Math.max(0, (parseInt(list[idx].likes, 10) || 0) + delta),
-        adminUpdatedAt: Date.now()
-      };
-      await saveAdminProfilesEverywhere(list);
-      showToast(`❤️ Начислено +${delta} лайков профилю ${list[idx].nick}!`);
-    } catch (e) {}
-  };
-
-  window.deleteUserProfile = async (profileId) => {
-    if (!confirm("Точно удалить этот игровой профиль с сайта?")) return;
-    try {
-      let list = adminProfilesCache.filter(p => p.profileId !== profileId);
-      await saveAdminProfilesEverywhere(list);
-      showToast("Профиль удалён");
-    } catch (e) {}
-  };
-
-  function renderAdminProfilesPanel(list) {
-    adminProfilesCache = list || [];
-    const pendingCont = document.getElementById('adminPendingC6EList');
-    const allCont = document.getElementById('adminAllProfilesList');
-    const badgeEl = document.getElementById('admPendingC6EBadge');
-    const totalEl = document.getElementById('admTotalProfilesCount');
-    const onlineEl = document.getElementById('admOnlineProfilesCount');
-    if (!pendingCont || !allCont) return;
-
-    const now = Date.now();
-    const pending = list.filter(p => p.c6eStatus === 'pending');
-    const onlineCount = list.filter(p => (now - (p.lastSeen || 0)) < 15 * 60 * 1000).length;
-
-    if (badgeEl) {
-      badgeEl.innerText = `ЗАЯВОК В [C6E]: ${pending.length}`;
-      badgeEl.style.background = pending.length > 0 ? 'rgba(255, 179, 0, 0.25)' : 'rgba(255,255,255,0.06)';
-    }
-    if (totalEl) totalEl.innerText = String(list.length);
-    if (onlineEl) onlineEl.innerText = String(onlineCount);
-
-    pendingCont.innerHTML = pending.length === 0
-      ? '<span class="item-sub">Новых заявок на проверку принадлежности к [C6E] пока нет</span>'
-      : pending.map(p => `
-          <div class="list-item" style="flex-direction:column; align-items:flex-start; border-left:4px solid #ffb300; background:rgba(255,179,0,0.12); gap:8px; padding:12px;">
-            <div style="display:flex; justify-content:space-between; width:100%; align-items:center; flex-wrap:wrap; gap:6px;">
-              <b style="font-size:13px; color:#fff;">${p.countryFlag || '🌍'} [C6E] ${p.nick} <span style="color:#ffb300;">(ID: ${p.gameId || '—'})</span></b>
-              <span style="font-size:9px; font-family:var(--font-tech); background:#ffb300; color:#000; font-weight:900; padding:2px 7px; border-radius:4px;">⏳ ЖДЁТ ПРОВЕРКИ</span>
+  const homeFeed = document.getElementById('home-news-feed');
+  if (homeFeed) {
+    if (!list.length) {
+      homeFeed.innerHTML = '<div class="text-center" style="font-size:11px; color:#666; padding:20px;">Новостей пока нет</div>';
+    } else {
+      homeFeed.innerHTML = list.slice().reverse().slice(0, 3).map(n => {
+        const isUpdate = (n.tag || '').toUpperCase() === 'ОБНОВЛЕНИЕ' || Boolean(n.versionId);
+        return `
+          <div class="news-card-home" onclick="selectTab('news', document.getElementById('btn-news'))" style="cursor:pointer; ${isUpdate ? 'border-left:3px solid #ffb300; background:linear-gradient(90deg, rgba(255,179,0,0.08), transparent);' : ''}">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+              <span style="color:${isUpdate ? '#ffb300' : 'var(--accent-light)'}; font-size:9px; font-weight:800; font-family:var(--font-tech);">
+                ${isUpdate ? '⚡ ' : ''}${escapeHTML(n.tag || 'LIVE')}
+              </span>
+              <span style="color: var(--silver-muted); font-size: 9px;">${escapeHTML(n.date)}</span>
             </div>
-            <div class="item-sub" style="color:#ddd;">
-              K/D: <b>${p.kd || '1.00'}</b> • Возраст: <b>${p.age || 16} лет</b> • Страна: <b>${p.countryText || 'Россия'}</b> • IP: <code>${p.ip || '—'}</code>
-            </div>
-            <div style="display:flex; gap:8px; width:100%; flex-wrap:wrap;">
-              <button type="button" class="action-btn" style="margin:0; flex:1; min-width:140px; padding:9px; background:var(--success); color:#000; font-size:10px; font-weight:900;" onclick="window.approveUserC6EStatus('${p.profileId}')">
-                <i class="fas fa-check-circle"></i> ✅ ОДОБРИТЬ В [C6E]
-              </button>
-              <button type="button" class="action-btn secondary" style="margin:0; flex:1; min-width:140px; padding:9px; border-color:#ff5263; color:#ff5263; font-size:10px; font-weight:900;" onclick="window.rejectUserC6EStatus('${p.profileId}')">
-                <i class="fas fa-times-circle"></i> ❌ ОТКЛОНИТЬ (В ГОСТИ)
-              </button>
+            <div style="font-family: var(--font-tech); font-size: 13px; color: var(--silver); line-height:1.4;">
+              ${escapeHTML(n.title)}
             </div>
           </div>
-        `).join('');
+        `;
+      }).join('');
+    }
+  }
 
-    const sortedAll = [...list].sort((a, b) => (b.lastSeen || 0) - (a.lastSeen || 0));
-    allCont.innerHTML = sortedAll.length === 0
-      ? '<span class="item-sub">Зарегистрированных профилей пока нет</span>'
-      : sortedAll.map(p => {
-          const isOnline = (now - (p.lastSeen || 0)) < 15 * 60 * 1000;
-          const isC6E = p.c6eStatus === 'approved';
-          const isPend = p.c6eStatus === 'pending';
-          const safeIp = (p.ip || '').replace(/'/g, "\\'");
-          const safeDev = (p.profileId || '').replace(/'/g, "\\'");
-          const safeNick = (p.nick || 'Игрок').replace(/'/g, "\\'");
-          const cleanTag = isC6E ? '[C6E]' : (isPend ? '[C6E]' : (p.clanTag ? '[' + String(p.clanTag).replace(/[\[\]\?]/g, '') + ']' : ''));
-          return `
-            <div class="list-item" style="border-left-color:${isC6E ? 'var(--success)' : (isPend ? '#ffb300' : 'var(--ct-blue)')}; flex-wrap:wrap; gap:8px;">
-              <div style="display:flex; align-items:center; gap:9px; min-width:0; flex:1;">
-                <img src="${p.avatar || 'logo.png'}" onerror="this.src='logo.png'" style="width:34px; height:34px; border-radius:8px; object-fit:cover; flex-shrink:0;">
-                <div class="item-info" style="min-width:0;">
-                  <b>${isOnline ? '🟢' : '⚪'} ${p.countryFlag || '🌍'} ${cleanTag} ${p.nick}</b>
-                  <span class="item-sub">ID: ${p.gameId || '—'} • K/D: ${p.kd || '1.0'} • ${p.age || 16} лет • ❤️ ${p.likes || 0} • ${isC6E ? '🛡️ Боец C6E' : (isPend ? '⏳ Ждёт проверки C6E' : '💎 ' + (p.clanName || 'Гость'))}</span>
-                </div>
+  const fullFeed = document.getElementById('dynamic-news-container');
+  if (fullFeed) {
+    if (!list.length) {
+      fullFeed.innerHTML = '<div class="card text-center" style="color:#666;">Лента новостей пуста</div>';
+    } else {
+      fullFeed.innerHTML = list.slice().reverse().map(n => {
+        const isUpdate = (n.tag || '').toUpperCase() === 'ОБНОВЛЕНИЕ' || Boolean(n.versionId);
+        return `
+          <div class="card" style="border-left: 3px solid ${isUpdate ? '#ffb300' : 'var(--accent-light)'}; ${isUpdate ? 'box-shadow: 0 12px 35px rgba(255,179,0,0.08);' : ''}">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+              <div style="font-size:10px; color:${isUpdate ? '#ffb300' : 'var(--accent-light)'}; font-weight:700; font-family:var(--font-tech);">
+                ${escapeHTML(n.date)} <span style="color:var(--silver); opacity:0.8;">[${escapeHTML(n.tag || 'NEWS')}]</span>
               </div>
-              <div class="item-actions">
-                ${isC6E
-                  ? `<button class="btn-icon" title="Снять тег [C6E] и перевести в гости" onclick="window.rejectUserC6EStatus('${safeDev}')"><i class="fas fa-user-minus"></i></button>`
-                  : `<button class="btn-icon" style="color:var(--success); border-color:var(--success);" title="Подтвердить статус Бойца [C6E]" onclick="window.approveUserC6EStatus('${safeDev}')"><i class="fas fa-check"></i></button>`}
-                <button class="btn-icon" style="color:#ff5263;" title="+10 лайков профилю" onclick="window.boostAdminProfileLikes('${safeDev}', 10)"><i class="fas fa-heart"></i></button>
-                <button class="btn-icon ban" title="Забанить через C6E Shield" onclick="window.banUserQuick('${safeIp}', '${safeDev}', '${safeNick}')"><i class="fas fa-ban"></i></button>
-                <button class="btn-icon del" title="Удалить профиль" onclick="window.deleteUserProfile('${safeDev}')"><i class="fas fa-trash"></i></button>
+              ${isUpdate ? `<span style="font-family:var(--font-tech); font-size:9px; font-weight:800; color:#00e676; background:rgba(0,230,118,0.1); border:1px solid rgba(0,230,118,0.35); padding:3px 9px; border-radius:20px;"><i class="fas fa-code"></i> DEV: KAS (@kas_0ff)</span>` : ''}
+            </div>
+            <h2 style="font-family: var(--font-tech); font-size: 17px; margin: 0 0 14px 0; color: #fff; line-height:1.35;">${escapeHTML(n.title)}</h2>
+            <div style="font-size: 13px; color: #ccc; line-height: 1.65;">${n.text}</div>
+          </div>
+        `;
+      }).join('');
+    }
+  }
+
+  if (list.length > 0) {
+    const latestId = Math.max(...list.map(i => i.id || 0));
+    checkUpdateBadge('news', latestId, 'btn-news');
+  }
+}
+
+function ensureReleaseModalDOM() {
+  if (document.getElementById('c6e-release-modal')) return;
+  const modal = document.createElement('div');
+  modal.id = 'c6e-release-modal';
+  modal.className = 'c6e-modal-overlay';
+  modal.style.zIndex = '10005';
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) window.closeSiteReleaseModal(true);
+  });
+  document.body.appendChild(modal);
+}
+
+window.openSiteReleaseModal = (relObj = null) => {
+  if (checkIfCurrentUserBanned()) return;
+  ensureReleaseModalDOM();
+  const rel = relObj || currentActiveRelease || DEFAULT_KAS_RELEASE;
+  const modal = document.getElementById('c6e-release-modal');
+  if (!modal) return;
+
+  const heroBtn = document.getElementById('hero-patch-btn');
+  if (heroBtn && rel.versionLabel) {
+    heroBtn.innerHTML = `<i class="fas fa-bolt" style="margin-right: 8px;"></i> ОБНОВА ${escapeHTML(rel.versionLabel.split(' ')[0])} ОТ KAS`;
+  }
+
+  modal.innerHTML = `
+    <div class="c6e-modal-card" style="max-width:650px; border-top:3px solid #ffb300; box-shadow:0 25px 75px rgba(0,0,0,0.95), 0 0 40px rgba(255,179,0,0.18);">
+      <div class="c6e-modal-head" style="background:linear-gradient(135deg, rgba(255,179,0,0.16), rgba(158,27,40,0.22));">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span style="background:#ffb300; color:#000; font-family:var(--font-tech); font-size:9px; font-weight:900; padding:4px 9px; border-radius:6px; letter-spacing:1px;">
+            🚀 НОВОЕ ОБНОВЛЕНИЕ САЙТА
+          </span>
+          <span style="font-family:var(--font-tech); font-size:10px; color:#00e676; font-weight:800;">
+            ${escapeHTML(rel.versionLabel || 'v4.5')}
+          </span>
+        </div>
+        <button type="button" class="c6e-modal-close" onclick="window.closeSiteReleaseModal(true)">✕</button>
+      </div>
+
+      <div class="c6e-modal-body" style="max-height:70vh; overflow-y:auto;">
+        <h3 style="font-family:var(--font-tech); font-size:16px; color:#fff; margin:0 0 12px 0; line-height:1.35;">
+          ${escapeHTML(rel.title)}
+        </h3>
+        <div style="font-size:13px; color:#ccc; line-height:1.65;">
+          ${rel.text}
+        </div>
+      </div>
+
+      <div style="padding:14px 18px; background:rgba(10,11,15,0.96); border-top:1px solid rgba(255,255,255,0.08); display:flex; gap:8px; flex-wrap:wrap; justify-content:space-between; align-items:center;">
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button type="button" class="boost-btn" style="width:auto; padding:10px 14px;" onclick="window.closeSiteReleaseModal(true); selectTab('pantheon', document.getElementById('btn-pantheon'));">
+            <i class="fas fa-crown"></i> ОТКРЫТЬ ПАНТЕОН (900G)
+          </button>
+          <button type="button" class="report-mini-btn" style="padding:10px 14px;" onclick="window.closeSiteReleaseModal(true); selectTab('news', document.getElementById('btn-news'));">
+            <i class="fas fa-newspaper"></i> В НОВОСТИ
+          </button>
+        </div>
+        <button type="button" class="report-mini-btn" style="padding:10px 16px; border-color:#00e676; color:#00e676;" onclick="window.closeSiteReleaseModal(true);">
+          <i class="fas fa-check"></i> ПРИНЯТО, KAS!
+        </button>
+      </div>
+    </div>
+  `;
+
+  modal.classList.add('active');
+};
+
+window.closeSiteReleaseModal = (markSeen = true) => {
+  const modal = document.getElementById('c6e-release-modal');
+  if (modal) modal.classList.remove('active');
+  if (markSeen && currentActiveRelease && currentActiveRelease.versionId) {
+    try {
+      localStorage.setItem('c6e_seen_release_v', currentActiveRelease.versionId);
+    } catch (e) {}
+  }
+};
+
+function checkAndShowReleaseNotification() {
+  if (!currentActiveRelease || !currentActiveRelease.versionId) return;
+  let seenVer = null;
+  try {
+    seenVer = localStorage.getItem('c6e_seen_release_v');
+  } catch (e) {}
+
+  const heroBtn = document.getElementById('hero-patch-btn');
+  if (heroBtn && currentActiveRelease.versionLabel) {
+    heroBtn.innerHTML = `<i class="fas fa-bolt" style="margin-right: 8px;"></i> ОБНОВА ${escapeHTML(currentActiveRelease.versionLabel.split(' ')[0])} ОТ KAS`;
+  }
+
+  if (seenVer !== currentActiveRelease.versionId) {
+    setTimeout(() => {
+      if (!checkIfCurrentUserBanned()) {
+        window.openSiteReleaseModal(currentActiveRelease);
+        if (window.showNotify) {
+          window.showNotify(`🚀 Вышло обновление сайта от Kas: ${currentActiveRelease.versionLabel || 'v4.5'}!`, 'success');
+        }
+      }
+    }, 1350);
+  }
+}
+
+onSnapshot(doc(db, DB_COLLECTION, "site_release"), (snap) => {
+  if (snap.exists() && snap.data().versionId && snap.data().title) {
+    currentActiveRelease = {
+      ...DEFAULT_KAS_RELEASE,
+      ...snap.data()
+    };
+  } else {
+    currentActiveRelease = { ...DEFAULT_KAS_RELEASE };
+  }
+  renderPublicNewsFeeds();
+  checkAndShowReleaseNotification();
+}, () => {
+  // Если документ site_release еще не создан в базе, показываем встроенный релиз v4.5 от Kas
+  currentActiveRelease = { ...DEFAULT_KAS_RELEASE };
+  renderPublicNewsFeeds();
+  checkAndShowReleaseNotification();
+});
+
+onSnapshot(doc(db, DB_COLLECTION, "news"), (snap) => {
+  cachedFirestoreNewsList = (snap.exists() && snap.data().list) ? snap.data().list : [];
+  renderPublicNewsFeeds();
+});
+
+let timerInterval;
+onSnapshot(doc(db, DB_COLLECTION, "match"), (snap) => {
+  if (snap.exists()) {
+    const data = snap.data();
+    const enemyEl = document.getElementById('enemy-name-display');
+    if (enemyEl) enemyEl.innerText = escapeHTML(data.enemy || "TBA");
+    if (data.date && data.enemy) startTimer(data.date);
+    else stopTimer("ОЖИДАНИЕ АНОНСА...");
+  }
+});
+
+function stopTimer(msg) {
+  if (timerInterval) clearInterval(timerInterval);
+  const cdEl = document.getElementById('countdown');
+  const stEl = document.getElementById('match-status');
+  if (cdEl) cdEl.innerHTML = `<span style="font-size:12px; color:var(--silver-muted);">${msg}</span>`;
+  if (stEl) { stEl.innerText = "OFFLINE"; stEl.style.background = "#333"; stEl.style.color = "#fff"; }
+}
+
+function startTimer(isoDate) {
+  if (timerInterval) clearInterval(timerInterval);
+  const target = new Date(isoDate).getTime();
+
+  const update = () => {
+    const now = new Date().getTime();
+    const diff = target - now;
+    const statusEl = document.getElementById('match-status');
+    const cdEl = document.getElementById('countdown');
+    if (!statusEl || !cdEl) return;
+
+    if (diff < 0) {
+      statusEl.innerText = "LIVE";
+      statusEl.style.background = "var(--accent-light)";
+      statusEl.style.color = "#fff";
+      cdEl.innerHTML = "<span style='font-size:15px; font-weight:700; color:var(--accent-light);'>МАТЧ НАЧАЛСЯ</span>";
+      clearInterval(timerInterval);
+      return;
+    }
+
+    const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+    cdEl.innerHTML = `
+      <div class="text-center"><div class="cd-num">${d}</div><div class="cd-lbl">DAYS</div></div>
+      <div style="font-size:24px; padding-bottom:15px; color:#444;">:</div>
+      <div class="text-center"><div class="cd-num">${h}</div><div class="cd-lbl">HRS</div></div>
+      <div style="font-size:24px; padding-bottom:15px; color:#444;">:</div>
+      <div class="text-center"><div class="cd-num">${m}</div><div class="cd-lbl">MIN</div></div>
+    `;
+    statusEl.innerText = "UPCOMING";
+    statusEl.style.background = "var(--silver)";
+    statusEl.style.color = "#000";
+  };
+  update();
+  timerInterval = setInterval(update, 1000);
+}
+
+window.selectPracSlot = (id, cardEl) => {
+  document.getElementById('prac-slot-select').value = id;
+  document.querySelectorAll('.slot-card').forEach(c => c.classList.remove('selected'));
+  if (cardEl) cardEl.classList.add('selected');
+};
+
+onSnapshot(doc(db, DB_COLLECTION, "practices"), (snap) => {
+  const slotsGrid = document.getElementById('prac-slots-grid');
+  const publicList = document.getElementById('public-booked-list');
+  const hiddenInput = document.getElementById('prac-slot-select');
+
+  if (!snap.exists() || !snap.data().list) {
+    if (slotsGrid) slotsGrid.innerHTML = '<div style="font-size:12px; color:#666; padding:12px; grid-column:1/-1; text-align:center;">Свободных слотов на данный момент нет</div>';
+    if (publicList) publicList.innerHTML = '<div style="font-size:11px; color:#666; text-align:center; padding:10px;">Расписание чисто</div>';
+    return;
+  }
+
+  const allSlots = snap.data().list;
+  allSlots.sort((a, b) => new Date(a.isoDate) - new Date(b.isoDate));
+
+  const openSlots = allSlots.filter(s => s.status === 'open' && new Date(s.isoDate) > new Date());
+  if (slotsGrid) {
+    if (!openSlots.length) {
+      slotsGrid.innerHTML = '<div style="font-size:12px; color:var(--silver-muted); padding:15px; grid-column:1/-1; text-align:center; border:1px dashed var(--glass-border); border-radius:8px;">Сейчас все слоты заняты. Загляните чуть позже!</div>';
+      if (hiddenInput) hiddenInput.value = '';
+    } else {
+      slotsGrid.innerHTML = openSlots.map((s, idx) => `
+        <div class="slot-card ${idx === 0 ? 'selected' : ''}" onclick="window.selectPracSlot(${s.id}, this)">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+            <span style="font-size:9px; color:var(--success); font-family:var(--font-tech);"><i class="fas fa-circle" style="font-size:6px;"></i> СВОБОДЕН</span>
+            <span style="font-size:9px; background:var(--accent-dim); border:1px solid var(--accent); padding:2px 6px; border-radius:4px; color:var(--silver); font-family:var(--font-tech);">${escapeHTML(s.format || 'BO1')}</span>
+          </div>
+          <div class="slot-time">${escapeHTML(s.displayTime)}</div>
+          <div style="font-size:10px; color:var(--silver-muted); margin-top:4px; display:flex; justify-content:space-between;">
+            <span><i class="fas fa-server"></i> ${escapeHTML(s.server || 'Россия, Москва')}</span>
+            <span style="color:var(--accent-light); font-weight:700;">ВЫБРАТЬ ➔</span>
+          </div>
+        </div>
+      `).join('');
+      if (hiddenInput) hiddenInput.value = openSlots[0].id;
+    }
+  }
+
+  const bookedSlots = allSlots.filter(s => s.status === 'booked');
+  if (publicList) {
+    publicList.innerHTML = !bookedSlots.length
+      ? '<div style="font-size:11px; color:#666; text-align:center; padding:12px;">Подтвержденных праков пока нет</div>'
+      : bookedSlots.map(s => {
+          const maps = (s.team && s.team.maps) ? s.team.maps.join(', ') : 'TBA';
+          return `
+            <div style="background:rgba(255,255,255,0.02); border:1px solid var(--glass-border); border-left:3px solid var(--accent-light); border-radius:8px; padding: 12px 14px; margin-bottom:10px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+                <span style="color:var(--silver); font-size:11px; font-weight:700;"><i class="far fa-calendar-check text-accent"></i> ${escapeHTML(s.displayTime)}</span>
+                <span style="font-size:9px; padding:2px 8px; background:var(--accent-dim); border:1px solid var(--accent); color:var(--silver); border-radius:4px; font-family:var(--font-tech);">CONFIRMED • ${escapeHTML(s.format || 'BO1')}</span>
+              </div>
+              <div style="margin-top:6px; font-family:var(--font-tech); font-size:15px; font-weight:800; color:#fff;">
+                [C6E] <span style="color:var(--accent-light);">VS</span> ${escapeHTML(s.team ? s.team.clanName : 'TBA')}
+              </div>
+              <div style="font-size:10px; color:var(--silver-muted); margin-top:4px;">
+                <i class="fas fa-map"></i> Карты: <span style="color:var(--silver);">${escapeHTML(maps)}</span>
               </div>
             </div>
           `;
         }).join('');
   }
+});
 
-  window.sendAdminFounderChatMsg = async () => {
-    const inp = document.getElementById('adminChatInput');
-    const text = (inp?.value || '').trim();
-    if (!text) return;
-    inp.value = '';
-    try {
-      const ref = doc(db, DB_COLLECTION, "global_chat");
-      const snap = await getDoc(ref);
-      const now = Date.now();
-      let messages = (snap.exists() && Array.isArray(snap.data().messages)) ? snap.data().messages : [];
-      messages.push({
-        id: now,
-        senderId: 'FOUNDER_KAS',
-        nick: 'Kas',
-        clanTag: 'C6E',
-        c6eStatus: 'approved',
-        isFounder: true,
-        avatar: 'logo.png',
-        frameStyle: 'frame-c6e-gold',
-        countryFlag: '👑',
-        text,
-        timeStr: new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }),
-        ts: now
+window.filterSchedule = (type, btn) => {
+  currentScheduleFilter = type;
+  document.querySelectorAll('#schedule .sub-filter-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderScheduleGrid();
+};
+
+function renderScheduleGrid() {
+  const grid = document.getElementById('dynamic-schedule-grid');
+  if (!grid) return;
+
+  const filtered = currentScheduleFilter === 'all'
+    ? allScheduleData
+    : allScheduleData.filter(item => {
+        if (item.type) return item.type === currentScheduleFilter;
+        const txt = (item.event || '').toLowerCase();
+        if (currentScheduleFilter === 'CW') return txt.includes('прак') || txt.includes('cw');
+        if (currentScheduleFilter === 'CUP') return txt.includes('турнир') || txt.includes('cup');
+        if (currentScheduleFilter === 'TRAIN') return txt.includes('трен') || txt.includes('train');
+        return true;
       });
-      await setDoc(ref, { messages, lastPurgeTs: (snap.exists() && snap.data().lastPurgeTs) ? snap.data().lastPurgeTs : now }, { merge: true });
-      await setDoc(doc(db, DB_COLLECTION, "reviews"), { c6e_chat: messages }, { merge: true }).catch(() => {});
-      showToast("👑 Сообщение от Основателя Kas отправлено в общий чат!");
-    } catch (e) {
-      showToast("Ошибка отправки в чат", true);
-    }
-  };
 
-  window.clearGlobalChatNow = async () => {
-    if (!confirm("Очистить все сообщения в Общем чате прямо сейчас?")) return;
-    try {
-      await setDoc(doc(db, DB_COLLECTION, "global_chat"), { messages: [], lastPurgeTs: Date.now() });
-      await setDoc(doc(db, DB_COLLECTION, "reviews"), { c6e_chat: [], c6e_chat_purge: Date.now() }, { merge: true }).catch(() => {});
-      showToast("🧹 Общий чат полностью очищен!");
-    } catch (e) {}
-  };
-
-  window.deleteSingleChatMsg = async (msgId) => {
-    try {
-      const ref = doc(db, DB_COLLECTION, "global_chat");
-      const snap = await getDoc(ref);
-      if (!snap.exists()) return;
-      const messages = (snap.data().messages || []).filter(m => m.id !== msgId);
-      await setDoc(ref, { messages }, { merge: true });
-      await setDoc(doc(db, DB_COLLECTION, "reviews"), { c6e_chat: messages }, { merge: true }).catch(() => {});
-      showToast("Сообщение удалено");
-    } catch (e) {}
-  };
-
-  window.saveAdminShopConfig = async () => {
-    const title = (document.getElementById('admShopTitle')?.value || '').trim();
-    const hypeText = (document.getElementById('admShopHype')?.value || '').trim();
-    try {
-      await setDoc(doc(db, DB_COLLECTION, "shop_config"), { title, hypeText }, { merge: true });
-      showToast("🛒 Настройки и тизер Магазина [C6E] обновлены на сайте!");
-    } catch (e) {
-      showToast("Ошибка сохранения Магазина", true);
-    }
-  };
-
-  onSnapshot(doc(db, DB_COLLECTION, "profiles"), (snap) => {
-    adminProfilesMain = (snap.exists() && Array.isArray(snap.data().list)) ? snap.data().list : [];
-    refreshMergedAdminProfiles();
-  }, () => {
-    refreshMergedAdminProfiles();
-  });
-
-  onSnapshot(doc(db, DB_COLLECTION, "reviews"), (snap) => {
-    if (snap.exists() && Array.isArray(snap.data().c6e_profiles)) {
-      adminProfilesMirrorRev = snap.data().c6e_profiles;
-      refreshMergedAdminProfiles();
-    }
-  });
-
-  onSnapshot(doc(db, DB_COLLECTION, "practices"), (snap) => {
-    if (snap.exists() && Array.isArray(snap.data().c6e_profiles)) {
-      adminProfilesMirrorPrac = snap.data().c6e_profiles;
-      refreshMergedAdminProfiles();
-    }
-  });
-
-  onSnapshot(doc(db, DB_COLLECTION, "security_logs"), (snap) => {
-    if (snap.exists() && Array.isArray(snap.data().c6e_profiles)) {
-      adminProfilesMirrorSec = snap.data().c6e_profiles;
-      refreshMergedAdminProfiles();
-    }
-  });
-
-  setTimeout(refreshMergedAdminProfiles, 300);
-
-  onSnapshot(doc(db, DB_COLLECTION, "global_chat"), (snap) => {
-    const cont = document.getElementById('adminChatMessagesList');
-    if (!cont) return;
-    const msgs = (snap.exists() && Array.isArray(snap.data().messages)) ? snap.data().messages : [];
-    cont.innerHTML = msgs.length === 0
-      ? '<span class="item-sub">Сообщений в чате пока нет</span>'
-      : msgs.slice().reverse().map(m => `
-          <div class="list-item">
-            <div class="item-info">
-              <b>${m.countryFlag || '🌍'} ${m.clanTag ? '[' + m.clanTag + '] ' : ''}${m.nick} <span style="font-size:9px; color:var(--silver-muted);">${m.timeStr || ''}</span></b>
-              <span class="item-sub" style="color:#eee;">${m.text}</span>
-            </div>
-            <button class="btn-icon del" onclick="window.deleteSingleChatMsg(${m.id})"><i class="fas fa-trash"></i></button>
-          </div>
-        `).join('');
-  });
-
-  onSnapshot(doc(db, DB_COLLECTION, "shop_config"), (snap) => {
-    if (!snap.exists()) return;
-    const d = snap.data();
-    const tInp = document.getElementById('admShopTitle');
-    const hInp = document.getElementById('admShopHype');
-    const wEl  = document.getElementById('admShopWaitCount');
-    if (tInp && !tInp.value && d.title) tInp.value = d.title;
-    if (hInp && !hInp.value && d.hypeText) hInp.value = d.hypeText;
-    if (wEl) wEl.innerText = String(Array.isArray(d.waitlist) ? d.waitlist.length : 0);
-  });
-
-  window.generateKasUpdateIntoEditor = async () => {
-    showToast("Генерирую статью и баннер обновления от лица Kas...");
-    const payload = await buildKasUpdatePayload();
-    document.getElementById('newsTitle').value = payload.title;
-    document.getElementById('newsDate').value = payload.dateVal;
-    document.getElementById('newsTag').value = 'ОБНОВЛЕНИЕ';
-    document.getElementById('newsVisualEditor').innerHTML = payload.htmlText;
-    showToast("✅ Красивая новость об обнове с картинкой готова в редакторе!");
-  };
-
-  window.publishKasUpdateOneClick = async () => {
-    await window.generateKasUpdateIntoEditor();
-    await window.addNews();
-  };
-
-  window.addNews = async () => {
-    const title = document.getElementById('newsTitle').value.trim();
-    if (!title) return showToast("Введите заголовок новости!", true);
-    const editor = document.getElementById('newsVisualEditor');
-    const formattedText = editor.innerHTML.replace(/\scontenteditable="false"/g, '');
-    if (!formattedText.trim()) return showToast("Введите текст новости!", true);
-
-    const dateVal = document.getElementById('newsDate').value.trim() || new Date().toLocaleDateString('ru-RU');
-    const tagVal = document.getElementById('newsTag').value;
-    const editingId = document.getElementById('editingNewsId').value;
-    const verInp = (document.getElementById('relVersionInp')?.value || 'v4.5').trim();
-    const nowId = editingId ? parseInt(editingId, 10) : Date.now();
-    const versionId = tagVal === 'ОБНОВЛЕНИЕ' ? `c6e_rel_${verInp.replace(/[^a-zA-Z0-9]/g, '_')}_${nowId}` : undefined;
-
-    const ref = doc(db, DB_COLLECTION, "news");
-    const snap = await getDoc(ref);
-    let list = (snap.exists() && snap.data().list) ? snap.data().list : [];
-
-    const newsItem = { id: nowId, title, text: formattedText, date: dateVal, tag: tagVal };
-    if (versionId) newsItem.versionId = versionId;
-
-    if (editingId) {
-      list = list.map(n => n.id === newsItem.id ? newsItem : n);
-      await setDoc(ref, { list }, { merge: true });
-      showToast("Новость обновлена!");
-      cancelNewsEdit();
-    } else {
-      list.push(newsItem);
-      await setDoc(ref, { list }, { merge: true });
-      showToast("Новость сохранена на сайте!");
-      document.getElementById('newsTitle').value = '';
-      editor.innerHTML = '';
-    }
-
-    // Если рубрика «ОБНОВЛЕНИЕ» — запускаем глобальное уведомление для всех посетителей сайта!
-    if (tagVal === 'ОБНОВЛЕНИЕ') {
-      await setDoc(doc(db, DB_COLLECTION, "site_release"), {
-        id: nowId,
-        versionId: versionId || `c6e_rel_${nowId}`,
-        versionLabel: `${verInp.toUpperCase()} // PORTAL UPDATE`,
-        date: dateVal,
-        tag: 'ОБНОВЛЕНИЕ',
-        author: 'Kas (@kas_0ff)',
-        title,
-        text: formattedText
-      });
-      showToast("🚀 Push-уведомление об обнове активировано для всех посетителей сайта!");
-    }
-
-    if (document.getElementById('tgAutoPostNews').checked) {
-      await sendNewsObjectToTG(newsItem);
-    }
-  };
-
-  window.editNews = (id) => {
-    const item = cachedNews.find(n => n.id === id);
-    if (!item) return;
-    document.getElementById('editingNewsId').value = item.id;
-    document.getElementById('newsTitle').value = item.title;
-    document.getElementById('newsVisualEditor').innerHTML = item.text || '';
-    document.getElementById('newsDate').value = item.date || '';
-    document.getElementById('newsTag').value = item.tag || 'ВАЖНО';
-    document.getElementById('newsEditBadge').style.display = 'inline-block';
-    document.getElementById('newsSubmitBtn').innerHTML = '<i class="fas fa-save"></i> СОХРАНИТЬ ИЗМЕНЕНИЯ';
-    document.getElementById('newsCancelEditBtn').style.display = 'inline-flex';
-  };
-
-  window.cancelNewsEdit = () => {
-    document.getElementById('editingNewsId').value = '';
-    document.getElementById('newsTitle').value = '';
-    document.getElementById('newsVisualEditor').innerHTML = '';
-    document.getElementById('newsEditBadge').style.display = 'none';
-    document.getElementById('newsSubmitBtn').innerHTML = '<i class="fas fa-paper-plane"></i> ОПУБЛИКОВАТЬ НА САЙТЕ И В ТГК';
-    document.getElementById('newsCancelEditBtn').style.display = 'none';
-  };
-
-  window.updateMatch = async () => {
-    const enemy = document.getElementById('tmEnemy').value.trim();
-    const date = document.getElementById('tmDate').value;
-    if (!enemy || !date) return showToast("Укажите соперника и дату матча", true);
-    await setDoc(doc(db, DB_COLLECTION, "match"), { enemy, date });
-    showToast("Таймер матча запущен!");
-
-    if (document.getElementById('tgAutoPostTimer').checked) {
-      const d = new Date(date);
-      const readable = d.toLocaleString('ru-RU', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
-      const htmlPost =
-        `🔥 <b>АНОНС МАТЧА // MATCH DAY [C6E]</b>\n` +
-        `────────────────────\n` +
-        `⚔️ <b>[C6E] CYBER 6 ESPORTS</b>  VS  <b>${enemy}</b>\n` +
-        `⏰ <b>Начало:</b> <code>${readable} (МСК)</code>\n` +
-        `────────────────────\n` +
-        `🔗 <a href="${TG_CONFIG.siteUrl}">Обратный отсчет в Матч-центре на сайте [C6E]</a>`;
-
-      await publishToTelegramChannel({
-        htmlText: htmlPost,
-        cardConfig: {
-          badge: 'UPCOMING MATCH // STANDOFF 2',
-          title: `[C6E]  VS  ${enemy.toUpperCase()}`,
-          subtitle: `НАЧАЛО МАТЧА: ${readable.toUpperCase()} (МСК)`,
-          lines: [
-            'Поддержите нашу команду Cyber 6 Esports [C6E]!',
-            'Таймер обратного отсчета уже запущен на официальном сайте.'
-          ]
-        }
-      });
-    }
-  };
-
-  window.clearMatch = async () => {
-    await setDoc(doc(db, DB_COLLECTION, "match"), { enemy: "", date: "" });
-    showToast("Таймер сброшен");
-  };
-
-  let currentRosterType = "roster_main";
-  let rosterUnsub = null;
-
-  window.loadRoster = () => { 
-    currentRosterType = document.getElementById('rosterType').value; 
-    setupRosterListener(); 
-  };
-
-  function setupRosterListener() {
-    if (rosterUnsub) rosterUnsub(); 
-    document.getElementById('rosterList').innerHTML = '<span class="item-sub">Загрузка...</span>';
-    rosterUnsub = onSnapshot(doc(db, DB_COLLECTION, currentRosterType), (snap) => {
-      const list = (snap.exists() && snap.data().list) ? snap.data().list : [];
-      cachedRoster = list;
-      document.getElementById('kpi-players').innerText = list.length;
-
-      const container = document.getElementById('rosterList');
-      container.innerHTML = list.length === 0
-        ? '<span class="item-sub">В этом составе пока нет игроков</span>'
-        : list.map(p => {
-            const st = computeAdminPlayerStats(p);
-            const safeNick = p.nick.replace(/'/g, "\\'");
-            return `
-              <div class="list-item" style="background: rgba(0,0,0,0.5);">
-                <div style="display:flex; align-items:center; gap:10px; min-width:0;">
-                  <img src="${p.img || 'logo.png'}" onerror="this.src='logo.png'" style="width:36px; height:36px; border-radius:6px; object-fit:cover; border:1px solid var(--silver-border);">
-                  <div class="item-info">
-                    <b>${p.nick}</b>
-                    <span class="item-sub">${p.role} • LIVE K/D: <b style="color:var(--success); display:inline;">${st.liveKd}</b> • <b style="color:#ffb300; display:inline;">${st.totalPantheonPts} PTS</b></span>
-                  </div>
-                </div>
-                <div class="item-actions">
-                  <button class="btn-icon tg" onclick="window.publishSinglePlayerToTG('${safeNick}')" title="Отправить карточку бойца в ТГК"><i class="fab fa-telegram-plane"></i></button>
-                  <button class="btn-icon edit" onclick="window.editPlayer('${safeNick}')" title="Изменить"><i class="fas fa-pen"></i></button>
-                  <button class="btn-icon del" onclick="window.deletePlayer('${safeNick}')" title="Удалить"><i class="fas fa-trash"></i></button>
-                </div>
-              </div>
-            `;
-          }).join('');
-    });
+  if (filtered.length === 0) {
+    grid.innerHTML = '<div class="card text-center" style="grid-column: 1/-1; color: #666;">В этой категории пока нет запланированных событий</div>';
+    return;
   }
 
-  window.addPlayer = async () => {
-    let nick = document.getElementById('pNick').value.trim();
-    if (!nick) return showToast("Введите никнейм игрока!", true);
-    if (!nick.includes('[C6E]')) {
-      nick = `[C6E] ${nick.replace(/^C6E\s*\|\s*/i, '')}`;
+  const groupedData = {};
+  filtered.forEach(item => {
+    const dayKey = item.day || 'ДЕНЬ';
+    if (!groupedData[dayKey]) groupedData[dayKey] = [];
+    groupedData[dayKey].push(item);
+  });
+
+  let fullHtml = '';
+  Object.keys(groupedData).forEach(dayName => {
+    const events = groupedData[dayName];
+    const eventsHtml = events.map(ev => {
+      let typeClass = 'type-train';
+      let badgeHtml = `<span class="tag-badge bg-train">${escapeHTML(ev.type || 'OPS')}</span>`;
+      const txt = (ev.event || '').toLowerCase();
+
+      if (ev.type === 'CW' || txt.includes('прак') || txt.includes('cw')) {
+        typeClass = 'type-pracc';
+        badgeHtml = '<span class="tag-badge bg-pracc">CW</span>';
+      } else if (ev.type === 'CUP' || txt.includes('турнир') || txt.includes('cup')) {
+        typeClass = 'type-tour';
+        badgeHtml = '<span class="tag-badge bg-tour">CUP</span>';
+      }
+
+      if (ev.status === 'live') {
+        badgeHtml = '<span class="tag-badge bg-live">🔴 LIVE</span>';
+      } else if (ev.status === 'done') {
+        badgeHtml = '<span class="tag-badge" style="background:rgba(0,230,118,0.15); color:var(--success);">✓ DONE</span>';
+      }
+
+      let statusStyle = '';
+      if (ev.status === 'done') statusStyle = 'opacity: 0.6;';
+      if (ev.status === 'canceled') statusStyle = 'border-left-color: var(--accent-light); opacity: 0.5; text-decoration: line-through;';
+
+      return `
+        <div class="event-item ${typeClass}" style="${statusStyle}">
+          <span class="event-time">${escapeHTML(ev.time)}</span>
+          <div class="event-info">
+            <span class="event-name">${escapeHTML(ev.event)}</span>
+          </div>
+          ${badgeHtml}
+        </div>
+      `;
+    }).join('');
+
+    fullHtml += `
+      <div class="day-card">
+        <div class="day-header">
+          <span class="day-title"><i class="far fa-calendar-alt text-accent" style="margin-right:6px;"></i> ${escapeHTML(dayName)}</span>
+        </div>
+        <div class="events-list">
+          ${eventsHtml}
+        </div>
+      </div>
+    `;
+  });
+
+  grid.innerHTML = fullHtml;
+}
+
+onSnapshot(doc(db, DB_COLLECTION, "schedule"), (snap) => {
+  allScheduleData = (snap.exists() && snap.data().list) ? snap.data().list : [];
+  renderScheduleGrid();
+});
+
+// =========================================================
+// 6. ИСТОРИЯ МАТЧЕЙ + ПЕРЕСЧЕТ РОСТЕРА И ПАНТЕОНА
+// =========================================================
+
+window.filterHistory = (mode, btn) => {
+  currentHistoryFilter = mode;
+  document.querySelectorAll('#history .sub-filter-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderHistoryList();
+};
+
+window.toggleMatchDrawer = (id) => {
+  const el = document.getElementById('drawer-' + id);
+  if (el) el.classList.toggle('open');
+};
+
+function buildSo2TeamTableHTML(teamTitle, sideText, roundsScore, playersList, isOurTeam) {
+  if (!playersList || !playersList.length) return '';
+
+  const rowsHtml = playersList.map((p, idx) => {
+    const k = parseInt(p.kills, 10) || 0;
+    const a = parseInt(p.assists, 10) || 0;
+    const d = parseInt(p.deaths, 10) || 0;
+    const kd = p.kd || (d > 0 ? (k / d).toFixed(2) : k.toFixed(2));
+    const sc = p.score !== undefined ? p.score : (k * 2 + a);
+    const pg = p.ping !== undefined ? p.ping : 40;
+    const kdColor = parseFloat(kd) >= 1.0 ? 'var(--success)' : 'var(--accent-light)';
+
+    return `
+      <tr>
+        <td style="color:#777; font-size:10px;">${idx + 1}</td>
+        <td class="col-name">${formatPlayerNickHTML(p.nick, isOurTeam)}</td>
+        <td style="color:#fff; font-weight:700;">${k}</td>
+        <td style="color:#9ca0a8;">${a}</td>
+        <td style="color:#9ca0a8;">${d}</td>
+        <td style="font-family:var(--font-tech); font-weight:800; color:${kdColor};">${escapeHTML(kd)}</td>
+        <td style="color:var(--warning); font-weight:700;">${sc}</td>
+        <td style="color:#777; font-size:10px;">${pg}</td>
+      </tr>
+    `;
+  }).join('');
+
+  return `
+    <div class="so2-team-panel">
+      <div class="so2-team-header ${isOurTeam ? 'c6e-head' : 'enemy-head'}">
+        <div>
+          <span style="color:#fff;">${escapeHTML(teamTitle)}</span>
+          <span style="font-size:9px; color:var(--silver-muted); display:block; font-weight:500; margin-top:2px;">${escapeHTML(sideText)}</span>
+        </div>
+        <div style="font-size:20px; color:${isOurTeam ? 'var(--silver)' : '#9ec8ff'};">${escapeHTML(roundsScore)}</div>
+      </div>
+      <div class="so2-table-wrap">
+        <table class="so2-table">
+          <thead>
+            <tr>
+              <th style="width:22px;">#</th>
+              <th class="col-name">Имя</th>
+              <th>У</th>
+              <th>П</th>
+              <th>С</th>
+              <th>K/D</th>
+              <th>Счет</th>
+              <th>Пинг</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rowsHtml}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+function renderHistoryList() {
+  const cont = document.getElementById('full-history-container');
+  if (!cont) return;
+
+  let list = [...allHistoryData].reverse();
+  if (currentHistoryFilter === 'win') {
+    list = list.filter(m => parseInt(m.our, 10) > parseInt(m.their, 10));
+  } else if (currentHistoryFilter === 'proof') {
+    list = list.filter(m => (m.proofImg && m.proofImg.length > 5) || (m.players && m.players.length > 0));
+  }
+
+  if (list.length === 0) {
+    cont.innerHTML = '<div class="card text-center" style="color:#666;">Матчей по выбранному фильтру пока нет</div>';
+    return;
+  }
+
+  cont.innerHTML = list.map(m => {
+    const ourScore = parseInt(m.our, 10) || 0;
+    const theirScore = parseInt(m.their, 10) || 0;
+    const isWin = ourScore > theirScore;
+    const color = isWin ? 'var(--success)' : 'var(--accent-light)';
+    const statusText = isWin ? 'ПОБЕДА [C6E]' : 'ПОРАЖЕНИЕ';
+
+    const hasProof = m.proofImg && m.proofImg.length > 5;
+    const ourPlayers = m.players || [];
+    const enemyPlayers = m.enemyPlayers || [];
+    const hasAnyStats = ourPlayers.length > 0 || enemyPlayers.length > 0;
+
+    let enemyMvpText = '';
+    if (enemyPlayers.length > 0) {
+      const topEnemy = [...enemyPlayers].sort((a, b) => (parseFloat(b.kd) || 0) - (parseFloat(a.kd) || 0))[0];
+      if (topEnemy) {
+        const ekd = topEnemy.kd || (topEnemy.deaths > 0 ? (topEnemy.kills / topEnemy.deaths).toFixed(2) : topEnemy.kills);
+        enemyMvpText = `${topEnemy.nick} (${ekd} K/D • ${topEnemy.kills} У)`;
+      }
     }
 
-    const rawImg = document.getElementById('pImg').value.trim();
-    const p = { 
-      nick, 
-      role: document.getElementById('pRole').value.trim() || "Player", 
-      img: normalizeImageUrl(rawImg) || "logo.png", 
-      quote: document.getElementById('pQuote').value.trim() || "Cyber 6 Esports", 
-      device: document.getElementById('pDevice').value.trim() || "Mobile", 
-      settings: document.getElementById('pSettings').value.trim() || "Default", 
-      weapon: document.getElementById('pWeapon').value.trim() || "AKR / M4", 
-      stats: {
-        kd: document.getElementById('pKd').value.trim() || "1.0",
-        rank: document.getElementById('pRank').value.trim() || "The Legend"
-      } 
+    const ourTableHtml = buildSo2TeamTableHTML(
+      '[C6E] CYBER 6 ESPORTS',
+      m.ourSide || 'АТАКА (Т)',
+      ourScore,
+      ourPlayers,
+      true
+    );
+
+    const enemyTableHtml = buildSo2TeamTableHTML(
+      m.enemy || 'СОПЕРНИК',
+      m.theirSide || 'ОБОРОНА (СТ)',
+      theirScore,
+      enemyPlayers,
+      false
+    );
+
+    const proofImgHtml = hasProof ? `
+      <div style="margin-top:14px;">
+        <div style="font-size:10px; font-family:var(--font-tech); color:var(--success); margin-bottom:6px;">
+          <i class="fas fa-camera-retro"></i> ОРИГИНАЛЬНЫЙ СКРИНШОТ ТАБА STANDOFF 2 (НАЖМИ ДЛЯ УВЕЛИЧЕНИЯ):
+        </div>
+        <img src="${m.proofImg}" class="proof-thumb-img" alt="Standoff 2 Scoreboard Proof" onclick="window.openProofLightbox('${m.proofImg}')">
+      </div>
+    ` : '';
+
+    return `
+      <div class="history-match-card" style="border-left: 4px solid ${color};">
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+          <div>
+            <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom: 6px;">
+              <span class="tag-c6e" style="font-size:10px; padding:2px 7px;">[C6E]</span>
+              <span style="font-size:9px; background:rgba(255,255,255,0.06); padding:3px 8px; border-radius:4px; color:var(--silver); font-family:var(--font-tech);">${escapeHTML(m.tour || 'Турнир')}</span>
+              <span style="font-size:9px; background:var(--accent-dim); border:1px solid var(--accent); padding:3px 8px; border-radius:4px; color:var(--silver); font-family:var(--font-tech);"><i class="fas fa-map-marker-alt text-accent"></i> ${escapeHTML(m.map || 'Dune')}</span>
+            </div>
+            <div style="font-family: var(--font-tech); font-size: 16px; font-weight: 800; color: #fff;">
+              [C6E] CYBER 6 <span style="color:var(--accent-light);">VS</span> ${escapeHTML(m.enemy)}
+            </div>
+          </div>
+
+          <div style="text-align: right;">
+            <div style="font-family: var(--font-tech); font-size: 26px; font-weight: 900; color: ${color}; line-height:1;">
+              ${ourScore} : ${theirScore}
+            </div>
+            <div style="font-size: 9px; color: ${color}; font-weight: 800; font-family: var(--font-tech); letter-spacing:1px; margin-top:4px;">
+              ${statusText}
+            </div>
+          </div>
+        </div>
+
+        <div class="so2-bottom-bar">
+          <span><i class="fas fa-globe-europe text-accent"></i> ${escapeHTML(m.tour || 'Турнир')} / ${escapeHTML(m.map || 'Dune')} / ${escapeHTML(m.server || 'Россия, Москва')}</span>
+          <span><i class="far fa-clock"></i> ${escapeHTML(m.date || 'Сегодня')}</span>
+        </div>
+
+        ${(hasProof || hasAnyStats) ? `
+          <div style="margin-top: 12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+            <span style="font-size:10px; color:var(--silver-muted);">
+              ${hasAnyStats ? `<i class="fas fa-list-ol text-accent"></i> Полный Таб (${ourPlayers.length + enemyPlayers.length} игроков)` : ''}
+              ${hasProof ? ' • <i class="fas fa-check-circle" style="color:var(--success);"></i> Скриншот-доказательство' : ''}
+            </span>
+            <button type="button" class="btn-glitch" style="width:auto; padding:8px 16px; font-size:10px;" onclick="window.toggleMatchDrawer(${m.id})">
+              <i class="fas fa-table" style="margin-right:6px;"></i> ОТКРЫТЬ ТАБ ИГРОКОВ И СКРИНШОТ
+            </button>
+          </div>
+
+          <div id="drawer-${m.id}" class="match-proof-drawer">
+            ${(m.mvp || enemyMvpText) ? `
+              <div class="mvp-compare-bar">
+                ${m.mvp ? `
+                  <div class="mvp-card" style="border-left:3px solid var(--warning);">
+                    <i class="fas fa-crown" style="color:var(--warning); font-size:16px;"></i>
+                    <div>
+                      <div style="font-size:9px; color:var(--silver-muted); text-transform:uppercase; font-weight:700;">MVP НАШЕЙ КОМАНДЫ [C6E]</div>
+                      <div style="font-weight:700; color:#fff;">${escapeHTML(m.mvp)}</div>
+                    </div>
+                  </div>
+                ` : ''}
+                ${enemyMvpText ? `
+                  <div class="mvp-card" style="border-left:3px solid #5ea8ff;">
+                    <i class="fas fa-crosshairs" style="color:#5ea8ff; font-size:16px;"></i>
+                    <div>
+                      <div style="font-size:9px; color:var(--silver-muted); text-transform:uppercase; font-weight:700;">ЛИДЕР ПРОТИВНИКА</div>
+                      <div style="font-weight:700; color:#fff;">${escapeHTML(enemyMvpText)}</div>
+                    </div>
+                  </div>
+                ` : ''}
+              </div>
+            ` : ''}
+
+            <div class="so2-tab-grid">
+              ${ourTableHtml}
+              ${enemyTableHtml}
+            </div>
+
+            ${proofImgHtml}
+          </div>
+        ` : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+onSnapshot(doc(db, DB_COLLECTION, "history"), (snap) => {
+  const list = (snap.exists() && snap.data().list) ? snap.data().list : [];
+  allHistoryData = list;
+
+  let wins = 0;
+  list.forEach(m => {
+    if (parseInt(m.our, 10) > parseInt(m.their, 10)) wins++;
+  });
+
+  const total = list.length;
+  const rate = total > 0 ? Math.round((wins / total) * 100) : 0;
+
+  const wrEl = document.getElementById('win-rate-display');
+  const totEl = document.getElementById('total-games-display');
+  if (wrEl) wrEl.innerText = `${rate}%`;
+  if (totEl) totEl.innerText = total;
+
+  renderHistoryList();
+  renderAllRosters();
+  renderPantheonSection();
+});
+
+// --- ROADMAP, МЕДИА, ОТЗЫВЫ ---
+onSnapshot(doc(db, DB_COLLECTION, "about"), (snap) => {
+  const list = (snap.exists() && snap.data().roadmap) ? snap.data().roadmap : [];
+  const cont = document.getElementById('roadmap-container');
+  if (cont) {
+    if (!list.length) {
+      cont.innerHTML = '<div class="text-center" style="color:#666; font-size:12px;">История заполняется...</div>';
+      return;
+    }
+    cont.innerHTML = '<div style="position:absolute; left:6px; top:0; bottom:0; width:2px; background:linear-gradient(180deg, var(--silver), var(--accent), transparent);"></div>' +
+      list.map(r => `
+        <div style="position:relative; margin-bottom:25px; padding-left:15px;">
+          <div style="position:absolute; left:-18px; top:2px; width:10px; height:10px; background:var(--bg-deep); border:2px solid var(--accent-light); border-radius:50%; z-index:2;"></div>
+          <div style="font-size:10px; color:var(--accent-light); font-family:var(--font-tech);">${escapeHTML(r.date)}</div>
+          <div style="font-weight:700; font-size:14px; color:var(--silver); margin:2px 0;">${escapeHTML(r.title)}</div>
+          <div style="font-size:12px; color:var(--text-gray);">${escapeHTML(r.desc)}</div>
+        </div>
+      `).join('');
+  }
+});
+
+onSnapshot(doc(db, DB_COLLECTION, "media"), (snap) => {
+  if (!snap.exists()) return;
+  const d = snap.data();
+  const vidCont = document.getElementById('video-container');
+  if (vidCont && d.videoId) {
+    vidCont.innerHTML = `<iframe style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" src="https://www.youtube.com/embed/${escapeHTML(d.videoId)}?rel=0&modestbranding=1" allowfullscreen></iframe>`;
+  }
+  const galCont = document.getElementById('gallery-container');
+  if (galCont && d.gallery && d.gallery.length) {
+    galCont.innerHTML = d.gallery.map(g => `
+      <div style="background: url('${g.src}') center/cover; height: 110px; border-radius: 6px; cursor: pointer; border:1px solid var(--glass-border); transition:0.3s;" onclick="window.openProofLightbox('${g.src}')"></div>
+    `).join('');
+    const latest = Math.max(...d.gallery.map(i => i.id || 0));
+    checkUpdateBadge('media', latest, 'btn-media');
+  }
+});
+
+onSnapshot(doc(db, DB_COLLECTION, "reviews"), (snap) => {
+  const list = (snap.exists() && snap.data().list) ? snap.data().list : [];
+  const el = document.getElementById('reviews-container');
+  if (el) {
+    el.innerHTML = list.slice().reverse().map(r => `
+      <div class="card" style="padding: 15px; margin-bottom: 12px;">
+        <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:6px;">
+          <span style="color:var(--silver); font-weight:700;">${escapeHTML(r.nick)}</span>
+          <span style="color:var(--accent-light); font-size:11px;">для ${escapeHTML(r.target)}</span>
+        </div>
+        <div style="font-size:13px; color:#ccc; font-style:italic;">"${escapeHTML(r.text)}"</div>
+      </div>
+    `).join('');
+  }
+});
+
+// =========================================================
+// 7. ОТПРАВКА ФОРМ (ЗАЩИЩЕНО СИСТЕМОЙ C6E SHIELD + ЗАПИСЬ МАТОВ)
+// =========================================================
+
+window.sendToTelegram = async (e) => {
+  e.preventDefault();
+  if (checkIfCurrentUserBanned()) return;
+  if (!checkCooldown('last_join_submit', 15)) {
+    return window.showNotify("Анкета уже отправлена! Подождите 15 минут.", "error");
+  }
+
+  const btn = e.target.querySelector('button');
+  const originalText = btn.innerText;
+
+  const nick = document.getElementById('nick').value.trim();
+  const tg = document.getElementById('tg_username').value.trim();
+
+  if (nick.length < 2 || tg.length < 2) {
+    window.showNotify("Заполните корректно Ник и TG!", "error");
+    return;
+  }
+
+  if (containsSpam(nick) || containsSpam(tg)) {
+    const badWord = findMatchedSpamWord(nick + ' ' + tg);
+    logSecurityEvent("⚠️ СПАМ / МАТ (АНКЕТА)", nick || "Аноним", `Заблокирована попытка отправить запрещённое слово («${badWord}») в анкете: Ник=${nick}, TG=${tg}`, true);
+    return window.showNotify("Обнаружены запрещенные слова! Нарушение зафиксировано C6E Shield.", "error");
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> ПРОВЕРКА C6E SHIELD...';
+
+  await resolveClientIp();
+
+  const data = {
+    nick: escapeHTML(nick),
+    hours: escapeHTML(document.getElementById('hours').value),
+    role: escapeHTML(document.getElementById('role').value),
+    rank: escapeHTML(document.getElementById('best_rank').value),
+    tg: escapeHTML(tg)
+  };
+
+  try {
+    await logSecurityEvent("ЗАЯВКА В КЛУБ", nick, `TG: ${tg} | Роль: ${data.role} | Часы: ${data.hours}`, false);
+
+    const tgMsg = `📝 <b>НОВАЯ ЗАЯВКА В CYBER 6 ESPORTS [C6E]</b>\n\n` +
+                  `👤 <b>Ник:</b> ${data.nick}\n` +
+                  `⏳ <b>Часы:</b> ${data.hours}\n` +
+                  `🎯 <b>Роль:</b> ${data.role}\n` +
+                  `🏆 <b>Пик Ранг:</b> ${data.rank}\n` +
+                  `✈️ <b>TG:</b> ${data.tg}\n` +
+                  `────────────────────\n` +
+                  `🛡 <b>Device ID:</b> <code>${clientSecurityMeta.deviceId}</code>\n` +
+                  `🌐 <b>IP:</b> <code>${clientSecurityMeta.ip}</code>`;
+
+    await sendToBot(TG_CONFIG.groupId, tgMsg);
+    setCooldown('last_join_submit');
+    window.showNotify("Заявка в [C6E] отправлена!", "success");
+    e.target.reset();
+  } catch (err) {
+    window.showNotify("Ошибка отправки: " + err.message, "error");
+  } finally {
+    btn.disabled = false;
+    btn.innerText = originalText;
+  }
+};
+
+window.submitPrac = async (e) => {
+  e.preventDefault();
+  if (checkIfCurrentUserBanned()) return;
+  if (!checkCooldown('last_prac_submit', 10)) {
+    return window.showNotify("Подождите 10 минут перед следующей заявкой.", "error");
+  }
+
+  const slotId = parseInt(document.getElementById('prac-slot-select').value, 10);
+  const maps = Array.from(document.querySelectorAll('.map-check:checked')).map(cb => cb.value);
+
+  const clanName = document.getElementById('pc-clan').value.trim();
+  const captain = document.getElementById('pc-cap').value.trim();
+  const capId = document.getElementById('pc-id').value.trim();
+  const contact = document.getElementById('pc-contact').value.trim();
+  const lineup = document.getElementById('pc-lineup').value.trim();
+
+  if (!slotId) return window.showNotify("Нажмите на свободный слот времени выше!", "error");
+  if (containsSpam(clanName) || containsSpam(lineup) || containsSpam(captain)) {
+    const badWord = findMatchedSpamWord(`${clanName} ${captain} ${lineup}`);
+    logSecurityEvent("⚠️ СПАМ / МАТ (ПРАКИ)", `${clanName || 'Клан'} (${captain || 'Капитан'})`, `Заблокирована попытка отправить слово («${badWord}») в праках: ${clanName} | ${lineup}`, true);
+    return window.showNotify("Обнаружены запрещенные слова! Нарушение зафиксировано C6E Shield.", "error");
+  }
+  if (!/^\d{7,14}$/.test(capId)) return window.showNotify("ID должен содержать от 7 до 14 цифр!", "error");
+  if (!/^@[a-zA-Z0-9_]{3,25}$/.test(contact)) return window.showNotify("TG должен начинаться с @!", "error");
+  if (maps.length === 0) return window.showNotify("Выберите хотя бы одну карту!", "error");
+
+  const btn = e.target.querySelector('button[type="submit"]');
+  const originalText = btn.innerHTML;
+  btn.innerText = "БРОНИРОВАНИЕ...";
+  btn.disabled = true;
+
+  await resolveClientIp();
+
+  try {
+    const ref = doc(db, DB_COLLECTION, "practices");
+    const snap = await getDoc(ref);
+    if (!snap.exists()) throw new Error("База слотов пуста");
+
+    let list = snap.data().list;
+    const idx = list.findIndex(s => s.id === slotId);
+    if (idx === -1 || list[idx].status !== 'open') {
+      throw new Error("Этот слот только что заняли!");
+    }
+
+    const slotObj = list[idx];
+    list[idx].status = 'booked';
+    list[idx].team = {
+      clanName: escapeHTML(clanName),
+      captain: escapeHTML(captain),
+      capId: escapeHTML(capId),
+      contact: escapeHTML(contact),
+      format: slotObj.format || "BO1",
+      maps: maps,
+      lineup: escapeHTML(lineup),
+      ip: clientSecurityMeta.ip,
+      deviceId: clientSecurityMeta.deviceId,
+      deviceInfo: clientSecurityMeta.deviceInfo
     };
 
-    const ref = doc(db, DB_COLLECTION, currentRosterType);
-    const snap = await getDoc(ref);
-    let list = snap.exists() ? (snap.data().list || []) : [];
+    await updateDoc(ref, { list: list });
+    await logSecurityEvent("ПРАК (CW)", `${clanName} (${captain})`, `TG: ${contact} | ID: ${capId} | Карты: ${maps.join(', ')}`, false);
 
-    const existingIdx = list.findIndex(item => item.nick.toLowerCase() === nick.toLowerCase());
-    if (existingIdx >= 0) {
-      list[existingIdx] = p;
-      showToast(`Данные бойца ${nick} обновлены!`);
-    } else {
-      list.push(p);
-      showToast(`Боец ${nick} добавлен в состав!`);
-    }
+    const d = new Date(slotObj.isoDate);
+    const weekday = d.toLocaleDateString('ru-RU', { weekday: 'long' }).toUpperCase();
+    const shortDate = d.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' });
+    const timeStr = d.toLocaleTimeString('ru-RU', { timeZone: 'Europe/Moscow', hour: '2-digit', minute: '2-digit' });
 
-    await setDoc(ref, { list });
-    if (document.getElementById('tgAutoPostPlayer').checked) {
-      await sendPlayerCardToTG(p);
-    }
-    ['pNick','pRole','pImg','pQuote','pKd','pRank','pDevice','pSettings','pWeapon'].forEach(id => document.getElementById(id).value = '');
-  };
-
-  window.editPlayer = (nick) => {
-    const p = cachedRoster.find(item => item.nick === nick);
-    if (!p) return;
-    document.getElementById('pNick').value = p.nick || '';
-    document.getElementById('pRole').value = p.role || '';
-    document.getElementById('pImg').value = p.img || '';
-    document.getElementById('pQuote').value = p.quote || '';
-    document.getElementById('pDevice').value = p.device || '';
-    document.getElementById('pSettings').value = p.settings || '';
-    document.getElementById('pWeapon').value = p.weapon || '';
-    document.getElementById('pKd').value = p.stats ? p.stats.kd : '';
-    document.getElementById('pRank').value = p.stats ? p.stats.rank : '';
-    showToast(`Редактирование: ${p.nick}`);
-  };
-
-  window.deletePlayer = async (nick) => {
-    if (!confirm(`Удалить игрока ${nick} из состава?`)) return;
-    const ref = doc(db, DB_COLLECTION, currentRosterType);
-    const snap = await getDoc(ref);
-    if (snap.exists()) {
-      let list = (snap.data().list || []).filter(p => p.nick !== nick);
-      await setDoc(ref, { list });
-      showToast("Игрок удален");
-    }
-  };
-
-  window.addRoadmap = async () => {
-    const title = document.getElementById('rmTitle').value.trim();
-    if (!title) return showToast("Введите заголовок события!", true);
-    const item = {
+    const schRef = doc(db, DB_COLLECTION, "schedule");
+    const schSnap = await getDoc(schRef);
+    const newSchItem = {
       id: Date.now(),
-      date: document.getElementById('rmDate').value.trim() || new Date().toLocaleDateString('ru-RU'),
-      title,
-      desc: document.getElementById('rmDesc').value.trim()
+      day: `${weekday} / ${shortDate}`,
+      time: timeStr,
+      type: 'CW',
+      event: `Прак: [C6E] VS ${escapeHTML(clanName)} (${slotObj.format || 'BO1'})`,
+      status: 'upcoming'
     };
-    if (await updateArray("about", "roadmap", item)) {
-      showToast("Точка истории добавлена");
-      document.getElementById('rmTitle').value = '';
-      document.getElementById('rmDesc').value = '';
+    if (!schSnap.exists()) await setDoc(schRef, { list: [newSchItem] });
+    else await updateDoc(schRef, { list: arrayUnion(newSchItem) });
+
+    setCooldown('last_prac_submit');
+
+    const tgMsg = `⚔️ <b>[C6E] // НОВЫЙ ПРАК ЗАБРОНИРОВАН</b>\n` +
+                  `────────────────────\n` +
+                  `📅 <b>ВРЕМЯ:</b> <code>${slotObj.displayTime}</code>\n` +
+                  `👥 <b>СОПЕРНИК:</b> <code>${escapeHTML(clanName)}</code>\n` +
+                  `👤 <b>КАПИТАН:</b> ${escapeHTML(captain)} (ID: <code>${escapeHTML(capId)}</code>)\n` +
+                  `📞 <b>СВЯЗЬ:</b> ${escapeHTML(contact)}\n` +
+                  `🎮 <b>ФОРМАТ:</b> ${slotObj.format || 'BO1'}\n` +
+                  `🗺 <b>КАРТЫ:</b> ${maps.join(', ')}\n` +
+                  `📝 <b>СОСТАВ:</b> ${escapeHTML(lineup || 'Не указан')}`;
+
+    await sendToBot(TG_CONFIG.channelId, tgMsg);
+    window.showNotify("Прак забронирован и добавлен в Расписание!", "success");
+    e.target.reset();
+  } catch (err) {
+    window.showNotify(err.message, "error");
+  } finally {
+    btn.innerHTML = originalText;
+    btn.disabled = false;
+  }
+};
+
+window.submitReview = async (e) => {
+  e.preventDefault();
+  if (checkIfCurrentUserBanned()) return;
+  if (!checkCooldown('last_review_submit', 30)) {
+    return window.showNotify("Отзыв можно оставлять раз в 30 минут.", "error");
+  }
+
+  const nick = document.getElementById('rev-nick').value.trim();
+  const target = document.getElementById('rev-target').value;
+  const text = document.getElementById('rev-text').value.trim();
+
+  if (text.length < 5) return window.showNotify("Отзыв слишком короткий!", "error");
+  if (containsSpam(text) || containsSpam(nick)) {
+    const badWord = findMatchedSpamWord(`${nick} ${text}`);
+    logSecurityEvent("⚠️ СПАМ / МАТ (ОТЗЫВЫ)", nick || "Аноним", `Заблокирована попытка отправить запрещённое слово («${badWord}») в отзыве: "${text.slice(0, 80)}"`, true);
+    return window.showNotify("Обнаружены запрещенные слова! Нарушение зафиксировано C6E Shield.", "error");
+  }
+
+  await resolveClientIp();
+
+  try {
+    const ref = doc(db, DB_COLLECTION, "reviews");
+    const snap = await getDoc(ref);
+    if (!snap.exists()) await setDoc(ref, { list: [] });
+
+    await updateDoc(ref, {
+      list: arrayUnion({
+        id: Date.now(),
+        nick: escapeHTML(nick),
+        target: escapeHTML(target),
+        text: escapeHTML(text),
+        ip: clientSecurityMeta.ip,
+        deviceId: clientSecurityMeta.deviceId,
+        deviceInfo: clientSecurityMeta.deviceInfo
+      })
+    });
+
+    await logSecurityEvent("ОТЗЫВ", nick, `Кому: ${target} | Текст: ${text.slice(0, 80)}`, false);
+
+    setCooldown('last_review_submit');
+    window.showNotify("Отзыв опубликован!", "success");
+    e.target.reset();
+  } catch (err) {
+    window.showNotify("Ошибка сети", "error");
+  }
+};
+
+
+
+// ============================================================================
+// 8. ЯДРО ОБНОВЛЕНИЯ v0.5.0: ТЕМЫ, ИГРОВЫЕ ПРОФИЛИ (12+), ВЕРИФИКАЦИЯ [C6E],
+//    ФЛАГИ СТРАН, ОНЛАЙН-РАДАР, ОБЩИЙ ЧАТ (12Ч), УВЕДОМЛЕНИЯ И МАГАЗИН [C6E]
+// ============================================================================
+
+const THEME_PRESETS = {
+  red:   { name: '🔴 Кровавый Рубин [C6E]', accent: '#9e1b28', light: '#d42638', dim: 'rgba(158, 27, 40, 0.16)', glow: 'rgba(212, 38, 56, 0.38)' },
+  green: { name: '🟢 Темно-зеленый Изумруд', accent: '#0b6e4f', light: '#00c885', dim: 'rgba(11, 110, 79, 0.18)', glow: 'rgba(0, 200, 133, 0.38)' },
+  gold:  { name: '🟡 Темно-желтый Пантеон', accent: '#9a6b00', light: '#ffb300', dim: 'rgba(154, 107, 0, 0.18)', glow: 'rgba(255, 179, 0, 0.38)' },
+  blue:  { name: '🔵 Темно-синий Сапфир', accent: '#1446a0', light: '#3b82f6', dim: 'rgba(20, 70, 160, 0.18)', glow: 'rgba(59, 130, 246, 0.38)' }
+};
+
+function applySiteTheme(themeKey) {
+  const key = THEME_PRESETS[themeKey] ? themeKey : 'red';
+  const t = THEME_PRESETS[key];
+  document.documentElement.setAttribute('data-theme', key);
+  document.documentElement.style.setProperty('--accent', t.accent);
+  document.documentElement.style.setProperty('--accent-light', t.light);
+  document.documentElement.style.setProperty('--accent-dim', t.dim);
+  document.documentElement.style.setProperty('--accent-glow', t.glow);
+  try { localStorage.setItem('c6e_theme_color', key); } catch (e) {}
+}
+
+// Применяем сохраненную тему сразу при старте
+try {
+  const savedTheme = localStorage.getItem('c6e_theme_color') || 'red';
+  applySiteTheme(savedTheme);
+} catch (e) {}
+
+window.openThemeSwitcherModal = () => {
+  let modal = document.getElementById('c6e-theme-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'c6e-theme-modal';
+    modal.className = 'c6e-modal-overlay';
+    modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('active'); });
+    document.body.appendChild(modal);
+  }
+  const cur = localStorage.getItem('c6e_theme_color') || 'red';
+  modal.innerHTML = `
+    <div class="c6e-modal-card" style="max-width:420px;">
+      <div class="c6e-modal-head">
+        <span style="font-family:var(--font-tech); font-size:12px; font-weight:900; color:#fff;">
+          <i class="fas fa-palette text-accent"></i> ЦВЕТ ОФОРМЛЕНИЯ САЙТА
+        </span>
+        <button type="button" class="c6e-modal-close" onclick="document.getElementById('c6e-theme-modal').classList.remove('active')">✕</button>
+      </div>
+      <div class="c6e-modal-body">
+        <p style="font-size:11px; color:var(--silver-muted); margin:0 0 12px 0;">
+          Выбери фирменный цветовой стиль интерфейса (текст и структура сайта остаются идеально читаемыми):
+        </p>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          ${Object.entries(THEME_PRESETS).map(([k, v]) => `
+            <button type="button" onclick="window.selectSiteTheme('${k}')" style="display:flex; justify-content:space-between; align-items:center; padding:12px 14px; border-radius:10px; border:1px solid ${cur === k ? v.light : 'rgba(255,255,255,0.1)'}; background:${cur === k ? v.dim : 'rgba(255,255,255,0.03)'}; color:#fff; font-family:var(--font-tech); font-size:11px; font-weight:800; cursor:pointer;">
+              <span>${v.name}</span>
+              <span style="width:18px; height:18px; border-radius:50%; background:${v.light}; box-shadow:0 0 10px ${v.light}; display:inline-block;"></span>
+            </button>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+  modal.classList.add('active');
+};
+
+window.selectSiteTheme = (themeKey) => {
+  applySiteTheme(themeKey);
+  const modal = document.getElementById('c6e-theme-modal');
+  if (modal) modal.classList.remove('active');
+  if (window.showNotify && THEME_PRESETS[themeKey]) {
+    window.showNotify(`🎨 Установлена тема: ${THEME_PRESETS[themeKey].name}`, 'success');
+  }
+};
+
+// АВТОМАТИЧЕСКОЕ ОПРЕДЕЛЕНИЕ ФЛАГА СТРАНЫ ПО ВВЕДЕННОМУ ТЕКСТУ
+const COUNTRY_FLAG_DICT = [
+  { keys: ['рф', 'росси', 'rus', 'russia', 'москв', 'спб', 'ru'], flag: '🇷🇺', label: 'Россия' },
+  { keys: ['кыргыз', 'киргиз', 'бишкек', 'ош', 'kg', 'kyrgyz'], flag: '🇰🇬', label: 'Кыргызстан' },
+  { keys: ['казах', 'алмат', 'астан', 'kz', 'kazakh'], flag: '🇰🇿', label: 'Казахстан' },
+  { keys: ['индонез', 'indonesia', 'id', 'джакарт'], flag: '🇮🇩', label: 'Индонезия' },
+  { keys: ['узбеки', 'ташкент', 'uz', 'uzbek'], flag: '🇺🇿', label: 'Узбекистан' },
+  { keys: ['беларус', 'белорус', 'минск', 'by', 'belarus'], flag: '🇧🇾', label: 'Беларусь' },
+  { keys: ['украин', 'киев', 'ua', 'ukrain'], flag: '🇺🇦', label: 'Украина' },
+  { keys: ['таджик', 'душанбе', 'tj', 'tajik'], flag: '🇹🇯', label: 'Таджикистан' },
+  { keys: ['азербай', 'баку', 'az', 'azer'], flag: '🇦🇿', label: 'Азербайджан' },
+  { keys: ['армени', 'ереван', 'am', 'armen'], flag: '🇦🇲', label: 'Армения' },
+  { keys: ['грузи', 'тбилис', 'ge', 'georgia'], flag: '🇬🇪', label: 'Грузия' },
+  { keys: ['турци', 'стамбул', 'tr', 'turkey'], flag: '🇹🇷', label: 'Турция' },
+  { keys: ['сша', 'америк', 'usa', 'us'], flag: '🇺🇸', label: 'США' },
+  { keys: ['герман', 'берлин', 'de', 'german'], flag: '🇩🇪', label: 'Германия' },
+  { keys: ['польш', 'варшав', 'pl', 'poland'], flag: '🇵🇱', label: 'Польша' },
+  { keys: ['бразил', 'br', 'brazil'], flag: '🇧🇷', label: 'Бразилия' },
+  { keys: ['япони', 'токио', 'jp', 'japan'], flag: '🇯🇵', label: 'Япония' },
+  { keys: ['коре', 'сеул', 'kr', 'korea'], flag: '🇰🇷', label: 'Южная Корея' },
+  { keys: ['китай', 'пекин', 'cn', 'china'], flag: '🇨🇳', label: 'Китай' },
+  { keys: ['инди', 'дели', 'in', 'india'], flag: '🇮🇳', label: 'Индия' },
+  { keys: ['великобрит', 'англи', 'лондон', 'uk', 'gb'], flag: '🇬🇧', label: 'Великобритания' },
+  { keys: ['франц', 'париж', 'fr', 'france'], flag: '🇫🇷', label: 'Франция' }
+];
+
+function resolveCountryInfo(rawInput) {
+  const s = String(rawInput || '').trim();
+  if (!s) return { flag: '🌍', label: 'Международный' };
+  const low = s.toLowerCase();
+  for (const item of COUNTRY_FLAG_DICT) {
+    if (item.keys.some(k => low === k || (k.length >= 3 && low.includes(k)))) {
+      return { flag: item.flag, label: item.label };
     }
+  }
+  return { flag: '🌍', label: s };
+}
+
+// Сжатие фото с телефона пользователя для Аватарки (240x240) или Баннера (720x260)
+function compressUserImageFile(file, maxW = 260, maxH = 260, quality = 0.80) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let w = img.width, h = img.height;
+        const ratio = Math.min(maxW / w, maxH / h, 1);
+        w = Math.max(40, Math.round(w * ratio));
+        h = Math.max(40, Math.round(h * ratio));
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+// Глобальное состояние профилей, уведомлений, чата и магазина
+let allProfilesList = [];
+let myLocalProfile = null;
+let myUserNotifications = [];
+let globalChatMessages = [];
+let globalChatLastPurge = Date.now();
+let currentHomeCommFilter = 'all';
+let shopConfigData = {
+  title: 'КИБЕР-МАРКЕТ CYBER 6 ESPORTS [C6E]',
+  subtitle: 'ЗАКРЫТЫЙ АУКЦИОН И ЭКСКЛЮЗИВНЫЙ ИГРОВОЙ КОНТЕНТ',
+  hypeText: 'Основатель и разработчик Kas готовит к запуску закрытый магазин [C6E]! Здесь появятся проверенные паки Голды, приватные конфигурации прицела и сенсы от топ-бойцов нашего состава, редкие VIP-рамки для профиля на сайте и пропуски на закрытые турниры с денежным фондом.',
+  waitlist: []
+};
+const sessionBootTime = Date.now();
+
+// УПРАВЛЕНИЕ БЛОКИРОВКОЙ ЭКРАНА ДО СОЗДАНИЯ ПРОФИЛЯ (БЕЗ ПРОКРУТКИ И ПРОСВЕЧИВАНИЯ САЙТА)
+function setGateLockState(locked) {
+  if (locked) {
+    document.documentElement.classList.add('c6e-gate-locked');
+    document.body?.classList.add('c6e-gate-locked');
+  } else {
+    document.documentElement.classList.remove('c6e-gate-locked');
+    document.body?.classList.remove('c6e-gate-locked');
+  }
+}
+
+function loadLocalProfileCache() {
+  try {
+    const raw = localStorage.getItem('c6e_user_profile_v5');
+    if (raw) {
+      myLocalProfile = JSON.parse(raw);
+      if (myLocalProfile && myLocalProfile.clanTag) {
+        myLocalProfile.clanTag = String(myLocalProfile.clanTag).replace(/[\[\]\?]/g, '').trim();
+      }
+    }
+  } catch (e) {}
+  try {
+    const rawN = localStorage.getItem('c6e_user_notifs_v5');
+    if (rawN) myUserNotifications = JSON.parse(rawN);
+  } catch (e) {}
+}
+loadLocalProfileCache();
+
+function saveLocalProfileCache(prof) {
+  myLocalProfile = prof;
+  try {
+    localStorage.setItem('c6e_user_profile_v5', JSON.stringify(prof));
+  } catch (e) {}
+  if (prof && prof.nick && prof.c6eStatus !== 'rejected') {
+    setGateLockState(false);
+  }
+  updateHeaderProfileChipUI();
+  autoFillFormsWithProfile();
+}
+
+// ОТПРАВКА СИСТЕМНОГО PUSH-УВЕДОМЛЕНИЯ НА ТЕЛЕФОН / ПК (С ПОДДЕРЖКОЙ ANDROID CHROME И SERVICE WORKER)
+function triggerNativeDeviceNotification(title, body) {
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+  try {
+    if (navigator.serviceWorker && navigator.serviceWorker.getRegistration) {
+      navigator.serviceWorker.getRegistration().then((reg) => {
+        if (reg && typeof reg.showNotification === 'function') {
+          reg.showNotification(title, {
+            body: body,
+            icon: 'logo.png',
+            badge: 'logo.png',
+            vibrate: [180, 80, 180]
+          });
+        } else {
+          new Notification(title, { body: body, icon: 'logo.png', badge: 'logo.png' });
+        }
+      }).catch(() => {
+        try { new Notification(title, { body: body, icon: 'logo.png' }); } catch (e) {}
+      });
+    } else {
+      new Notification(title, { body: body, icon: 'logo.png', badge: 'logo.png' });
+    }
+  } catch (e) {}
+}
+
+function addPersonalNotification(title, body, type = 'info', actionTab = null) {
+  const item = {
+    id: Date.now() + Math.floor(Math.random() * 1000),
+    title,
+    body,
+    type,
+    actionTab,
+    timeStr: new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }),
+    read: false
+  };
+  myUserNotifications.unshift(item);
+  if (myUserNotifications.length > 35) myUserNotifications = myUserNotifications.slice(0, 35);
+  try {
+    localStorage.setItem('c6e_user_notifs_v5', JSON.stringify(myUserNotifications));
+  } catch (e) {}
+  updateNotifBellBadgeUI();
+  triggerNativeDeviceNotification(title, body);
+}
+
+function updateNotifBellBadgeUI() {
+  const badge = document.getElementById('notif-badge-count');
+  if (badge) {
+    const unread = myUserNotifications.filter(n => !n.read).length;
+    if (unread > 0) {
+      badge.style.display = 'inline-flex';
+      badge.innerText = unread > 9 ? '9+' : String(unread);
+    } else {
+      badge.style.display = 'none';
+    }
+  }
+  const homePushBar = document.getElementById('home-push-optin-bar');
+  if (homePushBar) {
+    if ('Notification' in window && Notification.permission !== 'granted') {
+      homePushBar.style.display = 'flex';
+    } else {
+      homePushBar.style.display = 'none';
+    }
+  }
+}
+updateNotifBellBadgeUI();
+
+// СИНХРОННЫЙ ЗАПРОС РАЗРЕШЕНИЯ НА PUSH-УВЕДОМЛЕНИЯ ПО КЛИКУ ПОЛЬЗОВАТЕЛЯ
+window.requestDevicePushPermission = () => {
+  if (!('Notification' in window)) {
+    window.showNotify("Ваш браузер не поддерживает системные push-уведомления, но колокольчик 🔔 в шапке сайта активен!", "error");
+    return Promise.resolve('unsupported');
+  }
+  if (Notification.permission === 'granted') {
+    updateNotifBellBadgeUI();
+    triggerNativeDeviceNotification("🔔 CYBER 6 ESPORTS [C6E]", "Системные уведомления на ваше устройство уже активны!");
+    window.showNotify("📲 Push-уведомления на устройство уже включены!", "success");
+    return Promise.resolve('granted');
+  }
+  try {
+    // Вызывается строго синхронно внутри пользовательского клика (требование Android Chrome / iOS Safari)
+    const reqResult = Notification.requestPermission((permLegacy) => {
+      handlePushPermissionOutcome(permLegacy);
+    });
+    if (reqResult && typeof reqResult.then === 'function') {
+      return reqResult.then((perm) => {
+        handlePushPermissionOutcome(perm);
+        return perm;
+      }).catch(() => 'default');
+    }
+  } catch (e) {}
+  return Promise.resolve('default');
+};
+
+function handlePushPermissionOutcome(perm) {
+  updateNotifBellBadgeUI();
+  if (perm === 'granted') {
+    window.showNotify("📲 Уведомления на ваше устройство успешно включены!", "success");
+    addPersonalNotification(
+      "🔔 Уведомления CYBER 6 ESPORTS активны!",
+      "Теперь вы будете получать оповещения на устройство об обновлениях от Kas, @упоминаниях в чате и лайках профиля.",
+      "success"
+    );
+    if (document.getElementById('c6e-notif-modal')?.classList.contains('active')) {
+      window.openNotificationsModal();
+    }
+  } else if (perm === 'denied') {
+    window.showNotify("Системные уведомления отключены в браузере. Все события будут приходить в колокольчик 🔔 в шапке сайта!", "error");
+  }
+}
+
+window.openNotificationsModal = () => {
+  let modal = document.getElementById('c6e-notif-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'c6e-notif-modal';
+    modal.className = 'c6e-modal-overlay';
+    modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('active'); });
+    document.body.appendChild(modal);
+  }
+
+  myUserNotifications.forEach(n => { n.read = true; });
+  try { localStorage.setItem('c6e_user_notifs_v5', JSON.stringify(myUserNotifications)); } catch (e) {}
+  updateNotifBellBadgeUI();
+
+  const permStatus = ('Notification' in window) ? Notification.permission : 'unsupported';
+
+  modal.innerHTML = `
+    <div class="c6e-modal-card" style="max-width:500px;">
+      <div class="c6e-modal-head">
+        <span style="font-family:var(--font-tech); font-size:12px; font-weight:900; color:#fff;">
+          <i class="fas fa-bell text-accent"></i> ЦЕНТР УВЕДОМЛЕНИЙ [C6E]
+        </span>
+        <button type="button" class="c6e-modal-close" onclick="document.getElementById('c6e-notif-modal').classList.remove('active')">✕</button>
+      </div>
+      <div class="c6e-modal-body">
+        <div style="background:rgba(255,255,255,0.03); border:1px solid var(--glass-border); border-radius:10px; padding:10px 12px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+          <div style="font-size:11px; color:var(--silver);">
+            📲 <b>Push-уведомления на телефон/ПК:</b>
+            <span style="color:${permStatus === 'granted' ? 'var(--success)' : '#ffb300'}; font-weight:700;">
+              ${permStatus === 'granted' ? 'ВКЛЮЧЕНЫ ✅' : 'НЕ ВКЛЮЧЕНЫ'}
+            </span>
+          </div>
+          ${permStatus !== 'granted' ? `
+            <button type="button" class="chip-btn" style="background:var(--success); border-color:var(--success); color:#000; font-weight:800;" onclick="window.requestDevicePushPermission()">
+              🔔 Разрешить отправку
+            </button>
+          ` : ''}
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:8px; max-height:52vh; overflow-y:auto;">
+          ${myUserNotifications.length === 0 ? `
+            <div style="text-align:center; padding:25px; font-size:12px; color:var(--silver-muted);">
+              Пока нет новых уведомлений. Когда вас упомянут через <b>@Ник</b> в чате или поставят ❤️ лайк вашему профилю, они появятся здесь!
+            </div>
+          ` : myUserNotifications.map(n => `
+            <div style="padding:10px 12px; border-radius:10px; background:rgba(255,255,255,0.03); border-left:3px solid ${n.type === 'mention' ? '#ffb300' : (n.type === 'error' ? '#ff5263' : 'var(--success)')};">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                <b style="font-size:11.5px; color:#fff;">${escapeHTML(n.title)}</b>
+                <span style="font-size:9px; color:var(--silver-muted);">${escapeHTML(n.timeStr)}</span>
+              </div>
+              <div style="font-size:11.5px; color:#ccc; line-height:1.45;">${escapeHTML(n.body)}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+  modal.classList.add('active');
+};
+
+function getDisplayTagAndBadge(prof) {
+  if (!prof) return { tagStr: '', badgeHtml: '💎 Гость портала', isApprovedC6E: false };
+  if (prof.c6eStatus === 'approved') {
+    return {
+      tagStr: '[C6E]',
+      badgeHtml: '<span style="color:#00e676; font-weight:800;">🛡️ Боец [C6E]</span>',
+      isApprovedC6E: true
+    };
+  }
+  if (prof.c6eStatus === 'pending') {
+    return {
+      tagStr: '[C6E]',
+      badgeHtml: '<span style="color:#ffb300; font-weight:700;">⏳ На проверке в [C6E]</span>',
+      isApprovedC6E: false
+    };
+  }
+  const cleanTag = (prof.clanTag || '').replace(/[\[\]\?]/g, '').trim();
+  return {
+    tagStr: cleanTag ? `[${cleanTag}]` : '',
+    badgeHtml: `<span style="color:#93c5fd; font-weight:700;">💎 Гость ${prof.clanName ? '• ' + escapeHTML(prof.clanName) : 'портала'}</span>`,
+    isApprovedC6E: false
+  };
+}
+
+function updateHeaderProfileChipUI() {
+  const imgEl = document.getElementById('hp-avatar-img');
+  const wrapEl = document.querySelector('#header-profile-chip .hp-avatar-wrap');
+  const nickEl = document.getElementById('hp-nick-line');
+  const subEl = document.getElementById('hp-sub-line');
+  if (!nickEl || !subEl) return;
+
+  if (!myLocalProfile || !myLocalProfile.nick) {
+    nickEl.innerText = 'Создать профиль';
+    subEl.innerHTML = '💎 Гость портала';
+    return;
+  }
+
+  const info = getDisplayTagAndBadge(myLocalProfile);
+  if (imgEl) imgEl.src = myLocalProfile.avatar || 'logo.png';
+  if (wrapEl) {
+    wrapEl.className = `hp-avatar-wrap ${myLocalProfile.frameStyle || 'frame-c6e-red'}`;
+  }
+  nickEl.innerText = `${myLocalProfile.countryFlag || '🌍'} ${info.tagStr ? info.tagStr + ' ' : ''}${myLocalProfile.nick}`;
+  subEl.innerHTML = `${info.badgeHtml} • ❤️ ${myLocalProfile.likes || 0}`;
+}
+
+// АВТО-ПОДСТАНОВКА ДАННЫХ ПРОФИЛЯ ВО ВСЕ ФОРМЫ САЙТА (ПРАКИ, ОТЗЫВЫ, ЗАЯВКА В КЛАН)
+function autoFillFormsWithProfile() {
+  if (!myLocalProfile || !myLocalProfile.nick) return;
+  const info = getDisplayTagAndBadge(myLocalProfile);
+  const fullDisplayNick = `${info.tagStr ? info.tagStr + ' ' : ''}${myLocalProfile.nick}`.trim();
+
+  const pcClan = document.getElementById('pc-clan');
+  const pcCap  = document.getElementById('pc-cap');
+  const pcId   = document.getElementById('pc-id');
+  if (pcClan && !pcClan.value) {
+    pcClan.value = myLocalProfile.clanName || (info.tagStr ? info.tagStr : myLocalProfile.nick + ' Team');
+  }
+  if (pcCap && !pcCap.value) pcCap.value = fullDisplayNick;
+  if (pcId && !pcId.value && myLocalProfile.gameId) pcId.value = String(myLocalProfile.gameId).replace(/\D/g, '');
+
+  const revNick = document.getElementById('rev-nick');
+  if (revNick && !revNick.value) revNick.value = fullDisplayNick;
+
+  const joinNick = document.getElementById('nick');
+  if (joinNick && !joinNick.value) joinNick.value = fullDisplayNick;
+}
+
+// ОБЯЗАТЕЛЬНОЕ ОКНО РЕГИСТРАЦИИ / РЕДАКТИРОВАНИЯ ИГРОВОГО ПРОФИЛЯ ГОСТЯ (12+)
+let tempProfileAvatarDataUrl = '';
+let tempProfileBannerDataUrl = '';
+
+document.getElementById('guestAvatarFileInput')?.addEventListener('change', async (e) => {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+  try {
+    tempProfileAvatarDataUrl = await compressUserImageFile(file, 160, 160, 0.76);
+    const inp = document.getElementById('prof-avatar-url-inp');
+    const prev = document.getElementById('prof-avatar-preview-img');
+    if (inp) {
+      inp.value = '';
+      inp.placeholder = '✅ Аватарка с телефона загружена!';
+    }
+    if (prev) prev.src = tempProfileAvatarDataUrl;
+    window.showNotify("Аватарка с устройства загружена!", "success");
+  } catch (err) {
+    window.showNotify("Не удалось обработать фото", "error");
+  }
+  e.target.value = '';
+});
+
+document.getElementById('guestBannerFileInput')?.addEventListener('change', async (e) => {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+  try {
+    tempProfileBannerDataUrl = await compressUserImageFile(file, 720, 260, 0.80);
+    const inp = document.getElementById('prof-banner-custom-inp');
+    if (inp) inp.value = tempProfileBannerDataUrl;
+    const sel = document.getElementById('prof-banner-preset-sel');
+    if (sel) sel.value = 'custom';
+    const customRow = document.getElementById('prof-custom-banner-row');
+    if (customRow) customRow.style.display = 'flex';
+    window.showNotify("Баннер профиля с устройства загружен!", "success");
+  } catch (err) {
+    window.showNotify("Не удалось обработать баннер", "error");
+  }
+  e.target.value = '';
+});
+
+function showProfileFormStatus(msg, isError = true) {
+  const box = document.getElementById('prof-form-status-msg');
+  if (box) {
+    box.style.display = 'block';
+    box.style.background = isError ? 'rgba(212, 38, 56, 0.18)' : 'rgba(0, 230, 118, 0.14)';
+    box.style.borderColor = isError ? '#ff5263' : 'var(--success)';
+    box.style.color = isError ? '#ff8a96' : '#00e676';
+    box.innerHTML = msg;
+  }
+  if (window.showNotify) {
+    window.showNotify(msg.replace(/<[^>]*>/g, ''), isError ? 'error' : 'success');
+  }
+}
+
+window.openMyProfileModal = (forceRegistrationGate = false, rejectedMessage = null) => {
+  if (checkIfCurrentUserBanned()) return;
+
+  if (forceRegistrationGate) {
+    setGateLockState(true);
+  }
+
+  let modal = document.getElementById('c6e-profile-gate-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'c6e-profile-gate-modal';
+    modal.className = 'c6e-modal-overlay';
+    document.body.appendChild(modal);
+  }
+
+  if (forceRegistrationGate) {
+    modal.classList.add('gate-fullscreen');
+  } else {
+    modal.classList.remove('gate-fullscreen');
+  }
+
+  const p = myLocalProfile || {
+    nick: '',
+    gameId: '',
+    claimsC6E: false,
+    c6eStatus: 'guest',
+    clanTag: '',
+    clanName: '',
+    kd: '1.20',
+    age: 16,
+    countryText: 'Россия',
+    countryFlag: '🇷🇺',
+    bio: '',
+    avatar: 'logo.png',
+    banner: 'banner-crimson',
+    frameStyle: 'frame-c6e-red'
   };
 
-  window.updateVideo = async () => {
-    let raw = document.getElementById('vidId').value.trim();
-    if (!raw) return showToast("Введите ссылку или ID видео", true);
-    const match = raw.match(/(?:v=|youtu\.be\/|embed\/)([a-zA-Z0-9_-]{11})/);
-    const cleanId = match ? match[1] : raw;
-    await setDoc(doc(db, DB_COLLECTION, "media"), { videoId: cleanId }, { merge: true });
-    document.getElementById('vidId').value = cleanId;
-    showToast("YouTube видео обновлено!");
+  const isForceGuest = Boolean(rejectedMessage) || p.c6eStatus === 'rejected';
+  const isC6ESelected = isForceGuest ? false : Boolean(p.claimsC6E || p.c6eStatus === 'approved' || p.c6eStatus === 'pending');
+  const isCustomBanner = p.banner && !['banner-crimson','banner-gold','banner-emerald','banner-sapphire'].includes(p.banner);
+  const needPushAsk = ('Notification' in window) && Notification.permission !== 'granted';
+
+  modal.innerHTML = `
+    <div class="c6e-modal-card" style="max-width:580px; border-top:3px solid var(--accent-light);">
+      <div class="c6e-modal-head">
+        <div>
+          <span style="font-family:var(--font-tech); font-size:12px; font-weight:900; color:#fff;">
+            <i class="fas fa-id-card text-accent"></i> ${forceRegistrationGate ? 'РЕГИСТРАЦИЯ ИГРОВОГО ПРОФИЛЯ ПОРТАЛА [C6E]' : 'МОЙ ИГРОВОЙ ПРОФИЛЬ [C6E]'}
+          </span>
+          <div style="font-size:10px; color:var(--silver-muted); margin-top:2px;">
+            ${forceRegistrationGate ? 'Заполни профиль один раз без паролей и почты, чтобы открыть доступ ко всем разделам сайта' : 'Твои данные автоматически подставляются при записи на прак, в отзывах и чате'}
+          </div>
+        </div>
+        ${!forceRegistrationGate ? `<button type="button" class="c6e-modal-close" onclick="document.getElementById('c6e-profile-gate-modal').classList.remove('active')">✕</button>` : ''}
+      </div>
+
+      <div class="c6e-modal-body" style="max-height:80vh; overflow-y:auto;">
+        ${rejectedMessage ? `
+          <div style="background:rgba(212,38,56,0.16); border:1px solid #ff5263; border-radius:10px; padding:12px; margin-bottom:14px; font-size:11.5px; color:#fff; line-height:1.5;">
+            🚫 <b>Заявка на тег [C6E] отклонена администрацией!</b><br>
+            ${escapeHTML(rejectedMessage)} Укажите ниже тег и название клана Standoff 2, в котором вы состоите, чтобы получить значок <b>💎 Гостя сайта</b>.
+          </div>
+        ` : ''}
+
+        <!-- ПРЕВЬЮ АВАТАРКИ В РАМКЕ ЛОГОТИПА [C6E] -->
+        <div style="display:flex; align-items:center; gap:14px; background:rgba(255,255,255,0.03); padding:12px; border-radius:12px; border:1px solid var(--glass-border); margin-bottom:14px;">
+          <div id="prof-avatar-preview-frame" class="c6e-hex-avatar ${escapeHTML(p.frameStyle || 'frame-c6e-red')}" style="width:64px; height:64px;">
+            <img id="prof-avatar-preview-img" src="${escapeHTML(p.avatar || 'logo.png')}" onerror="this.src='logo.png'">
+          </div>
+          <div style="flex:1; min-width:0;">
+            <div style="font-size:11px; font-weight:700; color:#fff; margin-bottom:6px;">Аватарка профиля (с устройства или по ссылке)</div>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <button type="button" class="chip-btn" style="border-color:var(--accent-light); color:#fff;" onclick="document.getElementById('guestAvatarFileInput').click()">
+                <i class="fas fa-mobile-alt text-accent"></i> Загрузить с телефона
+              </button>
+              <input type="text" id="prof-avatar-url-inp" class="form-input" value="${escapeHTML((!p.avatar || p.avatar === 'logo.png' || String(p.avatar).startsWith('data:')) ? '' : p.avatar)}" placeholder="Или вставь прямую ссылку на фото..." style="padding:6px 9px; font-size:11px; flex:1; min-width:140px;" oninput="document.getElementById('prof-avatar-preview-img').src = this.value || 'logo.png'">
+            </div>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:10px; margin-bottom:12px;">
+          <div>
+            <label class="form-label">1. ТВОЙ НИК В STANDOFF 2 *</label>
+            <input type="text" id="prof-nick-inp" class="form-input" value="${escapeHTML(p.nick || '')}" placeholder="Например: Kas" required>
+          </div>
+          <div>
+            <label class="form-label">2. ИГРОВОЙ ID STANDOFF 2 *</label>
+            <input type="text" id="prof-gameid-inp" class="form-input" value="${escapeHTML(p.gameId || '')}" placeholder="Например: 74829104" required>
+          </div>
+        </div>
+
+        <!-- ВЫБОР: ВЫ ИЗ КЛАНА [C6E] ИЛИ НЕТ? -->
+        <div style="background:rgba(255,255,255,0.03); border:1px solid var(--glass-border); border-radius:11px; padding:12px; margin-bottom:12px;">
+          <label class="form-label" style="margin-bottom:8px; color:#ffb300;"><i class="fas fa-shield-alt"></i> 3. ВЫ СОСТОИТЕ В НАШЕМ КЛАНЕ [C6E] CYBER 6 ESPORTS?</label>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+            <label id="lbl-c6e-no" style="display:flex; align-items:center; gap:7px; padding:10px; border-radius:9px; border:1px solid ${!isC6ESelected ? 'var(--accent-light)' : 'rgba(255,255,255,0.1)'}; background:${!isC6ESelected ? 'var(--accent-dim)' : 'rgba(0,0,0,0.4)'}; cursor:pointer; font-size:11px; font-weight:700; color:#fff;">
+              <input type="radio" name="profC6ERadio" value="no" ${!isC6ESelected ? 'checked' : ''} onchange="window.toggleProfileClanFields(false)">
+              💎 Нет, я Гость / Другой клан
+            </label>
+            <label id="lbl-c6e-yes" style="display:flex; align-items:center; gap:7px; padding:10px; border-radius:9px; border:1px solid ${isC6ESelected ? '#ffb300' : 'rgba(255,255,255,0.1)'}; background:${isC6ESelected ? 'rgba(255,179,0,0.15)' : 'rgba(0,0,0,0.4)'}; cursor:pointer; font-size:11px; font-weight:700; color:#fff;">
+              <input type="radio" name="profC6ERadio" value="yes" ${isC6ESelected ? 'checked' : ''} ${isForceGuest ? 'disabled' : ''} onchange="window.toggleProfileClanFields(true)">
+              🛡️ Да, я боец [C6E]
+            </label>
+          </div>
+
+          <div id="prof-guest-clan-fields" style="display:${isC6ESelected ? 'none' : 'grid'}; grid-template-columns:110px 1fr; gap:8px; margin-top:10px;">
+            <div>
+              <label class="form-label">ТЕГ КЛАНА</label>
+              <input type="text" id="prof-clantag-inp" class="form-input" value="${escapeHTML(p.clanTag === 'C6E' ? '' : (p.clanTag || ''))}" placeholder="[TAG]" maxlength="7">
+            </div>
+            <div>
+              <label class="form-label">НАЗВАНИЕ ТВОЕГО КЛАНА STANDOFF 2</label>
+              <input type="text" id="prof-clanname-inp" class="form-input" value="${escapeHTML(p.clanName === 'CYBER 6 ESPORTS' ? '' : (p.clanName || ''))}" placeholder="Например: Horizon Esports (или Свободный агент)">
+            </div>
+          </div>
+
+          <div id="prof-c6e-notice" style="display:${isC6ESelected ? 'block' : 'none'}; margin-top:10px; font-size:11px; color:#ffb300; background:rgba(255,179,0,0.08); padding:8px 10px; border-radius:8px; border:1px dashed rgba(255,179,0,0.4);">
+            ⚡ <b>Проверка принадлежности к [C6E]:</b> В админку <b>Kas</b> придёт уведомление. После подтверждения админом ты получишь официальный статус <b>🛡️ Боец [C6E]</b>. Если ты не из состава, регистрация под тегом <code>[C6E]</code> будет отклонена.
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(135px, 1fr)); gap:10px; margin-bottom:12px;">
+          <div>
+            <label class="form-label">4. ДЕЙСТВУЮЩИЙ K/D *</label>
+            <input type="number" id="prof-kd-inp" class="form-input" step="0.01" min="0.1" max="15" value="${escapeHTML(p.kd || '1.20')}" placeholder="1.45" required>
+          </div>
+          <div>
+            <label class="form-label">5. ВОЗРАСТ (ОТ 12+) *</label>
+            <input type="number" id="prof-age-inp" class="form-input" min="12" max="99" value="${escapeHTML(p.age || 16)}" placeholder="16" required>
+          </div>
+          <div>
+            <label class="form-label">6. СТРАНА / РЕГИОН <span id="prof-flag-live">${escapeHTML(p.countryFlag || '🇷🇺')}</span></label>
+            <input type="text" id="prof-country-inp" class="form-input" value="${escapeHTML(p.countryText || 'Россия')}" placeholder="РФ, Кыргызстан, Индонезия..." oninput="window.updateLiveCountryFlag(this.value)" required>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;">
+          <div>
+            <label class="form-label">7. РАМКА В СТИЛЕ ЛОГОТИПА [C6E]</label>
+            <select id="prof-frame-sel" class="form-input" onchange="document.getElementById('prof-avatar-preview-frame').className = 'c6e-hex-avatar ' + this.value">
+              <option value="frame-c6e-red" ${p.frameStyle === 'frame-c6e-red' ? 'selected' : ''}>🔴 Рубиновый Щит [C6E]</option>
+              <option value="frame-c6e-gold" ${p.frameStyle === 'frame-c6e-gold' ? 'selected' : ''}>🟡 Золото Пантеона</option>
+              <option value="frame-c6e-green" ${p.frameStyle === 'frame-c6e-green' ? 'selected' : ''}>🟢 Изумрудный Кибер</option>
+              <option value="frame-c6e-blue" ${p.frameStyle === 'frame-c6e-blue' ? 'selected' : ''}>🔵 Ледяной Сапфир</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label">8. БАННЕР ПРОФИЛЯ</label>
+            <div style="display:flex; gap:5px;">
+              <select id="prof-banner-preset-sel" class="form-input" style="flex:1;" onchange="document.getElementById('prof-custom-banner-row').style.display = this.value === 'custom' ? 'flex' : 'none'">
+                <option value="banner-crimson" ${p.banner === 'banner-crimson' ? 'selected' : ''}>🔴 Кибер-Рубин [C6E]</option>
+                <option value="banner-gold" ${p.banner === 'banner-gold' ? 'selected' : ''}>🟡 Золотой Пантеон</option>
+                <option value="banner-emerald" ${p.banner === 'banner-emerald' ? 'selected' : ''}>🟢 Изумрудная Матрица</option>
+                <option value="banner-sapphire" ${p.banner === 'banner-sapphire' ? 'selected' : ''}>🔵 Сапфировый Лед</option>
+                <option value="custom" ${isCustomBanner ? 'selected' : ''}>🖼️ Своё фото / ссылка</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div id="prof-custom-banner-row" style="display:${isCustomBanner ? 'flex' : 'none'}; gap:6px; margin-bottom:12px; align-items:center;">
+          <button type="button" class="chip-btn" onclick="document.getElementById('guestBannerFileInput').click()"><i class="fas fa-image text-accent"></i> Баннер с телефона</button>
+          <input type="text" id="prof-banner-custom-inp" class="form-input" value="${escapeHTML(isCustomBanner ? p.banner : '')}" placeholder="Или ссылка на картинку баннера..." style="flex:1; padding:7px;">
+        </div>
+
+        <div style="margin-bottom:12px;">
+          <label class="form-label">9. ОПИСАНИЕ ПРОФИЛЯ / БИОГРАФИЯ (НЕОБЯЗАТЕЛЬНО)</label>
+          <textarea id="prof-bio-inp" class="form-input" rows="2" placeholder="Напиши пару слов о себе, любимом оружии (AWM / AKR) или девайсе...">${escapeHTML(p.bio || '')}</textarea>
+        </div>
+
+        ${needPushAsk ? `
+          <label style="display:flex; align-items:center; gap:9px; padding:10px 12px; border-radius:10px; background:rgba(0,230,118,0.08); border:1px solid rgba(0,230,118,0.35); margin-bottom:12px; cursor:pointer; font-size:11px; color:#fff;">
+            <input type="checkbox" id="prof-enable-push-chk" checked style="width:16px; height:16px; accent-color:#00e676;">
+            <span>📲 <b>Разрешить отправку уведомлений сайта на устройство</b> (новости Kas, @упоминания в чате, праки)</span>
+          </label>
+        ` : ''}
+
+        <div id="prof-form-status-msg" style="display:none; padding:10px 12px; border-radius:9px; border:1px solid #ff5263; font-size:11.5px; font-weight:700; margin-bottom:12px;"></div>
+
+        <button type="button" id="prof-save-submit-btn" class="btn-glitch" onclick="window.saveMyUserProfile()">
+          <i class="fas fa-check-circle" style="margin-right:8px;"></i> СОХРАНИТЬ ПРОФИЛЬ И ВОЙТИ НА ПОРТАЛ [C6E]
+        </button>
+      </div>
+    </div>
+  `;
+
+  modal.classList.add('active');
+};
+
+window.toggleProfileClanFields = (claimsC6E) => {
+  const guestFields = document.getElementById('prof-guest-clan-fields');
+  const notice = document.getElementById('prof-c6e-notice');
+  const lblNo = document.getElementById('lbl-c6e-no');
+  const lblYes = document.getElementById('lbl-c6e-yes');
+  if (guestFields) guestFields.style.display = claimsC6E ? 'none' : 'grid';
+  if (notice) notice.style.display = claimsC6E ? 'block' : 'none';
+  if (lblNo) {
+    lblNo.style.borderColor = !claimsC6E ? 'var(--accent-light)' : 'rgba(255,255,255,0.1)';
+    lblNo.style.background = !claimsC6E ? 'var(--accent-dim)' : 'rgba(0,0,0,0.4)';
+  }
+  if (lblYes) {
+    lblYes.style.borderColor = claimsC6E ? '#ffb300' : 'rgba(255,255,255,0.1)';
+    lblYes.style.background = claimsC6E ? 'rgba(255,179,0,0.15)' : 'rgba(0,0,0,0.4)';
+  }
+};
+
+window.updateLiveCountryFlag = (val) => {
+  const info = resolveCountryInfo(val);
+  const el = document.getElementById('prof-flag-live');
+  if (el) el.innerText = info.flag;
+};
+
+// НАДЁЖНОЕ СОХРАНЕНИЕ ПРОФИЛЯ (БЕЗ ЗАВИСАНИЙ, С СИНХРОННЫМ PUSH-ЗАПРОСОМ И ЗАПИСЬЮ В FIREBASE)
+window.saveMyUserProfile = async () => {
+  if (checkIfCurrentUserBanned()) return;
+
+  const nick = (document.getElementById('prof-nick-inp')?.value || '').trim().replace(/^\[[^\]]+\]\s*/, '');
+  const gameId = (document.getElementById('prof-gameid-inp')?.value || '').trim();
+  const kdRaw = parseFloat(String(document.getElementById('prof-kd-inp')?.value || '1.0').replace(',', '.')) || 1.0;
+  const ageVal = parseInt(document.getElementById('prof-age-inp')?.value || '0', 10);
+  const countryRaw = (document.getElementById('prof-country-inp')?.value || 'Россия').trim();
+  const bio = (document.getElementById('prof-bio-inp')?.value || '').trim();
+  const frameStyle = document.getElementById('prof-frame-sel')?.value || 'frame-c6e-red';
+  const bannerPreset = document.getElementById('prof-banner-preset-sel')?.value || 'banner-crimson';
+  const bannerCustom = (document.getElementById('prof-banner-custom-inp')?.value || '').trim();
+  const rawAvatarInp = (document.getElementById('prof-avatar-url-inp')?.value || '').trim();
+  const avatarUrl = rawAvatarInp || tempProfileAvatarDataUrl || (myLocalProfile && myLocalProfile.avatar) || 'logo.png';
+
+  const radioYes = document.querySelector('input[name="profC6ERadio"][value="yes"]');
+  const claimsC6E = Boolean(radioYes && radioYes.checked);
+  const rawClanTag = (document.getElementById('prof-clantag-inp')?.value || '').replace(/[\[\]]/g, '').trim();
+  const rawClanName = (document.getElementById('prof-clanname-inp')?.value || '').trim();
+  const pushChk = document.getElementById('prof-enable-push-chk');
+
+  if (!nick || nick.length < 2) {
+    return showProfileFormStatus("⚠️ Введите ваш игровой никнейм в Standoff 2 (минимум 2 символа)!", true);
+  }
+  if (!gameId || gameId.length < 3) {
+    return showProfileFormStatus("⚠️ Введите ваш игровой ID Standoff 2!", true);
+  }
+  if (isNaN(ageVal) || ageVal < 12) {
+    return showProfileFormStatus("⚠️ Регистрация доступна строго для игроков от 12 лет (12+)!", true);
+  }
+
+  if (containsSpam(nick) || containsSpam(bio) || containsSpam(rawClanName)) {
+    const bad = findMatchedSpamWord(`${nick} ${bio} ${rawClanName}`);
+    logSecurityEvent('🚨 ТРЕВОГА: Запрещенное слово в профиле', nick, `Слово «${bad}»`, true);
+    return showProfileFormStatus("🛡 В профиле обнаружены запрещённые слова!", true);
+  }
+
+  if (!claimsC6E && /^c6e|с6е$/i.test(rawClanTag)) {
+    return showProfileFormStatus("⚠️ Тег [C6E] выдается только после одобрения заявки администрацией! Выберите «Да, я боец [C6E]» или укажите свой клан.", true);
+  }
+
+  // ВАЖНО: Запрашиваем системное разрешение на Push-уведомления СИНХРОННО в момент клика (до первого await!)
+  if (pushChk && pushChk.checked && ('Notification' in window) && Notification.permission === 'default') {
+    window.requestDevicePushPermission();
+  }
+
+  const saveBtn = document.getElementById('prof-save-submit-btn');
+  if (saveBtn) {
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> СОХРАНЕНИЕ ПРОФИЛЯ В БАЗУ [C6E]...';
+  }
+  showProfileFormStatus("⏳ Синхронизация профиля с сервером CYBER 6 ESPORTS...", false);
+
+  const countryInfo = resolveCountryInfo(countryRaw);
+  const existingMem = allProfilesList.find(item => item.profileId === clientSecurityMeta.deviceId) || myLocalProfile;
+
+  let c6eStatus = 'guest';
+  let finalClanTag = rawClanTag;
+  let finalClanName = rawClanName || 'Свободный агент';
+
+  if (claimsC6E) {
+    if (existingMem && existingMem.c6eStatus === 'approved') {
+      c6eStatus = 'approved';
+    } else {
+      c6eStatus = 'pending';
+    }
+    finalClanTag = 'C6E';
+    finalClanName = 'CYBER 6 ESPORTS';
+  }
+
+  const newProf = {
+    profileId: clientSecurityMeta.deviceId,
+    nick,
+    gameId,
+    claimsC6E,
+    c6eStatus,
+    clanTag: finalClanTag,
+    clanName: finalClanName,
+    kd: Math.min(15, Math.max(0.1, kdRaw)).toFixed(2),
+    age: ageVal,
+    countryText: countryInfo.label,
+    countryFlag: countryInfo.flag,
+    bio,
+    avatar: avatarUrl,
+    banner: bannerPreset === 'custom' ? (bannerCustom || 'banner-crimson') : bannerPreset,
+    frameStyle,
+    likes: existingMem ? (parseInt(existingMem.likes, 10) || 0) : 0,
+    likedBy: (existingMem && Array.isArray(existingMem.likedBy)) ? existingMem.likedBy : [],
+    activityPts: (existingMem ? (parseInt(existingMem.activityPts, 10) || 10) : 15) + 5,
+    lastSeen: Date.now(),
+    ip: clientSecurityMeta.ip || 'Определяется...',
+    device: clientSecurityMeta.deviceInfo,
+    rejectionHandled: c6eStatus !== 'rejected'
   };
 
-  window.addGallery = async () => {
-    const rawSrc = document.getElementById('galUrl').value.trim();
-    if (!rawSrc) return showToast("Выберите фото с телефона или вставьте URL!", true);
-    const src = normalizeImageUrl(rawSrc);
-    if (await updateArray("media", "gallery", { id: Date.now(), src, cap: document.getElementById('galCap').value.trim() })) {
-      showToast("Фото добавлено в галерею!");
-      document.getElementById('galUrl').value = '';
-      document.getElementById('galCap').value = '';
+  // 1. Мгновенно сохраняем локально и разблокируем портал, чтобы интерфейс работал без единой задержки
+  saveLocalProfileCache(newProf);
+  const memIdx = allProfilesList.findIndex(x => x.profileId === newProf.profileId);
+  if (memIdx >= 0) allProfilesList[memIdx] = newProf;
+  else allProfilesList.unshift(newProf);
+  renderCommunityRadarOnHome();
+
+  // 2. Мульти-канальная синхронизация профиля с Firebase (siteData/profiles + резервные зеркала reviews/practices + TG-бот)
+  try {
+    await Promise.race([
+      resolveClientIp(),
+      new Promise(res => setTimeout(res, 700))
+    ]);
+    newProf.ip = clientSecurityMeta.ip || 'Не определен';
+
+    await syncProfileToAllCloudChannels(newProf);
+    saveLocalProfileCache(newProf);
+
+    if (newProf.c6eStatus === 'pending') {
+      logSecurityEvent('🛡️ Заявка на профиль бойца [C6E]', `${nick} (ID: ${gameId})`, `Игрок утверждает, что состоит в [C6E] (K/D: ${newProf.kd}, Возраст: ${newProf.age}). Ожидает проверки в админке!`);
+      sendToBot(
+        TG_CONFIG.groupId,
+        `🛡️ <b>НОВАЯ ЗАЯВКА НА ТЕГ [C6E] НА САЙТЕ</b>\n\n` +
+        `👤 <b>Ник:</b> <code>${escapeHTML(nick)}</code>\n` +
+        `🆔 <b>Standoff 2 ID:</b> <code>${escapeHTML(gameId)}</code>\n` +
+        `📊 <b>K/D:</b> ${escapeHTML(newProf.kd)} | <b>Возраст:</b> ${newProf.age}\n` +
+        `🌍 <b>Страна:</b> ${newProf.countryFlag} ${escapeHTML(newProf.countryText)}\n` +
+        `🌐 <b>IP:</b> <code>${escapeHTML(newProf.ip)}</code>\n\n` +
+        `👉 Зайдите в <b>Админку v0.5.0</b>, чтобы одобрить или отклонить заявку!`
+      ).catch(() => {});
+      addPersonalNotification("⏳ Заявка на тег [C6E] отправлена!", "Администратор Kas проверит ваш профиль в панели управления. После одобрения вы получите официальный статус бойца [C6E].", "info");
+      window.showNotify("Профиль создан! Заявка на тег [C6E] отправлена в админку Kas.", "success");
+    } else {
+      window.showNotify("✅ Игровой профиль сохранен! Добро пожаловать на портал [C6E].", "success");
     }
-  };
-</script>
-</body>
-</html>
+  } catch (err) {
+    console.warn("Ошибка синхронизации профиля с Firestore:", err);
+    window.showNotify("Профиль сохранён!", "success");
+  } finally {
+    setGateLockState(false);
+    const modal = document.getElementById('c6e-profile-gate-modal');
+    if (modal) {
+      modal.classList.remove('active');
+      modal.classList.remove('gate-fullscreen');
+    }
+  }
+};
+
+// ПРОСМОТР ЧУЖОГО ИЛИ СВОЕГО ПОЛНОГО ПРОФИЛЯ + СИСТЕМА ЛАЙКОВ ❤️
+window.openPublicProfileModal = (profileId) => {
+  const p = allProfilesList.find(x => x.profileId === profileId) || (myLocalProfile && myLocalProfile.profileId === profileId ? myLocalProfile : null);
+  if (!p) return;
+
+  let modal = document.getElementById('c6e-public-profile-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'c6e-public-profile-modal';
+    modal.className = 'c6e-modal-overlay';
+    modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('active'); });
+    document.body.appendChild(modal);
+  }
+
+  const info = getDisplayTagAndBadge(p);
+  const isOnline = (Date.now() - (p.lastSeen || 0)) < 15 * 60 * 1000;
+  const isMe = myLocalProfile && myLocalProfile.profileId === p.profileId;
+  const alreadyLiked = Array.isArray(p.likedBy) && p.likedBy.includes(clientSecurityMeta.deviceId);
+
+  const isPresetBanner = ['banner-crimson','banner-gold','banner-emerald','banner-sapphire'].includes(p.banner);
+  const bannerClass = isPresetBanner ? p.banner : 'banner-crimson';
+  const bannerStyle = !isPresetBanner && p.banner ? `background-image:url('${escapeHTML(p.banner)}');` : '';
+
+  modal.innerHTML = `
+    <div class="c6e-modal-card" style="max-width:500px; padding:0;">
+      <div class="prof-banner-box ${bannerClass}" style="${bannerStyle}">
+        <button type="button" class="c6e-modal-close" style="position:absolute; top:12px; right:12px; background:rgba(0,0,0,0.65);" onclick="document.getElementById('c6e-public-profile-modal').classList.remove('active')">✕</button>
+        <div style="position:absolute; top:12px; left:12px; display:flex; gap:6px;">
+          <span style="padding:4px 9px; border-radius:20px; background:rgba(0,0,0,0.7); border:1px solid ${isOnline ? '#00e676' : '#666'}; font-family:var(--font-tech); font-size:9px; font-weight:800; color:${isOnline ? '#00e676' : '#aaa'};">
+            ${isOnline ? '🟢 ОНЛАЙН НА САЙТЕ' : '⚪ БЫЛ НЕДАВНО'}
+          </span>
+        </div>
+      </div>
+
+      <div style="padding:0 20px 20px 20px; margin-top:-38px; position:relative;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+          <div class="c6e-hex-avatar ${escapeHTML(p.frameStyle || 'frame-c6e-red')}" style="width:78px; height:78px;">
+            <img src="${escapeHTML(p.avatar || 'logo.png')}" onerror="this.src='logo.png'">
+          </div>
+          <div style="display:flex; gap:8px;">
+            <button type="button" class="chip-btn" style="border-color:#ff5263; color:${alreadyLiked ? '#fff' : '#ff5263'}; background:${alreadyLiked ? 'rgba(212,38,56,0.35)' : 'rgba(0,0,0,0.5)'}; padding:8px 13px; font-size:11px;" onclick="window.likeUserProfile('${escapeHTML(p.profileId)}')">
+              ❤️ Лайк (${p.likes || 0})
+            </button>
+            ${isMe ? `
+              <button type="button" class="chip-btn" style="border-color:var(--accent-light); color:#fff; padding:8px 12px;" onclick="document.getElementById('c6e-public-profile-modal').classList.remove('active'); window.openMyProfileModal(false);">
+                <i class="fas fa-pen"></i> Изменить
+              </button>
+            ` : `
+              <button type="button" class="chip-btn" style="border-color:#00e676; color:#00e676; padding:8px 12px;" onclick="document.getElementById('c6e-public-profile-modal').classList.remove('active'); window.mentionUserInChat('${escapeHTML(p.nick).replace(/'/g, "\\'")}')">
+                💬 @Упомянуть
+              </button>
+            `}
+          </div>
+        </div>
+
+        <div style="font-family:var(--font-tech); font-size:18px; font-weight:900; color:#fff; display:flex; align-items:center; gap:7px; flex-wrap:wrap;">
+          <span>${escapeHTML(p.countryFlag || '🌍')}</span>
+          ${info.tagStr ? `<span style="color:var(--accent-light);">${escapeHTML(info.tagStr)}</span>` : ''}
+          <span>${escapeHTML(p.nick)}</span>
+        </div>
+        <div style="font-size:11px; margin-top:4px;">
+          ${info.badgeHtml} • <span style="color:var(--silver-muted);">${escapeHTML(p.countryText || 'Россия')} • ${escapeHTML(p.age || 16)} лет</span>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin:14px 0; background:rgba(255,255,255,0.03); padding:11px; border-radius:11px; border:1px solid var(--glass-border); text-align:center;">
+          <div>
+            <div style="font-family:var(--font-tech); font-size:15px; font-weight:900; color:var(--success);">${escapeHTML(p.kd || '1.00')}</div>
+            <div style="font-size:8px; color:var(--silver-muted); text-transform:uppercase;">ДЕЙСТВУЮЩИЙ K/D</div>
+          </div>
+          <div style="border-left:1px solid rgba(255,255,255,0.07); border-right:1px solid rgba(255,255,255,0.07);">
+            <div style="font-family:var(--font-tech); font-size:13px; font-weight:900; color:#fff;">${escapeHTML(p.gameId || '—')}</div>
+            <div style="font-size:8px; color:var(--silver-muted); text-transform:uppercase;">STANDOFF 2 ID</div>
+          </div>
+          <div>
+            <div style="font-family:var(--font-tech); font-size:15px; font-weight:900; color:#ffb300;">⚡ ${p.activityPts || 15}</div>
+            <div style="font-size:8px; color:var(--silver-muted); text-transform:uppercase;">АКТИВНОСТЬ</div>
+          </div>
+        </div>
+
+        <div style="background:rgba(0,0,0,0.45); border:1px solid rgba(255,255,255,0.06); border-radius:10px; padding:11px 13px; font-size:12px; color:#ccc; line-height:1.55;">
+          <div style="font-size:9px; font-family:var(--font-tech); color:var(--silver-muted); margin-bottom:4px;">ОПИСАНИЕ ПРОФИЛЯ / БИОГРАФИЯ:</div>
+          ${p.bio ? escapeHTML(p.bio) : '<span style="color:#666; font-style:italic;">Игрок пока не добавил биографию.</span>'}
+        </div>
+      </div>
+    </div>
+  `;
+  modal.classList.add('active');
+};
+
+window.likeUserProfile = async (targetProfileId) => {
+  if (checkIfCurrentUserBanned()) return;
+  try {
+    const idx = allProfilesList.findIndex(x => x.profileId === targetProfileId);
+    if (idx === -1) return;
+
+    const target = { ...allProfilesList[idx] };
+    const likedBy = Array.isArray(target.likedBy) ? [...target.likedBy] : [];
+    if (likedBy.includes(clientSecurityMeta.deviceId)) {
+      return window.showNotify("Вы уже ставили ❤️ лайк этому профилю!", "error");
+    }
+
+    likedBy.push(clientSecurityMeta.deviceId);
+    target.likedBy = likedBy;
+    target.likes = (parseInt(target.likes, 10) || 0) + 1;
+    target.activityPts = (parseInt(target.activityPts, 10) || 15) + 3;
+    target.lastSeen = Date.now();
+    allProfilesList[idx] = target;
+
+    await syncProfileToAllCloudChannels(target);
+    renderCommunityRadarOnHome();
+    window.showNotify(`❤️ Вы поставили лайк профилю ${target.nick}!`, "success");
+    if (document.getElementById('c6e-public-profile-modal')?.classList.contains('active')) {
+      window.openPublicProfileModal(targetProfileId);
+    }
+  } catch (e) {}
+};
+
+// ФИЛЬТРАЦИЯ И РЕНДЕР СООБЩЕСТВА И ОНЛАЙНА НА ГЛАВНОЙ
+window.setHomeCommunityFilter = (flt) => {
+  currentHomeCommFilter = flt || 'all';
+  ['all', 'c6e', 'guest', 'top'].forEach(k => {
+    const btn = document.getElementById('comm-flt-' + k);
+    if (btn) {
+      btn.style.borderColor = (k === currentHomeCommFilter) ? 'var(--accent-light)' : 'var(--glass-border)';
+      btn.style.color = (k === currentHomeCommFilter) ? '#fff' : 'var(--silver)';
+    }
+  });
+  renderCommunityRadarOnHome();
+};
+
+function renderCommunityRadarOnHome() {
+  const grid = document.getElementById('home-online-profiles-grid');
+  const onlineEl = document.getElementById('comm-online-count');
+  const totalEl = document.getElementById('comm-total-count');
+  const statProfEl = document.getElementById('home-stat-profiles-count');
+  if (!grid) return;
+
+  const now = Date.now();
+  let sourceList = [...allProfilesList];
+  if (myLocalProfile && myLocalProfile.nick && !sourceList.some(p => p.profileId === myLocalProfile.profileId)) {
+    sourceList.unshift(myLocalProfile);
+  }
+
+  const onlineCount = Math.max(1, sourceList.filter(p => (now - (p.lastSeen || 0)) < 15 * 60 * 1000).length);
+  const totalCount = Math.max(1, sourceList.length);
+
+  if (onlineEl) onlineEl.innerText = String(onlineCount);
+  if (totalEl) totalEl.innerText = String(totalCount);
+  if (statProfEl) statProfEl.innerText = String(totalCount);
+
+  let filtered = [...sourceList];
+  if (currentHomeCommFilter === 'c6e') {
+    filtered = filtered.filter(p => p.c6eStatus === 'approved');
+  } else if (currentHomeCommFilter === 'guest') {
+    filtered = filtered.filter(p => p.c6eStatus !== 'approved');
+  } else if (currentHomeCommFilter === 'top') {
+    filtered.sort((a, b) => (parseInt(b.likes, 10) || 0) - (parseInt(a.likes, 10) || 0));
+  } else {
+    filtered.sort((a, b) => (b.lastSeen || 0) - (a.lastSeen || 0));
+  }
+
+  if (filtered.length === 0) {
+    grid.innerHTML = `<div style="font-size:11px; color:var(--silver-muted); padding:16px; text-align:center; grid-column:1/-1;">В этой категории пока нет профилей.</div>`;
+    return;
+  }
+
+  grid.innerHTML = filtered.slice(0, 12).map(p => {
+    const info = getDisplayTagAndBadge(p);
+    const isOnline = (now - (p.lastSeen || 0)) < 15 * 60 * 1000;
+    const isPresetBanner = ['banner-crimson','banner-gold','banner-emerald','banner-sapphire'].includes(p.banner);
+    const bannerClass = isPresetBanner ? p.banner : 'banner-crimson';
+    const bannerStyle = !isPresetBanner && p.banner ? `background-image:url('${escapeHTML(p.banner)}');` : '';
+
+    return `
+      <div class="mini-prof-card" onclick="window.openPublicProfileModal('${escapeHTML(p.profileId)}')">
+        <div class="mini-prof-top ${bannerClass}" style="${bannerStyle}">
+          <span style="position:absolute; top:6px; right:8px; font-size:9px; font-family:var(--font-tech); color:#fff; background:rgba(0,0,0,0.65); padding:2px 6px; border-radius:10px;">
+            ❤️ ${p.likes || 0}
+          </span>
+        </div>
+        <div class="mini-prof-body">
+          <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:6px;">
+            <div class="c6e-hex-avatar ${escapeHTML(p.frameStyle || 'frame-c6e-red')}" style="width:42px; height:42px;">
+              <img src="${escapeHTML(p.avatar || 'logo.png')}" onerror="this.src='logo.png'">
+            </div>
+            <span style="font-size:8.5px; font-family:var(--font-tech); font-weight:800; color:${isOnline ? 'var(--success)' : 'var(--silver-muted)'};">
+              ${isOnline ? '🟢 ONLINE' : '⚪ OFFLINE'}
+            </span>
+          </div>
+          <div style="font-family:var(--font-tech); font-size:12px; font-weight:800; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+            ${escapeHTML(p.countryFlag || '🌍')} ${info.tagStr ? `<span style="color:var(--accent-light);">${escapeHTML(info.tagStr)}</span> ` : ''}${escapeHTML(p.nick)}
+          </div>
+          <div style="font-size:9.5px; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+            ${info.badgeHtml}
+          </div>
+          <div style="display:flex; justify-content:space-between; font-size:9px; color:var(--silver-muted); margin-top:6px; padding-top:5px; border-top:1px solid rgba(255,255,255,0.06);">
+            <span>K/D: <b style="color:var(--success);">${escapeHTML(p.kd || '1.00')}</b></span>
+            <span>⚡ ${p.activityPts || 15}</span>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ЖИВЫЕ ВИДЖЕТЫ НА ГЛАВНОМ ЭКРАНЕ: ТОП-3 ПАНТЕОНА + ПОСЛЕДНИЙ МАТЧ С ТАБОМ
+function renderHomeInnovationsWidgets() {
+  // 1. Мини-подиум Топ-3 Пантеона
+  const miniPanth = document.getElementById('home-pantheon-mini-grid');
+  if (miniPanth) {
+    const standings = buildPantheonStandings();
+    if (!standings.length) {
+      miniPanth.innerHTML = `<div style="font-size:11px; color:var(--silver-muted); padding:10px;">Загрузка рейтинга бойцов [C6E]...</div>`;
+    } else {
+      const prizes = ['🥇 500 GOLD', '🥈 250 GOLD', '🥉 150 GOLD'];
+      const rankCls = ['top-1', 'top-2', 'top-3'];
+      miniPanth.innerHTML = standings.slice(0, 3).map((item, idx) => {
+        const safeNick = escapeHTML(item.player.nick).replace(/'/g, "\\'");
+        return `
+          <div class="home-podium-mini-item ${rankCls[idx]}">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-family:var(--font-tech); font-size:9px; font-weight:900; color:#ffb300;">${prizes[idx]}</span>
+              <span style="font-family:var(--font-tech); font-size:12px; font-weight:900; color:#fff;">${item.pts} <span style="font-size:8.5px; color:#ffb300;">PTS</span></span>
+            </div>
+            <div style="display:flex; align-items:center; gap:10px; margin:4px 0;">
+              <img src="${item.player.img || 'logo.png'}" onerror="this.src='logo.png'" style="width:40px; height:40px; border-radius:9px; object-fit:cover; border:1px solid rgba(255,255,255,0.2);">
+              <div style="min-width:0; flex:1;">
+                <div style="font-family:var(--font-tech); font-size:12.5px; font-weight:900; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                  [C6E] ${escapeHTML(item.player.nick)}
+                </div>
+                <div style="font-size:9.5px; color:var(--silver-muted);">
+                  LIVE K/D: <b style="color:var(--success);">${item.analytics.effectiveKd.toFixed(2)}</b> • Бустов: 🔥 ${item.boostCount}
+                </div>
+              </div>
+            </div>
+            <button type="button" class="boost-btn" style="padding:7px 10px; font-size:9.5px;" onclick="window.boostPantheonPlayer('${safeNick}')">
+              🔥 ДАТЬ БУСТ (+25 PTS)
+            </button>
+          </div>
+        `;
+      }).join('');
+    }
+  }
+
+  // 2. Виджет последнего сыгранного матча [C6E] в Match Center
+  const latestBox = document.getElementById('home-latest-match-box');
+  if (latestBox) {
+    if (!allHistoryData || allHistoryData.length === 0) {
+      latestBox.innerHTML = '';
+    } else {
+      const lastM = allHistoryData[allHistoryData.length - 1];
+      const win = parseInt(lastM.our, 10) > parseInt(lastM.their, 10);
+      latestBox.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; background:rgba(0,0,0,0.42); border:1px solid rgba(255,255,255,0.07); border-left:3px solid ${win ? 'var(--success)' : '#ff5263'}; border-radius:10px; padding:10px 14px;">
+          <div>
+            <div style="font-family:var(--font-tech); font-size:9px; color:var(--silver-muted); letter-spacing:1px;">
+              ПОСЛЕДНИЙ ЗАВЕРШЕННЫЙ МАТЧ • ${escapeHTML(lastM.map || 'КАРТА')}
+            </div>
+            <div style="font-family:var(--font-tech); font-size:13px; font-weight:900; color:#fff; margin-top:3px;">
+              [C6E] <span style="color:${win ? 'var(--success)' : '#ff5263'};">${escapeHTML(lastM.our)} : ${escapeHTML(lastM.their)}</span> ${escapeHTML(lastM.enemy)}
+            </div>
+          </div>
+          <button type="button" class="chip-btn" style="border-color:var(--accent-light); color:#fff;" onclick="selectTab('history', document.getElementById('btn-history'))">
+            <i class="fas fa-table text-accent"></i> Смотреть Таб и скрин ➔
+          </button>
+        </div>
+      `;
+    }
+  }
+}
+
+// Запускаем обновление виджетов Главного экрана
+setInterval(renderHomeInnovationsWidgets, 2500);
+setTimeout(renderHomeInnovationsWidgets, 600);
+
+// СИНХРОННЫЙ ПЕРВИЧНЫЙ ГЕЙТ ПРИ ЗАГРУЗКЕ САЙТА (БЕЗ ОЖИДАНИЯ СЕТИ И БЕЗ ПРОКРУТКИ ЗАДНЕГО ФОНА)
+if (!myLocalProfile || !myLocalProfile.nick) {
+  setGateLockState(true);
+  setTimeout(() => {
+    window.openMyProfileModal(true);
+  }, 50);
+} else {
+  setGateLockState(false);
+}
+
+// НАДЁЖНАЯ СИНХРОНИЗАЦИЯ ПРОФИЛЕЙ ЧЕРЕЗ ОСНОВНОЙ КАНАЛ (profiles) И РЕЗЕРВНЫЕ КАНАЛЫ (reviews / practices / localStorage)
+let profilesFromMainDoc = [];
+let profilesFromMirrorDoc = [];
+
+function mergeProfilesLists(...arrays) {
+  const map = new Map();
+  for (const arr of arrays) {
+    if (!Array.isArray(arr)) continue;
+    for (const p of arr) {
+      if (!p || !p.profileId || !p.nick) continue;
+      if (p._deleted) {
+        map.delete(p.profileId);
+        continue;
+      }
+      const prev = map.get(p.profileId);
+      if (!prev || (p.adminUpdatedAt || p.lastSeen || 0) >= (prev.adminUpdatedAt || prev.lastSeen || 0)) {
+        map.set(p.profileId, p);
+      }
+    }
+  }
+  return Array.from(map.values());
+}
+
+async function syncProfileToAllCloudChannels(profToSave) {
+  // Сохраняем в общее локальное зеркало браузера (мгновенно видно в соседней вкладке админки на том же устройстве)
+  try {
+    const rawMirror = localStorage.getItem('c6e_shared_profiles_mirror');
+    const localArr = rawMirror ? JSON.parse(rawMirror) : [];
+    const mergedLocal = mergeProfilesLists(localArr, [profToSave]);
+    localStorage.setItem('c6e_shared_profiles_mirror', JSON.stringify(mergedLocal));
+  } catch (e) {}
+
+  let syncedAny = false;
+
+  // Канал 1: Основной документ siteData/profiles
+  try {
+    const ref = doc(db, DB_COLLECTION, "profiles");
+    const snap = await getDoc(ref);
+    const current = (snap.exists() && Array.isArray(snap.data().list)) ? snap.data().list : [];
+    const existing = current.find(x => x.profileId === profToSave.profileId);
+    if (profToSave.claimsC6E && existing && existing.c6eStatus === 'approved') {
+      profToSave.c6eStatus = 'approved';
+    }
+    const updated = mergeProfilesLists(current, [profToSave]);
+    await setDoc(ref, { list: updated }, { merge: true });
+    syncedAny = true;
+  } catch (e1) {}
+
+  // Канал 2: Резервное зеркало внутри siteData/reviews (гарантированно разрешено правилами Firestore для гостей!)
+  try {
+    const revRef = doc(db, DB_COLLECTION, "reviews");
+    const revSnap = await getDoc(revRef);
+    const curMirror = (revSnap.exists() && Array.isArray(revSnap.data().c6e_profiles)) ? revSnap.data().c6e_profiles : [];
+    const existingM = curMirror.find(x => x.profileId === profToSave.profileId);
+    if (profToSave.claimsC6E && existingM && existingM.c6eStatus === 'approved') {
+      profToSave.c6eStatus = 'approved';
+    }
+    const updatedMirror = mergeProfilesLists(curMirror, [profToSave]);
+    if (revSnap.exists()) {
+      await updateDoc(revRef, { c6e_profiles: updatedMirror });
+    } else {
+      await setDoc(revRef, { list: [], c6e_profiles: updatedMirror }, { merge: true });
+    }
+    syncedAny = true;
+  } catch (e2) {}
+
+  // Канал 3: Резервное зеркало внутри siteData/practices и siteData/security_logs
+  try {
+    const prRef = doc(db, DB_COLLECTION, "practices");
+    const prSnap = await getDoc(prRef);
+    const curPr = (prSnap.exists() && Array.isArray(prSnap.data().c6e_profiles)) ? prSnap.data().c6e_profiles : [];
+    const updatedPr = mergeProfilesLists(curPr, [profToSave]);
+    if (prSnap.exists()) await updateDoc(prRef, { c6e_profiles: updatedPr });
+  } catch (e3) {}
+
+  try {
+    const secRef = doc(db, DB_COLLECTION, "security_logs");
+    const secSnap = await getDoc(secRef);
+    const curSec = (secSnap.exists() && Array.isArray(secSnap.data().c6e_profiles)) ? secSnap.data().c6e_profiles : [];
+    const updatedSec = mergeProfilesLists(curSec, [profToSave]);
+    await setDoc(secRef, { c6e_profiles: updatedSec }, { merge: true });
+  } catch (e4) {}
+}
+
+function handleMergedProfilesUpdate() {
+  let localMirror = [];
+  try {
+    const rawM = localStorage.getItem('c6e_shared_profiles_mirror');
+    if (rawM) localMirror = JSON.parse(rawM);
+  } catch (e) {}
+
+  allProfilesList = mergeProfilesLists(localMirror, profilesFromMirrorDoc, profilesFromMainDoc);
+  const remoteMe = allProfilesList.find(x => x.profileId === clientSecurityMeta.deviceId);
+
+  if (remoteMe) {
+    if (myLocalProfile && myLocalProfile.c6eStatus === 'pending' && remoteMe.c6eStatus === 'approved') {
+      addPersonalNotification("🛡️ Вы приняты в [C6E] на сайте!", "Основатель Kas подтвердил вашу принадлежность к клану CYBER 6 ESPORTS!", "success");
+      window.showNotify("🛡️ Администрация подтвердила ваш профиль бойца [C6E]!", "success");
+    }
+    if (remoteMe.c6eStatus === 'rejected') {
+      saveLocalProfileCache(remoteMe);
+      setGateLockState(true);
+      addPersonalNotification("❌ Отказ в регистрации под тегом [C6E]", "Администратор отклонил заявку на статус бойца [C6E]. Укажите ваш реальный клан в профиле.", "error");
+      window.openMyProfileModal(true, "Вы не числитесь в основном или резервном составе CYBER 6 ESPORTS.");
+    } else {
+      if (myLocalProfile && (remoteMe.likes || 0) > (myLocalProfile.likes || 0)) {
+        addPersonalNotification("❤️ Новый лайк профиля!", `Вашему игровому профилю поставили лайк! Всего лайков: ${remoteMe.likes}`, "info");
+      }
+      saveLocalProfileCache(remoteMe);
+    }
+  } else if (!myLocalProfile || !myLocalProfile.nick) {
+    setGateLockState(true);
+    window.openMyProfileModal(true);
+  } else {
+    // Если профиль создан локально, но еще не попал в облако — автоматически отправляем во все каналы
+    syncProfileToAllCloudChannels(myLocalProfile).catch(() => {});
+  }
+
+  renderCommunityRadarOnHome();
+  renderGlobalChatSection();
+}
+
+onSnapshot(doc(db, DB_COLLECTION, "profiles"), (snap) => {
+  profilesFromMainDoc = (snap.exists() && Array.isArray(snap.data().list)) ? snap.data().list : [];
+  handleMergedProfilesUpdate();
+}, () => {
+  handleMergedProfilesUpdate();
+});
+
+onSnapshot(doc(db, DB_COLLECTION, "reviews"), (snap) => {
+  if (snap.exists() && Array.isArray(snap.data().c6e_profiles)) {
+    profilesFromMirrorDoc = snap.data().c6e_profiles;
+    handleMergedProfilesUpdate();
+  }
+  if (snap.exists() && Array.isArray(snap.data().c6e_chat)) {
+    const now = Date.now();
+    const mirrorMsgs = snap.data().c6e_chat.filter(m => (now - (m.ts || 0)) < CHAT_RETENTION_MS);
+    if (mirrorMsgs.length >= globalChatMessages.length) {
+      globalChatMessages = mirrorMsgs;
+      renderGlobalChatSection();
+    }
+  }
+});
+
+// Обновление онлайна каждые 3 минуты
+setInterval(async () => {
+  if (!myLocalProfile || !myLocalProfile.nick) return;
+  try {
+    const ref = doc(db, DB_COLLECTION, "profiles");
+    const snap = await getDoc(ref);
+    if (!snap.exists()) return;
+    let list = Array.isArray(snap.data().list) ? [...snap.data().list] : [];
+    const idx = list.findIndex(x => x.profileId === clientSecurityMeta.deviceId);
+    if (idx >= 0) {
+      list[idx] = { ...list[idx], lastSeen: Date.now() };
+      await setDoc(ref, { list }, { merge: true });
+    }
+  } catch (e) {}
+}, 180000);
+
+// ============================================================================
+// ОБЩИЙ ЧАТ ИГРОКОВ С АВТО-ОЧИСТКОЙ КАЖДЫЕ 12 ЧАСОВ И @УПОМИНАНИЯМИ
+// ============================================================================
+const CHAT_RETENTION_MS = 12 * 60 * 60 * 1000; // 12 часов
+
+function getRemainingChatResetText() {
+  const elapsed = Date.now() - (globalChatLastPurge || Date.now());
+  const rem = Math.max(0, CHAT_RETENTION_MS - (elapsed % CHAT_RETENTION_MS));
+  const h = Math.floor(rem / (1000 * 60 * 60));
+  const m = Math.floor((rem % (1000 * 60 * 60)) / (1000 * 60));
+  return `${h}ч ${m}м`;
+}
+
+function formatChatMessageTextHTML(rawText) {
+  const safe = escapeHTML(rawText || '');
+  return safe.replace(/@([A-Za-zА-Яа-яЁё0-9_@.\-]{2,24})/g, '<span class="chat-mention-tag">@$1</span>');
+}
+
+window.mentionUserInChat = (nick) => {
+  selectTab('chat', document.getElementById('btn-chat'));
+  setTimeout(() => {
+    const inp = document.getElementById('global-chat-input');
+    if (inp) {
+      const clean = String(nick || '').replace(/^\[[^\]]+\]\s*/, '').trim();
+      if (!inp.value.includes(`@${clean}`)) {
+        inp.value = `${inp.value ? inp.value + ' ' : ''}@${clean} `;
+      }
+      inp.focus();
+    }
+  }, 150);
+};
+
+function renderGlobalChatSection() {
+  const root = document.getElementById('global-chat-root');
+  const now = Date.now();
+  const validMsgs = globalChatMessages.filter(m => (now - (m.ts || 0)) < CHAT_RETENTION_MS);
+
+  const chatLivePill = document.getElementById('home-chat-live-pill');
+  if (chatLivePill) {
+    chatLivePill.innerText = validMsgs.length > 0 ? `${validMsgs.length} СООБЩ.` : '12Ч ЧАТ';
+  }
+
+  if (!root) return;
+
+  const existingInputVal = document.getElementById('global-chat-input')?.value || '';
+  const myCleanNick = myLocalProfile ? myLocalProfile.nick.toLowerCase() : '';
+
+  root.innerHTML = `
+    <div class="chat-box-wrap">
+      <div class="chat-top-bar">
+        <div>
+          <div style="font-family:var(--font-tech); font-size:13px; font-weight:900; color:#fff; display:flex; align-items:center; gap:8px;">
+            <i class="fas fa-comments text-accent"></i> ОБЩИЙ ЧАТ ИГРОКОВ ПОРТАЛА [C6E]
+          </div>
+          <div style="font-size:10px; color:var(--silver-muted); margin-top:2px;">
+            Нажми на <b>@Ник</b> игрока, чтобы упомянуть его (ему придёт уведомление в 🔔 колокольчик и на телефон)
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="padding:4px 10px; border-radius:20px; background:rgba(255,179,0,0.12); border:1px solid rgba(255,179,0,0.4); font-family:var(--font-tech); font-size:9px; color:#ffb300; font-weight:800;">
+            🧹 Авто-очистка чата через: ${getRemainingChatResetText()}
+          </span>
+        </div>
+      </div>
+
+      <div style="padding:7px 12px; background:rgba(0,0,0,0.45); border-bottom:1px solid rgba(255,255,255,0.05); display:flex; align-items:center; gap:6px; overflow-x:auto; white-space:nowrap;">
+        <span style="font-size:9px; font-family:var(--font-tech); color:var(--silver-muted);">УПОМЯНУТЬ:</span>
+        ${allProfilesList.slice(0, 10).map(p => {
+          const safeN = escapeHTML(p.nick).replace(/'/g, "\\'");
+          return `<button type="button" class="chip-btn" style="padding:3px 8px; font-size:9.5px;" onclick="window.mentionUserInChat('${safeN}')">${escapeHTML(p.countryFlag || '🌍')} @${escapeHTML(p.nick)}</button>`;
+        }).join('')}
+      </div>
+
+      <div class="chat-messages-area" id="chat-messages-scroll">
+        ${validMsgs.length === 0 ? `
+          <div style="text-align:center; margin:auto; padding:30px; color:var(--silver-muted); font-size:12px;">
+            <i class="fas fa-comment-dots" style="font-size:28px; color:var(--accent-light); margin-bottom:8px; display:block;"></i>
+            Чат чист! Напиши первое сообщение или позови игроков через <b>@Ник</b>.
+          </div>
+        ` : validMsgs.map(m => {
+          const isMine = myLocalProfile && m.senderId === myLocalProfile.profileId;
+          const mentionsMe = myCleanNick && String(m.text || '').toLowerCase().includes(`@${myCleanNick}`);
+          const tagStr = m.c6eStatus === 'approved' ? '[C6E]' : (m.clanTag ? `[${m.clanTag}]` : '');
+          const rolePill = m.isFounder
+            ? '<span style="background:#ffb300; color:#000; font-family:var(--font-tech); font-size:8px; font-weight:900; padding:1px 6px; border-radius:4px;">👑 FOUNDER KAS</span>'
+            : (m.c6eStatus === 'approved'
+                ? '<span style="color:#00e676; font-size:9px; font-weight:800;">🛡️ [C6E]</span>'
+                : '<span style="color:#93c5fd; font-size:9px;">💎 Гость</span>');
+
+          return `
+            <div class="chat-msg-item ${isMine ? 'is-mine' : ''} ${mentionsMe ? 'mention-me' : ''}">
+              <div class="c6e-hex-avatar ${escapeHTML(m.frameStyle || 'frame-c6e-red')}" style="width:38px; height:38px; cursor:pointer;" onclick="window.openPublicProfileModal('${escapeHTML(m.senderId || '')}')">
+                <img src="${escapeHTML(m.avatar || 'logo.png')}" onerror="this.src='logo.png'">
+              </div>
+              <div style="flex:1; min-width:0;">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:3px;">
+                  <div style="display:flex; align-items:center; gap:5px; flex-wrap:wrap;">
+                    <span style="cursor:pointer; font-family:var(--font-tech); font-size:11px; font-weight:800; color:#fff;" onclick="window.openPublicProfileModal('${escapeHTML(m.senderId || '')}')">
+                      ${escapeHTML(m.countryFlag || '🌍')} ${tagStr ? `<span style="color:var(--accent-light);">${escapeHTML(tagStr)}</span> ` : ''}${escapeHTML(m.nick || 'Игрок')}
+                    </span>
+                    ${rolePill}
+                  </div>
+                  <div style="display:flex; align-items:center; gap:6px;">
+                    <span style="font-size:9px; color:var(--silver-muted);">${escapeHTML(m.timeStr || '')}</span>
+                    ${!isMine ? `<button type="button" style="background:none; border:none; color:#ffb300; font-size:10px; cursor:pointer; font-family:var(--font-tech); font-weight:700;" onclick="window.mentionUserInChat('${escapeHTML(m.nick || '').replace(/'/g, "\\'")}')">@Ответить</button>` : ''}
+                  </div>
+                </div>
+                <div style="font-size:12.5px; color:#e4e4e2; line-height:1.5; word-break:break-word;">
+                  ${formatChatMessageTextHTML(m.text)}
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+
+      <form class="chat-input-bar" onsubmit="window.sendGlobalChatMessage(event)">
+        <input type="text" id="global-chat-input" class="form-input" value="${escapeHTML(existingInputVal)}" placeholder="Напиши в общий чат (используй @Ник для упоминания)..." maxlength="280" style="margin:0; flex:1;" required>
+        <button type="submit" class="btn-glitch" style="width:auto; padding:10px 18px; margin:0;">
+          <i class="fas fa-paper-plane"></i>
+        </button>
+      </form>
+    </div>
+  `;
+
+  const sc = document.getElementById('chat-messages-scroll');
+  if (sc) sc.scrollTop = sc.scrollHeight;
+}
+
+window.sendGlobalChatMessage = async (e) => {
+  if (e) e.preventDefault();
+  if (checkIfCurrentUserBanned()) return;
+  if (!myLocalProfile || !myLocalProfile.nick) {
+    window.showNotify("Сначала создайте игровой профиль!", "error");
+    return window.openMyProfileModal(true);
+  }
+
+  const inp = document.getElementById('global-chat-input');
+  const text = (inp?.value || '').trim();
+  if (!text) return;
+
+  if (containsSpam(text)) {
+    const bad = findMatchedSpamWord(text);
+    logSecurityEvent('🚨 ТРЕВОГА: Запрещенное слово в чате', myLocalProfile.nick, `Слово «${bad}»: "${text.slice(0, 50)}"`, true);
+    return window.showNotify("🛡 C6E Shield: Сообщение заблокировано анти-мат фильтром!", "error");
+  }
+
+  if (inp) inp.value = '';
+
+  try {
+    const ref = doc(db, DB_COLLECTION, "global_chat");
+    const snap = await getDoc(ref);
+    const now = Date.now();
+    let messages = (snap.exists() && Array.isArray(snap.data().messages)) ? snap.data().messages : [];
+    let lastPurgeTs = (snap.exists() && snap.data().lastPurgeTs) ? snap.data().lastPurgeTs : now;
+
+    messages = messages.filter(m => (now - (m.ts || 0)) < CHAT_RETENTION_MS);
+    if (now - lastPurgeTs >= CHAT_RETENTION_MS) {
+      messages = [];
+      lastPurgeTs = now;
+    }
+
+    const newMsg = {
+      id: now + Math.floor(Math.random() * 1000),
+      senderId: myLocalProfile.profileId,
+      nick: myLocalProfile.nick,
+      clanTag: myLocalProfile.c6eStatus === 'approved' ? 'C6E' : (myLocalProfile.clanTag || ''),
+      c6eStatus: myLocalProfile.c6eStatus || 'guest',
+      avatar: myLocalProfile.avatar || 'logo.png',
+      frameStyle: myLocalProfile.frameStyle || 'frame-c6e-red',
+      countryFlag: myLocalProfile.countryFlag || '🌍',
+      text,
+      timeStr: new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }),
+      ts: now
+    };
+
+    messages.push(newMsg);
+    if (messages.length > 90) messages = messages.slice(-90);
+
+    try {
+      await setDoc(ref, { messages, lastPurgeTs }, { merge: true });
+    } catch (eChat) {}
+    try {
+      await updateDoc(doc(db, DB_COLLECTION, "reviews"), { c6e_chat: messages, c6e_chat_purge: lastPurgeTs });
+    } catch (eRevChat) {}
+  } catch (err) {
+    window.showNotify("Ошибка отправки сообщения", "error");
+  }
+};
+
+let lastProcessedChatMsgId = 0;
+onSnapshot(doc(db, DB_COLLECTION, "global_chat"), (snap) => {
+  const now = Date.now();
+  if (snap.exists()) {
+    const rawMsgs = Array.isArray(snap.data().messages) ? snap.data().messages : [];
+    globalChatLastPurge = snap.data().lastPurgeTs || now;
+    globalChatMessages = rawMsgs.filter(m => (now - (m.ts || 0)) < CHAT_RETENTION_MS);
+
+    if (myLocalProfile && myLocalProfile.nick && globalChatMessages.length > 0) {
+      const latest = globalChatMessages[globalChatMessages.length - 1];
+      if (latest.id !== lastProcessedChatMsgId && latest.ts > sessionBootTime && latest.senderId !== myLocalProfile.profileId) {
+        lastProcessedChatMsgId = latest.id;
+        const myClean = myLocalProfile.nick.toLowerCase();
+        const txtLow = String(latest.text || '').toLowerCase();
+        if (txtLow.includes(`@${myClean}`) || txtLow.includes('@all') || txtLow.includes('@все')) {
+          addPersonalNotification(
+            `💬 ${latest.nick} упомянул вас в чате!`,
+            latest.text,
+            'mention',
+            'chat'
+          );
+          if (window.showNotify) {
+            window.showNotify(`🔔 ${latest.nick} упомянул вас в Общем чате!`, 'success');
+          }
+        }
+      }
+    }
+  } else {
+    globalChatMessages = [];
+  }
+  renderGlobalChatSection();
+});
+
+// ============================================================================
+// РАЗДЕЛ «МАГАЗИН [C6E]» (ЭЛЕГАНТНЫЙ КИБЕР-МАРКЕТ С АЖИОТАЖЕМ)
+// ============================================================================
+function renderShopSection() {
+  const root = document.getElementById('c6e-shop-root');
+  if (!root) return;
+
+  const waitCount = Array.isArray(shopConfigData.waitlist) ? shopConfigData.waitlist.length : 0;
+  const isWaiting = Array.isArray(shopConfigData.waitlist) && shopConfigData.waitlist.some(w => w.deviceId === clientSecurityMeta.deviceId);
+
+  const teaserItems = [
+    { icon: 'fa-coins', color: '#ffb300', badge: 'LOCKED // SOON', title: 'ПАКИ ГОЛДЫ & GOLD PASS', desc: 'Мгновенное пополнение Голды и боевых пропусков Standoff 2 по закрытому курсу для участников портала [C6E].' },
+    { icon: 'fa-sliders-h', color: '#00e676', badge: 'PRO CONFIGS', title: 'ПРИВАТНЫЕ НАСТРОЙКИ БОЙЦОВ [C6E]', desc: 'Эксклюзивные паки кастомной раскладки, точной сенсы, прицелов и секретов оттяжки от основы Cyber 6 Esports.' },
+    { icon: 'fa-crown', color: '#ff5263', badge: 'VIP STATUS', title: 'КАСТОМНЫЕ VIP-РАМКИ И БАННЕРЫ', desc: 'Уникальные анимированные рамки профиля, золотой ник в Общем чате и приоритетный слот на праках.' },
+    { icon: 'fa-trophy', color: '#3b82f6', badge: 'TOURNAMENT SLOTS', title: 'БИЛЕТЫ НА ЗАКРЫТЫЕ ТУРНИРЫ C6E', desc: 'Прямые инвайты на еженедельные дуэли 1v1, 2v2 и 5v5 с гарантированным призовым фондом в Голде.' }
+  ];
+
+  root.innerHTML = `
+    <div class="shop-vault-hero">
+      <div style="display:inline-flex; align-items:center; gap:7px; padding:5px 14px; border-radius:20px; background:rgba(255,179,0,0.14); border:1px solid #ffb300; color:#ffb300; font-family:var(--font-tech); font-size:9.5px; font-weight:900; letter-spacing:1.2px; margin-bottom:12px;">
+        <i class="fas fa-lock"></i> SECRET CYBER MARKET // BY FOUNDER KAS
+      </div>
+      <h2 style="font-family:var(--font-tech); font-size:clamp(20px, 4vw, 28px); font-weight:900; color:#fff; margin:0 0 8px 0; letter-spacing:1px;">
+        ${escapeHTML(shopConfigData.title || 'КИБЕР-МАРКЕТ CYBER 6 ESPORTS [C6E]')}
+      </h2>
+      <div style="font-family:var(--font-tech); font-size:11px; color:var(--accent-light); font-weight:800; letter-spacing:1.5px; margin-bottom:14px;">
+        ${escapeHTML(shopConfigData.subtitle || 'ЗАКРЫТЫЙ АУКЦИОН И ЭКСКЛЮЗИВНЫЙ ИГРОВОЙ КОНТЕНТ')}
+      </div>
+      <p style="max-width:640px; margin:0 auto 20px auto; font-size:13px; color:#d4d6dc; line-height:1.65;">
+        ${escapeHTML(shopConfigData.hypeText)}
+      </p>
+
+      <div style="display:flex; justify-content:center; align-items:center; gap:12px; flex-wrap:wrap;">
+        <button type="button" class="boost-btn" style="width:auto; padding:12px 22px; font-size:11px;" onclick="window.joinShopWaitlist()">
+          <i class="fas fa-bell"></i> ${isWaiting ? '✅ ВЫ В СПИСКЕ ПЕРВЫХ ПОКУПАТЕЛЕЙ' : 'УВЕДОМИТЬ МЕНЯ ОБ ОТКРЫТИИ ПЕРВЫМ'}
+        </button>
+        <span style="padding:10px 14px; border-radius:10px; background:rgba(255,255,255,0.04); border:1px solid var(--glass-border); font-family:var(--font-tech); font-size:10px; color:var(--silver);">
+          🔥 Уже ждут открытия: <b style="color:#ffb300;">${waitCount + 24}</b> игроков
+        </span>
+      </div>
+    </div>
+
+    <div class="shop-teaser-grid">
+      ${teaserItems.map(item => `
+        <div class="shop-teaser-card">
+          <div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+              <span style="width:38px; height:38px; border-radius:10px; background:rgba(255,255,255,0.04); border:1px solid ${item.color}; color:${item.color}; display:inline-flex; align-items:center; justify-content:center; font-size:16px;">
+                <i class="fas ${item.icon}"></i>
+              </span>
+              <span style="font-family:var(--font-tech); font-size:8.5px; font-weight:800; color:${item.color}; background:rgba(0,0,0,0.5); padding:3px 8px; border-radius:6px; border:1px solid ${item.color};">
+                🔒 ${item.badge}
+              </span>
+            </div>
+            <h3 style="font-family:var(--font-tech); font-size:13px; font-weight:800; color:#fff; margin:0 0 8px 0;">
+              ${item.title}
+            </h3>
+            <p style="font-size:11.5px; color:var(--silver-muted); line-height:1.55; margin:0 0 14px 0;">
+              ${item.desc}
+            </p>
+          </div>
+          <div style="padding-top:10px; border-top:1px solid rgba(255,255,255,0.06); display:flex; justify-content:space-between; align-items:center; font-family:var(--font-tech); font-size:9.5px; color:#888;">
+            <span>ДОСТУП ПО ПРОФИЛЮ [C6E]</span>
+            <span style="color:#ffb300;">СКОРО ➔</span>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+window.joinShopWaitlist = async () => {
+  if (checkIfCurrentUserBanned()) return;
+  try {
+    const ref = doc(db, DB_COLLECTION, "shop_config");
+    const snap = await getDoc(ref);
+    let waitlist = (snap.exists() && Array.isArray(snap.data().waitlist)) ? [...snap.data().waitlist] : [];
+    if (waitlist.some(w => w.deviceId === clientSecurityMeta.deviceId)) {
+      return window.showNotify("Вы уже записаны в VIP-лист ожидания Магазина [C6E]!", "success");
+    }
+    waitlist.push({
+      deviceId: clientSecurityMeta.deviceId,
+      nick: myLocalProfile ? myLocalProfile.nick : 'Гость',
+      ts: Date.now()
+    });
+    await setDoc(ref, { waitlist }, { merge: true });
+    addPersonalNotification("🛒 Вы в VIP-списке Магазина [C6E]!", "Как только Основатель Kas откроет продажи, вы получите персональное уведомление.", "success");
+    window.showNotify("🔥 Вы добавлены в список ожидания Магазина [C6E]!", "success");
+  } catch (e) {}
+};
+
+onSnapshot(doc(db, DB_COLLECTION, "shop_config"), (snap) => {
+  if (snap.exists()) {
+    shopConfigData = { ...shopConfigData, ...snap.data() };
+  }
+  renderShopSection();
+}, () => {
+  renderShopSection();
+});
+
+// Инициализация UI при старте
+updateHeaderProfileChipUI();
+setTimeout(autoFillFormsWithProfile, 400);
+renderCommunityRadarOnHome();
+renderShopSection();
