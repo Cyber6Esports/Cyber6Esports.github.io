@@ -3177,27 +3177,59 @@ window.openNotificationsModal = () => {
   modal.classList.add('active');
 };
 
+
+// ПРЕСЕТЫ КИБЕР-АВАТАРОК [C6E] (ДЛЯ ВЫБОРА В 1 КЛИК В ПРОФИЛЕ)
+const C6E_AVATAR_PRESETS = [
+  { name: 'Логотип [C6E]', url: 'logo.png' },
+  { name: 'Кибер-Самурай', url: `data:image/svg+xml;utf8,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#222530"/><stop offset="100%" stop-color="#090a0f"/></linearGradient></defs><rect width="120" height="120" fill="url(#g1)"/><polygon points="60,14 102,38 102,82 60,106 18,82 18,38" fill="none" stroke="#d42638" stroke-width="4"/><path d="M38 52 L54 60 L38 68 Z M82 52 L66 60 L82 68 Z" fill="#e4e4e2"/><path d="M44 80 Q60 90 76 80" stroke="#d42638" stroke-width="4" fill="none"/></svg>')}` },
+  { name: 'Фантом Хром', url: `data:image/svg+xml;utf8,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><rect width="120" height="120" fill="#0d0e13"/><circle cx="60" cy="60" r="44" fill="none" stroke="#e4e4e2" stroke-width="3" stroke-dasharray="10 5"/><polygon points="60,24 90,78 30,78" fill="rgba(228,228,226,0.12)" stroke="#ffffff" stroke-width="3"/><circle cx="60" cy="58" r="10" fill="#d42638"/></svg>')}` },
+  { name: 'Снайпер AWM', url: `data:image/svg+xml;utf8,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><rect width="120" height="120" fill="#0b0c10"/><circle cx="60" cy="60" r="40" fill="none" stroke="#e4e4e2" stroke-width="3"/><line x1="60" y1="10" x2="60" y2="110" stroke="#d42638" stroke-width="2.5"/><line x1="10" y1="60" x2="110" y2="60" stroke="#d42638" stroke-width="2.5"/><circle cx="60" cy="60" r="16" fill="none" stroke="#ffffff" stroke-width="2"/><circle cx="60" cy="60" r="4" fill="#d42638"/></svg>')}` },
+  { name: 'Корона Пантеона', url: `data:image/svg+xml;utf8,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><rect width="120" height="120" fill="#101117"/><polygon points="24,84 32,42 50,62 60,32 70,62 88,42 96,84" fill="rgba(228,228,226,0.16)" stroke="#e4e4e2" stroke-width="4" stroke-linejoin="round"/><rect x="26" y="88" width="68" height="7" rx="3" fill="#d42638"/></svg>')}` }
+];
+
+// ПРОВЕРКА НАЛИЧИЯ ГАЛОЧКИ РАЗРАБОТЧИКА У ПРОФИЛЯ ИГРОКА (ВЫДАЕТСЯ В АДМИНКЕ + АВТОМАТИЧЕСКИ У KAS)
+function hasDeveloperBadge(prof) {
+  if (!prof) return false;
+  if (prof.isDeveloper === true || prof.devBadge === true || prof.role === 'developer') return true;
+  const cleanN = String(prof.nick || '').trim().toLowerCase();
+  if ((cleanN === 'kas' || cleanN === 'kas_0ff' || cleanN === '@kas_0ff') && (prof.c6eStatus === 'approved' || prof.claimsC6E)) {
+    return true;
+  }
+  return false;
+}
+
+function renderDevVerifiedCheckHTML(prof) {
+  if (!hasDeveloperBadge(prof)) return '';
+  return `<span class="c6e-dev-verified-badge" title="Официальный Разработчик CYBER 6 ESPORTS">✓</span>`;
+}
+
 function getDisplayTagAndBadge(prof) {
-  if (!prof) return { tagStr: '', badgeHtml: '💎 Гость портала', isApprovedC6E: false };
-  if (prof.c6eStatus === 'approved') {
+  if (!prof) return { tagStr: '', badgeHtml: 'Гость портала', isApprovedC6E: false, isDev: false };
+  const isDev = hasDeveloperBadge(prof);
+  const devPill = isDev ? `<span class="c6e-dev-pill-tag"><span class="c6e-dev-verified-badge" style="width:12px;height:12px;font-size:7px;">✓</span> DEV [C6E]</span> ` : '';
+
+  if (prof.c6eStatus === 'approved' || isDev) {
     return {
       tagStr: '[C6E]',
-      badgeHtml: '<span style="color:#00e676; font-weight:800;">🛡️ Боец [C6E]</span>',
-      isApprovedC6E: true
+      badgeHtml: `${devPill}<span style="color:var(--silver); font-weight:800;">🛡️ Боец [C6E]</span>`,
+      isApprovedC6E: true,
+      isDev
     };
   }
   if (prof.c6eStatus === 'pending') {
     return {
       tagStr: '[C6E]',
-      badgeHtml: '<span style="color:#ffb300; font-weight:700;">⏳ На проверке в [C6E]</span>',
-      isApprovedC6E: false
+      badgeHtml: `${devPill}<span style="color:var(--silver-muted); font-weight:700;">⏳ На проверке в [C6E]</span>`,
+      isApprovedC6E: false,
+      isDev
     };
   }
   const cleanTag = (prof.clanTag || '').replace(/[\[\]\?]/g, '').trim();
   return {
     tagStr: cleanTag ? `[${cleanTag}]` : '',
-    badgeHtml: `<span style="color:#93c5fd; font-weight:700;">💎 Гость ${prof.clanName ? '• ' + escapeHTML(prof.clanName) : 'портала'}</span>`,
-    isApprovedC6E: false
+    badgeHtml: `${devPill}<span style="color:var(--silver-muted); font-weight:700;">💎 Гость ${prof.clanName ? '• ' + escapeHTML(prof.clanName) : 'портала'}</span>`,
+    isApprovedC6E: false,
+    isDev
   };
 }
 
@@ -3217,10 +3249,10 @@ function updateHeaderProfileChipUI() {
   const info = getDisplayTagAndBadge(myLocalProfile);
   if (imgEl) imgEl.src = myLocalProfile.avatar || 'logo.png';
   if (wrapEl) {
-    wrapEl.className = `hp-avatar-wrap ${myLocalProfile.frameStyle || 'frame-c6e-red'}`;
+    wrapEl.className = `hp-avatar-wrap ${myLocalProfile.frameStyle || 'frame-c6e-mirror'}`;
   }
-  nickEl.innerText = `${myLocalProfile.countryFlag || '🌍'} ${info.tagStr ? info.tagStr + ' ' : ''}${myLocalProfile.nick}`;
-  subEl.innerHTML = `${info.badgeHtml} • ❤️ ${myLocalProfile.likes || 0}`;
+  nickEl.innerHTML = `<span>${escapeHTML(myLocalProfile.countryFlag || '🌍')} ${info.tagStr ? escapeHTML(info.tagStr) + ' ' : ''}${escapeHTML(myLocalProfile.nick)}</span> ${renderDevVerifiedCheckHTML(myLocalProfile)}`;
+  subEl.innerHTML = `${info.isDev ? '⚡ Разработчик' : (info.isApprovedC6E ? '🛡️ Боец [C6E]' : '💎 Гость')} • ❤️ ${myLocalProfile.likes || 0}`;
 }
 
 // АВТО-ПОДСТАНОВКА ДАННЫХ ПРОФИЛЯ ВО ВСЕ ФОРМЫ САЙТА (ПРАКИ, ОТЗЫВЫ, ЗАЯВКА В КЛАН)
@@ -3277,8 +3309,7 @@ document.getElementById('guestBannerFileInput')?.addEventListener('change', asyn
     if (inp) inp.value = tempProfileBannerDataUrl;
     const sel = document.getElementById('prof-banner-preset-sel');
     if (sel) sel.value = 'custom';
-    const customRow = document.getElementById('prof-custom-banner-row');
-    if (customRow) customRow.style.display = 'flex';
+    window.updateLiveBannerPreview('custom');
     window.showNotify("Баннер профиля с устройства загружен!", "success");
   } catch (err) {
     window.showNotify("Не удалось обработать баннер", "error");
@@ -3299,6 +3330,36 @@ function showProfileFormStatus(msg, isError = true) {
     window.showNotify(msg.replace(/<[^>]*>/g, ''), isError ? 'error' : 'success');
   }
 }
+
+window.selectPresetAvatar = (idx) => {
+  const item = C6E_AVATAR_PRESETS[idx];
+  if (!item) return;
+  tempProfileAvatarDataUrl = item.url;
+  const prev = document.getElementById('prof-avatar-preview-img');
+  const inp = document.getElementById('prof-avatar-url-inp');
+  if (prev) prev.src = item.url;
+  if (inp) {
+    inp.value = item.url === 'logo.png' ? '' : item.url;
+  }
+  document.querySelectorAll('.avatar-preset-item').forEach((el, i) => {
+    el.classList.toggle('active', i === idx);
+  });
+};
+
+window.updateLiveBannerPreview = (presetVal) => {
+  const box = document.getElementById('prof-live-banner-preview');
+  const customRow = document.getElementById('prof-custom-banner-row');
+  if (customRow) customRow.style.display = presetVal === 'custom' ? 'flex' : 'none';
+  if (!box) return;
+  const validPresets = ['banner-mirror','banner-crimson','banner-chrome','banner-gold','banner-emerald','banner-sapphire'];
+  box.className = 'prof-banner-box ' + (validPresets.includes(presetVal) ? presetVal : 'banner-mirror');
+  if (presetVal === 'custom') {
+    const customUrl = document.getElementById('prof-banner-custom-inp')?.value || tempProfileBannerDataUrl || '';
+    box.style.backgroundImage = customUrl ? `url('${customUrl}')` : '';
+  } else {
+    box.style.backgroundImage = '';
+  }
+};
 
 window.openMyProfileModal = (forceRegistrationGate = false, rejectedMessage = null) => {
   if (checkIfCurrentUserBanned()) return;
@@ -3334,73 +3395,90 @@ window.openMyProfileModal = (forceRegistrationGate = false, rejectedMessage = nu
     countryFlag: '🇷🇺',
     bio: '',
     avatar: 'logo.png',
-    banner: 'banner-crimson',
-    frameStyle: 'frame-c6e-red'
+    banner: 'banner-mirror',
+    frameStyle: 'frame-c6e-mirror'
   };
 
   const isForceGuest = Boolean(rejectedMessage) || p.c6eStatus === 'rejected';
   const isC6ESelected = isForceGuest ? false : Boolean(p.claimsC6E || p.c6eStatus === 'approved' || p.c6eStatus === 'pending');
-  const isCustomBanner = p.banner && !['banner-crimson','banner-gold','banner-emerald','banner-sapphire'].includes(p.banner);
+  const presetBanners = ['banner-mirror','banner-crimson','banner-chrome','banner-gold','banner-emerald','banner-sapphire'];
+  const isCustomBanner = p.banner && !presetBanners.includes(p.banner);
+  const activeBannerClass = isCustomBanner ? 'banner-mirror' : (p.banner || 'banner-mirror');
+  const activeBannerStyle = isCustomBanner ? `background-image:url('${escapeHTML(p.banner)}');` : '';
   const needPushAsk = ('Notification' in window) && Notification.permission !== 'granted';
 
   modal.innerHTML = `
-    <div class="c6e-modal-card" style="max-width:580px; border-top:3px solid var(--accent-light);">
+    <div class="c6e-modal-card" style="max-width:580px;">
       <div class="c6e-modal-head">
         <div>
           <span style="font-family:var(--font-tech); font-size:12px; font-weight:900; color:#fff;">
-            <i class="fas fa-id-card text-accent"></i> ${forceRegistrationGate ? 'РЕГИСТРАЦИЯ ИГРОВОГО ПРОФИЛЯ ПОРТАЛА [C6E]' : 'МОЙ ИГРОВОЙ ПРОФИЛЬ [C6E]'}
+            <i class="fas fa-id-card text-accent"></i> ${forceRegistrationGate ? 'СОЗДАНИЕ ПРОФИЛЯ ПОРТАЛА [C6E]' : 'НАСТРОЙКА ПРОФИЛЯ, АВАТАРКИ И БАННЕРА'}
           </span>
           <div style="font-size:10px; color:var(--silver-muted); margin-top:2px;">
-            ${forceRegistrationGate ? 'Заполни профиль один раз без паролей и почты, чтобы открыть доступ ко всем разделам сайта' : 'Твои данные автоматически подставляются при записи на прак, в отзывах и чате'}
+            ${forceRegistrationGate ? 'Быстрая регистрация без паролей и почты для входа на портал' : 'Живое зеркальное превью твоего профиля, рамки и баннера'}
           </div>
         </div>
         ${!forceRegistrationGate ? `<button type="button" class="c6e-modal-close" onclick="document.getElementById('c6e-profile-gate-modal').classList.remove('active')">✕</button>` : ''}
       </div>
 
-      <div class="c6e-modal-body" style="max-height:80vh; overflow-y:auto;">
+      <div class="c6e-modal-body" style="max-height:82vh; overflow-y:auto;">
         ${rejectedMessage ? `
           <div style="background:rgba(212,38,56,0.16); border:1px solid #ff5263; border-radius:10px; padding:12px; margin-bottom:14px; font-size:11.5px; color:#fff; line-height:1.5;">
             🚫 <b>Заявка на тег [C6E] отклонена администрацией!</b><br>
-            ${escapeHTML(rejectedMessage)} Укажите ниже тег и название клана Standoff 2, в котором вы состоите, чтобы получить значок <b>💎 Гостя сайта</b>.
+            ${escapeHTML(rejectedMessage)} Укажите ниже тег и название клана Standoff 2, в котором вы состоите, чтобы получить значок <b>💎 Гостя портала</b>.
           </div>
         ` : ''}
 
-        <!-- ПРЕВЬЮ АВАТАРКИ В РАМКЕ ЛОГОТИПА [C6E] -->
-        <div style="display:flex; align-items:center; gap:14px; background:rgba(255,255,255,0.03); padding:12px; border-radius:12px; border:1px solid var(--glass-border); margin-bottom:14px;">
-          <div id="prof-avatar-preview-frame" class="c6e-hex-avatar ${escapeHTML(p.frameStyle || 'frame-c6e-red')}" style="width:64px; height:64px;">
-            <img id="prof-avatar-preview-img" src="${escapeHTML(p.avatar || 'logo.png')}" onerror="this.src='logo.png'">
+        <!-- ЖИВОЕ ЗЕРКАЛЬНОЕ ПРЕВЬЮ БАННЕРА, РАМКИ И АВАТАРКИ -->
+        <div style="border-radius:13px; overflow:hidden; border:1px solid var(--mirror-border-bright); background:rgba(10,11,15,0.95); margin-bottom:14px; box-shadow:0 12px 28px rgba(0,0,0,0.6);">
+          <div id="prof-live-banner-preview" class="prof-banner-box ${activeBannerClass}" style="height:86px; ${activeBannerStyle}">
+            <span style="position:absolute; top:8px; right:10px; z-index:2; font-family:var(--font-tech); font-size:8.5px; color:var(--silver); background:rgba(0,0,0,0.65); padding:3px 8px; border-radius:20px; border:1px solid rgba(255,255,255,0.15);">
+              LIVE PREVIEW
+            </span>
           </div>
-          <div style="flex:1; min-width:0;">
-            <div style="font-size:11px; font-weight:700; color:#fff; margin-bottom:6px;">Аватарка профиля (с устройства или по ссылке)</div>
-            <div style="display:flex; gap:6px; flex-wrap:wrap;">
-              <button type="button" class="chip-btn" style="border-color:var(--accent-light); color:#fff;" onclick="document.getElementById('guestAvatarFileInput').click()">
-                <i class="fas fa-mobile-alt text-accent"></i> Загрузить с телефона
-              </button>
-              <input type="text" id="prof-avatar-url-inp" class="form-input" value="${escapeHTML((!p.avatar || p.avatar === 'logo.png' || String(p.avatar).startsWith('data:')) ? '' : p.avatar)}" placeholder="Или вставь прямую ссылку на фото..." style="padding:6px 9px; font-size:11px; flex:1; min-width:140px;" oninput="document.getElementById('prof-avatar-preview-img').src = this.value || 'logo.png'">
+          <div style="padding:0 14px 12px 14px; margin-top:-30px; position:relative; z-index:2; display:flex; align-items:flex-end; gap:12px; flex-wrap:wrap;">
+            <div id="prof-avatar-preview-frame" class="c6e-hex-avatar ${escapeHTML(p.frameStyle || 'frame-c6e-mirror')}" style="width:66px; height:66px;">
+              <img id="prof-avatar-preview-img" src="${escapeHTML(p.avatar || 'logo.png')}" onerror="this.src='logo.png'">
             </div>
+            <div style="flex:1; min-width:160px;">
+              <div style="font-size:10.5px; font-weight:700; color:var(--silver); margin-bottom:5px;">Выбери готовую кибер-аватарку или загрузи свою:</div>
+              <div class="avatar-presets-strip">
+                ${C6E_AVATAR_PRESETS.map((pr, idx) => `
+                  <div class="avatar-preset-item ${p.avatar === pr.url ? 'active' : ''}" title="${pr.name}" onclick="window.selectPresetAvatar(${idx})">
+                    <img src="${pr.url}" alt="${pr.name}">
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+          <div style="padding:0 14px 12px 14px; display:flex; gap:6px; flex-wrap:wrap;">
+            <button type="button" class="chip-btn" style="border-color:var(--mirror-border-bright); color:#fff;" onclick="document.getElementById('guestAvatarFileInput').click()">
+              <i class="fas fa-camera text-accent"></i> Своё фото с устройства
+            </button>
+            <input type="text" id="prof-avatar-url-inp" class="form-input" value="${escapeHTML((!p.avatar || p.avatar === 'logo.png' || String(p.avatar).startsWith('data:')) ? '' : p.avatar)}" placeholder="Или вставь прямую ссылку на аватарку..." style="padding:6px 10px; font-size:11px; flex:1; min-width:150px;" oninput="if(this.value) document.getElementById('prof-avatar-preview-img').src = this.value">
           </div>
         </div>
 
-        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:10px; margin-bottom:12px;">
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(175px, 1fr)); gap:10px; margin-bottom:12px;">
           <div>
             <label class="form-label">1. ТВОЙ НИК В STANDOFF 2 *</label>
             <input type="text" id="prof-nick-inp" class="form-input" value="${escapeHTML(p.nick || '')}" placeholder="Например: Kas" required>
           </div>
           <div>
             <label class="form-label">2. ИГРОВОЙ ID STANDOFF 2 *</label>
-            <input type="text" id="prof-gameid-inp" class="form-input" value="${escapeHTML(p.gameId || '')}" placeholder="Например: 74829104" required>
+            <input type="text" id="prof-gameid-inp" class="form-input" value="${escapeHTML(p.gameId || '')}" placeholder="Например: 46594114" required>
           </div>
         </div>
 
         <!-- ВЫБОР: ВЫ ИЗ КЛАНА [C6E] ИЛИ НЕТ? -->
-        <div style="background:rgba(255,255,255,0.03); border:1px solid var(--glass-border); border-radius:11px; padding:12px; margin-bottom:12px;">
-          <label class="form-label" style="margin-bottom:8px; color:#ffb300;"><i class="fas fa-shield-alt"></i> 3. ВЫ СОСТОИТЕ В НАШЕМ КЛАНЕ [C6E] CYBER 6 ESPORTS?</label>
+        <div style="background:rgba(255,255,255,0.025); border:1px solid var(--mirror-border); border-radius:11px; padding:12px; margin-bottom:12px;">
+          <label class="form-label" style="margin-bottom:8px; color:var(--silver);"><i class="fas fa-shield-alt text-accent"></i> 3. ВЫ СОСТОИТЕ В НАШЕМ КЛАНЕ [C6E] CYBER 6 ESPORTS?</label>
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-            <label id="lbl-c6e-no" style="display:flex; align-items:center; gap:7px; padding:10px; border-radius:9px; border:1px solid ${!isC6ESelected ? 'var(--accent-light)' : 'rgba(255,255,255,0.1)'}; background:${!isC6ESelected ? 'var(--accent-dim)' : 'rgba(0,0,0,0.4)'}; cursor:pointer; font-size:11px; font-weight:700; color:#fff;">
+            <label id="lbl-c6e-no" style="display:flex; align-items:center; gap:7px; padding:10px; border-radius:9px; border:1px solid ${!isC6ESelected ? 'var(--silver)' : 'rgba(255,255,255,0.1)'}; background:${!isC6ESelected ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.4)'}; cursor:pointer; font-size:11px; font-weight:700; color:#fff;">
               <input type="radio" name="profC6ERadio" value="no" ${!isC6ESelected ? 'checked' : ''} onchange="window.toggleProfileClanFields(false)">
               💎 Нет, я Гость / Другой клан
             </label>
-            <label id="lbl-c6e-yes" style="display:flex; align-items:center; gap:7px; padding:10px; border-radius:9px; border:1px solid ${isC6ESelected ? '#ffb300' : 'rgba(255,255,255,0.1)'}; background:${isC6ESelected ? 'rgba(255,179,0,0.15)' : 'rgba(0,0,0,0.4)'}; cursor:pointer; font-size:11px; font-weight:700; color:#fff;">
+            <label id="lbl-c6e-yes" style="display:flex; align-items:center; gap:7px; padding:10px; border-radius:9px; border:1px solid ${isC6ESelected ? 'var(--accent-light)' : 'rgba(255,255,255,0.1)'}; background:${isC6ESelected ? 'var(--accent-dim)' : 'rgba(0,0,0,0.4)'}; cursor:pointer; font-size:11px; font-weight:700; color:#fff;">
               <input type="radio" name="profC6ERadio" value="yes" ${isC6ESelected ? 'checked' : ''} ${isForceGuest ? 'disabled' : ''} onchange="window.toggleProfileClanFields(true)">
               🛡️ Да, я боец [C6E]
             </label>
@@ -3412,69 +3490,70 @@ window.openMyProfileModal = (forceRegistrationGate = false, rejectedMessage = nu
               <input type="text" id="prof-clantag-inp" class="form-input" value="${escapeHTML(p.clanTag === 'C6E' ? '' : (p.clanTag || ''))}" placeholder="[TAG]" maxlength="7">
             </div>
             <div>
-              <label class="form-label">НАЗВАНИЕ ТВОЕГО КЛАНА STANDOFF 2</label>
+              <label class="form-label">НАЗВАНИЕ КЛАНА STANDOFF 2</label>
               <input type="text" id="prof-clanname-inp" class="form-input" value="${escapeHTML(p.clanName === 'CYBER 6 ESPORTS' ? '' : (p.clanName || ''))}" placeholder="Например: Horizon Esports (или Свободный агент)">
             </div>
           </div>
 
-          <div id="prof-c6e-notice" style="display:${isC6ESelected ? 'block' : 'none'}; margin-top:10px; font-size:11px; color:#ffb300; background:rgba(255,179,0,0.08); padding:8px 10px; border-radius:8px; border:1px dashed rgba(255,179,0,0.4);">
-            ⚡ <b>Проверка принадлежности к [C6E]:</b> В админку <b>Kas</b> придёт уведомление. После подтверждения админом ты получишь официальный статус <b>🛡️ Боец [C6E]</b>. Если ты не из состава, регистрация под тегом <code>[C6E]</code> будет отклонена.
+          <div id="prof-c6e-notice" style="display:${isC6ESelected ? 'block' : 'none'}; margin-top:10px; font-size:11px; color:var(--silver); background:rgba(255,255,255,0.04); padding:8px 10px; border-radius:8px; border:1px dashed var(--mirror-border-bright);">
+            ⚡ <b>Верификация состава [C6E]:</b> В панель управления придёт уведомление. После подтверждения админом ты получишь статус <b>🛡️ Боец [C6E]</b>.
           </div>
         </div>
 
-        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(135px, 1fr)); gap:10px; margin-bottom:12px;">
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:10px; margin-bottom:12px;">
           <div>
             <label class="form-label">4. ДЕЙСТВУЮЩИЙ K/D *</label>
             <input type="number" id="prof-kd-inp" class="form-input" step="0.01" min="0.1" max="15" value="${escapeHTML(p.kd || '1.20')}" placeholder="1.45" required>
           </div>
           <div>
-            <label class="form-label">5. ВОЗРАСТ (ОТ 12+) *</label>
+            <label class="form-label">5. ВОЗРАСТ (12+) *</label>
             <input type="number" id="prof-age-inp" class="form-input" min="12" max="99" value="${escapeHTML(p.age || 16)}" placeholder="16" required>
           </div>
           <div>
-            <label class="form-label">6. СТРАНА / РЕГИОН <span id="prof-flag-live">${escapeHTML(p.countryFlag || '🇷🇺')}</span></label>
+            <label class="form-label">6. СТРАНА <span id="prof-flag-live">${escapeHTML(p.countryFlag || '🇷🇺')}</span></label>
             <input type="text" id="prof-country-inp" class="form-input" value="${escapeHTML(p.countryText || 'Россия')}" placeholder="РФ, Кыргызстан, Индонезия..." oninput="window.updateLiveCountryFlag(this.value)" required>
           </div>
         </div>
 
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;">
           <div>
-            <label class="form-label">7. РАМКА В СТИЛЕ ЛОГОТИПА [C6E]</label>
+            <label class="form-label">7. ВИД РАМКИ АВАТАРКИ [C6E]</label>
             <select id="prof-frame-sel" class="form-input" onchange="document.getElementById('prof-avatar-preview-frame').className = 'c6e-hex-avatar ' + this.value">
-              <option value="frame-c6e-red" ${p.frameStyle === 'frame-c6e-red' ? 'selected' : ''}>🔴 Рубиновый Щит [C6E]</option>
-              <option value="frame-c6e-gold" ${p.frameStyle === 'frame-c6e-gold' ? 'selected' : ''}>🟡 Золото Пантеона</option>
-              <option value="frame-c6e-green" ${p.frameStyle === 'frame-c6e-green' ? 'selected' : ''}>🟢 Изумрудный Кибер</option>
-              <option value="frame-c6e-blue" ${p.frameStyle === 'frame-c6e-blue' ? 'selected' : ''}>🔵 Ледяной Сапфир</option>
+              <option value="frame-c6e-mirror" ${p.frameStyle === 'frame-c6e-mirror' ? 'selected' : ''}>💎 Зеркальный Хром [C6E]</option>
+              <option value="frame-c6e-red" ${p.frameStyle === 'frame-c6e-red' ? 'selected' : ''}>🛡️ Рубиновый Щит [C6E]</option>
+              <option value="frame-c6e-obsidian" ${p.frameStyle === 'frame-c6e-obsidian' ? 'selected' : ''}>🖤 Чёрный Обсидиан</option>
+              <option value="frame-c6e-gold" ${p.frameStyle === 'frame-c6e-gold' ? 'selected' : ''}>👑 Золото Пантеона</option>
+              <option value="frame-c6e-neon" ${p.frameStyle === 'frame-c6e-neon' ? 'selected' : ''}>⚡ Кибер-Кристалл</option>
             </select>
           </div>
           <div>
-            <label class="form-label">8. БАННЕР ПРОФИЛЯ</label>
-            <div style="display:flex; gap:5px;">
-              <select id="prof-banner-preset-sel" class="form-input" style="flex:1;" onchange="document.getElementById('prof-custom-banner-row').style.display = this.value === 'custom' ? 'flex' : 'none'">
-                <option value="banner-crimson" ${p.banner === 'banner-crimson' ? 'selected' : ''}>🔴 Кибер-Рубин [C6E]</option>
-                <option value="banner-gold" ${p.banner === 'banner-gold' ? 'selected' : ''}>🟡 Золотой Пантеон</option>
-                <option value="banner-emerald" ${p.banner === 'banner-emerald' ? 'selected' : ''}>🟢 Изумрудная Матрица</option>
-                <option value="banner-sapphire" ${p.banner === 'banner-sapphire' ? 'selected' : ''}>🔵 Сапфировый Лед</option>
-                <option value="custom" ${isCustomBanner ? 'selected' : ''}>🖼️ Своё фото / ссылка</option>
-              </select>
-            </div>
+            <label class="form-label">8. ВИД БАННЕРА ПРОФИЛЯ</label>
+            <select id="prof-banner-preset-sel" class="form-input" onchange="window.updateLiveBannerPreview(this.value)">
+              <option value="banner-mirror" ${p.banner === 'banner-mirror' ? 'selected' : ''}>💎 Зеркальный Обсидиан [C6E]</option>
+              <option value="banner-crimson" ${p.banner === 'banner-crimson' ? 'selected' : ''}>🛡️ Кровавый Рубин [C6E]</option>
+              <option value="banner-chrome" ${p.banner === 'banner-chrome' ? 'selected' : ''}>⚙️ Хромированная Сталь</option>
+              <option value="banner-gold" ${p.banner === 'banner-gold' ? 'selected' : ''}>👑 Золотой Пантеон</option>
+              <option value="banner-emerald" ${p.banner === 'banner-emerald' ? 'selected' : ''}>🟢 Изумрудная Матрица</option>
+              <option value="banner-sapphire" ${p.banner === 'banner-sapphire' ? 'selected' : ''}>🔵 Ледяной Сапфир</option>
+              <option value="custom" ${isCustomBanner ? 'selected' : ''}>🖼️ Своё фото / ссылка</option>
+            </select>
           </div>
         </div>
 
         <div id="prof-custom-banner-row" style="display:${isCustomBanner ? 'flex' : 'none'}; gap:6px; margin-bottom:12px; align-items:center;">
-          <button type="button" class="chip-btn" onclick="document.getElementById('guestBannerFileInput').click()"><i class="fas fa-image text-accent"></i> Баннер с телефона</button>
-          <input type="text" id="prof-banner-custom-inp" class="form-input" value="${escapeHTML(isCustomBanner ? p.banner : '')}" placeholder="Или ссылка на картинку баннера..." style="flex:1; padding:7px;">
+          <button type="button" class="chip-btn" style="border-color:var(--mirror-border-bright); color:#fff;" onclick="document.getElementById('guestBannerFileInput').click()"><i class="fas fa-image text-accent"></i> Загрузить баннер</button>
+          <input type="text" id="prof-banner-custom-inp" class="form-input" value="${escapeHTML(isCustomBanner && !String(p.banner).startsWith('data:') ? p.banner : '')}" placeholder="Или ссылка на картинку баннера..." style="flex:1; padding:7px;" oninput="window.updateLiveBannerPreview('custom')">
         </div>
 
         <div style="margin-bottom:12px;">
-          <label class="form-label">9. ОПИСАНИЕ ПРОФИЛЯ / БИОГРАФИЯ (НЕОБЯЗАТЕЛЬНО)</label>
-          <textarea id="prof-bio-inp" class="form-input" rows="2" placeholder="Напиши пару слов о себе, любимом оружии (AWM / AKR) или девайсе...">${escapeHTML(p.bio || '')}</textarea>
+          <label class="form-label">9. О СЕБЕ / ДЕВАЙС / ЛЮБИМОЕ ОРУЖИЕ (НЕОБЯЗАТЕЛЬНО)</label>
+          <textarea id="prof-bio-inp" class="form-input" rows="2" placeholder="Например: Основной снайпер, играю в 4 пальца, девайс 120 FPS...">${escapeHTML(p.bio || '')}</textarea>
         </div>
 
         ${needPushAsk ? `
-          <label style="display:flex; align-items:center; gap:9px; padding:10px 12px; border-radius:10px; background:rgba(0,230,118,0.08); border:1px solid rgba(0,230,118,0.35); margin-bottom:12px; cursor:pointer; font-size:11px; color:#fff;">
-            <input type="checkbox" id="prof-enable-push-chk" checked style="width:16px; height:16px; accent-color:#00e676;">
-            <span>📲 <b>Разрешить отправку уведомлений сайта на устройство</b> (новости Kas, @упоминания в чате, праки)</span>
+          <label style="display:flex; align-items:center; gap:9px; padding:10px 12px; border-radius:10px; background:rgba(255,255,255,0.04); border:1px solid var(--mirror-border); margin-bottom:12px; cursor:pointer; font-size:11px; color:#fff;">
+            <input type="checkbox" id="prof-enable-push-chk" checked style="width:16px; height:16px; accent-color:var(--accent-light);">
+            <span>📲 <b>Разрешить уведомления портала на устройство</b> (новости, @упоминания в чате, праки)</span>
           </label>
         ` : ''}
 
@@ -3489,7 +3568,6 @@ window.openMyProfileModal = (forceRegistrationGate = false, rejectedMessage = nu
 
   modal.classList.add('active');
 };
-
 window.toggleProfileClanFields = (claimsC6E) => {
   const guestFields = document.getElementById('prof-guest-clan-fields');
   const notice = document.getElementById('prof-c6e-notice');
@@ -3598,7 +3676,7 @@ window.saveMyUserProfile = async () => {
     countryFlag: countryInfo.flag,
     bio,
     avatar: avatarUrl,
-    banner: bannerPreset === 'custom' ? (bannerCustom || 'banner-crimson') : bannerPreset,
+    banner: bannerPreset === 'custom' ? (bannerCustom || tempProfileBannerDataUrl || (myLocalProfile && myLocalProfile.banner) || 'banner-mirror') : bannerPreset,
     frameStyle,
     likes: existingMem ? (parseInt(existingMem.likes, 10) || 0) : 0,
     likedBy: (existingMem && Array.isArray(existingMem.likedBy)) ? existingMem.likedBy : [],
@@ -3606,6 +3684,7 @@ window.saveMyUserProfile = async () => {
     lastSeen: Date.now(),
     ip: clientSecurityMeta.ip || 'Определяется...',
     device: clientSecurityMeta.deviceInfo,
+    isDeveloper: Boolean(existingMem && (existingMem.isDeveloper || existingMem.devBadge)) || (nick.toLowerCase() === 'kas'),
     rejectionHandled: c6eStatus !== 'rejected'
   };
 
@@ -3677,8 +3756,8 @@ window.openPublicProfileModal = (profileId) => {
   const isMe = myLocalProfile && myLocalProfile.profileId === p.profileId;
   const alreadyLiked = Array.isArray(p.likedBy) && p.likedBy.includes(clientSecurityMeta.deviceId);
 
-  const isPresetBanner = ['banner-crimson','banner-gold','banner-emerald','banner-sapphire'].includes(p.banner);
-  const bannerClass = isPresetBanner ? p.banner : 'banner-crimson';
+  const isPresetBanner = ['banner-mirror','banner-crimson','banner-chrome','banner-gold','banner-emerald','banner-sapphire'].includes(p.banner);
+  const bannerClass = isPresetBanner ? p.banner : 'banner-mirror';
   const bannerStyle = !isPresetBanner && p.banner ? `background-image:url('${escapeHTML(p.banner)}');` : '';
 
   modal.innerHTML = `
@@ -3717,6 +3796,7 @@ window.openPublicProfileModal = (profileId) => {
           <span>${escapeHTML(p.countryFlag || '🌍')}</span>
           ${info.tagStr ? `<span style="color:var(--accent-light);">${escapeHTML(info.tagStr)}</span>` : ''}
           <span>${escapeHTML(p.nick)}</span>
+          ${renderDevVerifiedCheckHTML(p)}
         </div>
         <div style="font-size:11px; margin-top:4px;">
           ${info.badgeHtml} • <span style="color:var(--silver-muted);">${escapeHTML(p.countryText || 'Россия')} • ${escapeHTML(p.age || 16)} лет</span>
@@ -3827,8 +3907,8 @@ function renderCommunityRadarOnHome() {
   grid.innerHTML = filtered.slice(0, 12).map(p => {
     const info = getDisplayTagAndBadge(p);
     const isOnline = (now - (p.lastSeen || 0)) < 15 * 60 * 1000;
-    const isPresetBanner = ['banner-crimson','banner-gold','banner-emerald','banner-sapphire'].includes(p.banner);
-    const bannerClass = isPresetBanner ? p.banner : 'banner-crimson';
+    const isPresetBanner = ['banner-mirror','banner-crimson','banner-chrome','banner-gold','banner-emerald','banner-sapphire'].includes(p.banner);
+    const bannerClass = isPresetBanner ? p.banner : 'banner-mirror';
     const bannerStyle = !isPresetBanner && p.banner ? `background-image:url('${escapeHTML(p.banner)}');` : '';
 
     return `
@@ -3847,8 +3927,9 @@ function renderCommunityRadarOnHome() {
               ${isOnline ? '🟢 ONLINE' : '⚪ OFFLINE'}
             </span>
           </div>
-          <div style="font-family:var(--font-tech); font-size:12px; font-weight:800; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-            ${escapeHTML(p.countryFlag || '🌍')} ${info.tagStr ? `<span style="color:var(--accent-light);">${escapeHTML(info.tagStr)}</span> ` : ''}${escapeHTML(p.nick)}
+          <div style="font-family:var(--font-tech); font-size:12px; font-weight:800; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:flex; align-items:center; gap:4px;">
+            <span style="overflow:hidden; text-overflow:ellipsis;">${escapeHTML(p.countryFlag || '🌍')} ${info.tagStr ? `<span style="color:var(--accent-light);">${escapeHTML(info.tagStr)}</span> ` : ''}${escapeHTML(p.nick)}</span>
+            ${renderDevVerifiedCheckHTML(p)}
           </div>
           <div style="font-size:9.5px; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
             ${info.badgeHtml}
@@ -4185,12 +4266,15 @@ function renderGlobalChatSection() {
         ` : validMsgs.map(m => {
           const isMine = myLocalProfile && m.senderId === myLocalProfile.profileId;
           const mentionsMe = myCleanNick && String(m.text || '').toLowerCase().includes(`@${myCleanNick}`);
-          const tagStr = m.c6eStatus === 'approved' ? '[C6E]' : (m.clanTag ? `[${m.clanTag}]` : '');
-          const rolePill = m.isFounder
-            ? '<span style="background:#ffb300; color:#000; font-family:var(--font-tech); font-size:8px; font-weight:900; padding:1px 6px; border-radius:4px;">👑 FOUNDER KAS</span>'
+          const senderProf = allProfilesList.find(x => x.profileId === m.senderId) || m;
+          const isDevSender = Boolean(m.isFounder || m.isDeveloper || hasDeveloperBadge(senderProf));
+          const tagStr = (m.c6eStatus === 'approved' || isDevSender) ? '[C6E]' : (m.clanTag ? `[${String(m.clanTag).replace(/[\[\]\?]/g, '')}]` : '');
+          const devCheckHtml = isDevSender ? `<span class="c6e-dev-verified-badge" title="Официальный Разработчик CYBER 6 ESPORTS">✓</span>` : '';
+          const rolePill = isDevSender
+            ? '<span class="c6e-dev-pill-tag">⚡ DEV [C6E]</span>'
             : (m.c6eStatus === 'approved'
-                ? '<span style="color:#00e676; font-size:9px; font-weight:800;">🛡️ [C6E]</span>'
-                : '<span style="color:#93c5fd; font-size:9px;">💎 Гость</span>');
+                ? '<span style="color:var(--silver); font-size:9px; font-weight:800;">🛡️ [C6E]</span>'
+                : '<span style="color:var(--silver-muted); font-size:9px;">💎 Гость</span>');
 
           return `
             <div class="chat-msg-item ${isMine ? 'is-mine' : ''} ${mentionsMe ? 'mention-me' : ''}">
@@ -4200,8 +4284,9 @@ function renderGlobalChatSection() {
               <div style="flex:1; min-width:0;">
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:3px;">
                   <div style="display:flex; align-items:center; gap:5px; flex-wrap:wrap;">
-                    <span style="cursor:pointer; font-family:var(--font-tech); font-size:11px; font-weight:800; color:#fff;" onclick="window.openPublicProfileModal('${escapeHTML(m.senderId || '')}')">
-                      ${escapeHTML(m.countryFlag || '🌍')} ${tagStr ? `<span style="color:var(--accent-light);">${escapeHTML(tagStr)}</span> ` : ''}${escapeHTML(m.nick || 'Игрок')}
+                    <span style="cursor:pointer; font-family:var(--font-tech); font-size:11px; font-weight:800; color:#fff; display:inline-flex; align-items:center; gap:4px;" onclick="window.openPublicProfileModal('${escapeHTML(m.senderId || '')}')">
+                      <span>${escapeHTML(m.countryFlag || '🌍')} ${tagStr ? `<span style="color:var(--accent-light);">${escapeHTML(tagStr)}</span> ` : ''}${escapeHTML(m.nick || 'Игрок')}</span>
+                      ${devCheckHtml}
                     </span>
                     ${rolePill}
                   </div>
@@ -4271,6 +4356,7 @@ window.sendGlobalChatMessage = async (e) => {
       nick: myLocalProfile.nick,
       clanTag: myLocalProfile.c6eStatus === 'approved' ? 'C6E' : (myLocalProfile.clanTag || ''),
       c6eStatus: myLocalProfile.c6eStatus || 'guest',
+      isDeveloper: hasDeveloperBadge(myLocalProfile),
       avatar: myLocalProfile.avatar || 'logo.png',
       frameStyle: myLocalProfile.frameStyle || 'frame-c6e-red',
       countryFlag: myLocalProfile.countryFlag || '🌍',
@@ -4337,10 +4423,10 @@ function renderShopSection() {
   const isWaiting = Array.isArray(shopConfigData.waitlist) && shopConfigData.waitlist.some(w => w.deviceId === clientSecurityMeta.deviceId);
 
   const teaserItems = [
-    { icon: 'fa-coins', color: '#ffb300', badge: 'LOCKED // SOON', title: 'ПАКИ ГОЛДЫ & GOLD PASS', desc: 'Мгновенное пополнение Голды и боевых пропусков Standoff 2 по закрытому курсу для участников портала [C6E].' },
-    { icon: 'fa-sliders-h', color: '#00e676', badge: 'PRO CONFIGS', title: 'ПРИВАТНЫЕ НАСТРОЙКИ БОЙЦОВ [C6E]', desc: 'Эксклюзивные паки кастомной раскладки, точной сенсы, прицелов и секретов оттяжки от основы Cyber 6 Esports.' },
-    { icon: 'fa-crown', color: '#ff5263', badge: 'VIP STATUS', title: 'КАСТОМНЫЕ VIP-РАМКИ И БАННЕРЫ', desc: 'Уникальные анимированные рамки профиля, золотой ник в Общем чате и приоритетный слот на праках.' },
-    { icon: 'fa-trophy', color: '#3b82f6', badge: 'TOURNAMENT SLOTS', title: 'БИЛЕТЫ НА ЗАКРЫТЫЕ ТУРНИРЫ C6E', desc: 'Прямые инвайты на еженедельные дуэли 1v1, 2v2 и 5v5 с гарантированным призовым фондом в Голде.' }
+    { icon: 'fa-coins', color: 'var(--silver)', badge: 'LOCKED // SOON', title: 'ПАКИ ГОЛДЫ & GOLD PASS', desc: 'Мгновенное пополнение Голды и боевых пропусков Standoff 2 по закрытому курсу для участников портала [C6E].' },
+    { icon: 'fa-sliders-h', color: 'var(--accent-light)', badge: 'PRO CONFIGS', title: 'ПРИВАТНЫЕ НАСТРОЙКИ БОЙЦОВ [C6E]', desc: 'Эксклюзивные паки кастомной раскладки, точной сенсы, прицелов и секретов оттяжки от основы Cyber 6 Esports.' },
+    { icon: 'fa-crown', color: 'var(--silver)', badge: 'VIP STATUS', title: 'КАСТОМНЫЕ VIP-РАМКИ И БАННЕРЫ', desc: 'Уникальные зеркальные рамки профиля, выделенный ник в Общем чате и приоритетный слот на праках.' },
+    { icon: 'fa-trophy', color: 'var(--accent-light)', badge: 'TOURNAMENT SLOTS', title: 'БИЛЕТЫ НА ЗАКРЫТЫЕ ТУРНИРЫ C6E', desc: 'Прямые инвайты на еженедельные дуэли 1v1, 2v2 и 5v5 с гарантированным призовым фондом в Голде.' }
   ];
 
   root.innerHTML = `
