@@ -19,7 +19,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
-  <link rel="stylesheet" href="style.css?v=10">
+  <link rel="stylesheet" href="style.css?v=11">
   <script>
     (function() {
       try {
@@ -88,7 +88,11 @@
     </div>
   </div>
 
-  <div class="nav-top-actions" style="display:flex; align-items:center; gap:7px; margin-left:auto;">
+  <div class="nav-top-actions" style="display:flex; align-items:center; gap:6px; margin-left:auto;">
+    <button type="button" id="nav-music-btn" class="nav-icon-btn" onclick="toggleAmbient()" title="Фоновая кибер-атмосфера (Музыка)">
+      <i class="fas fa-music" id="nav-music-icon"></i>
+    </button>
+
     <button type="button" id="theme-switcher-btn" class="nav-icon-btn" onclick="if(window.openThemeSwitcherModal) window.openThemeSwitcherModal()" title="Сменить палитру сайта">
       <i class="fas fa-palette" style="color:var(--accent-light);"></i>
     </button>
@@ -176,6 +180,28 @@
           <div style="font-size:10px; font-weight:700; color:var(--silver);">Все разделы</div>
         </div>
       </div>
+    </div>
+
+        <!-- БЛОК ЕЖЕДНЕВНОЙ АКТИВНОСТИ 'FOCUS STREAK & LEVEL' (КАК '23 DAYS' НА ЗОЛОТОМ РЕФЕРЕНСЕ) -->
+    <div class="solar-streak-card" id="home-streak-widget">
+      <div style="display:flex; align-items:center; gap:14px;">
+        <div class="streak-flame-orb">
+          <i class="fas fa-fire"></i>
+        </div>
+        <div>
+          <div style="font-family:var(--font-tech); font-size:9px; color:var(--silver-muted); letter-spacing:1.2px;">
+            PORTAL STREAK // СЕРИЯ АКТИВНОСТИ И УРОВЕНЬ
+          </div>
+          <div style="display:flex; align-items:baseline; gap:10px; margin-top:3px; flex-wrap:wrap;">
+            <span class="streak-big-num" id="home-streak-days-val">1</span>
+            <span style="font-family:var(--font-tech); font-size:10px; color:var(--silver); font-weight:800;">ДНЕЙ ПОДРЯД</span>
+            <span class="solar-level-pill" id="home-user-level-pill" style="padding:2px 10px; font-size:8.5px;">LEVEL 1</span>
+          </div>
+        </div>
+      </div>
+      <button type="button" id="home-claim-streak-btn" class="chip-btn" style="border-color:#f5b041; color:#f5b041; padding:9px 14px; font-weight:900; font-size:10px;" onclick="window.claimDailyPortalStreak()">
+        🔥 ОТМЕТИТЬСЯ (+15 ⚡)
+      </button>
     </div>
 
     <!-- КРУГОВОЙ ДАШБОРД СТАТИСТИКИ (КАК БЛОК OVERALL PROGRESS 78% НА СКРИНШОТЕ) -->
@@ -295,6 +321,7 @@
         <span style="font-size: 12px; color: var(--silver-muted); align-self: center;">ОЖИДАНИЕ АНОНСА...</span>
       </div>
 
+      <div id="home-pickem-box" style="margin-top:14px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.06);"></div>
       <div id="home-latest-match-box" style="margin-top:16px; padding-top:14px; border-top:1px dashed rgba(255,255,255,0.1);"></div>
 
       <!-- ДОРОЖНАЯ КАРТА КАК ВНИЗУ РЕФЕРЕНС-СКРИНШОТА -->
@@ -321,6 +348,22 @@
           </div>
         </div>
       </div>
+    </div>
+
+        <!-- ИНТЕРАКТИВНАЯ БАЗА КАРТ И ТАКТИК STANDOFF 2 ОТ СОСТАВА [C6E] -->
+    <div class="card" id="home-tactical-maps-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+        <div>
+          <div style="font-family:var(--font-tech); font-size:12px; font-weight:900; color:#fff; display:flex; align-items:center; gap:8px;">
+            <i class="fas fa-map-marked-alt" style="color:#f5b041;"></i> ТАКТИЧЕСКАЯ БАЗА КАРТ STANDOFF 2 // РАЗБОР ОТ [C6E]
+          </div>
+          <div style="font-size:10px; color:var(--silver-muted); margin-top:2px;">
+            Фирменные тайминги, ключевые позиции снайпера и раскидки от основного состава CYBER 6 ESPORTS
+          </div>
+        </div>
+      </div>
+      <div class="map-tactics-tabs" id="c6e-map-tactics-tabs"></div>
+      <div id="c6e-map-tactics-content" class="map-tac-box"></div>
     </div>
 
     <div class="card">
@@ -359,9 +402,10 @@
         FOCUS • DISCIPLINE • VICTORY
       </div>
 
-      <div style="margin-bottom:18px;">
+      <div style="margin-bottom:8px;">
         <span id="hub-profile-badge-pill" class="solar-level-pill">💎 ГОСТЬ ПОРТАЛА</span>
       </div>
+      <div id="hub-profile-medals" class="profile-medals-row"></div>
 
       <!-- 3 КОЛОНКИ СТАТИСТИКИ ПРОФИЛЯ (КАК Days 746 / Habits 24 / Focus Hrs 2,145 НА СКРИНЕ) -->
       <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; padding:14px 8px; border-top:1px solid rgba(255,255,255,0.06); border-bottom:1px solid rgba(255,255,255,0.06); margin-bottom:16px;">
@@ -724,6 +768,25 @@
 
   <!-- 10. ЗАЯВКА В КОМАНДУ -->
   <section id="join">
+    <div class="card" id="join-recruitment-status-bar" style="padding:16px 18px; margin-bottom:14px;">
+      <div style="font-family:var(--font-tech); font-size:11px; font-weight:900; color:#f5b041; margin-bottom:8px; display:flex; align-items:center; gap:7px;">
+        <i class="fas fa-bullseye"></i> СТАТУС НАБОРА ПО РОЛЯМ В [C6E] (RECRUITMENT LIVE)
+      </div>
+      <div id="join-roles-status-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(135px, 1fr)); gap:8px;">
+        <div style="padding:8px 10px; border-radius:10px; background:rgba(255,255,255,0.03); border:1px solid rgba(245,176,65,0.3); font-size:11px; display:flex; justify-content:space-between;">
+          <span>🎯 Sniper</span><b style="color:#f5b041;">ОТКРЫТО</b>
+        </div>
+        <div style="padding:8px 10px; border-radius:10px; background:rgba(255,255,255,0.03); border:1px solid rgba(245,176,65,0.3); font-size:11px; display:flex; justify-content:space-between;">
+          <span>🧠 IGL / Капитан</span><b style="color:#f5b041;">ОТКРЫТО</b>
+        </div>
+        <div style="padding:8px 10px; border-radius:10px; background:rgba(255,255,255,0.03); border:1px solid rgba(245,176,65,0.3); font-size:11px; display:flex; justify-content:space-between;">
+          <span>💥 Entry Fragger</span><b style="color:#f5b041;">ОТКРЫТО</b>
+        </div>
+        <div style="padding:8px 10px; border-radius:10px; background:rgba(255,255,255,0.03); border:1px solid rgba(245,176,65,0.3); font-size:11px; display:flex; justify-content:space-between;">
+          <span>🛡️ Support</span><b style="color:#f5b041;">ОТКРЫТО</b>
+        </div>
+      </div>
+    </div>
     <div class="card">
       <div class="text-center">
         <h2 class="font-tech text-silver" style="margin-bottom: 5px;">JOIN <span class="text-accent">CYBER 6</span></h2>
@@ -825,10 +888,13 @@
   };
 
   window.selectTab = function(tabId, btn) {
+    try { if (navigator.vibrate) navigator.vibrate(10); } catch (e) {}
     document.querySelectorAll('section').forEach(s => {
-      s.classList.remove('active');
-      s.style.display = 'none';
-      s.style.opacity = '0';
+      if (s.id !== tabId) {
+        s.classList.remove('active');
+        s.style.display = 'none';
+        s.style.opacity = '0';
+      }
     });
 
     const target = document.getElementById(tabId);
@@ -940,6 +1006,6 @@
   </button>
 </nav>
 
-<script type="module" src="app.js?v=10"></script>
+<script type="module" src="app.js?v=11"></script>
 </body>
 </html>
