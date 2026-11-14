@@ -453,6 +453,244 @@
       .kpi-strip { grid-template-columns: repeat(2, 1fr); gap: 8px; }
       .grid-2 { grid-template-columns: 1fr !important; gap: 12px; }
     }
+
+    /* =========================================================================
+       OBSIDIAN & SOLAR GOLD ADMIN COMMAND CENTER THEME + НИЖНЯЯ ДОК-ПАНЕЛЬ
+       ========================================================================= */
+    :root {
+      --accent: #b87b14;
+      --accent-light: #f5b041;
+      --accent-dim: rgba(245, 176, 65, 0.14);
+      --accent-glow: rgba(245, 176, 65, 0.42);
+      --silver: #f3ece0;
+      --silver-muted: #9e9689;
+      --silver-border: rgba(245, 176, 65, 0.22);
+      --bg-deep: #07080b;
+      --bg-card: rgba(14, 16, 22, 0.96);
+      --glass-border: rgba(245, 176, 65, 0.15);
+    }
+
+    body {
+      background-color: #07080b !important;
+      background-image:
+        radial-gradient(circle at 50% 6%, rgba(245, 176, 65, 0.12) 0%, transparent 48%),
+        radial-gradient(circle at 50% 94%, rgba(184, 123, 20, 0.08) 0%, transparent 50%) !important;
+      background-attachment: scroll !important;
+      padding: 12px 12px 98px 12px !important;
+    }
+
+    .admin-topbar {
+      background: linear-gradient(165deg, #13151e 0%, #090a0e 100%) !important;
+      border: 1px solid rgba(245, 176, 65, 0.28) !important;
+      border-left: 3px solid #f5b041 !important;
+      border-radius: 18px !important;
+      box-shadow: 0 14px 34px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255, 225, 168, 0.14) !important;
+    }
+
+    .tg-bot-hub {
+      background: linear-gradient(155deg, rgba(24, 22, 16, 0.96) 0%, rgba(10, 11, 16, 0.99) 65%, rgba(42, 171, 238, 0.10) 100%) !important;
+      border: 1px solid rgba(245, 176, 65, 0.26) !important;
+      border-radius: 18px !important;
+      box-shadow: 0 16px 38px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255, 225, 168, 0.12) !important;
+    }
+
+    .kpi-card {
+      background: linear-gradient(155deg, #13151e 0%, #090a0e 100%) !important;
+      border: 1px solid rgba(245, 176, 65, 0.18) !important;
+      border-bottom: 2px solid #f5b041 !important;
+      border-radius: 16px !important;
+      box-shadow: 0 10px 26px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255, 225, 168, 0.10) !important;
+    }
+    .kpi-icon {
+      background: rgba(245, 176, 65, 0.12) !important;
+      border: 1px solid rgba(245, 176, 65, 0.32) !important;
+      color: #f5b041 !important;
+    }
+
+    .panel {
+      background: linear-gradient(165deg, #12141c 0%, #090a0e 65%, #0e1017 100%) !important;
+      border: 1px solid rgba(245, 176, 65, 0.18) !important;
+      border-radius: 20px !important;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 225, 168, 0.12) !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+    }
+    .panel::before {
+      background: linear-gradient(90deg, transparent, rgba(245, 176, 65, 0.65), transparent) !important;
+      height: 1.5px !important;
+    }
+    .panel-icon {
+      background: rgba(245, 176, 65, 0.12) !important;
+      border: 1px solid rgba(245, 176, 65, 0.30) !important;
+      color: #f5b041 !important;
+      border-radius: 8px !important;
+    }
+
+    .filter-btn {
+      background: rgba(16, 18, 25, 0.92) !important;
+      border: 1px solid rgba(245, 176, 65, 0.18) !important;
+      color: var(--silver-muted) !important;
+      border-radius: 30px !important;
+      padding: 10px 16px !important;
+    }
+    .filter-btn.active, .filter-btn:hover {
+      background: linear-gradient(135deg, rgba(245, 176, 65, 0.24), rgba(20, 17, 10, 0.98)) !important;
+      color: #f5b041 !important;
+      border-color: #f5b041 !important;
+      box-shadow: 0 0 18px rgba(245, 176, 65, 0.28) !important;
+    }
+
+    button.action-btn {
+      border-radius: 50px !important;
+      background: linear-gradient(145deg, rgba(34, 28, 16, 0.96) 0%, rgba(12, 13, 18, 0.99) 100%) !important;
+      border: 1px solid rgba(245, 176, 65, 0.48) !important;
+      color: #f7f4ef !important;
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.7), inset 0 0 14px rgba(245, 176, 65, 0.08) !important;
+    }
+    button.action-btn:hover, button.action-btn:active {
+      background: linear-gradient(135deg, #f5b041, #b87b14) !important;
+      color: #07080b !important;
+      border-color: #ffe099 !important;
+      box-shadow: 0 0 22px rgba(245, 176, 65, 0.45) !important;
+    }
+    button.action-btn.secondary {
+      background: rgba(255, 255, 255, 0.03) !important;
+      border: 1px solid rgba(245, 176, 65, 0.25) !important;
+      color: var(--silver) !important;
+    }
+
+    .login-box {
+      background: linear-gradient(165deg, #14161f 0%, #08090d 100%) !important;
+      border: 1px solid rgba(245, 176, 65, 0.38) !important;
+      border-radius: 24px !important;
+      box-shadow: 0 25px 70px rgba(0,0,0,0.95), 0 0 40px rgba(245, 176, 65, 0.14) !important;
+    }
+    .login-logo {
+      border-radius: 50%;
+      padding: 8px;
+      border: 2px solid #f5b041;
+      box-shadow: 0 0 28px rgba(245, 176, 65, 0.55), inset 0 0 16px rgba(245, 176, 65, 0.28);
+      background: radial-gradient(circle, rgba(245, 176, 65, 0.16), #07080b 70%);
+    }
+
+    /* Галочка разработчика в админке */
+    .adm-dev-check {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 15px; height: 15px; border-radius: 50%;
+      background: linear-gradient(135deg, #fff 0%, #f5b041 100%);
+      color: #07080b; font-size: 9px; font-weight: 900;
+      box-shadow: 0 0 10px rgba(245, 176, 65, 0.65);
+      margin-left: 4px; vertical-align: middle;
+    }
+    .btn-icon.dev-active {
+      background: linear-gradient(135deg, #f5b041, #b87b14) !important;
+      color: #07080b !important;
+      border-color: #ffe099 !important;
+      box-shadow: 0 0 12px rgba(245, 176, 65, 0.55) !important;
+      font-weight: 900;
+    }
+
+    /* НИЖНЯЯ ДОК-ПАНЕЛЬ АДМИНКИ (КАК В ПРИЛОЖЕНИИ НА СКРИНЕ) */
+    #admin-bottom-dock {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      z-index: 9500;
+      height: 68px;
+      background: linear-gradient(180deg, rgba(16, 18, 25, 0.96) 0%, rgba(7, 8, 11, 0.99) 100%);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-top: 1px solid rgba(245, 176, 65, 0.25);
+      box-shadow: 0 -10px 35px rgba(0, 0, 0, 0.88);
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      padding: 0 max(6px, env(safe-area-inset-right)) env(safe-area-inset-bottom) max(6px, env(safe-area-inset-left));
+    }
+    .adm-dock-btn {
+      flex: 1;
+      max-width: 96px;
+      height: 100%;
+      background: none;
+      border: none;
+      color: #7c7870;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      cursor: pointer;
+      transition: 0.2s;
+      position: relative;
+      padding: 0;
+    }
+    .adm-dock-btn i { font-size: 17px; transition: 0.2s; }
+    .adm-dock-btn span {
+      font-family: var(--font-tech);
+      font-size: 7.5px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .adm-dock-btn.active { color: #f5b041; }
+    .adm-dock-btn.active i {
+      color: #f5b041;
+      filter: drop-shadow(0 0 8px rgba(245, 176, 65, 0.55));
+      transform: translateY(-1px);
+    }
+    .adm-dock-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: 5px;
+      width: 16px;
+      height: 2.5px;
+      border-radius: 3px;
+      background: #f5b041;
+      box-shadow: 0 0 8px #f5b041;
+    }
+    .adm-dock-orb {
+      position: relative;
+      top: -14px;
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      padding: 4px;
+      background: radial-gradient(circle, rgba(245, 176, 65, 0.34) 0%, #090a0f 70%);
+      border: 1.5px solid rgba(245, 176, 65, 0.78);
+      box-shadow: 0 0 22px rgba(245, 176, 65, 0.48), inset 0 0 12px rgba(245, 176, 65, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: 0.25s;
+      flex-shrink: 0;
+    }
+    .adm-dock-orb.active, .adm-dock-orb:hover {
+      transform: translateY(-3px) scale(1.04);
+      border-color: #ffe099;
+      box-shadow: 0 0 32px rgba(245, 176, 65, 0.8), inset 0 0 16px rgba(245, 176, 65, 0.55);
+    }
+    .adm-dock-orb-inner {
+      width: 100%; height: 100%; border-radius: 50%;
+      background: linear-gradient(145deg, #241b0b 0%, #0b0c10 85%);
+      display: flex; align-items: center; justify-content: center;
+      color: #f5b041; font-size: 18px;
+    }
+    .adm-dock-orb-inner img {
+      width: 32px; height: 32px; object-fit: contain;
+      filter: drop-shadow(0 0 6px rgba(245, 176, 65, 0.65));
+    }
+
+    @media (max-width: 640px) {
+      .admin-topbar { padding: 12px 14px !important; }
+      .admin-brand h1 { font-size: 14px !important; }
+      .tg-bot-hub { padding: 14px !important; }
+      .kpi-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important; }
+      .kpi-card { padding: 11px 12px !important; }
+      .kpi-val { font-size: 18px !important; }
+      .container { grid-template-columns: 1fr !important; gap: 14px !important; }
+      .panel { padding: 15px 13px !important; }
+    }
   </style>
 </head>
 <body>
@@ -587,12 +825,12 @@
 
   <!-- 4. БЫСТРЫЕ ВКЛАДКИ -->
   <div class="filter-bar">
-    <button class="filter-btn active" onclick="filterPanels('all', this)"><i class="fas fa-th-large"></i> Все блоки</button>
-    <button class="filter-btn" onclick="filterPanels('cat-v5', this)" style="border-color:#00e676; color:#00e676;"><i class="fas fa-id-badge"></i> ⚡ v0.5.0: Профили [C6E], Чат и Магазин</button>
-    <button class="filter-btn" onclick="filterPanels('cat-roster', this)" style="border-color:#ffb300; color:#ffb300;"><i class="fas fa-crown"></i> 👑 Пантеон (900 Gold) и Состав</button>
-    <button class="filter-btn" onclick="filterPanels('cat-security', this)"><i class="fas fa-user-shield"></i> 🛡 Безопасность (C6E Shield)</button>
-    <button class="filter-btn" onclick="filterPanels('cat-matches', this)"><i class="fas fa-trophy"></i> Матчи (Таб), Праки и Расписание</button>
-    <button class="filter-btn" onclick="filterPanels('cat-news', this)"><i class="fas fa-newspaper"></i> Новости</button>
+    <button class="filter-btn active" id="adm-fbtn-all" onclick="filterPanels('all', this)"><i class="fas fa-th-large"></i> Все блоки</button>
+    <button class="filter-btn" id="adm-fbtn-v5" onclick="filterPanels('cat-v5', this)"><i class="fas fa-id-badge"></i> Профили, Галочка ✓ и Чат</button>
+    <button class="filter-btn" id="adm-fbtn-roster" onclick="filterPanels('cat-roster', this)"><i class="fas fa-crown"></i> Пантеон (900G) и Состав</button>
+    <button class="filter-btn" id="adm-fbtn-security" onclick="filterPanels('cat-security', this)"><i class="fas fa-user-shield"></i> C6E Shield (Баны)</button>
+    <button class="filter-btn" id="adm-fbtn-matches" onclick="filterPanels('cat-matches', this)"><i class="fas fa-trophy"></i> Матчи (Таб) и Праки</button>
+    <button class="filter-btn" id="adm-fbtn-news" onclick="filterPanels('cat-news', this)"><i class="fas fa-newspaper"></i> Новости и Обновы</button>
     <button class="filter-btn" onclick="filterPanels('cat-media', this)"><i class="fas fa-photo-video"></i> Медиа и Отзывы</button>
   </div>
 
@@ -625,11 +863,27 @@
             <span class="item-sub">Новых заявок на проверку пока нет</span>
           </div>
 
+          <!-- БЫСТРАЯ ВЫДАЧА ГАЛОЧКИ РАЗРАБОТЧИКА (✓ DEV) ЛЮБОМУ ИГРОКУ -->
+          <div style="background:rgba(245,176,65,0.08); border:1px solid rgba(245,176,65,0.35); border-radius:10px; padding:11px 12px; margin-bottom:14px;">
+            <div style="font-family:var(--font-tech); font-size:10.5px; font-weight:900; color:#f5b041; margin-bottom:5px; display:flex; align-items:center; gap:6px;">
+              <span class="adm-dev-check" style="margin:0;">✓</span> ВЫДАТЬ / СНЯТЬ ГАЛОЧКУ РАЗРАБОТЧИКА (DEV [C6E])
+            </div>
+            <div style="font-size:10px; color:var(--silver-muted); margin-bottom:8px;">
+              Нажми кнопку <b>⚡✓</b> напротив любого игрока в списке ниже или введи его никнейм вручную:
+            </div>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <input type="text" id="admDevBadgeNickInput" placeholder="Ник игрока (например: Kas или mART1N)..." style="flex:1; min-width:150px; margin:0; padding:8px 10px; font-size:12px;">
+              <button type="button" class="action-btn" style="width:auto; margin:0; padding:8px 14px; font-size:10px;" onclick="window.grantOrToggleDevByNick()">
+                ⚡ ВЫДАТЬ / СНЯТЬ ✓
+              </button>
+            </div>
+          </div>
+
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
             <h3 style="font-size:12px; color:var(--silver); margin:0;">
               <i class="fas fa-id-card text-accent"></i> ВСЕ ПРОФИЛИ САЙТА (<span id="admTotalProfilesCount">0</span>)
             </h3>
-            <span style="font-size:10px; color:var(--success); font-family:var(--font-tech); font-weight:800;">
+            <span style="font-size:10px; color:#f5b041; font-family:var(--font-tech); font-weight:800;">
               🟢 ОНЛАЙН: <span id="admOnlineProfilesCount">0</span>
             </span>
           </div>
@@ -1732,6 +1986,20 @@
         panel.style.display = 'none';
       }
     });
+
+    document.querySelectorAll('#admin-bottom-dock .adm-dock-btn, #admin-bottom-dock .adm-dock-orb').forEach(el => {
+      el.classList.remove('active');
+    });
+    const dockMap = {
+      'all': 'adm-dock-all',
+      'cat-v5': 'adm-dock-v5',
+      'cat-roster': 'adm-dock-roster',
+      'cat-matches': 'adm-dock-matches',
+      'cat-security': 'adm-dock-security'
+    };
+    const dEl = document.getElementById(dockMap[category] || 'adm-dock-all');
+    if (dEl) dEl.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   // =========================================================================
@@ -4345,6 +4613,75 @@
     }
   };
 
+  window.toggleUserDeveloperBadge = async (profileId) => {
+    try {
+      let list = [...adminProfilesCache];
+      const idx = list.findIndex(p => p.profileId === profileId);
+      if (idx === -1) return;
+      const nextState = !(list[idx].isDeveloper || list[idx].devBadge);
+      list[idx] = {
+        ...list[idx],
+        isDeveloper: nextState,
+        devBadge: nextState,
+        c6eStatus: nextState ? 'approved' : list[idx].c6eStatus,
+        clanTag: nextState ? 'C6E' : list[idx].clanTag,
+        clanName: nextState ? 'CYBER 6 ESPORTS' : list[idx].clanName,
+        adminUpdatedAt: Date.now()
+      };
+      await saveAdminProfilesEverywhere(list);
+      showToast(nextState
+        ? `⚡ Игроку ${list[idx].nick} выдана официальная Галочка Разработчика (✓ DEV [C6E])!`
+        : `Галочка разработчика снята у игрока ${list[idx].nick}`);
+    } catch (e) {
+      showToast("Ошибка изменения статуса разработчика", true);
+    }
+  };
+
+  window.grantOrToggleDevByNick = async () => {
+    const inp = document.getElementById('admDevBadgeNickInput');
+    const rawNick = (inp?.value || '').trim().replace(/^\[[^\]]+\]\s*/, '');
+    if (!rawNick) return showToast("Введите никнейм игрока!", true);
+
+    let list = [...adminProfilesCache];
+    const idx = list.findIndex(p => String(p.nick || '').trim().toLowerCase() === rawNick.toLowerCase());
+    if (idx >= 0) {
+      await window.toggleUserDeveloperBadge(list[idx].profileId);
+      if (inp) inp.value = '';
+      return;
+    }
+
+    // Если игрок ещё не создал профиль, создаём ему верифицированный профиль с галочкой разработчика
+    const newDevProf = {
+      profileId: 'DEV_' + rawNick.toUpperCase().replace(/[^A-Z0-9]/g, '') + '_' + Date.now().toString(36).toUpperCase(),
+      nick: rawNick,
+      gameId: 'C6E-DEV',
+      claimsC6E: true,
+      c6eStatus: 'approved',
+      isDeveloper: true,
+      devBadge: true,
+      clanTag: 'C6E',
+      clanName: 'CYBER 6 ESPORTS',
+      kd: '1.50',
+      age: 18,
+      countryText: 'Россия',
+      countryFlag: '🇷🇺',
+      bio: 'Официальный разработчик экосистемы CYBER 6 ESPORTS [C6E]',
+      avatar: 'logo.png',
+      banner: 'banner-gold',
+      frameStyle: 'frame-c6e-gold',
+      likes: 25,
+      likedBy: [],
+      activityPts: 100,
+      lastSeen: Date.now(),
+      adminUpdatedAt: Date.now(),
+      ip: 'Admin Verified'
+    };
+    list.unshift(newDevProf);
+    await saveAdminProfilesEverywhere(list);
+    if (inp) inp.value = '';
+    showToast(`⚡ Профиль ${rawNick} создан и получил Галочку Разработчика (✓ DEV [C6E])!`);
+  };
+
   window.boostAdminProfileLikes = async (profileId, delta = 10) => {
     try {
       let list = [...adminProfilesCache];
@@ -4421,21 +4758,25 @@
           const safeIp = (p.ip || '').replace(/'/g, "\\'");
           const safeDev = (p.profileId || '').replace(/'/g, "\\'");
           const safeNick = (p.nick || 'Игрок').replace(/'/g, "\\'");
-          const cleanTag = isC6E ? '[C6E]' : (isPend ? '[C6E]' : (p.clanTag ? '[' + String(p.clanTag).replace(/[\[\]\?]/g, '') + ']' : ''));
+          const isDev = Boolean(p.isDeveloper || p.devBadge || (String(p.nick || '').toLowerCase() === 'kas' && isC6E));
+          const cleanTag = (isC6E || isDev) ? '[C6E]' : (isPend ? '[C6E]' : (p.clanTag ? '[' + String(p.clanTag).replace(/[\[\]\?]/g, '') + ']' : ''));
           return `
-            <div class="list-item" style="border-left-color:${isC6E ? 'var(--success)' : (isPend ? '#ffb300' : 'var(--ct-blue)')}; flex-wrap:wrap; gap:8px;">
+            <div class="list-item" style="border-left-color:${isDev ? '#f5b041' : (isC6E ? 'var(--success)' : (isPend ? '#ffb300' : 'var(--ct-blue)'))}; flex-wrap:wrap; gap:8px;">
               <div style="display:flex; align-items:center; gap:9px; min-width:0; flex:1;">
-                <img src="${p.avatar || 'logo.png'}" onerror="this.src='logo.png'" style="width:34px; height:34px; border-radius:8px; object-fit:cover; flex-shrink:0;">
+                <img src="${p.avatar || 'logo.png'}" onerror="this.src='logo.png'" style="width:36px; height:36px; border-radius:50%; object-fit:cover; border:1.5px solid ${isDev ? '#f5b041' : 'rgba(255,255,255,0.2)'}; flex-shrink:0;">
                 <div class="item-info" style="min-width:0;">
-                  <b>${isOnline ? '🟢' : '⚪'} ${p.countryFlag || '🌍'} ${cleanTag} ${p.nick}</b>
-                  <span class="item-sub">ID: ${p.gameId || '—'} • K/D: ${p.kd || '1.0'} • ${p.age || 16} лет • ❤️ ${p.likes || 0} • ${isC6E ? '🛡️ Боец C6E' : (isPend ? '⏳ Ждёт проверки C6E' : '💎 ' + (p.clanName || 'Гость'))}</span>
+                  <b>${isOnline ? '🟢' : '⚪'} ${p.countryFlag || '🌍'} ${cleanTag} ${p.nick} ${isDev ? '<span class="adm-dev-check" title="Разработчик [C6E]">✓</span>' : ''}</b>
+                  <span class="item-sub">ID: ${p.gameId || '—'} • K/D: ${p.kd || '1.0'} • ${p.age || 16} лет • ❤️ ${p.likes || 0} • ${isDev ? '<b style="color:#f5b041;">⚡ DEV [C6E]</b>' : (isC6E ? '🛡️ Боец C6E' : (isPend ? '⏳ Ждёт проверки C6E' : '💎 ' + (p.clanName || 'Гость')))}</span>
                 </div>
               </div>
-              <div class="item-actions">
+              <div class="item-actions" style="flex-wrap:wrap;">
+                <button type="button" class="btn-icon ${isDev ? 'dev-active' : ''}" style="width:auto; padding:0 9px; font-family:var(--font-tech); font-size:9px; border-color:#f5b041; color:${isDev ? '#07080b' : '#f5b041'};" title="Выдать или снять галочку разработчика (✓ DEV)" onclick="window.toggleUserDeveloperBadge('${safeDev}')">
+                  ⚡✓ DEV
+                </button>
                 ${isC6E
                   ? `<button class="btn-icon" title="Снять тег [C6E] и перевести в гости" onclick="window.rejectUserC6EStatus('${safeDev}')"><i class="fas fa-user-minus"></i></button>`
-                  : `<button class="btn-icon" style="color:var(--success); border-color:var(--success);" title="Подтвердить статус Бойца [C6E]" onclick="window.approveUserC6EStatus('${safeDev}')"><i class="fas fa-check"></i></button>`}
-                <button class="btn-icon" style="color:#ff5263;" title="+10 лайков профилю" onclick="window.boostAdminProfileLikes('${safeDev}', 10)"><i class="fas fa-heart"></i></button>
+                  : `<button class="btn-icon" style="color:var(--success); border-color:var(--success);" title="Подтвердить статус Бойца [C6E]" onclick="window.approveUserC6EStatus('${safeDev}')"><i class="fas fa-shield-alt"></i></button>`}
+                <button class="btn-icon" style="color:#f5b041;" title="+10 лайков профилю" onclick="window.boostAdminProfileLikes('${safeDev}', 10)"><i class="fas fa-heart"></i></button>
                 <button class="btn-icon ban" title="Забанить через C6E Shield" onclick="window.banUserQuick('${safeIp}', '${safeDev}', '${safeNick}')"><i class="fas fa-ban"></i></button>
                 <button class="btn-icon del" title="Удалить профиль" onclick="window.deleteUserProfile('${safeDev}')"><i class="fas fa-trash"></i></button>
               </div>
