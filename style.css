@@ -3,24 +3,24 @@
    ========================================================= */
 
 :root {
-  --accent: #9e1b28;
-  --accent-light: #d42638;
-  --accent-dim: rgba(158, 27, 40, 0.16);
-  --accent-glow: rgba(212, 38, 56, 0.38);
+  --accent: #b87b14;
+  --accent-light: #f5b041;
+  --accent-dim: rgba(245, 176, 65, 0.14);
+  --accent-glow: rgba(245, 176, 65, 0.42);
   
-  --silver: #e4e4e2;
-  --silver-muted: #a8acb3;
-  --silver-border: rgba(228, 228, 226, 0.15);
+  --silver: #f3ece0;
+  --silver-muted: #9e9689;
+  --silver-border: rgba(245, 176, 65, 0.20);
   
-  --bg-deep: #0b0c0e;
-  --bg-panel: rgba(18, 19, 24, 0.88);
+  --bg-deep: #07080b;
+  --bg-panel: rgba(14, 16, 22, 0.96);
   
-  --glass-border: rgba(255, 255, 255, 0.09);
-  --text-white: #f4f4f4;
-  --text-gray: #9ca0a8;
+  --glass-border: rgba(245, 176, 65, 0.14);
+  --text-white: #f7f4ef;
+  --text-gray: #9a948a;
   
-  --success: #00e676;
-  --warning: #ffb300;
+  --success: #f5b041;
+  --warning: #f5b041;
   
   --font-main: 'Montserrat', sans-serif;
   --font-tech: 'Orbitron', sans-serif;
@@ -989,4 +989,545 @@ body.c6e-gate-locked #ambient-player {
 @media (max-width: 370px) {
   .nav-brand-sub { display: none; }
   .header-profile-chip { max-width: 88px !important; }
+}
+
+
+/* ============================================================================
+   OBSIDIAN & SOLAR GOLD NATIVE APP DESIGN (1:1 РЕФЕРЕНС + ДОК-ПАНЕЛЬ ВНИЗУ)
+   ============================================================================ */
+
+body {
+  background-color: #07080b !important;
+  background-image:
+    radial-gradient(circle at 50% 8%, rgba(245, 176, 65, 0.12) 0%, transparent 48%),
+    radial-gradient(circle at 50% 92%, rgba(184, 123, 20, 0.08) 0%, transparent 50%) !important;
+  padding-top: 64px !important;
+  padding-bottom: 96px !important;
+}
+
+.container {
+  padding-bottom: 115px !important;
+}
+
+/* Скрываем старый гамбургер и старое выпадающее меню навсегда */
+.menu-toggle,
+#menuBtn,
+.nav-dropdown,
+#navDropdown {
+  display: none !important;
+}
+
+/* Обновлённые карточки в стиле мобильного приложения (Obsidian Matte + Gold Rim) */
+.card {
+  background: linear-gradient(165deg, #12141c 0%, #090a0e 65%, #0e1017 100%) !important;
+  border: 1px solid rgba(245, 176, 65, 0.16) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 225, 168, 0.12) !important;
+  padding: 20px 18px;
+}
+.card::before {
+  background: linear-gradient(90deg, transparent, rgba(245, 176, 65, 0.55), transparent) !important;
+  opacity: 0.6 !important;
+}
+
+/* Кнопки-капсулы с круглой стрелкой ▶ справа (как ENTER FOCUS MODE на скрине) */
+.btn-glitch {
+  border-radius: 50px !important;
+  clip-path: none !important;
+  background: linear-gradient(145deg, rgba(28, 25, 18, 0.95) 0%, rgba(12, 13, 18, 0.98) 100%) !important;
+  border: 1px solid rgba(245, 176, 65, 0.42) !important;
+  color: #f7f4ef !important;
+  padding: 13px 22px !important;
+  font-size: 11px !important;
+  letter-spacing: 1.8px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7), inset 0 0 18px rgba(245, 176, 65, 0.06) !important;
+}
+.btn-glitch:hover, .btn-glitch:active {
+  background: linear-gradient(135deg, rgba(245, 176, 65, 0.22), rgba(20, 18, 12, 0.98)) !important;
+  border-color: #f5b041 !important;
+  box-shadow: 0 0 22px rgba(245, 176, 65, 0.35) !important;
+  transform: translateY(-1px);
+}
+
+/* ЗОЛОТОЕ КОЛЬЦО-ОРЕОЛ (SOLAR ECLIPSE HALO RING КАК НА СКРИНЕ) */
+.solar-eclipse-stage {
+  position: relative;
+  width: 146px;
+  height: 146px;
+  margin: 6px auto 14px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.solar-eclipse-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2.5px solid #f5b041;
+  box-shadow:
+    0 0 32px rgba(245, 176, 65, 0.65),
+    0 0 65px rgba(245, 176, 65, 0.25),
+    inset 0 0 24px rgba(245, 176, 65, 0.35);
+  background: radial-gradient(circle at 50% 30%, rgba(245, 176, 65, 0.16), rgba(7, 8, 11, 0.92) 70%);
+  animation: pulse-eclipse 3.2s infinite ease-in-out;
+}
+@keyframes pulse-eclipse {
+  0%, 100% { box-shadow: 0 0 26px rgba(245, 176, 65, 0.55), inset 0 0 20px rgba(245, 176, 65, 0.28); transform: scale(0.99); }
+  50% { box-shadow: 0 0 42px rgba(245, 176, 65, 0.85), 0 0 75px rgba(245, 176, 65, 0.30), inset 0 0 28px rgba(245, 176, 65, 0.42); transform: scale(1.02); }
+}
+.solar-eclipse-stage img.eclipse-inner-img {
+  position: relative;
+  z-index: 2;
+  width: 112px;
+  height: 112px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #08090d;
+  border: 2px solid rgba(255, 225, 168, 0.35);
+}
+
+/* Плашка LEVEL / STATUS под кольцом (как LEVEL 37 на скрине) */
+.solar-level-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 16px;
+  border-radius: 20px;
+  background: rgba(245, 176, 65, 0.10);
+  border: 1px solid rgba(245, 176, 65, 0.55);
+  color: #f5b041;
+  font-family: var(--font-tech);
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  box-shadow: 0 0 16px rgba(245, 176, 65, 0.18);
+}
+
+/* КРУГОВОЙ ДАШБОРД ПРОГРЕССА (КАК 78% COMPLETE НА СКРИНЕ СПРАВА ВВЕРХУ) */
+.solar-dashboard-widget {
+  display: grid;
+  grid-template-columns: 125px 1fr;
+  align-items: center;
+  gap: 18px;
+  padding: 16px 18px;
+  border-radius: 18px;
+  background: linear-gradient(155deg, rgba(22, 24, 32, 0.92), rgba(9, 10, 14, 0.98));
+  border: 1px solid rgba(245, 176, 65, 0.18);
+  margin-bottom: 16px;
+}
+.solar-ring-box {
+  position: relative;
+  width: 112px;
+  height: 112px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.solar-ring-svg {
+  width: 112px;
+  height: 112px;
+  transform: rotate(-90deg);
+}
+.solar-ring-bg {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.07);
+  stroke-width: 7;
+}
+.solar-ring-fill {
+  fill: none;
+  stroke: #f5b041;
+  stroke-width: 7;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 6px rgba(245, 176, 65, 0.6));
+  transition: stroke-dashoffset 0.7s ease;
+}
+.solar-ring-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.solar-ring-val {
+  font-family: var(--font-tech);
+  font-size: 20px;
+  font-weight: 900;
+  color: #fff;
+  line-height: 1;
+}
+.solar-ring-lbl {
+  font-family: var(--font-tech);
+  font-size: 7.5px;
+  color: var(--silver-muted);
+  letter-spacing: 1px;
+  margin-top: 4px;
+}
+.solar-metrics-list {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.solar-metric-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: var(--silver);
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+.solar-metric-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+.solar-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #f5b041;
+  box-shadow: 0 0 8px #f5b041;
+  display: inline-block;
+  margin-right: 8px;
+}
+
+/* СПИСОК РАЗДЕЛОВ В СТИЛЕ ПРИЛОЖЕНИЯ (КАК Dashboard > / Habits > НА СКРИНЕ СЛЕВА ВВЕРХУ) */
+.solar-menu-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 14px;
+}
+.solar-menu-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 13px 16px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  color: var(--silver);
+  cursor: pointer;
+  transition: 0.2s;
+  text-align: left;
+  width: 100%;
+}
+.solar-menu-row:hover,
+.solar-menu-row:active,
+.solar-menu-row.featured {
+  background: linear-gradient(90deg, rgba(245, 176, 65, 0.16) 0%, rgba(245, 176, 65, 0.03) 100%);
+  border-color: rgba(245, 176, 65, 0.45);
+  color: #fff;
+}
+.solar-menu-left {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  min-width: 0;
+}
+.solar-menu-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: rgba(245, 176, 65, 0.10);
+  border: 1px solid rgba(245, 176, 65, 0.30);
+  color: #f5b041;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.solar-menu-title {
+  font-family: var(--font-main);
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #fff;
+}
+.solar-menu-sub {
+  font-size: 10.5px;
+  color: var(--silver-muted);
+  margin-top: 1px;
+}
+.solar-menu-arrow {
+  color: #f5b041;
+  font-size: 12px;
+  opacity: 0.85;
+  flex-shrink: 0;
+}
+
+/* ДОРОЖНАЯ КАРТА МИССИИ ВНИЗУ ГЛАВНОЙ (КАК MISSION ROADMAP 1-2-3-4 НА СКРИНЕ) */
+.solar-roadmap-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  margin: 16px 0 6px 0;
+  padding: 0 6px;
+}
+.solar-roadmap-strip::before {
+  content: '';
+  position: absolute;
+  top: 15px;
+  left: 24px;
+  right: 24px;
+  height: 2px;
+  background: linear-gradient(90deg, #f5b041 0%, rgba(245, 176, 65, 0.35) 75%, rgba(255,255,255,0.08) 100%);
+  z-index: 1;
+}
+.solar-step-node {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 24%;
+}
+.solar-step-circle {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #0d0f15;
+  border: 1.5px solid rgba(245, 176, 65, 0.45);
+  color: var(--silver);
+  font-family: var(--font-tech);
+  font-size: 10px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 6px;
+}
+.solar-step-node.active .solar-step-circle {
+  background: #f5b041;
+  color: #07080b;
+  border-color: #ffe099;
+  box-shadow: 0 0 16px rgba(245, 176, 65, 0.75);
+}
+.solar-step-lbl {
+  font-family: var(--font-tech);
+  font-size: 7.5px;
+  color: var(--silver-muted);
+  text-transform: uppercase;
+  line-height: 1.25;
+}
+
+/* НИЖНЯЯ ДОК-ПАНЕЛЬ НАВИГАЦИИ ПРИЛОЖЕНИЯ (1:1 КАК ВНИЗУ СКРИНШОТА) */
+#c6e-bottom-dock {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 9500;
+  height: 70px;
+  background: linear-gradient(180deg, rgba(16, 18, 25, 0.96) 0%, rgba(7, 8, 11, 0.99) 100%);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-top: 1px solid rgba(245, 176, 65, 0.22);
+  box-shadow: 0 -10px 35px rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 max(8px, env(safe-area-inset-right)) env(safe-area-inset-bottom) max(8px, env(safe-area-inset-left));
+}
+.dock-nav-item {
+  flex: 1;
+  max-width: 92px;
+  height: 100%;
+  background: none;
+  border: none;
+  color: #7c7870;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: 0.2s;
+  position: relative;
+  padding: 0;
+}
+.dock-nav-item i {
+  font-size: 18px;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+.dock-nav-item span.dock-lbl {
+  font-family: var(--font-tech);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.dock-nav-item.active {
+  color: #f5b041;
+}
+.dock-nav-item.active i {
+  color: #f5b041;
+  filter: drop-shadow(0 0 8px rgba(245, 176, 65, 0.55));
+  transform: translateY(-1px);
+}
+.dock-nav-item.active::after {
+  content: '';
+  position: absolute;
+  bottom: 5px;
+  width: 16px;
+  height: 2.5px;
+  border-radius: 3px;
+  background: #f5b041;
+  box-shadow: 0 0 8px #f5b041;
+}
+
+/* Центральная круглая светящаяся золотая кнопка в док-панели (как треугольный знак на скрине) */
+.dock-center-orb-wrap {
+  position: relative;
+  top: -15px;
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  padding: 4px;
+  background: radial-gradient(circle, rgba(245, 176, 65, 0.32) 0%, #090a0f 70%);
+  border: 1.5px solid rgba(245, 176, 65, 0.75);
+  box-shadow:
+    0 0 24px rgba(245, 176, 65, 0.48),
+    inset 0 0 12px rgba(245, 176, 65, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  flex-shrink: 0;
+}
+.dock-center-orb-wrap:hover,
+.dock-center-orb-wrap:active,
+.dock-center-orb-wrap.active {
+  transform: translateY(-3px) scale(1.04);
+  box-shadow:
+    0 0 34px rgba(245, 176, 65, 0.8),
+    inset 0 0 16px rgba(245, 176, 65, 0.55);
+  border-color: #ffe099;
+}
+.dock-center-orb-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #241b0b 0%, #0b0c10 85%);
+  display: flex;
+   flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #f5b041;
+  font-size: 20px;
+}
+.dock-center-orb-inner img {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 6px rgba(245, 176, 65, 0.65));
+}
+
+/* Перемещаем фоновый плеер чуть выше нижней док-панели, чтобы не перекрывал иконки */
+#ambient-player {
+  bottom: 80px !important;
+  left: 12px !important;
+  border-color: rgba(245, 176, 65, 0.28) !important;
+}
+
+@media (max-width: 480px) {
+  .solar-dashboard-widget {
+    grid-template-columns: 104px 1fr;
+    gap: 12px;
+    padding: 14px;
+  }
+  .solar-ring-box, .solar-ring-svg {
+    width: 96px;
+    height: 96px;
+  }
+  .solar-ring-val {
+    font-size: 17px;
+  }
+}
+
+
+/* ============================================================================
+   ИСПРАВЛЕНИЕ ОКНА ОБНОВЛЕНИЯ НА ТЕЛЕФОНАХ (ФИКСИРОВАННАЯ ШАПКА И КНОПКА ЗАКРЫТИЯ)
+   ============================================================================ */
+#c6e-release-modal {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 98000 !important;
+  background: rgba(5, 6, 10, 0.90) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 12px !important;
+  box-sizing: border-box;
+}
+#c6e-release-modal.active {
+  display: flex !important;
+}
+.c6e-release-box {
+  width: min(95vw, 560px) !important;
+  max-height: 84vh !important;
+  background: linear-gradient(165deg, #151722 0%, #090a0f 100%) !important;
+  border: 1.5px solid rgba(245, 176, 65, 0.50) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.95), 0 0 30px rgba(245, 176, 65, 0.15) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  position: relative !important;
+}
+.c6e-release-top {
+  flex-shrink: 0 !important;
+  padding: 13px 16px !important;
+  background: rgba(18, 20, 28, 0.98) !important;
+  border-bottom: 1px solid rgba(245, 176, 65, 0.22) !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+.c6e-release-body {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  max-height: calc(84vh - 125px) !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior: contain !important;
+  padding: 16px !important;
+}
+.c6e-release-footer {
+  flex-shrink: 0 !important;
+  padding: 12px 16px !important;
+  background: rgba(18, 20, 28, 0.98) !important;
+  border-top: 1px solid rgba(245, 176, 65, 0.22) !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  flex-wrap: wrap !important;
+  gap: 10px !important;
+}
+@media (max-width: 520px) {
+  .c6e-release-box {
+    max-height: 82vh !important;
+  }
+  .c6e-release-body {
+    max-height: calc(82vh - 130px) !important;
+    padding: 13px !important;
+  }
+  .c6e-release-footer {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+  .c6e-release-footer button {
+    width: 100% !important;
+    justify-content: center !important;
+  }
 }
