@@ -19,11 +19,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
-  <link rel="stylesheet" href="style.css?v=8">
+  <link rel="stylesheet" href="style.css?v=10">
   <script>
     (function() {
       try {
-        var savedTheme = localStorage.getItem('c6e_theme_color') || 'red';
+        var savedTheme = localStorage.getItem('c6e_theme_color') || 'gold';
         document.documentElement.setAttribute('data-theme', savedTheme);
         var rawProf = localStorage.getItem('c6e_user_profile_v5');
         var prof = rawProf ? JSON.parse(rawProf) : null;
@@ -78,20 +78,19 @@
 <input type="file" id="guestAvatarFileInput" accept="image/*" style="display:none;">
 <input type="file" id="guestBannerFileInput" accept="image/*" style="display:none;">
 
-<!-- ВЕРХНЯЯ ПАНЕЛЬ НАВИГАЦИИ v0.5.0 -->
+<!-- ВЕРХНЯЯ ПАНЕЛЬ ПРИЛОЖЕНИЯ (БЕЗ СТАРОГО ГАМБУРГЕРА — НАВИГАЦИЯ ВНИЗУ ЭКРАНА) -->
 <nav class="navbar">
-  <div class="nav-brand" onclick="selectTab('home', document.getElementById('btn-home'))">
+  <div class="nav-brand" onclick="selectTab('home', document.getElementById('dock-btn-home'))">
     <img src="logo.png" alt="C6E" onerror="this.style.display='none'"> 
     <div class="nav-brand-text">
       <h1>CYBER <span class="six-num">6</span></h1>
-      <span class="nav-brand-sub">PORTAL v0.5.0</span>
+      <span class="nav-brand-sub" id="nav-active-section-lbl">COMMAND HUB</span>
     </div>
   </div>
 
-  <!-- БЛОК ПРОФИЛЯ ГОСТЯ, КОЛОКОЛЬЧИКА УВЕДОМЛЕНИЙ И СМЕНЫ ТЕМЫ В ШАПКЕ -->
-  <div class="nav-top-actions" style="display:flex; align-items:center; gap:7px; margin-left:auto; margin-right:8px;">
-    <button type="button" id="theme-switcher-btn" class="nav-icon-btn" onclick="if(window.openThemeSwitcherModal) window.openThemeSwitcherModal()" title="Сменить цвет оформления сайта">
-      <i class="fas fa-palette"></i>
+  <div class="nav-top-actions" style="display:flex; align-items:center; gap:7px; margin-left:auto;">
+    <button type="button" id="theme-switcher-btn" class="nav-icon-btn" onclick="if(window.openThemeSwitcherModal) window.openThemeSwitcherModal()" title="Сменить палитру сайта">
+      <i class="fas fa-palette" style="color:var(--accent-light);"></i>
     </button>
 
     <button type="button" id="notif-bell-btn" class="nav-icon-btn" onclick="if(window.openNotificationsModal) window.openNotificationsModal()" title="Уведомления и упоминания">
@@ -99,132 +98,135 @@
       <span id="notif-badge-count" class="notif-count-pill" style="display:none;">0</span>
     </button>
 
-    <div id="header-profile-chip" class="header-profile-chip" onclick="if(window.openMyProfileModal) window.openMyProfileModal()" title="Открыть игровой профиль">
-      <div class="hp-avatar-wrap frame-c6e-red">
+    <div id="header-profile-chip" class="header-profile-chip" onclick="selectTab('app-hub', document.getElementById('dock-btn-hub'))" title="Открыть профиль и все разделы">
+      <div class="hp-avatar-wrap frame-c6e-gold">
         <img id="hp-avatar-img" src="logo.png" alt="Avatar" onerror="this.src='logo.png'">
       </div>
       <div class="hp-info">
-        <div id="hp-nick-line" class="hp-nick">Создать профиль</div>
-        <div id="hp-sub-line" class="hp-sub">💎 Гость портала</div>
+        <div id="hp-nick-line" class="hp-nick">Профиль</div>
+        <div id="hp-sub-line" class="hp-sub">💎 Гость</div>
       </div>
     </div>
-  </div>
-
-  <button class="menu-toggle" id="menuBtn" onclick="toggleMenu()">
-    <i class="fas fa-bars"></i>
-  </button>
-
-  <div class="nav-dropdown" id="navDropdown">
-    <button class="menu-item active-tab" id="btn-home" onclick="selectTab('home', this)"><i class="fas fa-home"></i> Главная</button>
-    <button class="menu-item" id="btn-pantheon" onclick="selectTab('pantheon', this)"><i class="fas fa-crown"></i> Пантеон</button>
-    <button class="menu-item" id="btn-chat" onclick="selectTab('chat', this)"><i class="fas fa-comments"></i> Общий чат</button>
-    <button class="menu-item" id="btn-shop" onclick="selectTab('shop', this)"><i class="fas fa-shopping-bag"></i> Магазин</button>
-    <button class="menu-item" id="btn-team" onclick="selectTab('team', this)"><i class="fas fa-users"></i> Состав</button>
-    <button class="menu-item" id="btn-practice" onclick="selectTab('practice', this)"><i class="fas fa-crosshairs"></i> Праки</button>
-    <button class="menu-item" id="btn-schedule" onclick="selectTab('schedule', this)"><i class="far fa-calendar-alt"></i> Расписание</button>
-    <button class="menu-item" id="btn-history" onclick="selectTab('history', this)"><i class="fas fa-trophy"></i> Матчи</button>
-    <button class="menu-item" id="btn-news" onclick="selectTab('news', this)"><i class="fas fa-bolt"></i> Новости</button>
-    <button class="menu-item" id="btn-media" onclick="selectTab('media', this)"><i class="fas fa-play-circle"></i> Медиа</button>
-    <button class="menu-item" id="btn-about" onclick="selectTab('about', this)"><i class="fas fa-shield-alt"></i> Инфо</button>
-    <button class="menu-item" id="btn-reviews" onclick="selectTab('reviews', this)"><i class="fas fa-star"></i> Отзывы</button>
-    <div style="height: 1px; background: rgba(255,255,255,0.1); margin: 5px 0;"></div>
-    <button class="menu-item" style="color: var(--accent-light);" onclick="selectTab('join', this)"><i class="fas fa-user-plus"></i> Вступить</button>
   </div>
 </nav>
 
 <div class="container">
 
-      <!-- 1. ИННОВАЦИОННЫЙ ГЛАВНЫЙ ЭКРАН v0.5.0 (MIRROR COMMAND HUB) -->
+        <!-- 1. ГЛАВНЫЙ ЭКРАН В СТИЛЕ ПРИЛОЖЕНИЯ (OBSIDIAN & SOLAR GOLD DASHBOARD) -->
   <section id="home" class="active" style="display: block; opacity: 1; transform: translateY(0);">
-    <div class="card cyber-hero-v5">
+    <div class="card cyber-hero-v5" style="border-color: rgba(245, 176, 65, 0.28) !important;">
       <div class="hero-top-meta">
-        <span class="hero-live-pill"><span class="online-dot-pulse"></span> PORTAL v0.5.0 • C6E SHIELD</span>
-        <span class="hero-dev-pill" onclick="if(window.openSiteReleaseModal) window.openSiteReleaseModal()">
-          <span class="c6e-dev-verified-badge" style="width:13px; height:13px; font-size:7.5px;">✓</span> DEV: KAS (@kas_0ff) • ОБНОВЛЕНИЕ
+        <span class="hero-live-pill" style="border-color:rgba(245,176,65,0.35); color:#f5b041;">
+          <span class="online-dot-pulse" style="background:#f5b041; box-shadow:0 0 8px #f5b041;"></span> PORTAL v0.5.0 • NIGHT CYBER EDITION
+        </span>
+        <span class="hero-dev-pill" style="border-color:rgba(245,176,65,0.35); color:#f3ece0;" onclick="if(window.openSiteReleaseModal) window.openSiteReleaseModal()">
+          <span class="c6e-dev-verified-badge" style="width:13px; height:13px; font-size:7.5px;">✓</span> DEV: KAS (@kas_0ff)
         </span>
       </div>
 
-      <img src="logo.png" alt="Cyber 6 Esports" class="hero-logo-badge" onerror="this.style.display='none'">
-      <h2 class="hero-title">CYBER <span>6</span> ESPORTS</h2>
-      <div id="typing-text" style="margin-bottom: 12px;">STANDOFF 2 PROFESSIONAL TEAM</div>
-
-      <div style="max-width: 600px; margin: 0 auto 14px auto; font-size: 12px; color: var(--silver-muted); line-height: 1.55;">
-        Официальная киберспортивная платформа <b>[C6E]</b>. Еженедельная гонка в <b>Пантеоне за 900 GOLD</b>, верифицированные игровые профили, живой <b>Общий чат</b> и вызовы на <b>Праки (CW)</b>.
+      <!-- СВЕТЯЩЕЕСЯ ЗОЛОТОЕ КОЛЬЦО-ОРЕОЛ ВОКРУГ ЛОГОТИПА (КАК НА СКРИНЕ) -->
+      <div class="solar-eclipse-stage">
+        <div class="solar-eclipse-ring"></div>
+        <img src="logo.png" alt="Cyber 6 Esports" class="eclipse-inner-img" onerror="this.style.display='none'">
       </div>
 
-      <!-- 4 ЗЕРКАЛЬНЫЕ КИБЕР-КАРТОЧКИ БЫСТРОГО ДОСТУПА (В ЕДИНОМ СТИЛЕ ХРОМ + АКЦЕНТ) -->
-      <div class="hero-portal-cards-grid">
-        <div class="hero-portal-tile" onclick="selectTab('pantheon', document.getElementById('btn-pantheon'))">
-          <div class="hero-tile-top">
-            <span class="hero-tile-icon"><i class="fas fa-crown"></i></span>
-            <span class="hero-tile-badge">900 GOLD</span>
-          </div>
-          <div class="hero-tile-title">ПАНТЕОН [C6E]</div>
-          <div class="hero-tile-sub">Гонка бойцов за 500 / 250 / 150G и бусты зрителей</div>
-        </div>
+      <h2 class="hero-title" style="letter-spacing:4px; font-size:clamp(22px, 5.5vw, 34px); margin-bottom:4px;">
+        CYBER <span style="color:#f5b041;">6</span> ESPORTS
+      </h2>
+      <div id="typing-text" style="margin-bottom: 12px; color:#9e9689; letter-spacing:2.5px; font-size:10px;">
+        DOMINATE • EVOLVE • CONQUER
+      </div>
 
-        <div class="hero-portal-tile" onclick="selectTab('chat', document.getElementById('btn-chat'))">
-          <div class="hero-tile-top">
-            <span class="hero-tile-icon"><i class="fas fa-comments"></i></span>
-            <span class="hero-tile-badge" id="home-chat-live-pill">12Ч ЧАТ</span>
-          </div>
-          <div class="hero-tile-title">ОБЩИЙ ЧАТ</div>
-          <div class="hero-tile-sub">Живое общение гостей и состава с тегами @Ник</div>
-        </div>
+      <div style="margin-bottom: 16px;">
+        <span class="solar-level-pill"><i class="fas fa-crown"></i> PANTHEON PRIZE POOL • 900 GOLD</span>
+      </div>
 
-        <div class="hero-portal-tile" onclick="selectTab('practice', document.getElementById('btn-practice'))">
-          <div class="hero-tile-top">
-            <span class="hero-tile-icon"><i class="fas fa-crosshairs"></i></span>
-            <span class="hero-tile-badge" id="home-prac-live-pill">CW SLOTS</span>
-          </div>
-          <div class="hero-tile-title">ПРАКИ (CW)</div>
-          <div class="hero-tile-sub">Бронируй слот и сыграй против состава [C6E]</div>
-        </div>
+      <!-- КНОПКА-КАПСУЛА С КРУГЛОЙ ИКОНКОЙ ▶ СПРАВА (КАК ENTER FOCUS MODE НА СКРИНЕ) -->
+      <button type="button" class="btn-glitch" style="max-width:340px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; padding:10px 12px 10px 22px !important;" onclick="selectTab('pantheon', document.getElementById('dock-btn-center'))">
+        <span>ВОЙТИ В ПАНТЕОН [C6E]</span>
+        <span style="width:32px; height:32px; border-radius:50%; background:rgba(245,176,65,0.18); border:1px solid #f5b041; color:#f5b041; display:inline-flex; align-items:center; justify-content:center; font-size:11px;">
+          <i class="fas fa-play"></i>
+        </span>
+      </button>
 
-        <div class="hero-portal-tile" onclick="selectTab('shop', document.getElementById('btn-shop'))">
-          <div class="hero-tile-top">
-            <span class="hero-tile-icon"><i class="fas fa-shopping-bag"></i></span>
-            <span class="hero-tile-badge">MARKET</span>
+      <!-- БЫСТРЫЕ ИКОНКИ ДЕЙСТВИЙ (КАК QUICK ACTIONS: SEND / RECEIVE / TOP UP / MORE НА СКРИНЕ) -->
+      <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; margin-top:18px; padding-top:16px; border-top:1px solid rgba(255,255,255,0.06);">
+        <div style="cursor:pointer; text-align:center;" onclick="selectTab('team', null)">
+          <div style="width:42px; height:42px; border-radius:50%; margin:0 auto 6px auto; background:rgba(255,255,255,0.03); border:1px solid rgba(245,176,65,0.3); color:#f5b041; display:flex; align-items:center; justify-content:center; font-size:15px;">
+            <i class="fas fa-users"></i>
           </div>
-          <div class="hero-tile-title">МАГАЗИН [C6E]</div>
-          <div class="hero-tile-sub">Паки Голды, приватные конфиги и VIP-рамки</div>
+          <div style="font-size:10px; font-weight:700; color:var(--silver);">Состав</div>
+        </div>
+        <div style="cursor:pointer; text-align:center;" onclick="selectTab('practice', document.getElementById('dock-btn-practice'))">
+          <div style="width:42px; height:42px; border-radius:50%; margin:0 auto 6px auto; background:rgba(255,255,255,0.03); border:1px solid rgba(245,176,65,0.3); color:#f5b041; display:flex; align-items:center; justify-content:center; font-size:15px;">
+            <i class="fas fa-crosshairs"></i>
+          </div>
+          <div style="font-size:10px; font-weight:700; color:var(--silver);">Праки (CW)</div>
+        </div>
+        <div style="cursor:pointer; text-align:center;" onclick="selectTab('shop', null)">
+          <div style="width:42px; height:42px; border-radius:50%; margin:0 auto 6px auto; background:rgba(255,255,255,0.03); border:1px solid rgba(245,176,65,0.3); color:#f5b041; display:flex; align-items:center; justify-content:center; font-size:15px;">
+            <i class="fas fa-shopping-bag"></i>
+          </div>
+          <div style="font-size:10px; font-weight:700; color:var(--silver);">Магазин</div>
+        </div>
+        <div style="cursor:pointer; text-align:center;" onclick="selectTab('app-hub', document.getElementById('dock-btn-hub'))">
+          <div style="width:42px; height:42px; border-radius:50%; margin:0 auto 6px auto; background:rgba(255,255,255,0.03); border:1px solid rgba(245,176,65,0.3); color:#f5b041; display:flex; align-items:center; justify-content:center; font-size:15px;">
+            <i class="fas fa-th-large"></i>
+          </div>
+          <div style="font-size:10px; font-weight:700; color:var(--silver);">Все разделы</div>
         </div>
       </div>
     </div>
 
-    <!-- 4 ЗЕРКАЛЬНЫЕ ПЛИТКИ ЖИВОЙ ТЕЛЕМЕТРИИ ОРГАНИЗАЦИИ -->
-    <div class="stats-row-v5">
-      <div class="stat-card-v5">
-        <div class="val" id="win-rate-display">0%</div>
-        <div class="lbl">WIN RATE (СЕЗОН)</div>
+    <!-- КРУГОВОЙ ДАШБОРД СТАТИСТИКИ (КАК БЛОК OVERALL PROGRESS 78% НА СКРИНШОТЕ) -->
+    <div class="solar-dashboard-widget">
+      <div class="solar-ring-box">
+        <svg class="solar-ring-svg" viewBox="0 0 100 100">
+          <circle class="solar-ring-bg" cx="50" cy="50" r="42"></circle>
+          <circle class="solar-ring-fill" id="home-winrate-ring-circle" cx="50" cy="50" r="42" stroke-dasharray="264" stroke-dashoffset="66"></circle>
+        </svg>
+        <div class="solar-ring-center">
+          <div class="solar-ring-val" id="win-rate-display">0%</div>
+          <div class="solar-ring-lbl">WIN RATE</div>
+        </div>
       </div>
-      <div class="stat-card-v5">
-        <div class="val" id="total-games-display">0</div>
-        <div class="lbl">СЫГРАНО МАТЧЕЙ</div>
-      </div>
-      <div class="stat-card-v5" style="cursor:pointer;" onclick="selectTab('pantheon', document.getElementById('btn-pantheon'))">
-        <div class="val">900 G</div>
-        <div class="lbl">ФОНД ПАНТЕОНА</div>
-      </div>
-      <div class="stat-card-v5" style="cursor:pointer;" onclick="document.getElementById('home-community-hub')?.scrollIntoView({behavior:'smooth'})">
-        <div class="val" id="home-stat-profiles-count">1</div>
-        <div class="lbl">ИГРОКОВ В БАЗЕ</div>
+
+      <div class="solar-metrics-list">
+        <div style="font-family:var(--font-tech); font-size:9.5px; color:var(--silver-muted); letter-spacing:1.2px; margin-bottom:2px;">
+          OVERALL TELEMETRY // СЕЗОН [C6E]
+        </div>
+        <div class="solar-metric-row" onclick="selectTab('history', null)" style="cursor:pointer;">
+          <span><span class="solar-dot"></span>Сыграно матчей</span>
+          <b id="total-games-display" style="font-family:var(--font-tech); color:#fff;">0</b>
+        </div>
+        <div class="solar-metric-row" onclick="selectTab('pantheon', document.getElementById('dock-btn-center'))" style="cursor:pointer;">
+          <span><span class="solar-dot"></span>Призовой фонд</span>
+          <b style="font-family:var(--font-tech); color:#f5b041;">900 GOLD</b>
+        </div>
+        <div class="solar-metric-row" onclick="document.getElementById('home-community-hub')?.scrollIntoView({behavior:'smooth'})" style="cursor:pointer;">
+          <span><span class="solar-dot"></span>Профилей в базе</span>
+          <b id="home-stat-profiles-count" style="font-family:var(--font-tech); color:#fff;">1</b>
+        </div>
+        <div class="solar-metric-row" onclick="selectTab('chat', document.getElementById('dock-btn-chat'))" style="cursor:pointer;">
+          <span><span class="solar-dot"></span>Активность чата</span>
+          <b id="home-chat-live-pill" style="font-family:var(--font-tech); color:#f5b041;">LIVE</b>
+        </div>
       </div>
     </div>
 
     <!-- ЖИВОЙ МИНИ-ПОДИУМ ТОП-3 ПАНТЕОНА НА ГЛАВНОЙ -->
     <div class="card home-pantheon-widget" id="home-pantheon-mini-card">
-      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; padding-bottom:12px; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.08);">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; padding-bottom:12px; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.06);">
         <div>
-          <div style="font-family:var(--font-tech); font-size:12.5px; font-weight:900; color:var(--silver); display:flex; align-items:center; gap:8px;">
-            <i class="fas fa-crown text-accent"></i> ТОП-3 ПАНТЕОНА // ГОНКА ЗА 900 GOLD
+          <div style="font-family:var(--font-tech); font-size:12px; font-weight:900; color:#fff; display:flex; align-items:center; gap:8px;">
+            <i class="fas fa-crown" style="color:#f5b041;"></i> ТОП-3 ПАНТЕОНА // ГОНКА ЗА 900 GOLD
           </div>
           <div style="font-size:10px; color:var(--silver-muted); margin-top:2px;">
-            Рейтинг считается автоматически по K/D из официальных Табов матчей + бусты зрителей (+25 PTS)
+            Очки PTS считаются автоматически по K/D из официальных Табов матчей + бусты зрителей
           </div>
         </div>
-        <button type="button" class="chip-btn" style="border-color:var(--mirror-border-bright); color:#fff;" onclick="selectTab('pantheon', document.getElementById('btn-pantheon'))">
-          ВЕСЬ ПАНТЕОН ➔
+        <button type="button" class="chip-btn" style="border-color:rgba(245,176,65,0.45); color:#f5b041;" onclick="selectTab('pantheon', document.getElementById('dock-btn-center'))">
+          ОТКРЫТЬ ➔
         </button>
       </div>
       <div id="home-pantheon-mini-grid" class="home-podium-mini-grid">
@@ -236,33 +238,33 @@
     <div class="card community-radar-card" id="home-community-hub">
       <div class="community-radar-header">
         <div>
-          <div style="font-family:var(--font-tech); font-size:12.5px; font-weight:900; color:var(--silver); display:flex; align-items:center; gap:8px;">
-            <span class="online-dot-pulse"></span> ИГРОКИ ОНЛАЙН И ПРОФИЛИ СООБЩЕСТВА [C6E]
+          <div style="font-family:var(--font-tech); font-size:12px; font-weight:900; color:#fff; display:flex; align-items:center; gap:8px;">
+            <span class="online-dot-pulse" style="background:#f5b041; box-shadow:0 0 8px #f5b041;"></span> ИГРОКИ ОНЛАЙН И ПРОФИЛИ СООБЩЕСТВА [C6E]
           </div>
           <div style="font-size:10px; color:var(--silver-muted); margin-top:3px;">
-            Нажми на карточку игрока, чтобы открыть его зеркальный профиль, баннер, K/D и поставить ❤️ лайк
+            Нажми на карточку любого игрока, чтобы посмотреть его баннер, K/D, страну и поставить ❤️ лайк
           </div>
         </div>
         <div class="community-counters-strip">
           <div class="comm-counter-pill online">
             <span class="lbl">ОНЛАЙН</span>
-            <span class="val" id="comm-online-count">1</span>
+            <span class="val" id="comm-online-count" style="color:#f5b041;">1</span>
           </div>
           <div class="comm-counter-pill total">
             <span class="lbl">ВСЕГО</span>
             <span class="val" id="comm-total-count">1</span>
           </div>
-          <button type="button" class="chip-btn" style="border-color:var(--mirror-border-bright); color:#fff;" onclick="if(window.openMyProfileModal) window.openMyProfileModal(false)">
-            <i class="fas fa-sliders-h text-accent"></i> Настроить профиль
+          <button type="button" class="chip-btn" style="border-color:rgba(245,176,65,0.45); color:#f5b041;" onclick="if(window.openMyProfileModal) window.openMyProfileModal(false)">
+            <i class="fas fa-sliders-h"></i> Настроить
           </button>
         </div>
       </div>
 
       <div style="display:flex; gap:6px; overflow-x:auto; padding-bottom:10px; margin-bottom:10px;">
-        <button type="button" class="chip-btn comm-filter-btn active" id="comm-flt-all" style="border-color:var(--accent-light); color:#fff;" onclick="window.setHomeCommunityFilter('all')">Все профили</button>
-        <button type="button" class="chip-btn comm-filter-btn" id="comm-flt-c6e" onclick="window.setHomeCommunityFilter('c6e')">Состав [C6E]</button>
-        <button type="button" class="chip-btn comm-filter-btn" id="comm-flt-guest" onclick="window.setHomeCommunityFilter('guest')">Гости портала</button>
-        <button type="button" class="chip-btn comm-filter-btn" id="comm-flt-top" onclick="window.setHomeCommunityFilter('top')">По лайкам ❤️</button>
+        <button type="button" class="chip-btn comm-filter-btn active" id="comm-flt-all" style="border-color:#f5b041; color:#fff;" onclick="window.setHomeCommunityFilter('all')">ALL</button>
+        <button type="button" class="chip-btn comm-filter-btn" id="comm-flt-c6e" onclick="window.setHomeCommunityFilter('c6e')">БОЙЦЫ [C6E]</button>
+        <button type="button" class="chip-btn comm-filter-btn" id="comm-flt-guest" onclick="window.setHomeCommunityFilter('guest')">ГОСТИ</button>
+        <button type="button" class="chip-btn comm-filter-btn" id="comm-flt-top" onclick="window.setHomeCommunityFilter('top')">ТОП ❤️</button>
       </div>
 
       <div id="home-online-profiles-grid" class="online-profiles-showcase">
@@ -270,11 +272,11 @@
       </div>
     </div>
 
-    <!-- MATCH CENTER + ПОСЛЕДНИЙ ОФИЦИАЛЬНЫЙ РЕЗУЛЬТАТ С ТАБОМ -->
+    <!-- MATCH CENTER + ДОРОЖНАЯ КАРТА МИССИИ (КАК MISSION ROADMAP 1-2-3-4 НА СКРИНЕ) -->
     <div class="card match-card">
       <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 10px; margin-bottom: 15px;">
         <span class="font-tech text-silver" style="font-size: 11px;"><i class="fas fa-satellite-dish text-accent"></i> MATCH CENTER // ТЕЛЕМЕТРИЯ МАТЧЕЙ</span>
-        <span id="match-status" style="font-size: 9px; font-family: var(--font-tech); color: #fff; background: rgba(255,255,255,0.08); border: 1px solid var(--mirror-border); padding: 3px 8px; border-radius: 4px;">OFFLINE</span>
+        <span id="match-status" style="font-size: 9px; font-family: var(--font-tech); color: #f5b041; background: rgba(245,176,65,0.1); border: 1px solid rgba(245,176,65,0.35); padding: 3px 8px; border-radius: 4px;">OFFLINE</span>
       </div>
       
       <div class="match-teams" style="display: flex; align-items: center; justify-content: space-between;">
@@ -282,7 +284,7 @@
           <div class="font-tech" style="font-size: 24px; font-weight: 800; color: var(--silver);">C<span class="text-accent">6</span>E</div>
           <div style="font-size: 10px; color: var(--text-gray);">Cyber 6 Esports</div>
         </div>
-        <div style="font-family: var(--font-tech); font-size: 18px; color: var(--accent-light); font-style: italic; font-weight: 700;">VS</div>
+        <div style="font-family: var(--font-tech); font-size: 18px; color: #f5b041; font-style: italic; font-weight: 700;">VS</div>
         <div class="text-center" style="flex: 1;">
           <div class="font-tech" style="font-size: 24px; font-weight: 800; color: var(--silver);" id="enemy-name-display">TBA</div>
           <div style="font-size: 10px; color: var(--text-gray);">Opponent</div>
@@ -294,6 +296,31 @@
       </div>
 
       <div id="home-latest-match-box" style="margin-top:16px; padding-top:14px; border-top:1px dashed rgba(255,255,255,0.1);"></div>
+
+      <!-- ДОРОЖНАЯ КАРТА КАК ВНИЗУ РЕФЕРЕНС-СКРИНШОТА -->
+      <div style="margin-top:18px; padding-top:14px; border-top:1px solid rgba(255,255,255,0.06);">
+        <div style="font-family:var(--font-tech); font-size:9px; color:var(--silver-muted); letter-spacing:1.2px; margin-bottom:4px;">
+          CURRENT MISSION // ПУТЬ К ДОМИНАЦИИ [C6E]
+        </div>
+        <div class="solar-roadmap-strip">
+          <div class="solar-step-node active" onclick="if(window.openMyProfileModal) window.openMyProfileModal(false)" style="cursor:pointer;">
+            <div class="solar-step-circle">1</div>
+            <div class="solar-step-lbl">ПРОФИЛЬ<br>[C6E]</div>
+          </div>
+          <div class="solar-step-node active" onclick="selectTab('practice', document.getElementById('dock-btn-practice'))" style="cursor:pointer;">
+            <div class="solar-step-circle">2</div>
+            <div class="solar-step-lbl">ПРАКИ &<br>ТАБЫ</div>
+          </div>
+          <div class="solar-step-node active" onclick="selectTab('team', null)" style="cursor:pointer;">
+            <div class="solar-step-circle">3</div>
+            <div class="solar-step-lbl">РОСТ<br>LIVE K/D</div>
+          </div>
+          <div class="solar-step-node active" onclick="selectTab('pantheon', document.getElementById('dock-btn-center'))" style="cursor:pointer;">
+            <div class="solar-step-circle">4</div>
+            <div class="solar-step-lbl">ПАНТЕОН<br>900 GOLD</div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="card">
@@ -303,9 +330,189 @@
       <div id="home-news-feed">
         <div class="text-center" style="font-size: 12px; color: #666; padding: 20px;">Загрузка данных...</div>
       </div>
-      <button class="btn-glitch btn-secondary" onclick="selectTab('news', document.getElementById('btn-news'))" style="margin-top: 10px;">
+      <button class="btn-glitch" onclick="selectTab('news', null)" style="margin-top: 10px;">
         ОТКРЫТЬ ВСЕ НОВОСТИ
       </button>
+    </div>
+  </section>
+
+  <!-- ЭКРАН ПРОФИЛЯ И ВСЕХ РАЗДЕЛОВ ПРИЛОЖЕНИЯ (1:1 КАК ЭКРАН 'MY PROFILE' СЛЕВА ВВЕРХУ НА СКРИНШОТЕ) -->
+  <section id="app-hub">
+    <div class="card" style="text-align:center; padding:24px 18px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+        <span style="font-family:var(--font-tech); font-size:10px; color:var(--silver-muted); letter-spacing:1.5px;">MY PROFILE & COMMAND MENU</span>
+        <button type="button" class="chip-btn" style="border-color:rgba(245,176,65,0.45); color:#f5b041;" onclick="if(window.openMyProfileModal) window.openMyProfileModal(false)">
+          <i class="fas fa-pen"></i> Изменить профиль
+        </button>
+      </div>
+
+      <!-- АВАТАРКА ИГРОКА В СВЕТЯЩЕМСЯ ЗОЛОТОМ КОЛЬЦЕ-ОРЕОЛЕ -->
+      <div class="solar-eclipse-stage" onclick="if(window.openMyProfileModal) window.openMyProfileModal(false)" style="cursor:pointer;">
+        <div class="solar-eclipse-ring"></div>
+        <img id="hub-profile-avatar" src="logo.png" alt="Avatar" class="eclipse-inner-img" onerror="this.src='logo.png'">
+      </div>
+
+      <h2 id="hub-profile-nick" style="font-family:var(--font-tech); font-size:22px; font-weight:900; color:#fff; letter-spacing:2px; margin:0 0 4px 0; display:flex; align-items:center; justify-content:center; gap:6px;">
+        ИГРОК [C6E]
+      </h2>
+      <div id="hub-profile-sub" style="font-size:10px; color:var(--silver-muted); letter-spacing:2px; text-transform:uppercase; margin-bottom:12px;">
+        FOCUS • DISCIPLINE • VICTORY
+      </div>
+
+      <div style="margin-bottom:18px;">
+        <span id="hub-profile-badge-pill" class="solar-level-pill">💎 ГОСТЬ ПОРТАЛА</span>
+      </div>
+
+      <!-- 3 КОЛОНКИ СТАТИСТИКИ ПРОФИЛЯ (КАК Days 746 / Habits 24 / Focus Hrs 2,145 НА СКРИНЕ) -->
+      <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; padding:14px 8px; border-top:1px solid rgba(255,255,255,0.06); border-bottom:1px solid rgba(255,255,255,0.06); margin-bottom:16px;">
+        <div>
+          <div style="font-size:10px; color:var(--silver-muted);">Действующий K/D</div>
+          <div id="hub-stat-kd" style="font-family:var(--font-tech); font-size:18px; font-weight:900; color:#fff; margin-top:3px;">1.20</div>
+        </div>
+        <div style="border-left:1px solid rgba(255,255,255,0.06); border-right:1px solid rgba(255,255,255,0.06);">
+          <div style="font-size:10px; color:var(--silver-muted);">Лайков ❤️</div>
+          <div id="hub-stat-likes" style="font-family:var(--font-tech); font-size:18px; font-weight:900; color:#f5b041; margin-top:3px;">0</div>
+        </div>
+        <div>
+          <div style="font-size:10px; color:var(--silver-muted);">Активность ⚡</div>
+          <div id="hub-stat-pts" style="font-family:var(--font-tech); font-size:18px; font-weight:900; color:#fff; margin-top:3px;">20</div>
+        </div>
+      </div>
+
+      <!-- НАВИГАЦИОННЫЙ СПИСОК ВСЕХ РАЗДЕЛОВ САЙТА СО СТРЕЛКАМИ '>' (1:1 КАК НА СКРИНШОТЕ) -->
+      <div class="solar-menu-list">
+        <button type="button" class="solar-menu-row featured" onclick="selectTab('pantheon', document.getElementById('dock-btn-center'))">
+          <div class="solar-menu-left">
+            <span class="solar-menu-icon"><i class="fas fa-crown"></i></span>
+            <div>
+              <div class="solar-menu-title">Пантеон [C6E] • Гонка за 900 GOLD</div>
+              <div class="solar-menu-sub">Еженедельный рейтинг бойцов (500 / 250 / 150G) и бусты</div>
+            </div>
+          </div>
+          <i class="fas fa-chevron-right solar-menu-arrow"></i>
+        </button>
+
+        <button type="button" class="solar-menu-row" onclick="selectTab('team', null)">
+          <div class="solar-menu-left">
+            <span class="solar-menu-icon"><i class="fas fa-users"></i></span>
+            <div>
+              <div class="solar-menu-title">Состав организации (Main & Reserve)</div>
+              <div class="solar-menu-sub">Карточки бойцов [C6E], LIVE K/D, настройки и девайсы</div>
+            </div>
+          </div>
+          <i class="fas fa-chevron-right solar-menu-arrow"></i>
+        </button>
+
+        <button type="button" class="solar-menu-row" onclick="selectTab('chat', document.getElementById('dock-btn-chat'))">
+          <div class="solar-menu-left">
+            <span class="solar-menu-icon"><i class="fas fa-comments"></i></span>
+            <div>
+              <div class="solar-menu-title">Общий чат игроков (12ч)</div>
+              <div class="solar-menu-sub">Живое общение гостей и бойцов с упоминаниями @Ник</div>
+            </div>
+          </div>
+          <i class="fas fa-chevron-right solar-menu-arrow"></i>
+        </button>
+
+        <button type="button" class="solar-menu-row" onclick="selectTab('shop', null)">
+          <div class="solar-menu-left">
+            <span class="solar-menu-icon"><i class="fas fa-shopping-bag"></i></span>
+            <div>
+              <div class="solar-menu-title">Магазин [C6E] • Cyber Market</div>
+              <div class="solar-menu-sub">Паки Голды, приватные конфиги, VIP-рамки и слоты</div>
+            </div>
+          </div>
+          <i class="fas fa-chevron-right solar-menu-arrow"></i>
+        </button>
+
+        <button type="button" class="solar-menu-row" onclick="selectTab('practice', document.getElementById('dock-btn-practice'))">
+          <div class="solar-menu-left">
+            <span class="solar-menu-icon"><i class="fas fa-crosshairs"></i></span>
+            <div>
+              <div class="solar-menu-title">Запись на Праки (CW)</div>
+              <div class="solar-menu-sub">Бронирование свободного слота на матч против [C6E]</div>
+            </div>
+          </div>
+          <i class="fas fa-chevron-right solar-menu-arrow"></i>
+        </button>
+
+        <button type="button" class="solar-menu-row" onclick="selectTab('history', null)">
+          <div class="solar-menu-left">
+            <span class="solar-menu-icon"><i class="fas fa-trophy"></i></span>
+            <div>
+              <div class="solar-menu-title">История матчей и Двойные Табы</div>
+              <div class="solar-menu-sub">Официальные результаты, статистика 5v5 и скриншоты</div>
+            </div>
+          </div>
+          <i class="fas fa-chevron-right solar-menu-arrow"></i>
+        </button>
+
+        <button type="button" class="solar-menu-row" onclick="selectTab('schedule', null)">
+          <div class="solar-menu-left">
+            <span class="solar-menu-icon"><i class="far fa-calendar-alt"></i></span>
+            <div>
+              <div class="solar-menu-title">Расписание праков и турниров</div>
+              <div class="solar-menu-sub">Календарь предстоящих игр и тренировок состава</div>
+            </div>
+          </div>
+          <i class="fas fa-chevron-right solar-menu-arrow"></i>
+        </button>
+
+        <button type="button" class="solar-menu-row" onclick="selectTab('news', null)">
+          <div class="solar-menu-left">
+            <span class="solar-menu-icon"><i class="fas fa-bolt"></i></span>
+            <div>
+              <div class="solar-menu-title">Новости и Патч-ноуты от Kas</div>
+              <div class="solar-menu-sub">Официальные анонсы и обновления платформы</div>
+            </div>
+          </div>
+          <i class="fas fa-chevron-right solar-menu-arrow"></i>
+        </button>
+
+        <button type="button" class="solar-menu-row" onclick="selectTab('media', null)">
+          <div class="solar-menu-left">
+            <span class="solar-menu-icon"><i class="fas fa-play-circle"></i></span>
+            <div>
+              <div class="solar-menu-title">Медиа и Галерея</div>
+              <div class="solar-menu-sub">Хайлайты, мувики и лучшие моменты клана</div>
+            </div>
+          </div>
+          <i class="fas fa-chevron-right solar-menu-arrow"></i>
+        </button>
+
+        <button type="button" class="solar-menu-row" onclick="selectTab('about', null)">
+          <div class="solar-menu-left">
+            <span class="solar-menu-icon"><i class="fas fa-shield-alt"></i></span>
+            <div>
+              <div class="solar-menu-title">Инфо и История организации</div>
+              <div class="solar-menu-sub">Дорожная карта развития CYBER 6 ESPORTS</div>
+            </div>
+          </div>
+          <i class="fas fa-chevron-right solar-menu-arrow"></i>
+        </button>
+
+        <button type="button" class="solar-menu-row" onclick="selectTab('reviews', null)">
+          <div class="solar-menu-left">
+            <span class="solar-menu-icon"><i class="fas fa-star"></i></span>
+            <div>
+              <div class="solar-menu-title">Отзывы об игроках и клане</div>
+              <div class="solar-menu-sub">Мнения соперников и участников сообщества</div>
+            </div>
+          </div>
+          <i class="fas fa-chevron-right solar-menu-arrow"></i>
+        </button>
+
+        <button type="button" class="solar-menu-row featured" onclick="selectTab('join', null)">
+          <div class="solar-menu-left">
+            <span class="solar-menu-icon"><i class="fas fa-user-plus"></i></span>
+            <div>
+              <div class="solar-menu-title">Подать заявку на вступление в [C6E]</div>
+              <div class="solar-menu-sub">Анкета кандидата в основной или резервный состав</div>
+            </div>
+          </div>
+          <i class="fas fa-chevron-right solar-menu-arrow"></i>
+        </button>
+      </div>
     </div>
   </section>
 
@@ -600,6 +807,23 @@
     type();
   }
 
+  const SECTION_TITLES_MAP = {
+    'home': 'COMMAND HUB',
+    'pantheon': 'ПАНТЕОН • 900 GOLD',
+    'chat': 'ОБЩИЙ ЧАТ 12Ч',
+    'shop': 'CYBER MARKET [C6E]',
+    'team': 'СОСТАВ КЛАНА',
+    'practice': 'ПРАКИ (CW)',
+    'schedule': 'РАСПИСАНИЕ',
+    'history': 'МАТЧИ И ТАБЫ',
+    'news': 'НОВОСТИ И ОБНОВЫ',
+    'media': 'МЕДИА ХАБ',
+    'about': 'О КЛАНЕ [C6E]',
+    'reviews': 'ОТЗЫВЫ',
+    'join': 'ВСТУПИТЬ В [C6E]',
+    'app-hub': 'МОЙ ПРОФИЛЬ И РАЗДЕЛЫ'
+  };
+
   window.selectTab = function(tabId, btn) {
     document.querySelectorAll('section').forEach(s => {
       s.classList.remove('active');
@@ -616,20 +840,31 @@
       });
     }
 
-    document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active-tab'));
-    if (btn) {
-      btn.classList.add('active-tab');
-      if (btn.classList.contains('has-update')) {
-        btn.classList.remove('has-update');
-        localStorage.setItem('last_seen_' + tabId, Date.now());
-      }
+    const subLbl = document.getElementById('nav-active-section-lbl');
+    if (subLbl) {
+      subLbl.innerText = SECTION_TITLES_MAP[tabId] || 'PORTAL v0.5.0';
     }
 
-    const dropdown = document.getElementById('navDropdown');
-    const menuBtn = document.getElementById('menuBtn');
-    if (dropdown) dropdown.classList.remove('active');
-    if (menuBtn) menuBtn.classList.remove('active');
-    window.scrollTo(0, 0);
+    document.querySelectorAll('#c6e-bottom-dock .dock-nav-item, #c6e-bottom-dock .dock-center-orb-wrap').forEach(el => {
+      el.classList.remove('active');
+    });
+    const dockMap = {
+      'home': 'dock-btn-home',
+      'chat': 'dock-btn-chat',
+      'pantheon': 'dock-btn-center',
+      'practice': 'dock-btn-practice',
+      'app-hub': 'dock-btn-hub'
+    };
+    const dockId = dockMap[tabId] || 'dock-btn-hub';
+    const dockEl = document.getElementById(dockId);
+    if (dockEl) dockEl.classList.add('active');
+
+    if (typeof window.refreshAppHubProfile === 'function') {
+      window.refreshAppHubProfile();
+    }
+
+    localStorage.setItem('last_seen_' + tabId, Date.now());
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   window.toggleMenu = function() {
@@ -675,6 +910,36 @@
   };
 </script>
 
-<script type="module" src="app.js?v=8"></script>
+
+<!-- НИЖНЯЯ НАВИГАЦИОННАЯ ДОК-ПАНЕЛЬ ПРИЛОЖЕНИЯ С ЦЕНТРАЛЬНОЙ ЗОЛОТОЙ КНОПКОЙ (КАК НА СКРИНШОТЕ) -->
+<nav id="c6e-bottom-dock">
+  <button type="button" class="dock-nav-item active" id="dock-btn-home" onclick="selectTab('home', this)">
+    <i class="fas fa-home"></i>
+    <span class="dock-lbl">Главная</span>
+  </button>
+
+  <button type="button" class="dock-nav-item" id="dock-btn-chat" onclick="selectTab('chat', this)">
+    <i class="fas fa-comments"></i>
+    <span class="dock-lbl">Чат</span>
+  </button>
+
+  <div class="dock-center-orb-wrap" id="dock-btn-center" onclick="selectTab('pantheon', this)" title="Пантеон [C6E] • 900 GOLD">
+    <div class="dock-center-orb-inner">
+      <img src="logo.png" alt="C6E" onerror="this.style.display='none'; this.parentElement.innerHTML='<i class=\'fas fa-crown\'></i>';">
+    </div>
+  </div>
+
+  <button type="button" class="dock-nav-item" id="dock-btn-practice" onclick="selectTab('practice', this)">
+    <i class="fas fa-crosshairs"></i>
+    <span class="dock-lbl">Праки</span>
+  </button>
+
+  <button type="button" class="dock-nav-item" id="dock-btn-hub" onclick="selectTab('app-hub', this)">
+    <i class="fas fa-user-astronaut"></i>
+    <span class="dock-lbl">Разделы</span>
+  </button>
+</nav>
+
+<script type="module" src="app.js?v=10"></script>
 </body>
 </html>
