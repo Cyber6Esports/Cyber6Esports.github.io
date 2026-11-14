@@ -764,6 +764,9 @@
         <button type="button" class="btn-tg-action" onclick="publishScheduleToTG()">
           <i class="fas fa-calendar-alt"></i> РАСПИСАНИЕ В ТГК
         </button>
+        <button type="button" class="btn-tg-action" style="background:linear-gradient(135deg, #f5b041, #b87b14); color:#07080b;" onclick="window.publishOpenPracsToTG()">
+          <i class="fas fa-crosshairs"></i> АФИША ПРАКОВ (CW) В ТГК
+        </button>
       </div>
     </div>
 
@@ -4772,6 +4775,9 @@
               <div class="item-actions" style="flex-wrap:wrap;">
                 <button type="button" class="btn-icon ${isDev ? 'dev-active' : ''}" style="width:auto; padding:0 9px; font-family:var(--font-tech); font-size:9px; border-color:#f5b041; color:${isDev ? '#07080b' : '#f5b041'};" title="Выдать или снять галочку разработчика (✓ DEV)" onclick="window.toggleUserDeveloperBadge('${safeDev}')">
                   ⚡✓ DEV
+                </button>
+                <button type="button" class="btn-icon" style="color:#f5b041; border-color:rgba(245,176,65,0.4);" title="Выдать золотую медаль в профиль (👑 Чемпион Пантеона / 🎯 MVP)" onclick="window.awardProfileMedalPrompt('${safeDev}')">
+                  <i class="fas fa-medal"></i>
                 </button>
                 ${isC6E
                   ? `<button class="btn-icon" title="Снять тег [C6E] и перевести в гости" onclick="window.rejectUserC6EStatus('${safeDev}')"><i class="fas fa-user-minus"></i></button>`
