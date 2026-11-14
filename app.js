@@ -1775,7 +1775,7 @@ onSnapshot(doc(db, DB_COLLECTION, "roster_reserve"), (s) => {
 // АВТО-СИСТЕМА ОБНОВЛЕНИЙ САЙТА И УВЕДОМЛЕНИЙ ОТ РАЗРАБОТЧИКА KAS (@kas_0ff)
 // ============================================================================
 const DEFAULT_KAS_RELEASE = {
-  id: 1763050000500,
+  id: 1794650000500,
   versionId: "c6e_release_v0_5_0_official",
   versionLabel: "v0.5.0 // PROFILES, 12H CHAT, SHOP, THEMES & COMMAND HUB",
   date: "13.11.2026",
@@ -1972,53 +1972,54 @@ window.openSiteReleaseModal = (relObj = null) => {
   if (!modal) return;
 
   modal.innerHTML = `
-    <div class="c6e-release-box">
-      <div class="c6e-release-top">
-        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-          <span style="background:linear-gradient(135deg, #ffb300, #d42638); color:#000; font-family:var(--font-tech); font-size:9px; font-weight:900; padding:4px 10px; border-radius:20px; letter-spacing:1px;">
-            🔔 НОВОЕ ОБНОВЛЕНИЕ САЙТА
+    <div class="c6e-release-box" style="width:min(95vw, 550px); max-height:82vh; display:flex; flex-direction:column; overflow:hidden; background:linear-gradient(165deg, #14161f 0%, #090a0e 100%); border:1.5px solid rgba(245,176,65,0.55); border-radius:20px; box-shadow:0 25px 70px rgba(0,0,0,0.96);">
+      <div class="c6e-release-top" style="flex-shrink:0; padding:12px 15px; background:rgba(18,20,28,0.98); border-bottom:1px solid rgba(245,176,65,0.22); display:flex; justify-content:space-between; align-items:center; gap:8px;">
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; min-width:0;">
+          <span style="background:rgba(245,176,65,0.18); border:1px solid #f5b041; color:#f5b041; font-family:var(--font-tech); font-size:8.5px; font-weight:900; padding:4px 9px; border-radius:20px; letter-spacing:1px;">
+            ⚡ ПАТЧ-НОУТ [C6E]
           </span>
-          <span style="font-family:var(--font-tech); font-size:10px; color:var(--silver); font-weight:700;">
-            ${escapeHTML(rel.versionLabel || 'RELEASE UPDATE')} • ${escapeHTML(rel.date || '')}
+          <span style="font-family:var(--font-tech); font-size:9.5px; color:var(--silver); font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+            ${escapeHTML(rel.versionLabel || 'v0.5.0')}
           </span>
         </div>
-        <button class="chip-btn" onclick="window.closeSiteReleaseModal(true)" style="padding:5px 10px;">✕</button>
+        <button type="button" onclick="window.closeSiteReleaseModal(true)" style="flex-shrink:0; min-width:88px; height:34px; border-radius:18px; background:rgba(245,176,65,0.18); border:1px solid #f5b041; color:#f5b041; font-family:var(--font-tech); font-size:9.5px; font-weight:900; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:5px; padding:0 12px;">
+          ЗАКРЫТЬ ✕
+        </button>
       </div>
 
-      <div class="c6e-release-body">
-        <h2 style="font-family:var(--font-tech); font-size:clamp(16px, 3.8vw, 21px); color:#fff; margin:0 0 14px 0; line-height:1.35;">
+      <div class="c6e-release-body" style="flex:1 1 auto; min-height:0; max-height:calc(82vh - 126px); overflow-y:auto; -webkit-overflow-scrolling:touch; padding:15px;">
+        <h2 style="font-family:var(--font-tech); font-size:clamp(14px, 3.8vw, 18px); color:#fff; margin:0 0 12px 0; line-height:1.35;">
           ${escapeHTML(rel.title)}
         </h2>
-        <div style="font-size:13px; color:#ccc; line-height:1.65;">
+        <div style="font-size:12.5px; color:#ccc; line-height:1.6;">
           ${rel.text}
         </div>
       </div>
 
-      <div class="c6e-release-footer">
-        <div style="font-size:10px; color:var(--silver-muted);">
-          <i class="fas fa-check-circle" style="color:var(--success);"></i> Официальный патч-ноут от разработчика <b style="color:#fff;">Kas (@kas_0ff)</b>
-        </div>
-        <div style="display:flex; gap:8px; flex-wrap:wrap;">
-          <button class="chip-btn" style="border-color:#ffb300; color:#ffb300; padding:9px 14px; font-weight:800;" onclick="window.closeSiteReleaseModal(true); selectTab('news', document.getElementById('btn-news'));">
-            <i class="fas fa-newspaper"></i> ЧИТАТЬ В НОВОСТЯХ
-          </button>
-          <button class="btn-glitch" style="width:auto; padding:9px 18px; font-size:10px;" onclick="window.closeSiteReleaseModal(true);">
-            ПОНЯТНО, ОЦЕНИТЬ ОБНОВУ! 🚀
-          </button>
-        </div>
+      <div class="c6e-release-footer" style="flex-shrink:0; padding:11px 15px; background:rgba(18,20,28,0.98); border-top:1px solid rgba(245,176,65,0.22); display:flex; gap:8px;">
+        <button type="button" class="btn-glitch" style="width:100%; padding:11px 16px !important; font-size:10.5px !important; margin:0;" onclick="window.closeSiteReleaseModal(true);">
+          ПОНЯТНО, ЗАКРЫТЬ ОКНО ✕
+        </button>
       </div>
     </div>
   `;
 
+  modal.style.display = 'flex';
   modal.classList.add('active');
 };
 
 window.closeSiteReleaseModal = (markSeen = true) => {
   const modal = document.getElementById('c6e-release-modal');
-  if (modal) modal.classList.remove('active');
-  if (markSeen && currentActiveRelease && currentActiveRelease.versionId) {
+  if (modal) {
+    modal.classList.remove('active');
+    modal.style.display = 'none';
+  }
+  if (markSeen) {
     try {
-      localStorage.setItem('c6e_seen_release_ver', currentActiveRelease.versionId);
+      if (currentActiveRelease && currentActiveRelease.versionId) {
+        localStorage.setItem('c6e_seen_release_ver', currentActiveRelease.versionId);
+      }
+      localStorage.setItem('c6e_seen_release_ver_v5', DEFAULT_KAS_RELEASE.versionId);
     } catch (e) {}
   }
 };
@@ -2028,7 +2029,7 @@ function checkAndShowReleaseNotification() {
   if (!currentActiveRelease || !currentActiveRelease.versionId) return;
   let seenVer = '';
   try {
-    seenVer = localStorage.getItem('c6e_seen_release_ver') || '';
+    seenVer = localStorage.getItem('c6e_seen_release_ver') || localStorage.getItem('c6e_seen_release_ver_v5') || '';
   } catch (e) {}
 
   if (seenVer !== currentActiveRelease.versionId) {
@@ -2067,8 +2068,8 @@ renderPublicNewsFeeds();
 onSnapshot(doc(db, DB_COLLECTION, "site_release"), (snap) => {
   if (snap.exists() && snap.data().versionId && snap.data().title) {
     const remoteRel = snap.data();
-    // Если в базе лежит старый релиз (например v4.5), а в коде уже вышел новый DEFAULT_KAS_RELEASE (v0.5.0) — приоритет у нового релиза!
-    if ((remoteRel.id || 0) > (DEFAULT_KAS_RELEASE.id || 0)) {
+    const isOldV4 = String(remoteRel.versionId || '').includes('v4') || String(remoteRel.versionLabel || '').includes('v4');
+    if (!isOldV4 && (remoteRel.id || 0) > (DEFAULT_KAS_RELEASE.id || 0)) {
       currentActiveRelease = { ...DEFAULT_KAS_RELEASE, ...remoteRel };
     } else {
       currentActiveRelease = { ...DEFAULT_KAS_RELEASE };
@@ -2534,8 +2535,14 @@ onSnapshot(doc(db, DB_COLLECTION, "history"), (snap) => {
 
   const wrEl = document.getElementById('win-rate-display');
   const totEl = document.getElementById('total-games-display');
+  const ringEl = document.getElementById('home-winrate-ring-circle');
   if (wrEl) wrEl.innerText = `${rate}%`;
   if (totEl) totEl.innerText = total;
+  if (ringEl) {
+    const circumference = 264;
+    const offset = circumference - (Math.min(100, Math.max(0, rate)) / 100) * circumference;
+    ringEl.style.strokeDashoffset = String(Math.round(offset));
+  }
 
   renderHistoryList();
   renderAllRosters();
@@ -2822,12 +2829,12 @@ window.submitReview = async (e) => {
 const THEME_PRESETS = {
   red:   { name: '🔴 Кровавый Рубин [C6E]', accent: '#9e1b28', light: '#d42638', dim: 'rgba(158, 27, 40, 0.16)', glow: 'rgba(212, 38, 56, 0.38)' },
   green: { name: '🟢 Темно-зеленый Изумруд', accent: '#0b6e4f', light: '#00c885', dim: 'rgba(11, 110, 79, 0.18)', glow: 'rgba(0, 200, 133, 0.38)' },
-  gold:  { name: '🟡 Темно-желтый Пантеон', accent: '#9a6b00', light: '#ffb300', dim: 'rgba(154, 107, 0, 0.18)', glow: 'rgba(255, 179, 0, 0.38)' },
+  gold:  { name: '🟡 Obsidian & Solar Gold (Ночной Кибер)', accent: '#b87b14', light: '#f5b041', dim: 'rgba(245, 176, 65, 0.14)', glow: 'rgba(245, 176, 65, 0.42)' },
   blue:  { name: '🔵 Темно-синий Сапфир', accent: '#1446a0', light: '#3b82f6', dim: 'rgba(20, 70, 160, 0.18)', glow: 'rgba(59, 130, 246, 0.38)' }
 };
 
 function applySiteTheme(themeKey) {
-  const key = THEME_PRESETS[themeKey] ? themeKey : 'red';
+  const key = THEME_PRESETS[themeKey] ? themeKey : 'gold';
   const t = THEME_PRESETS[key];
   document.documentElement.setAttribute('data-theme', key);
   document.documentElement.style.setProperty('--accent', t.accent);
@@ -2839,7 +2846,7 @@ function applySiteTheme(themeKey) {
 
 // Применяем сохраненную тему сразу при старте
 try {
-  const savedTheme = localStorage.getItem('c6e_theme_color') || 'red';
+  const savedTheme = localStorage.getItem('c6e_theme_color') || 'gold';
   applySiteTheme(savedTheme);
 } catch (e) {}
 
@@ -2852,7 +2859,7 @@ window.openThemeSwitcherModal = () => {
     modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('active'); });
     document.body.appendChild(modal);
   }
-  const cur = localStorage.getItem('c6e_theme_color') || 'red';
+  const cur = localStorage.getItem('c6e_theme_color') || 'gold';
   modal.innerHTML = `
     <div class="c6e-modal-card" style="max-width:420px;">
       <div class="c6e-modal-head">
@@ -3253,7 +3260,42 @@ function updateHeaderProfileChipUI() {
   }
   nickEl.innerHTML = `<span>${escapeHTML(myLocalProfile.countryFlag || '🌍')} ${info.tagStr ? escapeHTML(info.tagStr) + ' ' : ''}${escapeHTML(myLocalProfile.nick)}</span> ${renderDevVerifiedCheckHTML(myLocalProfile)}`;
   subEl.innerHTML = `${info.isDev ? '⚡ Разработчик' : (info.isApprovedC6E ? '🛡️ Боец [C6E]' : '💎 Гость')} • ❤️ ${myLocalProfile.likes || 0}`;
+  if (typeof window.refreshAppHubProfile === 'function') window.refreshAppHubProfile();
 }
+
+window.refreshAppHubProfile = () => {
+  const avEl = document.getElementById('hub-profile-avatar');
+  const nickEl = document.getElementById('hub-profile-nick');
+  const subEl = document.getElementById('hub-profile-sub');
+  const badgeEl = document.getElementById('hub-profile-badge-pill');
+  const kdEl = document.getElementById('hub-stat-kd');
+  const likesEl = document.getElementById('hub-stat-likes');
+  const ptsEl = document.getElementById('hub-stat-pts');
+  if (!nickEl) return;
+
+  if (!myLocalProfile || !myLocalProfile.nick) {
+    if (avEl) avEl.src = 'logo.png';
+    nickEl.innerHTML = 'ГОСТЬ ПОРТАЛА';
+    if (subEl) subEl.innerText = 'FOCUS • DISCIPLINE • VICTORY';
+    if (badgeEl) badgeEl.innerHTML = '💎 СОЗДАТЬ ПРОФИЛЬ';
+    return;
+  }
+
+  const info = getDisplayTagAndBadge(myLocalProfile);
+  if (avEl) avEl.src = myLocalProfile.avatar || 'logo.png';
+  nickEl.innerHTML = `<span>${escapeHTML(myLocalProfile.countryFlag || '🌍')} ${info.tagStr ? escapeHTML(info.tagStr) + ' ' : ''}${escapeHTML(myLocalProfile.nick)}</span> ${renderDevVerifiedCheckHTML(myLocalProfile)}`;
+  if (subEl) {
+    subEl.innerText = `${myLocalProfile.countryText || 'Россия'} • ID: ${myLocalProfile.gameId || '—'} • ${myLocalProfile.age || 16} ЛЕТ`;
+  }
+  if (badgeEl) {
+    badgeEl.innerHTML = info.isDev
+      ? '⚡ OFFICIAL DEVELOPER [C6E]'
+      : (info.isApprovedC6E ? '🛡️ ОФИЦИАЛЬНЫЙ БОЕЦ [C6E]' : (myLocalProfile.c6eStatus === 'pending' ? '⏳ ЗАЯВКА В [C6E] НА ПРОВЕРКЕ' : `💎 ГОСТЬ • ${escapeHTML(myLocalProfile.clanName || 'ПОРТАЛА')}`));
+  }
+  if (kdEl) kdEl.innerText = myLocalProfile.kd || '1.20';
+  if (likesEl) likesEl.innerText = String(myLocalProfile.likes || 0);
+  if (ptsEl) ptsEl.innerText = String(myLocalProfile.activityPts || 20);
+};
 
 // АВТО-ПОДСТАНОВКА ДАННЫХ ПРОФИЛЯ ВО ВСЕ ФОРМЫ САЙТА (ПРАКИ, ОТЗЫВЫ, ЗАЯВКА В КЛАН)
 function autoFillFormsWithProfile() {
