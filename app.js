@@ -1775,80 +1775,50 @@ onSnapshot(doc(db, DB_COLLECTION, "roster_reserve"), (s) => {
 // АВТО-СИСТЕМА ОБНОВЛЕНИЙ САЙТА И УВЕДОМЛЕНИЙ ОТ РАЗРАБОТЧИКА KAS (@kas_0ff)
 // ============================================================================
 const DEFAULT_KAS_RELEASE = {
-  id: 1794650000500,
-  versionId: "c6e_release_v0_5_0_official",
-  versionLabel: "v0.5.0 // PROFILES, 12H CHAT, SHOP, THEMES & COMMAND HUB",
-  date: "13.11.2026",
+  id: 1794700000600,
+  versionId: "c6e_release_v0_6_0_solar_app",
+  versionLabel: "v0.6.0 // SOLAR GOLD APP & PRO TOOLS",
+  date: "14.11.2026",
   tag: "ОБНОВЛЕНИЕ",
   author: "Kas (@kas_0ff)",
-  title: "🚀 ГЛОБАЛЬНОЕ ОБНОВЛЕНИЕ САЙТА v0.5.0 ОТ KAS: ИГРОВЫЕ ПРОФИЛИ [C6E], ОБЩИЙ ЧАТ 12Ч, МАГАЗИН, ТЕМЫ И НОВЫЙ COMMAND HUB!",
+  tgSummary: "🚀 <b>ОБНОВЛЕНИЕ САЙТА CYBER 6 ESPORTS [v0.6.0]</b>\n\n" +
+             "👨‍💻 <b>Разработчик:</b> Kas (@kas_0ff)\n\n" +
+             "✨ <b>Что нового на портале:</b>\n" +
+             "• 🟡 <b>Стиль Obsidian & Solar Gold:</b> новый дизайн приложения с золотыми ореолами и нижней док-панелью вместо старого меню.\n" +
+             "• 🔥 <b>Focus Streak и Уровни (LEVEL):</b> ежедневный чек-ин на сайте (+15 ⚡) и прокачка уровня профиля.\n" +
+             "• 🗺 <b>Тактическая база карт и Pick'Em:</b> разбор карт от [C6E], голосование за исход матчей и копирование настроек бойцов в 1 тап.\n" +
+             "• 🏅 <b>Медали профиля и быстрые реакции:</b> золотые значки достижений и реакции (🔥 👑 ❤️ ⚡) под новостями и Табами.\n" +
+             "• ⚡ <b>Скорость 120 FPS:</b> мгновенное переключение вкладок на телефонах, планшетах, iPad и ПК!",
+  title: "🚀 ОБНОВЛЕНИЕ v0.6.0 ОТ KAS: ДИЗАЙН SOLAR GOLD, ДОК-ПАНЕЛЬ, УРОВНИ ПРОФИЛЯ, БАЗА КАРТ И 120 FPS!",
   text: `
-    <div style="margin:0 0 16px 0; border-radius:12px; overflow:hidden; border:1px solid rgba(255,179,0,0.45); background:linear-gradient(135deg, rgba(158,27,40,0.38) 0%, rgba(10,11,15,0.98) 58%, rgba(255,179,0,0.18) 100%); padding:18px; position:relative; box-shadow:0 12px 32px rgba(0,0,0,0.65);">
-      <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
-        <img src="logo.png" alt="C6E" onerror="this.style.display='none'" style="width:68px; height:68px; object-fit:contain; border-radius:14px; border:1px solid rgba(255,179,0,0.5); background:rgba(0,0,0,0.5); padding:6px;">
-        <div style="flex:1; min-width:200px;">
-          <div style="display:inline-flex; align-items:center; gap:6px; background:rgba(255,179,0,0.15); border:1px solid #ffb300; color:#ffb300; font-family:'Orbitron',sans-serif; font-size:9px; font-weight:800; padding:3px 10px; border-radius:20px; letter-spacing:1px; margin-bottom:6px;">
-            ⚡ OFFICIAL PORTAL UPDATE v0.5.0 • BY KAS
-          </div>
-          <div style="font-family:'Orbitron',sans-serif; font-size:16px; font-weight:900; color:#ffffff; letter-spacing:0.5px;">
-            CYBER <span style="color:#d42638;">6</span> ESPORTS // <span style="color:#ffb300;">UPDATE 0.5.0 LIVE</span>
-          </div>
-          <div style="font-size:11px; color:#aaa; margin-top:3px;">
-            Разработчик и Основатель: <strong style="color:#fff;">Kas (Джораев Неджи)</strong> • <em>Официальный патч-ноут портала для состава и гостей</em>
-          </div>
+    <div style="border-radius:14px; border:1px solid rgba(245,176,65,0.45); background:linear-gradient(145deg, rgba(245,176,65,0.14) 0%, rgba(10,11,15,0.98) 100%); padding:14px 16px; margin-bottom:12px;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <img src="logo.png" alt="C6E" onerror="this.style.display='none'" style="width:48px; height:48px; border-radius:50%; border:1.5px solid #f5b041; padding:4px; background:#07080b;">
+        <div>
+          <div style="font-family:'Orbitron',sans-serif; font-size:9px; color:#f5b041; font-weight:900; letter-spacing:1px;">⚡ ПАТЧ v0.6.0 • DEV: KAS (@kas_0ff)</div>
+          <div style="font-family:'Orbitron',sans-serif; font-size:14px; font-weight:900; color:#fff; margin-top:2px;">OBSIDIAN & SOLAR GOLD APP EDITION</div>
         </div>
       </div>
     </div>
 
-    <p style="margin:0 0 12px 0; font-size:13.5px; color:#e4e4e2; line-height:1.7;">
-      Салам всем бойцам и гостям нашего портала! На связи <strong>Kas (<code>@kas_0ff</code>)</strong> — основатель и главный разработчик <strong>CYBER 6 ESPORTS <code>[C6E]</code></strong>. Сегодня на сайте установлено масштабное обновление <code style="background:rgba(212,38,56,0.18); border:1px solid rgba(212,38,56,0.45); padding:2px 7px; border-radius:4px; color:#ff6b7a; font-family:'Orbitron',sans-serif; font-size:11px;">v0.5.0</code>, которое превращает наш сайт в полноценную социальную и турнирную кибер-платформу!
+    <p style="margin:0 0 10px 0; font-size:12.5px; color:#e4e4e2; line-height:1.55;">
+      Салам всем! На связи <strong>Kas (<code>@kas_0ff</code>)</strong>. Сайт <strong>CYBER 6 ESPORTS <code>[C6E]</code></strong> переведён на новый движок <code>v0.6.0</code> в стиле мобильного кибер-приложения:
     </p>
 
-    <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-left:3px solid #ffb300; border-radius:10px; padding:14px 16px; margin:14px 0;">
-      <div style="font-family:'Orbitron',sans-serif; font-size:12px; font-weight:800; color:#ffb300; margin-bottom:8px; letter-spacing:0.8px;">
-        🆔 1. ЛИЧНЫЕ ИГРОВЫЕ ПРОФИЛИ (12+), ПРОВЕРКА ТЕГА [C6E], РАМКИ И БАННЕРЫ
+    <div style="display:flex; flex-direction:column; gap:7px; margin-bottom:12px; font-size:12px; color:#d4d0c8;">
+      <div style="padding:9px 12px; border-radius:10px; background:rgba(255,255,255,0.03); border-left:3px solid #f5b041;">
+        🟡 <strong>Дизайн Solar Gold & Док-панель:</strong> золотые кольца-ореолы, круговой дашборд <code>WIN RATE</code> и нижняя панель иконок вместо старого гамбургера.
       </div>
-      <p style="margin:0 0 8px 0; font-size:13px; color:#ccc; line-height:1.65;">
-        Теперь у каждого посетителя есть свой игровой профиль без паролей и почты! Укажи свой <strong>Ник</strong>, <strong>Standoff 2 ID</strong>, действующий <code>K/D</code>, возраст (<code>12+</code>) и страну — система сама подставит флаг твоей страны (<code>🇷🇺</code>, <code>🇰🇬</code>, <code>🇰🇿</code>, <code>🇮🇩</code> и др.).
-      </p>
-      <p style="margin:0; font-size:12.5px; color:#bbb; line-height:1.6;">
-        Бойцы нашего состава проходят верификацию и получают официальный статус <strong>🛡️ Боец <code>[C6E]</code></strong>, а гости из других команд — стильный значок <strong>💎 Гость портала</strong> со своим клан-тегом. Выбирай гексагональную рамку в стиле логотипа <code>[C6E]</code>, загружай аватарку и баннер с телефона, ставь ❤️ лайки чужим профилям, а твои данные будут <em>автоматически подставляться</em> при записи на прак и отправке отзывов!
-      </p>
+      <div style="padding:9px 12px; border-radius:10px; background:rgba(255,255,255,0.03); border-left:3px solid #f5b041;">
+        🔥 <strong>Focus Streak & LEVEL профиля:</strong> нажимай «Отметиться» каждый день, копи серию дней и прокачивай <code>LEVEL</code> и золотые медали профиля.
+      </div>
+      <div style="padding:9px 12px; border-radius:10px; background:rgba(255,255,255,0.03); border-left:3px solid #f5b041;">
+        🗺️ <strong>База карт, Pick'Em и Конфиги:</strong> тактический разбор карт от <code>[C6E]</code>, прогнозы на матчи, копирование сенсы/прицела бойцов в 1 клик и реакции <code>🔥 👑 ❤️ ⚡</code>.
+      </div>
+      <div style="padding:9px 12px; border-radius:10px; background:rgba(255,255,255,0.03); border-left:3px solid #f5b041;">
+        ⚡ <strong>Оптимизация 120 FPS:</strong> мгновенное открытие вкладок без задержек на телефонах, iPad, планшетах и ПК.
+      </div>
     </div>
-
-    <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-left:3px solid #00e676; border-radius:10px; padding:14px 16px; margin:14px 0;">
-      <div style="font-family:'Orbitron',sans-serif; font-size:12px; font-weight:800; color:#00e676; margin-bottom:8px; letter-spacing:0.8px;">
-        💬 2. ОБЩИЙ ЧАТ ИГРОКОВ (АВТО-ОЧИСТКА 12Ч) И СИСТЕМНЫЕ УВЕДОМЛЕНИЯ 🔔
-      </div>
-      <p style="margin:0; font-size:13px; color:#ccc; line-height:1.65;">
-        Открыт живой <strong>«Общий чат»</strong> для общения между гостями и составом <code>[C6E]</code>! Чтобы не засорять память, чат автоматически очищается каждые <code style="background:rgba(0,230,118,0.15); padding:2px 6px; border-radius:4px; color:#00e676;">12 часов</code>. Нажми на любого игрока или введи его <code>@Ник</code> — и ему мгновенно прилетит персональное уведомление в колокольчик <strong>🔔</strong> в шапке сайта и прямо на экран телефона!
-      </p>
-    </div>
-
-    <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-left:3px solid #d42638; border-radius:10px; padding:14px 16px; margin:14px 0;">
-      <div style="font-family:'Orbitron',sans-serif; font-size:12px; font-weight:800; color:#ff6b7a; margin-bottom:8px; letter-spacing:0.8px;">
-        🛒 3. ЗАКРЫТЫЙ «МАГАЗИН [C6E]» И 4 ЦВЕТОВЫЕ ТЕМЫ САЙТА 🎨
-      </div>
-      <p style="margin:0; font-size:13px; color:#ccc; line-height:1.65;">
-        В меню появился новый раздел <strong>«Магазин»</strong> — закрытый кибер-маркет, где скоро откроется доступ к проверенным пакам Голды, приватным конфигам прицела и сенсы наших топ-бойцов, кастомным VIP-рамкам и слотам на закрытые турниры. А по нажатию на иконку палитры <strong>🎨</strong> в шапке ты можешь в 1 клик переключать тему оформления сайта: <em>Кровавый Рубин</em>, <em>Изумруд</em>, <em>Золото Пантеона</em> или <em>Ледяной Сапфир</em>!
-      </p>
-    </div>
-
-    <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-left:3px solid #3b82f6; border-radius:10px; padding:14px 16px; margin:14px 0;">
-      <div style="font-family:'Orbitron',sans-serif; font-size:12px; font-weight:800; color:#60a5fa; margin-bottom:8px; letter-spacing:0.8px;">
-        ⚡ 4. НОВЫЙ ГЛАВНЫЙ ЭКРАН (COMMAND HUB), РАДАР ОНЛАЙНА И 120 FPS НА ТЕЛЕФОНАХ
-      </div>
-      <p style="margin:0; font-size:13px; color:#ccc; line-height:1.65;">
-        Главный экран полностью переработан: теперь здесь расположен живой радар игроков онлайн с фильтрами (<code>Все профили</code> / <code>Бойцы [C6E]</code> / <code>Гости</code>), интерактивный мини-подиум лидеров <strong>Пантеона (500 / 250 / 150 GOLD)</strong> и карточка последнего сыгранного матча с быстрым переходом к <strong>Двойному Табу Standoff 2</strong>. Весь интерфейс оптимизирован под мобильные экраны для плавной работы без лагов!
-      </p>
-    </div>
-
-    <blockquote style="margin:16px 0 8px 0; padding:14px 18px; border-left:4px solid #ffb300; background:rgba(255,179,0,0.07); color:#e4e4e2; font-style:italic; border-radius:0 10px 10px 0; line-height:1.65;">
-      «Каждое обновление портала <strong>CYBER 6 ESPORTS [C6E]</strong> создаётся для того, чтобы нашим бойцам и гостям было максимально кайфово находиться внутри экосистемы клана. Создавайте свои профили, общайтесь в чате, голосуйте бустами в Пантеоне за <code>900 GOLD</code> и следите за новыми релизами!»
-      <div style="margin-top:8px; font-style:normal; font-family:'Orbitron',sans-serif; font-size:10px; font-weight:800; color:#ffb300; letter-spacing:1px;">
-        — KAS (@kas_0ff) // ОСНОВАТЕЛЬ И ГЛАВНЫЙ РАЗРАБОТЧИК CYBER 6 ESPORTS [C6E]
-      </div>
-    </blockquote>
   `
 };
 
@@ -1940,6 +1910,7 @@ function renderPublicNewsFeeds() {
             </div>
             <h2 style="font-family: var(--font-tech); font-size: 17px; margin: 0 0 14px 0; color: #fff; line-height:1.35;">${escapeHTML(n.title)}</h2>
             <div style="font-size: 13px; color: #ccc; line-height: 1.65;">${n.text}</div>
+            ${typeof window.renderPostReactionsHTML === 'function' ? window.renderPostReactionsHTML('news_' + (n.versionId || n.id || '0')) : ''}
           </div>
         `;
       }).join('');
@@ -2065,11 +2036,72 @@ function checkAndShowReleaseNotification() {
 // Сразу рендерим ленту новостей со встроенным постом v0.5.0 без ожидания ответа сети
 renderPublicNewsFeeds();
 
+// АВТОМАТИЧЕСКАЯ СИНХРОНИЗАЦИЯ НОВОГО РЕЛИЗА ИЗ ФАЙЛОВ В НОВОСТИ САЙТА И В TELEGRAM-КАНАЛ [C6E]
+let autoReleaseBroadcastChecked = false;
+async function autoSyncAndBroadcastNewFileRelease() {
+  if (autoReleaseBroadcastChecked) return;
+  autoReleaseBroadcastChecked = true;
+  try {
+    const relVer = DEFAULT_KAS_RELEASE.versionId;
+    const localSentKey = 'c6e_tg_autobroadcast_' + relVer;
+
+    // 1. Проверяем в облаке (reviews / site_release), отправлялся ли уже этот релиз файлов в ТГК
+    const revRef = doc(db, DB_COLLECTION, "reviews");
+    const revSnap = await getDoc(revRef);
+    const alreadyBroadcastedInCloud = revSnap.exists() && revSnap.data().c6e_last_tg_rel === relVer;
+
+    // 2. Автоматически сохраняем пост обновления в siteData/news и siteData/site_release (если доступно)
+    try {
+      const newsRef = doc(db, DB_COLLECTION, "news");
+      const newsSnap = await getDoc(newsRef);
+      let newsList = (newsSnap.exists() && Array.isArray(newsSnap.data().list)) ? [...newsSnap.data().list] : [];
+      if (!newsList.some(n => n.versionId === relVer)) {
+        newsList.push({
+          id: DEFAULT_KAS_RELEASE.id,
+          versionId: relVer,
+          date: DEFAULT_KAS_RELEASE.date,
+          tag: "ОБНОВЛЕНИЕ",
+          title: DEFAULT_KAS_RELEASE.title,
+          text: DEFAULT_KAS_RELEASE.text
+        });
+        await setDoc(newsRef, { list: newsList }, { merge: true });
+      }
+      await setDoc(doc(db, DB_COLLECTION, "site_release"), {
+        ...DEFAULT_KAS_RELEASE,
+        tgBroadcastedVersion: relVer
+      }, { merge: true });
+    } catch (eNews) {}
+
+    // 3. Если этот релиз файлов ещё НЕ отправлялся в ТГК — ждём подгрузки токена бота и автоматически публикуем в ТГК!
+    if (!alreadyBroadcastedInCloud && !localStorage.getItem(localSentKey)) {
+      localStorage.setItem(localSentKey, '1');
+      try {
+        await updateDoc(revRef, { c6e_last_tg_rel: relVer });
+      } catch (eLock) {}
+
+      setTimeout(async () => {
+        if (!TG_CONFIG.token) {
+          try {
+            const bSnap = await getDoc(doc(db, DB_COLLECTION, "bot_config"));
+            if (bSnap.exists() && bSnap.data().encToken) {
+              TG_CONFIG.token = decodeBotToken(bSnap.data().encToken);
+            }
+          } catch (eBot) {}
+        }
+        if (TG_CONFIG.token && DEFAULT_KAS_RELEASE.tgSummary) {
+          const tgText = DEFAULT_KAS_RELEASE.tgSummary + `\n\n🌐 <b>Оценить обновление на сайте:</b>\nhttps://cyber6esports.github.io/`;
+          await sendToBot(TG_CONFIG.channelId, tgText);
+        }
+      }, 2200);
+    }
+  } catch (e) {}
+}
+
 onSnapshot(doc(db, DB_COLLECTION, "site_release"), (snap) => {
   if (snap.exists() && snap.data().versionId && snap.data().title) {
     const remoteRel = snap.data();
-    const isOldV4 = String(remoteRel.versionId || '').includes('v4') || String(remoteRel.versionLabel || '').includes('v4');
-    if (!isOldV4 && (remoteRel.id || 0) > (DEFAULT_KAS_RELEASE.id || 0)) {
+    const isOlder = (remoteRel.id || 0) <= (DEFAULT_KAS_RELEASE.id || 0);
+    if (!isOlder) {
       currentActiveRelease = { ...DEFAULT_KAS_RELEASE, ...remoteRel };
     } else {
       currentActiveRelease = { ...DEFAULT_KAS_RELEASE };
@@ -2079,6 +2111,7 @@ onSnapshot(doc(db, DB_COLLECTION, "site_release"), (snap) => {
   }
   renderPublicNewsFeeds();
   checkAndShowReleaseNotification();
+  autoSyncAndBroadcastNewFileRelease();
 }, () => {
   currentActiveRelease = { ...DEFAULT_KAS_RELEASE };
   renderPublicNewsFeeds();
@@ -4559,3 +4592,339 @@ updateHeaderProfileChipUI();
 setTimeout(autoFillFormsWithProfile, 400);
 renderCommunityRadarOnHome();
 renderShopSection();
+
+
+
+// ============================================================================
+// 9. МОДУЛИ v0.6.0: FOCUS STREAK & LEVEL, БАЗА КАРТ [C6E], PICK'EM, РЕАКЦИИ,
+//    КОПИРОВАНИЕ КОНФИГОВ БОЙЦОВ, ЗОЛОТЫЕ МЕДАЛИ И СТАТУС НАБОРА В СОСТАВ
+// ============================================================================
+
+function triggerHaptic(ms = 12) {
+  try {
+    if (navigator.vibrate) navigator.vibrate(ms);
+  } catch (e) {}
+}
+
+function computeUserLevel(prof) {
+  if (!prof) return 1;
+  const pts = parseInt(prof.activityPts, 10) || 20;
+  const streak = parseInt(prof.streakDays, 10) || 1;
+  const likes = parseInt(prof.likes, 10) || 0;
+  return Math.min(99, Math.max(1, Math.floor((pts + streak * 10 + likes * 5) / 20)));
+}
+
+function getProfileMedalsList(prof) {
+  if (!prof) return [];
+  const medals = [];
+  if (hasDeveloperBadge(prof)) {
+    medals.push({ icon: 'fa-code', title: '⚡ РАЗРАБОТЧИК [C6E]' });
+  }
+  if (prof.c6eStatus === 'approved') {
+    medals.push({ icon: 'fa-shield-alt', title: '🛡️ ОФИЦИАЛЬНЫЙ БОЕЦ [C6E]' });
+  }
+  if (Array.isArray(prof.customMedals)) {
+    prof.customMedals.forEach(m => medals.push({ icon: 'fa-medal', title: m }));
+  }
+  const streak = parseInt(prof.streakDays, 10) || 1;
+  if (streak >= 3) {
+    medals.push({ icon: 'fa-fire', title: `🔥 STREAK ${streak} ДН.` });
+  }
+  const kdVal = parseFloat(prof.kd || '1.0') || 1.0;
+  if (kdVal >= 1.5) {
+    medals.push({ icon: 'fa-crosshairs', title: '🎯 HIGH K/D PRO' });
+  }
+  if ((parseInt(prof.likes, 10) || 0) >= 5) {
+    medals.push({ icon: 'fa-heart', title: '👑 ЗВЕЗДА СООБЩЕСТВА' });
+  }
+  return medals;
+}
+
+function renderStreakAndLevelUI() {
+  const daysEl = document.getElementById('home-streak-days-val');
+  const lvlEl = document.getElementById('home-user-level-pill');
+  const btnEl = document.getElementById('home-claim-streak-btn');
+  const hubMedalsEl = document.getElementById('hub-profile-medals');
+
+  const todayStr = new Date().toLocaleDateString('ru-RU');
+  const streak = (myLocalProfile && parseInt(myLocalProfile.streakDays, 10)) ? parseInt(myLocalProfile.streakDays, 10) : 1;
+  const lvl = computeUserLevel(myLocalProfile);
+  const claimedToday = myLocalProfile && myLocalProfile.lastStreakDate === todayStr;
+
+  if (daysEl) daysEl.innerText = String(streak);
+  if (lvlEl) lvlEl.innerText = `LEVEL ${lvl}`;
+  if (btnEl) {
+    if (claimedToday) {
+      btnEl.innerHTML = `<i class="fas fa-check-circle"></i> СЕГОДНЯ ОТМЕЧЕНО (LVL ${lvl})`;
+      btnEl.style.opacity = '0.75';
+    } else {
+      btnEl.innerHTML = `🔥 ОТМЕТИТЬСЯ (+15 ⚡)`;
+      btnEl.style.opacity = '1';
+    }
+  }
+
+  if (hubMedalsEl && myLocalProfile) {
+    const medals = getProfileMedalsList(myLocalProfile);
+    hubMedalsEl.innerHTML = `<span class="c6e-medal-chip"><i class="fas fa-layer-group"></i> LEVEL ${lvl}</span>` +
+      medals.map(m => `<span class="c6e-medal-chip"><i class="fas ${m.icon}"></i> ${escapeHTML(m.title)}</span>`).join('');
+  }
+}
+
+window.claimDailyPortalStreak = async () => {
+  triggerHaptic(20);
+  if (!myLocalProfile || !myLocalProfile.nick) {
+    return window.openMyProfileModal(true);
+  }
+  const todayStr = new Date().toLocaleDateString('ru-RU');
+  if (myLocalProfile.lastStreakDate === todayStr) {
+    return window.showNotify("🔥 Вы уже забрали ежедневный бонус активности сегодня! Заходите завтра.", "success");
+  }
+
+  myLocalProfile.streakDays = (parseInt(myLocalProfile.streakDays, 10) || 1) + 1;
+  myLocalProfile.activityPts = (parseInt(myLocalProfile.activityPts, 10) || 20) + 15;
+  myLocalProfile.lastStreakDate = todayStr;
+  myLocalProfile.lastSeen = Date.now();
+
+  saveLocalProfileCache(myLocalProfile);
+  renderStreakAndLevelUI();
+  if (typeof window.refreshAppHubProfile === 'function') window.refreshAppHubProfile();
+  await syncProfileToAllCloudChannels(myLocalProfile);
+
+  const newLvl = computeUserLevel(myLocalProfile);
+  window.showNotify(`🔥 Серия дней: ${myLocalProfile.streakDays}! Начислено +15 ⚡ активности (Ваш уровень: LEVEL ${newLvl})`, "success");
+};
+
+// КОПИРОВАНИЕ НАСТРОЕК, СЕНСЫ И ДЕВАЙСА БОЙЦА [C6E] В 1 ТАП
+window.copyRosterPlayerConfig = (nick) => {
+  triggerHaptic(15);
+  const allP = [...mainRosterData, ...reserveRosterData];
+  const p = allP.find(x => x.nick === nick);
+  if (!p) return;
+  const textToCopy = `[C6E] ${p.nick} | Роль: ${p.role || 'Pro'} | Девайс: ${p.device || '120 FPS'} | Сенса: ${p.sens || '2.10'} | Прицел/ID: ${p.crosshair || 'Стандарт [C6E]'}`;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(textToCopy).then(() => {
+      window.showNotify(`📋 Настройки бойца [C6E] ${p.nick} скопированы в буфер обмена!`, "success");
+    }).catch(() => {
+      window.showNotify(`📋 ${textToCopy}`, "success");
+    });
+  } else {
+    window.showNotify(`📋 ${textToCopy}`, "success");
+  }
+};
+
+// ИНТЕРАКТИВНАЯ ТАКТИЧЕСКАЯ БАЗА КАРТ STANDOFF 2 ОТ СОСТАВА [C6E]
+const C6E_MAP_TACTICS_DATA = [
+  {
+    id: 'dune',
+    name: '🏜️ DUNE',
+    role: 'Коронная карта [C6E] • Контроль Мида и Ковров',
+    callouts: 'Мид (Арка) • Ковры (Апартаменты) • Плент А (Балкон) • Плент B (Туннель)',
+    setup: 'Схема 2-1-2 в защите (CT): Снайпер с AWM держит дальний пик Мида под флешку тиммейта на 1:48, два опорника закрывают выход с Ковров на А, два игрока контролируют Туннель B.',
+    tip: 'Совет от Kas: На атаке (T) не отдавайте первый фраг на Миду — давайте смок на Хелпу и выходите сплитом через Ковры + Коннектор.'
+  },
+  {
+    id: 'province',
+    name: '🏰 PROVINCE',
+    role: 'Снайперская доминация • Контроль Апартаментов и Моста',
+    callouts: 'Мост • Апартаменты (Ковры) • Конюшня • Руины • Плент А / B',
+    setup: 'В защите (CT) 2 снайпера контролируют длинные дистанции на А и выходе из Конюшни, а рифлер с M4A1/AKR играет в упоре под флешку.',
+    tip: 'Совет от [C6E]: Быстрый раш B работает только с двумя смоками на КТ-спавн и Арку.'
+  },
+  {
+    id: 'sandstone',
+    name: '🕌 SANDSTONE',
+    role: 'Классика праков 5v5 • Быстрые ротации через Мид',
+    callouts: 'Апартаменты • Мид (Двери) • Балкон А • Тёмка B • КТ-Рампа',
+    setup: 'Агрессивный поджим Мида вдвоём на первых секундах раунда даёт полную информацию о перетяжке соперника под А или B.',
+    tip: 'Совет от [C6E]: Всегда оставляйте молотов под выход из Апартаментов на 40-й секунде.'
+  },
+  {
+    id: 'rust',
+    name: '🏭 RUST',
+    role: 'Жёсткий аим-контроль и дуэли на ближней дистанции',
+    callouts: 'Ангар • Вент (Труба) • Мид-Контейнеры • Мостик А • Плент B',
+    setup: 'Ключ к победе на Rust — контроль Контейнеров на Миду и прострелы Вента. Игрок поддержки обязан кидать анти-пуш молотов в Туннель.',
+    tip: 'Совет от [C6E]: В клатчах 1v1 на пленте А играйте от верхнего Мостика и тайминга диффуза.'
+  },
+  {
+    id: 'zone7',
+    name: '☢️ ZONE 7',
+    role: 'Тактический контроль углов и командный размен',
+    callouts: 'Лаборатория • Реактор • Кишка • Плент А • Склад B',
+    setup: 'Плотная игра парами (Entry + Размен): никогда не пикайте длинный коридор по одному без моментальной ответной флешки.',
+    tip: 'Совет от [C6E]: Контроль центра карты позволяет сменить вектор атаки за 8 секунд до конца раунда.'
+  }
+];
+
+let activeTacticalMapId = 'dune';
+window.selectTacticalMap = (mapId) => {
+  triggerHaptic(10);
+  activeTacticalMapId = mapId;
+  renderTacticalMapGuide();
+};
+
+function renderTacticalMapGuide() {
+  const tabsEl = document.getElementById('c6e-map-tactics-tabs');
+  const boxEl = document.getElementById('c6e-map-tactics-content');
+  if (!tabsEl || !boxEl) return;
+
+  tabsEl.innerHTML = C6E_MAP_TACTICS_DATA.map(m => `
+    <button type="button" class="map-tac-btn ${m.id === activeTacticalMapId ? 'active' : ''}" onclick="window.selectTacticalMap('${m.id}')">
+      ${m.name}
+    </button>
+  `).join('');
+
+  const cur = C6E_MAP_TACTICS_DATA.find(m => m.id === activeTacticalMapId) || C6E_MAP_TACTICS_DATA[0];
+  boxEl.innerHTML = `
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:8px;">
+      <span style="font-family:var(--font-tech); font-size:12px; font-weight:900; color:#f5b041;">${cur.name}</span>
+      <span style="font-size:10px; color:var(--silver); font-weight:700;">${cur.role}</span>
+    </div>
+    <div style="font-size:11px; color:var(--silver-muted); margin-bottom:6px;">
+      <b style="color:#fff;">📍 Ключевые позиции:</b> ${cur.callouts}
+    </div>
+    <div style="font-size:11.5px; color:#ddd; line-height:1.5; margin-bottom:8px;">
+      <b style="color:#f5b041;">🛡️ Схема [C6E]:</b> ${cur.setup}
+    </div>
+    <div style="font-size:11px; color:var(--silver); background:rgba(245,176,65,0.08); border:1px solid rgba(245,176,65,0.25); padding:8px 10px; border-radius:8px;">
+      💡 <i>${cur.tip}</i>
+    </div>
+  `;
+}
+
+// СИСТЕМА PICK'EM (ПРОГНОЗЫ НА МАТЧ В MATCH CENTER) И БЫСТРЫЕ РЕАКЦИИ ПОД ПОСТАМИ
+let globalReactionsMap = {};
+let globalPickemVotes = { win20: 14, clutch: 6, mvp: 9 };
+
+function renderHomePickemWidget() {
+  const box = document.getElementById('home-pickem-box');
+  if (!box) return;
+  const myVote = localStorage.getItem('c6e_my_pickem_vote') || '';
+  const w20 = parseInt(globalPickemVotes.win20, 10) || 14;
+  const cl = parseInt(globalPickemVotes.clutch, 10) || 6;
+  const mvp = parseInt(globalPickemVotes.mvp, 10) || 9;
+  const total = Math.max(1, w20 + cl + mvp);
+
+  box.innerHTML = `
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+      <span style="font-family:var(--font-tech); font-size:9.5px; font-weight:800; color:#f5b041;">
+        🎯 PICK'EM ПРОГНОЗ СООБЩЕСТВА НА МАТЧ [C6E] (+5 ⚡ В ПРОФИЛЬ)
+      </span>
+      <span style="font-size:9.5px; color:var(--silver-muted);">Проголосовало: <b style="color:#fff;">${total}</b></span>
+    </div>
+    <div class="pickem-grid">
+      <button type="button" class="pickem-option-btn ${myVote === 'win20' ? 'voted' : ''}" onclick="window.voteMatchPickem('win20')">
+        <span>🏆 Сухая победа [C6E]</span>
+        <b>${Math.round((w20 / total) * 100)}%</b>
+      </button>
+      <button type="button" class="pickem-option-btn ${myVote === 'clutch' ? 'voted' : ''}" onclick="window.voteMatchPickem('clutch')">
+        <span>🔥 Победа в клатче</span>
+        <b>${Math.round((cl / total) * 100)}%</b>
+      </button>
+      <button type="button" class="pickem-option-btn ${myVote === 'mvp' ? 'voted' : ''}" onclick="window.voteMatchPickem('mvp')">
+        <span>👑 Тотальная доминация</span>
+        <b>${Math.round((mvp / total) * 100)}%</b>
+      </button>
+    </div>
+  `;
+}
+
+window.voteMatchPickem = async (choiceKey) => {
+  triggerHaptic(15);
+  if (localStorage.getItem('c6e_my_pickem_vote')) {
+    return window.showNotify("🎯 Ваш прогноз Pick'Em уже учтён!", "success");
+  }
+  localStorage.setItem('c6e_my_pickem_vote', choiceKey);
+  globalPickemVotes[choiceKey] = (parseInt(globalPickemVotes[choiceKey], 10) || 5) + 1;
+  renderHomePickemWidget();
+
+  if (myLocalProfile && myLocalProfile.nick) {
+    myLocalProfile.activityPts = (parseInt(myLocalProfile.activityPts, 10) || 20) + 5;
+    saveLocalProfileCache(myLocalProfile);
+    renderStreakAndLevelUI();
+    syncProfileToAllCloudChannels(myLocalProfile).catch(() => {});
+  }
+  try {
+    await updateDoc(doc(db, DB_COLLECTION, "reviews"), { c6e_pickem: globalPickemVotes });
+  } catch (e) {}
+  window.showNotify("🎯 Прогноз принят! +5 ⚡ очков активности начислено в ваш профиль.", "success");
+};
+
+window.renderPostReactionsHTML = (itemKey) => {
+  const counts = globalReactionsMap[itemKey] || { fire: 7, crown: 4, heart: 5, bolt: 3 };
+  const myReact = localStorage.getItem('c6e_react_' + itemKey) || '';
+  const emojis = [
+    { k: 'fire', icon: '🔥', val: counts.fire || 7 },
+    { k: 'crown', icon: '👑', val: counts.crown || 4 },
+    { k: 'heart', icon: '❤️', val: counts.heart || 5 },
+    { k: 'bolt', icon: '⚡', val: counts.bolt || 3 }
+  ];
+  return `
+    <div class="c6e-reactions-bar" onclick="event.stopPropagation();">
+      ${emojis.map(em => `
+        <button type="button" class="react-pill-btn ${myReact === em.k ? 'reacted' : ''}" onclick="window.reactToPost('${escapeHTML(itemKey)}', '${em.k}')">
+          <span>${em.icon}</span> <span>${em.val}</span>
+        </button>
+      `).join('')}
+    </div>
+  `;
+};
+
+window.reactToPost = async (itemKey, emojiKey) => {
+  triggerHaptic(10);
+  const storeKey = 'c6e_react_' + itemKey;
+  if (localStorage.getItem(storeKey)) {
+    return window.showNotify("Вы уже поставили реакцию на эту запись!", "success");
+  }
+  localStorage.setItem(storeKey, emojiKey);
+  if (!globalReactionsMap[itemKey]) {
+    globalReactionsMap[itemKey] = { fire: 7, crown: 4, heart: 5, bolt: 3 };
+  }
+  globalReactionsMap[itemKey][emojiKey] = (parseInt(globalReactionsMap[itemKey][emojiKey], 10) || 3) + 1;
+  renderPublicNewsFeeds();
+  try {
+    await updateDoc(doc(db, DB_COLLECTION, "reviews"), { c6e_reactions: globalReactionsMap });
+  } catch (e) {}
+};
+
+// Подписка на реакции, Pick'Em и статус набора из документа reviews / about
+onSnapshot(doc(db, DB_COLLECTION, "reviews"), (snap) => {
+  if (!snap.exists()) return;
+  const d = snap.data();
+  if (d.c6e_pickem) {
+    globalPickemVotes = { ...globalPickemVotes, ...d.c6e_pickem };
+    renderHomePickemWidget();
+  }
+  if (d.c6e_reactions) {
+    globalReactionsMap = { ...globalReactionsMap, ...d.c6e_reactions };
+    renderPublicNewsFeeds();
+  }
+  if (d.c6e_recruitment) {
+    renderRecruitmentStatusGrid(d.c6e_recruitment);
+  }
+});
+
+function renderRecruitmentStatusGrid(recData) {
+  const grid = document.getElementById('join-roles-status-grid');
+  if (!grid || !recData) return;
+  const roles = [
+    { key: 'sniper', label: '🎯 Sniper' },
+    { key: 'igl', label: '🧠 IGL / Капитан' },
+    { key: 'entry', label: '💥 Entry Fragger' },
+    { key: 'support', label: '🛡️ Support' }
+  ];
+  grid.innerHTML = roles.map(r => {
+    const isOpen = recData[r.key] !== false;
+    return `
+      <div style="padding:8px 10px; border-radius:10px; background:rgba(255,255,255,0.03); border:1px solid ${isOpen ? 'rgba(245,176,65,0.35)' : 'rgba(255,255,255,0.08)'}; font-size:11px; display:flex; justify-content:space-between;">
+        <span>${r.label}</span>
+        <b style="color:${isOpen ? '#f5b041' : '#777'}; font-family:var(--font-tech); font-size:9.5px;">${isOpen ? 'ОТКРЫТО' : 'ЗАКРЫТО'}</b>
+      </div>
+    `;
+  }).join('');
+}
+
+// Запускаем инициализацию модулей v0.6.0
+renderStreakAndLevelUI();
+renderTacticalMapGuide();
+renderHomePickemWidget();
