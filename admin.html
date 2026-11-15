@@ -691,6 +691,199 @@
       .container { grid-template-columns: 1fr !important; gap: 14px !important; }
       .panel { padding: 15px 13px !important; }
     }
+
+    /* =========================================================================
+       ОБНОВЛЕНИЕ АДМИНКИ v0.7.0: РЕЖИМ АДМИНА / РЕЖИМ ОСНОВАТЕЛЯ KAS,
+       КНОПКА «ПАНЕЛЬ УПРАВЛЕНИЯ» (БЕЗ ДЛИННОГО СКРОЛЛА), СИНЯЯ ГАЛОЧКА DEV
+       ========================================================================= */
+    .adm-dev-check {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      width: 16px !important;
+      height: 16px !important;
+      border-radius: 50% !important;
+      background: linear-gradient(135deg, #38bdf8 0%, #1d9bf0 55%, #0284c7 100%) !important;
+      color: #ffffff !important;
+      font-size: 9px !important;
+      font-weight: 900 !important;
+      border: 1px solid rgba(255, 255, 255, 0.85) !important;
+      box-shadow: 0 0 12px rgba(29, 155, 240, 0.85) !important;
+      margin-left: 4px !important;
+      vertical-align: middle !important;
+    }
+    .btn-icon.dev-active {
+      background: linear-gradient(135deg, #38bdf8, #0284c7) !important;
+      color: #ffffff !important;
+      border-color: #bae6fd !important;
+      box-shadow: 0 0 12px rgba(29, 155, 240, 0.65) !important;
+      font-weight: 900;
+    }
+    .btn-icon.admin-role-active {
+      background: linear-gradient(135deg, #f5b041, #b87b14) !important;
+      color: #07080b !important;
+      border-color: #ffe099 !important;
+      box-shadow: 0 0 12px rgba(245, 176, 65, 0.65) !important;
+      font-weight: 900;
+    }
+
+    /* Переключатель Режима Администратора / Режима Основателя */
+    .mode-switcher-bar {
+      max-width: 1400px;
+      margin: 0 auto 14px auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      background: linear-gradient(155deg, #13151f 0%, #090a0e 100%);
+      border: 1px solid rgba(245, 176, 65, 0.28);
+      border-radius: 18px;
+      padding: 12px 16px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.75);
+    }
+    .mode-pills-wrap {
+      display: flex;
+      gap: 6px;
+      background: rgba(0, 0, 0, 0.55);
+      padding: 4px;
+      border-radius: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .mode-pill-btn {
+      padding: 8px 16px;
+      border-radius: 25px;
+      border: none;
+      background: transparent;
+      color: var(--silver-muted);
+      font-family: var(--font-tech);
+      font-size: 9.5px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .mode-pill-btn.active {
+      background: linear-gradient(135deg, #f5b041, #b87b14);
+      color: #07080b;
+      box-shadow: 0 0 16px rgba(245, 176, 65, 0.45);
+    }
+
+    /* Главная кнопка «ПАНЕЛЬ УПРАВЛЕНИЯ (ВЫБРАТЬ РАЗДЕЛ)» */
+    .control-launcher-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 11px 20px;
+      border-radius: 30px;
+      background: linear-gradient(135deg, rgba(245, 176, 65, 0.22), rgba(20, 16, 8, 0.98));
+      border: 1.5px solid #f5b041;
+      color: #ffffff;
+      font-family: var(--font-tech);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 1px;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.8), 0 0 20px rgba(245, 176, 65, 0.25);
+      transition: 0.22s;
+    }
+    .control-launcher-btn:hover, .control-launcher-btn:active {
+      background: linear-gradient(135deg, #f5b041, #b87b14);
+      color: #07080b;
+      transform: translateY(-1px);
+    }
+
+    /* Модальное меню выбора раздела админки (чтобы не листать длинный лист) */
+    #adminControlMenuModal {
+      position: fixed;
+      inset: 0;
+      z-index: 98000;
+      background: rgba(5, 6, 10, 0.92);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+    }
+    #adminControlMenuModal.active {
+      display: flex;
+    }
+    .adm-hub-box {
+      width: min(95vw, 680px);
+      max-height: 86vh;
+      background: linear-gradient(165deg, #151722 0%, #08090d 100%);
+      border: 1.5px solid rgba(245, 176, 65, 0.48);
+      border-radius: 22px;
+      box-shadow: 0 28px 75px rgba(0, 0, 0, 0.96);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .adm-hub-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
+      gap: 10px;
+      padding: 16px;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .adm-hub-tile {
+      padding: 14px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(245, 176, 65, 0.20);
+      color: #fff;
+      text-align: left;
+      cursor: pointer;
+      transition: 0.2s;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .adm-hub-tile:hover, .adm-hub-tile.active {
+      background: linear-gradient(145deg, rgba(245, 176, 65, 0.20), rgba(16, 14, 10, 0.96));
+      border-color: #f5b041;
+      box-shadow: 0 0 18px rgba(245, 176, 65, 0.22);
+      transform: translateY(-2px);
+    }
+    .adm-hub-tile .tile-ic {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: rgba(245, 176, 65, 0.12);
+      border: 1px solid rgba(245, 176, 65, 0.35);
+      color: #f5b041;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+    }
+    .adm-hub-tile .tile-tt {
+      font-family: var(--font-tech);
+      font-size: 11px;
+      font-weight: 900;
+      color: #fff;
+    }
+    .adm-hub-tile .tile-ds {
+      font-size: 10px;
+      color: var(--silver-muted);
+      line-height: 1.35;
+    }
+
+    /* Скрываем старую длинную полоску filter-bar, т.к. теперь есть удобная кнопка ПАНЕЛЬ УПРАВЛЕНИЯ */
+    .filter-bar {
+      display: none !important;
+    }
+
+    /* В Режиме Администратора скрываем блоки, предназначенные только для Основателя Kas */
+    body.admin-helper-mode .founder-only-block {
+      display: none !important;
+    }
+
   </style>
 </head>
 <body>
@@ -700,6 +893,26 @@
 
 <input type="file" id="phoneImageInput" accept="image/*" style="display: none;">
 <input type="file" id="proofImageInput" accept="image/*" style="display: none;">
+<input type="file" id="shopProductImageInput" accept="image/*" style="display: none;">
+
+<!-- МОДАЛЬНОЕ МЕНЮ «ПАНЕЛЬ УПРАВЛЕНИЯ» (ВЫБОР НУЖНОГО ИНСТРУМЕНТА БЕЗ СКРОЛЛА ВСЕГО ЛИСТА) -->
+<div id="adminControlMenuModal" onclick="if(event.target===this) this.classList.remove('active')">
+  <div class="adm-hub-box">
+    <div style="padding:14px 18px; background:rgba(18,20,28,0.98); border-bottom:1px solid rgba(245,176,65,0.22); display:flex; justify-content:space-between; align-items:center;">
+      <div>
+        <div style="font-family:var(--font-tech); font-size:12px; font-weight:900; color:#f5b041;">
+          <i class="fas fa-sliders-h"></i> ПАНЕЛЬ УПРАВЛЕНИЯ // ВЫБЕРИ РАЗДЕЛ
+        </div>
+        <div style="font-size:10px; color:var(--silver-muted); margin-top:2px;">
+          Нажми на нужный инструмент — откроется только он без лишней прокрутки экрана
+        </div>
+      </div>
+      <button type="button" class="chip-btn" style="border-color:#f5b041; color:#f5b041; padding:6px 12px;" onclick="document.getElementById('adminControlMenuModal').classList.remove('active')">ЗАКРЫТЬ ✕</button>
+    </div>
+
+    <div class="adm-hub-grid" id="adminControlHubTiles"></div>
+  </div>
+</div>
 <img id="hiddenBrandLogo" src="logo.png" crossorigin="anonymous" style="display:none;">
 
 <!-- ЭКРАН АВТОРИЗАЦИИ -->
@@ -738,25 +951,47 @@
     </div>
   </div>
 
-  <!-- 2. ЦЕНТР БЫСТРОЙ ПУБЛИКАЦИИ В ТГК + ЗАЩИЩЁННЫЙ СЕЙФ ТОКЕНА -->
-  <div class="tg-bot-hub">
+  <!-- ПЕРЕКЛЮЧАТЕЛЬ РЕЖИМА (АДМИНИСТРАТОР / ОСНОВАТЕЛЬ KAS) + КНОПКА ВЫБОРА РАЗДЕЛА -->
+  <div class="mode-switcher-bar">
+    <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+      <div class="mode-pills-wrap">
+        <button type="button" class="mode-pill-btn active" id="mode-btn-admin" onclick="window.setAdminPanelRoleMode('admin')">
+          <i class="fas fa-bolt"></i> РЕЖИМ АДМИНИСТРАТОРА
+        </button>
+        <button type="button" class="mode-pill-btn" id="mode-btn-founder" onclick="window.setAdminPanelRoleMode('founder')">
+          <i class="fas fa-crown"></i> РЕЖИМ ОСНОВАТЕЛЯ (KAS)
+        </button>
+      </div>
+      <span id="currentActiveToolBadge" style="font-family:var(--font-tech); font-size:10px; color:var(--silver-muted);">
+        РАЗДЕЛ: <b style="color:#f5b041;">МАТЧИ И СКАНЕР ТАБА</b>
+      </span>
+    </div>
+
+    <button type="button" class="control-launcher-btn" onclick="window.openAdminControlHubModal()">
+      <span><i class="fas fa-th-large" style="margin-right:8px;"></i> ПАНЕЛЬ УПРАВЛЕНИЯ (РАЗДЕЛЫ)</span>
+      <i class="fas fa-chevron-down"></i>
+    </button>
+  </div>
+
+  <!-- 2. НАСТРОЙКИ TELEGRAM БОТА, ID ТГК, ID ГРУППЫ/БЕСЕДЫ И @KASCHEFF (ТОЛЬКО В РЕЖИМЕ ОСНОВАТЕЛЯ) -->
+  <div class="tg-bot-hub founder-only-block" id="founderTgStudioBlock">
     <div class="tg-hub-top">
       <div>
         <div class="tg-hub-title">
           <i class="fab fa-telegram" style="color:var(--tg-blue); font-size:20px;"></i>
-          <span>TELEGRAM BOT STUDIO // ОФИЦИАЛЬНЫЙ ТГК [C6E]</span>
-          <span id="tgTokenStatusBadge" class="tg-shield-status warn">⚠️ ВВЕДИТЕ НОВЫЙ ТОКЕН</span>
+          <span>TELEGRAM BOT STUDIO // НАСТРОЙКИ ОСНОВАТЕЛЯ (@kascheff)</span>
+          <span id="tgTokenStatusBadge" class="tg-shield-status warn">ПРОВЕРКА ТОКЕНА...</span>
         </div>
         <div class="tg-hub-sub">
-          Токен бота больше не хранится в коде на GitHub — он шифруется в базе Firebase и автоматически блокирует спам-вебхуки
+          Новые праки и заявки автоматически приходят в указанную <b>Группу/Беседу</b>, а новости и афиши — в <b>ТГК</b>.
         </div>
       </div>
       <div class="tg-hub-actions">
-        <button type="button" class="btn-tg-action" style="background:linear-gradient(135deg, #ffb300, #d42638); color:#000;" onclick="publishPantheonWinnersToTG()">
-          <i class="fas fa-crown"></i> ПАНТЕОН ТОП-3 (900 GOLD) В ТГК
+        <button type="button" class="btn-tg-action" style="background:linear-gradient(135deg, #f5b041, #b87b14); color:#07080b;" onclick="publishPantheonWinnersToTG()">
+          <i class="fas fa-crown"></i> ПАНТЕОН (900G) В ТГК
         </button>
         <button type="button" class="btn-tg-action" onclick="publishFullRosterToTG()">
-          <i class="fas fa-users"></i> СОСТАВ [C6E] В ТГК
+          <i class="fas fa-users"></i> СОСТАВ В ТГК
         </button>
         <button type="button" class="btn-tg-action" onclick="publishWeeklyReportToTG()">
           <i class="fas fa-chart-line"></i> ОТЧЁТ K/D В ТГК
@@ -765,23 +1000,52 @@
           <i class="fas fa-calendar-alt"></i> РАСПИСАНИЕ В ТГК
         </button>
         <button type="button" class="btn-tg-action" style="background:linear-gradient(135deg, #f5b041, #b87b14); color:#07080b;" onclick="window.publishOpenPracsToTG()">
-          <i class="fas fa-crosshairs"></i> АФИША ПРАКОВ (CW) В ТГК
+          <i class="fas fa-crosshairs"></i> АФИША ПРАКОВ В ТГК
         </button>
       </div>
     </div>
 
-    <div class="tg-shield-bar">
-      <div style="font-size:11px; color:var(--silver); font-weight:700; display:flex; align-items:center; gap:8px;">
-        <i class="fas fa-key" style="color:var(--tg-blue);"></i>
-        <span>СЕКРЕТНЫЙ ТОКЕН БОТА (СКРЫТ ОТ GITHUB):</span>
+    <div class="tg-shield-bar" style="flex-direction:column; align-items:stretch; gap:10px;">
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(210px, 1fr)); gap:10px;">
+        <div>
+          <label style="margin:0 0 4px 0; font-size:9.5px; color:#f5b041;"><i class="fas fa-key"></i> 1. IT TOKEN БОТА (@BotFather)</label>
+          <div style="display:flex; gap:6px;">
+            <input type="password" id="secretBotTokenInput" placeholder="Токен Telegram-бота..." style="margin:0; padding:9px 11px; font-size:12px;">
+            <button type="button" class="btn-icon" onclick="toggleTokenVisibility()" title="Показать/скрыть токен" style="width:36px; height:36px; flex-shrink:0;">
+              <i class="fas fa-eye" id="tokenEyeIcon"></i>
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <label style="margin:0 0 4px 0; font-size:9.5px; color:#f5b041;"><i class="fas fa-bullhorn"></i> 2. ID ОФИЦИАЛЬНОГО ТГК (КАНАЛА)</label>
+          <input type="text" id="admTgChannelIdInput" value="-1004428385527" placeholder="-100..." style="margin:0; padding:9px 11px; font-size:12px;">
+        </div>
+
+        <div>
+          <label style="margin:0 0 4px 0; font-size:9.5px; color:#f5b041;"><i class="fas fa-users"></i> 3. ID ГРУППЫ / БЕСЕДЫ (ДЛЯ ПРАКОВ И ЗАЯВОК)</label>
+          <input type="text" id="admTgGroupIdInput" value="-1004452371581" placeholder="-100..." style="margin:0; padding:9px 11px; font-size:12px;">
+        </div>
+
+        <div>
+          <label style="margin:0 0 4px 0; font-size:9.5px; color:#f5b041;"><i class="fas fa-user-check"></i> 4. USERNAME ОСНОВАТЕЛЯ</label>
+          <input type="text" id="admFounderUserInput" value="@kascheff" placeholder="@kascheff" style="margin:0; padding:9px 11px; font-size:12px;">
+        </div>
       </div>
-      <div class="tg-shield-inputs">
-        <input type="password" id="secretBotTokenInput" placeholder="Вставь сюда новый токен из @BotFather..." style="flex:1; min-width:200px; margin:0; padding:9px 12px; font-size:12px;">
-        <button type="button" class="btn-icon" onclick="toggleTokenVisibility()" title="Показать/скрыть токен" style="width:36px; height:36px;">
-          <i class="fas fa-eye" id="tokenEyeIcon"></i>
-        </button>
-        <button type="button" class="btn-tg-action" onclick="saveSecretBotToken()" style="padding:9px 14px;">
-          <i class="fas fa-shield-alt"></i> СОХРАНИТЬ В БАЗУ И СБРОСИТЬ СПАМ
+
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.06);">
+        <div style="display:flex; gap:6px; flex-wrap:wrap; flex:1; min-width:240px;">
+          <input type="text" id="admQuickTgBroadcastText" placeholder="Быстрое сообщение от Основателя в ТГК или Группу чата..." style="flex:1; margin:0; padding:8px 12px; font-size:12px;">
+          <button type="button" class="chip-btn" style="border-color:var(--tg-blue); color:var(--tg-blue); padding:8px 12px;" onclick="window.sendQuickCustomTgMessage('channel')">
+            <i class="fab fa-telegram"></i> В ТГК
+          </button>
+          <button type="button" class="chip-btn" style="border-color:#f5b041; color:#f5b041; padding:8px 12px;" onclick="window.sendQuickCustomTgMessage('group')">
+            <i class="fas fa-comments"></i> В Группу/Беседу
+          </button>
+        </div>
+
+        <button type="button" class="btn-tg-action" onclick="saveSecretBotToken()" style="padding:9px 16px;">
+          <i class="fas fa-save"></i> СОХРАНИТЬ ВСЕ НАСТРОЙКИ БОТА И ID ГРУПП
         </button>
       </div>
     </div>
@@ -919,22 +1183,86 @@
             </div>
           </div>
 
-          <div style="background:rgba(0,0,0,0.45); padding:15px; border-radius:12px; border:1px solid var(--glass-border);">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-              <h3 style="font-size:12px; color:#ffb300; margin:0;">
-                <i class="fas fa-shopping-bag"></i> 3. НАСТРОЙКА РАЗДЕЛА «МАГАЗИН [C6E]»
+          <div class="founder-only-block" style="background:rgba(0,0,0,0.45); padding:15px; border-radius:14px; border:1px solid rgba(245,176,65,0.28);">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+              <h3 style="font-size:12px; color:#f5b041; margin:0; display:flex; align-items:center; gap:7px;">
+                <i class="fas fa-shopping-bag"></i> 3. УПРАВЛЕНИЕ МАГАЗИНОМ И ТОВАРАМИ (ВАЛЮТА GOLD «G» // ТОЛЬКО ОСНОВАТЕЛЬ)
               </h3>
-              <span style="font-size:9.5px; color:var(--silver-muted); font-family:var(--font-tech);">
-                Ждут открытия: <b style="color:#ffb300;" id="admShopWaitCount">0</b>
-              </span>
             </div>
-            <label style="margin-top:4px;">Заголовок Магазина</label>
-            <input type="text" id="admShopTitle" value="КИБЕР-МАРКЕТ CYBER 6 ESPORTS [C6E]">
-            <label style="margin-top:6px;">Интригующая надпись (ажиотаж для гостей)</label>
-            <textarea id="admShopHype" rows="2">Основатель и разработчик Kas готовит к запуску закрытый магазин [C6E]! Здесь появятся проверенные паки Голды, приватные конфигурации прицела и сенсы от топ-бойцов нашего состава, редкие VIP-рамки для профиля на сайте и пропуски на закрытые турниры с денежным фондом.</textarea>
-            <button type="button" class="action-btn secondary" style="margin-top:8px; padding:9px; border-color:#ffb300; color:#ffb300;" onclick="window.saveAdminShopConfig()">
-              <i class="fas fa-save"></i> СОХРАНИТЬ ТЕКСТ МАГАЗИНА НА САЙТЕ
+
+            <div class="row-inputs" style="margin-bottom:8px;">
+              <div>
+                <label style="margin-top:0;">Заголовок Магазина</label>
+                <input type="text" id="admShopTitle" value="МАГАЗИН CYBER 6 ESPORTS [C6E]">
+              </div>
+              <div>
+                <label style="margin-top:0;">Описание витрины</label>
+                <input type="text" id="admShopHype" value="Официальный магазин организации [C6E]. Все товары и привилегии оцениваются в игровой валюте Gold (G).">
+              </div>
+            </div>
+            <button type="button" class="chip-btn" style="border-color:#f5b041; color:#f5b041; margin-bottom:14px;" onclick="window.saveAdminShopConfig()">
+              <i class="fas fa-save"></i> Сохранить шапку магазина
             </button>
+
+            <!-- КОНСТРУКТОР КАРТОЧКИ ТОВАРА -->
+            <div style="background:rgba(245,176,65,0.06); border:1px solid rgba(245,176,65,0.25); border-radius:12px; padding:12px; margin-bottom:12px;">
+              <div style="font-family:var(--font-tech); font-size:10px; font-weight:900; color:#f5b041; margin-bottom:8px;">
+                + ДОБАВИТЬ / ИЗМЕНИТЬ КАРТОЧКУ ТОВАРА В МАГАЗИНЕ (ВАЛЮТА G)
+              </div>
+              <input type="hidden" id="admProdEditId" value="">
+              <div class="row-inputs">
+                <div>
+                  <label style="margin-top:2px;">Название товара *</label>
+                  <input type="text" id="admProdTitle" placeholder="Например: PRO Конфиг Основы [C6E]">
+                </div>
+                <div>
+                  <label style="margin-top:2px;">Баннер-бейдж (на углу)</label>
+                  <input type="text" id="admProdBadge" placeholder="HIT / VIP / PRO CONFIG">
+                </div>
+              </div>
+
+              <div class="row-inputs">
+                <div>
+                  <label style="margin-top:6px;">Цена в Gold (G) *</label>
+                  <input type="number" id="admProdPrice" placeholder="250" min="1">
+                </div>
+                <div>
+                  <label style="margin-top:6px;">Скидка % (0 = без скидки)</label>
+                  <input type="number" id="admProdDiscount" placeholder="20" min="0" max="90" value="0">
+                </div>
+                <div>
+                  <label style="margin-top:6px;">Контакт покупки (TG)</label>
+                  <input type="text" id="admProdContact" value="@kascheff" placeholder="@kascheff">
+                </div>
+              </div>
+
+              <label style="margin-top:6px;">Картинка / Баннер товара (с телефона или прямая ссылка)</label>
+              <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                <button type="button" class="chip-btn" style="border-color:#f5b041; color:#f5b041;" onclick="document.getElementById('shopProductImageInput').click()">
+                  <i class="fas fa-camera"></i> Загрузить фото с устройства
+                </button>
+                <input type="text" id="admProdImage" placeholder="Или вставь ссылку на картинку..." style="flex:1; min-width:150px; margin:0; padding:8px 10px;">
+              </div>
+
+              <label style="margin-top:6px;">Описание товара</label>
+              <textarea id="admProdDesc" rows="2" placeholder="Подробное и грамотное описание того, что получит покупатель..."></textarea>
+
+              <div style="display:flex; gap:8px; margin-top:10px;">
+                <button type="button" class="action-btn" style="margin:0; padding:10px;" onclick="window.saveShopProductCard()">
+                  <i class="fas fa-plus-circle"></i> СОХРАНИТЬ ТОВАР НА ВИТРИНУ [G]
+                </button>
+                <button type="button" class="chip-btn" onclick="window.resetShopProductForm()" style="padding:10px 14px;">
+                  Сбросить
+                </button>
+              </div>
+            </div>
+
+            <div style="font-family:var(--font-tech); font-size:10px; color:var(--silver); margin-bottom:6px;">
+              АКТИВНЫЕ ТОВАРЫ НА ВИТРИНЕ МАГАЗИНА (<span id="admShopProductsCount">0</span>):
+            </div>
+            <div id="adminShopProductsList" class="data-list" style="max-height:240px;">
+              <span class="item-sub">Загрузка товаров...</span>
+            </div>
           </div>
         </div>
       </div>
@@ -969,7 +1297,7 @@
     <!-- =========================================================================
          0. СИСТЕМА БЕЗОПАСНОСТИ C6E SHIELD (ЛОГ IP/УСТРОЙСТВ + ЧЁРНЫЙ СПИСОК БАНОВ)
          ========================================================================= -->
-    <div class="panel full-width cat-security">
+    <div class="panel full-width cat-security founder-only-block">
       <div class="panel-header">
         <h2><span class="panel-icon"><i class="fas fa-user-shield"></i></span> C6E SHIELD // ЖУРНАЛ IP, ПОПЫТОК ВЗЛОМА И ЧЁРНЫЙ СПИСОК</h2>
         <div style="display:flex; gap:8px; align-items:center;">
@@ -1740,14 +2068,23 @@
         throw new Error(meData.description || "Токен недействителен");
       }
 
+      const chInp = (document.getElementById('admTgChannelIdInput')?.value || '').trim() || TG_CONFIG.channelId;
+      const grInp = (document.getElementById('admTgGroupIdInput')?.value || '').trim() || TG_CONFIG.groupId;
+      const fnInp = (document.getElementById('admFounderUserInput')?.value || '').trim() || '@kascheff';
+      TG_CONFIG.channelId = chInp;
+      TG_CONFIG.groupId = grInp;
+      TG_CONFIG.founderUsername = fnInp;
+
       const encToken = encodeBotToken(rawToken);
       await setDoc(doc(db, DB_COLLECTION, "bot_config"), {
         encToken,
         botUsername: meData.result.username || "C6E_Bot",
-        channelId: TG_CONFIG.channelId,
-        groupId: TG_CONFIG.groupId,
+        channelId: chInp,
+        groupId: grInp,
+        founderUsername: fnInp,
         updatedAt: Date.now()
       }, { merge: true });
+      await setDoc(doc(db, DB_COLLECTION, "shop_config"), { founderUsername: fnInp }, { merge: true }).catch(() => {});
 
       TG_CONFIG.token = rawToken;
       showToast(`✅ Бот @${meData.result.username} защищён, спам-вебхуки удалены!`);
@@ -2019,20 +2356,30 @@
     return new Blob([u8arr], { type: mime });
   }
 
-  async function generateC6ECardBlob({ badge = 'CYBER 6 ESPORTS', title = '[C6E] OFFICIAL', subtitle = '', lines = [], accentColor = '#d42638' }) {
+  async function generateC6ECardBlob({ badge = 'CYBER 6 ESPORTS', title = 'CYBER 6 ESPORTS [C6E]', subtitle = '', lines = [], accentColor = '#f5b041' }) {
     const canvas = document.createElement('canvas');
     canvas.width = 1280;
     canvas.height = 720;
     const ctx = canvas.getContext('2d');
 
+    // 1. Глубокий обсидианово-золотой фон (Obsidian & Solar Gold Broadcast)
     const bgGrad = ctx.createLinearGradient(0, 0, 1280, 720);
-    bgGrad.addColorStop(0, '#121318');
-    bgGrad.addColorStop(0.5, '#0b0c0e');
-    bgGrad.addColorStop(1, '#180a0e');
+    bgGrad.addColorStop(0, '#0c0e14');
+    bgGrad.addColorStop(0.55, '#07080b');
+    bgGrad.addColorStop(1, '#16120a');
     ctx.fillStyle = bgGrad;
     ctx.fillRect(0, 0, 1280, 720);
 
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+    // 2. Мягкое золотое свечение (Solar Eclipse Halo) справа позади логотипа
+    const radGlow = ctx.createRadialGradient(1020, 350, 30, 1020, 350, 340);
+    radGlow.addColorStop(0, 'rgba(245, 176, 65, 0.25)');
+    radGlow.addColorStop(0.6, 'rgba(245, 176, 65, 0.06)');
+    radGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = radGlow;
+    ctx.fillRect(0, 0, 1280, 720);
+
+    // 3. Тонкая кибер-сетка
+    ctx.strokeStyle = 'rgba(245, 176, 65, 0.035)';
     ctx.lineWidth = 1;
     for (let x = 0; x < 1280; x += 64) {
       ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 720); ctx.stroke();
@@ -2041,59 +2388,138 @@
       ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(1280, y); ctx.stroke();
     }
 
-    ctx.fillStyle = accentColor;
-    ctx.fillRect(0, 0, 1280, 8);
-    ctx.fillRect(45, 55, 6, 610);
+    // 4. Внешняя золотая рамка трансляции
+    ctx.strokeStyle = 'rgba(245, 176, 65, 0.38)';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(28, 28, 1224, 664);
+
+    // Акцентная золотая линия сверху и слева
+    const goldGrad = ctx.createLinearGradient(0, 0, 1280, 0);
+    goldGrad.addColorStop(0, '#f5b041');
+    goldGrad.addColorStop(0.5, '#ffe89e');
+    goldGrad.addColorStop(1, '#9a6508');
+    ctx.fillStyle = goldGrad;
+    ctx.fillRect(28, 28, 1224, 5);
+    ctx.fillRect(28, 28, 5, 664);
+
+    // 5. Светящееся золотое кольцо-ореол и логотип [C6E] справа
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(1045, 340, 155, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(245, 176, 65, 0.55)';
+    ctx.lineWidth = 3.5;
+    ctx.shadowColor = '#f5b041';
+    ctx.shadowBlur = 28;
+    ctx.stroke();
+    ctx.restore();
 
     const logoImg = document.getElementById('hiddenBrandLogo');
     if (logoImg && logoImg.complete && logoImg.naturalWidth > 0) {
       ctx.save();
-      ctx.globalAlpha = 0.16;
-      ctx.drawImage(logoImg, 760, 90, 460, 460);
-      ctx.globalAlpha = 1.0;
-      ctx.drawImage(logoImg, 1080, 48, 130, 130);
+      ctx.beginPath();
+      ctx.arc(1045, 340, 138, 0, Math.PI * 2);
+      ctx.clip();
+      ctx.drawImage(logoImg, 907, 202, 276, 276);
       ctx.restore();
     }
 
-    ctx.fillStyle = 'rgba(212, 38, 56, 0.2)';
-    ctx.fillRect(75, 58, 420, 38);
-    ctx.strokeStyle = accentColor;
-    ctx.lineWidth = 2;
-    ctx.strokeRect(75, 58, 420, 38);
+    // 6. Функция очистки текста от системных смайликов (чтобы на Canvas не было квадратиков)
+    const cleanCanvasText = (str) => {
+      return String(str || '')
+        .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE00}-\u{FE0F}]/gu, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+    };
 
-    ctx.fillStyle = '#e4e4e2';
-    ctx.font = 'bold 18px Orbitron, Montserrat, sans-serif';
-    ctx.fillText(badge.toUpperCase(), 92, 83);
+    // 7. Рисуем золотой пятиугольник 'G' и верхний бейдж
+    const cleanBadge = cleanCanvasText(badge).toUpperCase() || 'CYBER 6 ESPORTS // OFFICIAL';
+    ctx.fillStyle = 'rgba(245, 176, 65, 0.14)';
+    ctx.fillRect(68, 62, 520, 40);
+    ctx.strokeStyle = '#f5b041';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(68, 62, 520, 40);
 
+    // Векторный золотой пятиугольник G внутри бейджа
+    ctx.save();
+    ctx.translate(92, 82);
+    ctx.beginPath();
+    for (let i = 0; i < 5; i++) {
+      const ang = (i * 2 * Math.PI) / 5 - Math.PI / 2;
+      const px = Math.cos(ang) * 12;
+      const py = Math.sin(ang) * 12;
+      if (i === 0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+    }
+    ctx.closePath();
+    ctx.fillStyle = '#f5b041';
+    ctx.fill();
+    ctx.fillStyle = '#07080b';
+    ctx.font = '900 12px Orbitron, Montserrat, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('G', 0, 1);
+    ctx.restore();
+
+    ctx.fillStyle = '#f5b041';
+    ctx.font = '800 16px Orbitron, Montserrat, sans-serif';
+    ctx.fillText(cleanBadge.slice(0, 42), 116, 88);
+
+    // 8. Главный заголовок и подзаголовок
+    const cleanTitle = cleanCanvasText(title).toUpperCase();
     ctx.fillStyle = '#ffffff';
-    ctx.font = '900 46px Orbitron, Montserrat, sans-serif';
-    ctx.fillText(title.slice(0, 36), 75, 160);
+    ctx.font = '900 40px Orbitron, Montserrat, sans-serif';
+    ctx.fillText(cleanTitle.slice(0, 34), 68, 156);
 
     if (subtitle) {
-      ctx.fillStyle = accentColor;
-      ctx.font = 'bold 24px Montserrat, sans-serif';
-      ctx.fillText(subtitle.slice(0, 55), 75, 202);
+      const cleanSub = cleanCanvasText(subtitle);
+      ctx.fillStyle = '#f5b041';
+      ctx.font = '700 21px Montserrat, sans-serif';
+      ctx.fillText(cleanSub.slice(0, 56), 68, 196);
     }
 
-    let startY = 265;
-    lines.slice(0, 7).forEach((line, idx) => {
-      ctx.fillStyle = idx % 2 === 0 ? 'rgba(255, 255, 255, 0.045)' : 'rgba(255, 255, 255, 0.02)';
-      ctx.fillRect(75, startY - 32, 1080, 46);
-      ctx.fillStyle = accentColor;
-      ctx.fillRect(75, startY - 32, 4, 46);
+    // 9. Карточки строк данных с векторными золотыми маркерами
+    let startY = 252;
+    lines.slice(0, 6).forEach((rawLine, idx) => {
+      const cleanLine = cleanCanvasText(rawLine);
+      ctx.fillStyle = idx === 0 ? 'rgba(245, 176, 65, 0.12)' : (idx % 2 === 0 ? 'rgba(255, 255, 255, 0.045)' : 'rgba(255, 255, 255, 0.025)');
+      ctx.fillRect(68, startY - 34, 780, 50);
+      ctx.strokeStyle = idx === 0 ? 'rgba(245, 176, 65, 0.55)' : 'rgba(255, 255, 255, 0.08)';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(68, startY - 34, 780, 50);
 
-      ctx.fillStyle = '#f4f4f4';
-      ctx.font = '600 22px Montserrat, sans-serif';
-      ctx.fillText(String(line).slice(0, 72), 95, startY - 2);
-      startY += 56;
+      // Левая золотая полоска строки
+      ctx.fillStyle = idx === 0 ? '#f5b041' : (idx === 1 ? '#e4e4e2' : (idx === 2 ? '#cd7f32' : '#f5b041'));
+      ctx.fillRect(68, startY - 34, 5, 50);
+
+      // Номер строки в золотом квадрате
+      ctx.fillStyle = 'rgba(245, 176, 65, 0.18)';
+      ctx.fillRect(84, startY - 23, 28, 28);
+      ctx.fillStyle = '#f5b041';
+      ctx.font = '900 14px Orbitron, sans-serif';
+      ctx.fillText(String(idx + 1), 93, startY - 4);
+
+      // Текст строки
+      ctx.fillStyle = '#f7f4ef';
+      ctx.font = '700 20px Montserrat, sans-serif';
+      ctx.fillText(cleanLine.slice(0, 58), 126, startY - 2);
+      startY += 60;
     });
 
-    ctx.fillStyle = '#8b8e96';
-    ctx.font = 'bold 16px Orbitron, Montserrat, sans-serif';
-    ctx.fillText('CYBER 6 ESPORTS [C6E] // OFFICIAL COMMAND CENTER', 75, 680);
+    // 10. Нижний колонтитул трансляции
+    ctx.fillStyle = 'rgba(245, 176, 65, 0.25)';
+    ctx.fillRect(68, 632, 1144, 1);
 
-    return new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.88));
+    ctx.fillStyle = '#9e9689';
+    ctx.font = '800 14px Orbitron, Montserrat, sans-serif';
+    ctx.fillText('CYBER 6 ESPORTS [C6E]  •  OFFICIAL PORTAL: CYBER6ESPORTS.GITHUB.IO', 68, 662);
+
+    const founderTag = (TG_CONFIG.founderUsername || '@kascheff').toUpperCase();
+    ctx.fillStyle = '#f5b041';
+    ctx.fillText(`FOUNDER: ${founderTag}`, 980, 662);
+
+    return new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.92));
   }
+  const renderCyberCardBlob = (title, subtitle, lines, badge) => generateC6ECardBlob({ badge: badge || 'CYBER 6 ESPORTS', title, subtitle, lines });
 
   async function ensureBotTokenLoaded() {
     if (TG_CONFIG.token) return TG_CONFIG.token;
@@ -3708,6 +4134,23 @@
     listenToDoc(DB_COLLECTION, "bot_config", (data) => {
       const badge = document.getElementById('tgTokenStatusBadge');
       const inp = document.getElementById('secretBotTokenInput');
+      if (data) {
+        if (data.channelId) {
+          TG_CONFIG.channelId = data.channelId;
+          const chEl = document.getElementById('admTgChannelIdInput');
+          if (chEl) chEl.value = data.channelId;
+        }
+        if (data.groupId) {
+          TG_CONFIG.groupId = data.groupId;
+          const grEl = document.getElementById('admTgGroupIdInput');
+          if (grEl) grEl.value = data.groupId;
+        }
+        if (data.founderUsername) {
+          TG_CONFIG.founderUsername = data.founderUsername;
+          const fnEl = document.getElementById('admFounderUserInput');
+          if (fnEl) fnEl.value = data.founderUsername;
+        }
+      }
       if (data && data.encToken) {
         const decoded = decodeBotToken(data.encToken);
         if (decoded) {
@@ -4773,8 +5216,11 @@
                 </div>
               </div>
               <div class="item-actions" style="flex-wrap:wrap;">
-                <button type="button" class="btn-icon ${isDev ? 'dev-active' : ''}" style="width:auto; padding:0 9px; font-family:var(--font-tech); font-size:9px; border-color:#f5b041; color:${isDev ? '#07080b' : '#f5b041'};" title="Выдать или снять галочку разработчика (✓ DEV)" onclick="window.toggleUserDeveloperBadge('${safeDev}')">
-                  ⚡✓ DEV
+                <button type="button" class="btn-icon founder-only-block ${isDev ? 'dev-active' : ''}" style="width:auto; padding:0 9px; font-family:var(--font-tech); font-size:9px; border-color:#38bdf8; color:${isDev ? '#fff' : '#38bdf8'};" title="Выдать или снять синюю галочку разработчика (✓ DEV)" onclick="window.toggleUserDeveloperBadge('${safeDev}')">
+                  ✓ DEV
+                </button>
+                <button type="button" class="btn-icon founder-only-block ${p.isSiteAdmin ? 'admin-role-active' : ''}" style="width:auto; padding:0 9px; font-family:var(--font-tech); font-size:9px; border-color:#f5b041; color:${p.isSiteAdmin ? '#07080b' : '#f5b041'};" title="Выдать или снять права Администратора сайта этому профилю" onclick="window.toggleUserSiteAdminRole('${safeDev}')">
+                  <i class="fas fa-key"></i> АДМИН
                 </button>
                 <button type="button" class="btn-icon" style="color:#f5b041; border-color:rgba(245,176,65,0.4);" title="Выдать золотую медаль в профиль (👑 Чемпион Пантеона / 🎯 MVP)" onclick="window.awardProfileMedalPrompt('${safeDev}')">
                   <i class="fas fa-medal"></i>
