@@ -1,0 +1,81 @@
+{
+  "id": "cyber6esports-official-app",
+  "name": "CYBER 6 ESPORTS [C6E]",
+  "short_name": "CYBER 6",
+  "description": "Официальное киберспортивное приложение CYBER 6 ESPORTS (Standoff 2). Пантеон 900 Gold, Праки (CW), Состав, Магазин и Общий чат.",
+  "lang": "ru",
+  "dir": "ltr",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": [
+    "standalone",
+    "fullscreen"
+  ],
+  "orientation": "portrait",
+  "background_color": "#07080b",
+  "theme_color": "#07080b",
+  "categories": [
+    "games",
+    "sports",
+    "social"
+  ],
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Пантеон 900 Gold",
+      "short_name": "Пантеон",
+      "description": "Еженедельная гонка бойцов за 900 Голды",
+      "url": "./index.html#pantheon",
+      "icons": [
+        {
+          "src": "logo.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Запись на Праки (CW)",
+      "short_name": "Праки",
+      "description": "Бронирование праков против состава [C6E]",
+      "url": "./index.html#practice",
+      "icons": [
+        {
+          "src": "logo.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Магазин [C6E]",
+      "short_name": "Магазин",
+      "description": "Кибер-маркет в валюте Gold (G)",
+      "url": "./index.html#shop",
+      "icons": [
+        {
+          "src": "logo.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}
