@@ -988,13 +988,13 @@
       </div>
       <div class="tg-hub-actions">
         <button type="button" class="btn-tg-action" style="background:linear-gradient(135deg, #f5b041, #b87b14); color:#07080b;" onclick="publishPantheonWinnersToTG()">
-          <i class="fas fa-crown"></i> ПАНТЕОН (900G) В ТГК
+          <i class="fas fa-crown"></i> APEX RANK (900G) В ТГК
         </button>
         <button type="button" class="btn-tg-action" onclick="publishFullRosterToTG()">
           <i class="fas fa-users"></i> СОСТАВ В ТГК
         </button>
         <button type="button" class="btn-tg-action" onclick="publishWeeklyReportToTG()">
-          <i class="fas fa-chart-line"></i> ОТЧЁТ K/D В ТГК
+          <i class="fas fa-chart-line"></i> ЕЖЕНЕДЕЛЬНЫЙ ОТЧЁТ КЛАНА В ГРУППУ
         </button>
         <button type="button" class="btn-tg-action" onclick="publishScheduleToTG()">
           <i class="fas fa-calendar-alt"></i> РАСПИСАНИЕ В ТГК
@@ -1094,11 +1094,74 @@
   <div class="filter-bar">
     <button class="filter-btn active" id="adm-fbtn-all" onclick="filterPanels('all', this)"><i class="fas fa-th-large"></i> Все блоки</button>
     <button class="filter-btn" id="adm-fbtn-v5" onclick="filterPanels('cat-v5', this)"><i class="fas fa-id-badge"></i> Профили, Галочка ✓ и Чат</button>
-    <button class="filter-btn" id="adm-fbtn-roster" onclick="filterPanels('cat-roster', this)"><i class="fas fa-crown"></i> Пантеон (900G) и Состав</button>
+    <button class="filter-btn" id="adm-fbtn-roster" onclick="filterPanels('cat-roster', this)"><i class="fas fa-crown"></i> APEX RANK и Состав</button>
     <button class="filter-btn" id="adm-fbtn-security" onclick="filterPanels('cat-security', this)"><i class="fas fa-user-shield"></i> C6E Shield (Баны)</button>
     <button class="filter-btn" id="adm-fbtn-matches" onclick="filterPanels('cat-matches', this)"><i class="fas fa-trophy"></i> Матчи (Таб) и Праки</button>
     <button class="filter-btn" id="adm-fbtn-news" onclick="filterPanels('cat-news', this)"><i class="fas fa-newspaper"></i> Новости и Обновы</button>
     <button class="filter-btn" onclick="filterPanels('cat-media', this)"><i class="fas fa-photo-video"></i> Медиа и Отзывы</button>
+  </div>
+
+  
+  <!-- УМНЫЙ ПОМОЩНИК АДМИНА И ОСНОВАТЕЛЯ: НАБОР В КЛАН (ОТКРЫТЬ/ЗАКРЫТЬ), 4 ШАБЛОНА РАСПИСАНИЯ, БАННЕР САЙТА И ЗАЯВКИ -->
+  <div class="panel full-width" style="margin-bottom:16px; border-top:3px solid #f5b041; background:linear-gradient(160deg, rgba(22,25,36,0.96), rgba(10,12,18,0.99));">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; padding-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.07);">
+      <div>
+        <div style="font-family:var(--font-tech); font-size:13px; font-weight:900; color:#f5b041; display:flex; align-items:center; gap:8px;">
+          <i class="fas fa-magic"></i> БЫСТРОЕ УПРАВЛЕНИЕ В 1 КЛИК (ДЛЯ КАСА И АДМИНА)
+        </div>
+        <div style="font-size:11px; color:var(--silver-muted); margin-top:2px;">
+          Открывай и закрывай заявки в клан на сайте, выкладывай 4 готовых шаблона расписания и отправляй карточки-отчёты в группу одним нажатием.
+        </div>
+      </div>
+
+      <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+        <span id="admRecruitmentStatusBadge" style="padding:6px 12px; border-radius:20px; background:rgba(0,230,118,0.15); border:1px solid #00e676; color:#00e676; font-family:var(--font-tech); font-size:10px; font-weight:900;">
+          НАБОР В КЛАН: ОТКРЫТ
+        </span>
+        <button type="button" class="btn-tg-action" style="background:linear-gradient(135deg, #f5b041, #b87b14); color:#07080b; padding:8px 14px;" onclick="window.toggleClanRecruitmentOpen()">
+          <i class="fas fa-door-open"></i> ОТКРЫТЬ / ЗАКРЫТЬ ЗАЯВКИ НА САЙТЕ
+        </button>
+        <button type="button" class="btn-tg-action founder-only-block" onclick="window.openAdminHeroBannerSetter()">
+          <i class="fas fa-image"></i> СМЕНИТЬ БАННЕР ЗА АВАТАРКОЙ НА ГЛАВНОЙ
+        </button>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:14px; margin-top:12px;">
+      <!-- 4 ГОТОВЫХ ШАБЛОНА РАСПИСАНИЯ ДЛЯ АДМИНА -->
+      <div style="background:rgba(0,0,0,0.42); border:1px solid rgba(255,255,255,0.06); border-radius:12px; padding:12px;">
+        <div style="font-family:var(--font-tech); font-size:10.5px; font-weight:900; color:#fff; margin-bottom:8px;">
+          <i class="fas fa-calendar-check text-accent"></i> 4 ТЕМЫ / ШАБЛОНА РАСПИСАНИЯ В 1 КЛИК:
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:7px;">
+          <button type="button" class="chip-btn" style="padding:8px; text-align:left; border-color:rgba(245,176,65,0.4); color:#f5b041;" onclick="window.quickAddAdminScheduleTemplate('CW', '19:00', 'Вечерний Прак [C6E] (BO3)')">
+            ⚔️ 1. Вечерний Прак (19:00)
+          </button>
+          <button type="button" class="chip-btn" style="padding:8px; text-align:left; border-color:rgba(0,230,118,0.4); color:#00e676;" onclick="window.quickAddAdminScheduleTemplate('TRAIN', '18:00', 'Командная тренировка и раскидки [C6E]')">
+            🎯 2. Тренировка (18:00)
+          </button>
+          <button type="button" class="chip-btn" style="padding:8px; text-align:left; border-color:rgba(56,189,248,0.4); color:#38bdf8;" onclick="window.quickAddAdminScheduleTemplate('CUP', '20:00', 'Турнирный матч Cyber 6 Esports')">
+            🏆 3. Турнир (20:00)
+          </button>
+          <button type="button" class="chip-btn" style="padding:8px; text-align:left; border-color:rgba(255,42,84,0.4); color:#ff7a95;" onclick="window.quickAddAdminScheduleTemplate('MEDIA', '21:00', 'Общий сбор состава и разбор демок')">
+            🎙️ 4. Разбор и Сбор (21:00)
+          </button>
+        </div>
+      </div>
+
+      <!-- СВЕЖИЕ АНКЕТЫ НА ВСТУПЛЕНИЕ В КЛАН С САЙТА -->
+      <div style="background:rgba(0,0,0,0.42); border:1px solid rgba(255,255,255,0.06); border-radius:12px; padding:12px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <span style="font-family:var(--font-tech); font-size:10.5px; font-weight:900; color:#fff;">
+            <i class="fas fa-user-plus text-accent"></i> ЗАЯВКИ НА ВСТУПЛЕНИЕ В КЛАН (<span id="admJoinAppsCount">0</span>)
+          </span>
+          <button type="button" class="chip-btn" style="font-size:9px; padding:3px 8px;" onclick="window.clearJoinApplicationsList()">Очистить</button>
+        </div>
+        <div id="adminJoinApplicationsList" class="data-list" style="max-height:110px;">
+          <span class="item-sub">Новых анкет пока нет</span>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="container" id="adminContainer">
@@ -1272,12 +1335,12 @@
     <!-- =========================================================================
          НОВАЯ ПАНЕЛЬ: УПРАВЛЕНИЕ ПАНТЕОНОМ [C6E] (ПРИЗОВАЯ ГОНКА 500 / 250 / 150 ГОЛДЫ)
          ========================================================================= -->
-    <div class="panel full-width cat-roster" style="border-top: 3px solid #ffb300;">
+    <div class="panel full-width cat-roster founder-only-block" style="border-top: 3px solid #ffb300;">
       <div class="panel-header">
-        <h2><span class="panel-icon" style="color:#ffb300; background:rgba(255,179,0,0.15);"><i class="fas fa-crown"></i></span> ПАНТЕОН [C6E] // УПРАВЛЕНИЕ ГОНКОЙ ЗА 900 ГОЛДЫ ОТ ОСНОВАТЕЛЯ</h2>
+        <h2><span class="panel-icon" style="color:#ffb300; background:rgba(255,179,0,0.15);"><i class="fas fa-crown"></i></span> APEX RANK [C6E] // УПРАВЛЕНИЕ РЕЙТИНГОМ (100–350 PTS ОТ КИЛЛОВ И K/D // ТОЛЬКО КАС)</h2>
         <div style="display:flex; gap:8px; flex-wrap:wrap;">
           <button type="button" class="btn-tg-action" style="background:linear-gradient(135deg, #ffb300, #d42638); color:#000; padding:8px 12px;" onclick="publishPantheonWinnersToTG()">
-            <i class="fab fa-telegram"></i> ОПУБЛИКОВАТЬ ИТОГИ ПАНТЕОНА (500/250/150G) В ТГК
+            <i class="fab fa-telegram"></i> ОПУБЛИКОВАТЬ КАРТОЧКУ APEX RANK (900G) В ТГК
           </button>
           <button type="button" class="chip-btn" onclick="resetWeeklyPantheonBoosts()">
             <i class="fas fa-redo"></i> Новый сезон недели (сброс бустов)
@@ -1297,9 +1360,9 @@
     <!-- =========================================================================
          0. СИСТЕМА БЕЗОПАСНОСТИ C6E SHIELD (ЛОГ IP/УСТРОЙСТВ + ЧЁРНЫЙ СПИСОК БАНОВ)
          ========================================================================= -->
-    <div class="panel full-width cat-security founder-only-block">
+    <div class="panel full-width cat-security">
       <div class="panel-header">
-        <h2><span class="panel-icon"><i class="fas fa-user-shield"></i></span> C6E SHIELD // ЖУРНАЛ IP, ПОПЫТОК ВЗЛОМА И ЧЁРНЫЙ СПИСОК</h2>
+        <h2><span class="panel-icon"><i class="fas fa-user-shield"></i></span> ЖУРНАЛ ДЕЙСТВИЙ АДМИНА И ПОЛЬЗОВАТЕЛЕЙ + C6E SHIELD</h2>
         <div style="display:flex; gap:8px; align-items:center;">
           <button type="button" class="chip-btn" onclick="clearSecurityLogs()"><i class="fas fa-broom"></i> Очистить журнал</button>
         </div>
@@ -1311,6 +1374,12 @@
             <h3 style="font-size: 12px; color: var(--silver); margin:0;"><i class="fas fa-satellite-dish text-accent"></i> ЖУРНАЛ АКТИВНОСТИ И ПОПЫТОК ВЗЛОМА / МАТОВ</h3>
           </div>
           <p style="font-size:10px; color:var(--silver-muted); margin-top:0;">Красной плашкой <b>🚨 ТРЕВОГА</b> подсвечиваются попытки подобрать пароль к админке и попытки отправить запрещённые слова или мат на сайте.</p>
+          <div style="display:flex; gap:6px; flex-wrap:wrap; margin:8px 0;">
+            <button type="button" class="chip-btn" style="border-color:#f5b041; color:#f5b041;" onclick="window.filterAdminActivityLogs('all')">Все события</button>
+            <button type="button" class="chip-btn" onclick="window.filterAdminActivityLogs('admin')">Действия Админа</button>
+            <button type="button" class="chip-btn" onclick="window.filterAdminActivityLogs('user')">Действия Игроков</button>
+            <button type="button" class="chip-btn" style="border-color:#ff5263; color:#ff5263;" onclick="window.filterAdminActivityLogs('alert')">Тревоги Shield</button>
+          </div>
           <div id="securityLogsList" class="data-list" style="max-height: 360px; margin-top:8px;">
             <span class="item-sub">Журнал пока пуст...</span>
           </div>
@@ -1747,15 +1816,27 @@
             </div>
           </div>
 
-          <label>Своя картинка для ТГ (если пусто — бот сам нарисует баннер C6E!)</label>
-          <input type="text" id="pracTgImg" placeholder="Оставь пустым для авто-баннера [C6E]">
+          <div style="margin-top:10px; padding:10px 12px; border-radius:10px; background:rgba(245,176,65,0.07); border:1px solid rgba(245,176,65,0.28);">
+            <label style="margin:0 0 6px 0; color:#f5b041; font-size:9.5px;">2. ЕСЛИ СОПЕРНИК УЖЕ НАЙДЕН — ЗАПОЛНИ ДЛЯ МГНОВЕННОЙ БРОНИ НА САЙТЕ (ИЛИ ОСТАВЬ ПУСТЫМ ДЛЯ СВОБОДНОГО СЛОТА):</label>
+            <input type="text" id="pracBookedClanInput" placeholder="Название клана соперника (например: Saints)..." style="margin-bottom:6px;">
+            <div class="row-inputs">
+              <div>
+                <input type="text" id="pracBookedCapInput" placeholder="Капитан / @tg" style="margin:0;">
+              </div>
+              <div>
+                <input type="text" id="pracBookedMapsInput" placeholder="Карты (Sandstone, Dune)" style="margin:0;">
+              </div>
+            </div>
+          </div>
 
-          <label style="display:flex; align-items:center; gap:8px; cursor:pointer; margin-top:12px; color:var(--silver);">
+          <input type="hidden" id="pracTgImg" value="">
+
+          <label style="display:flex; align-items:center; gap:8px; cursor:pointer; margin-top:10px; color:var(--silver);">
             <input type="checkbox" id="pracAutoSchedule" checked style="width:16px; height:16px;">
-            Сразу добавить слот в «Расписание»
+            Сразу добавить этот прак в «Расписание» на сайте
           </label>
 
-          <button class="action-btn" onclick="createPracSlot()"><i class="fas fa-bullhorn"></i> СОЗДАТЬ СЛОТ И ОТПРАВИТЬ БАННЕР В ТГК</button>
+          <button class="action-btn" onclick="createPracSlot()"><i class="fas fa-bullhorn"></i> СОЗДАТЬ КАРТОЧКУ ПРАКА НА САЙТЕ И В ГРУППЕ</button>
         </div>
 
         <div style="background: rgba(0,0,0,0.35); padding: 16px; border-radius: 12px; border: 1px solid var(--glass-border);">
@@ -2900,11 +2981,14 @@
     const rawFanBoosts = (cachedPantheon.boosts && cachedPantheon.boosts[pKey]) ? parseInt(cachedPantheon.boosts[pKey], 10) : 0;
     const fanBoosts = Math.min(20, rawFanBoosts);
     const founderBonus = (cachedPantheon.bonusPts && cachedPantheon.bonusPts[pKey]) ? parseInt(cachedPantheon.bonusPts[pKey], 10) : 0;
-    const kdPts = Math.round(liveKd * 450);
-    const growthPts = Math.round(delta * 1200);
-    const matchActivityPts = (matchesPlayed * 85) + (matchesWon * 95) + (mvpCount * 160) + (kills * 3);
-    const siteActivityPts = (fanBoosts * 25) + founderBonus;
-    const totalPantheonPts = Math.max(100, kdPts + growthPts + matchActivityPts + siteActivityPts);
+    // ФОРМУЛА APEX RANK (СТРОГО ОТ 100 ДО 350 PTS В ЗАВИСИМОСТИ ОТ КИЛЛОВ И K/D!)
+    const kdNorm = Math.max(0, Math.min(1, (liveKd - 0.60) / 1.40));
+    const killsNorm = matchesPlayed > 0
+      ? Math.max(0, Math.min(1, kills / 75))
+      : Math.max(0, Math.min(0.45, (baseKd - 0.70) / 1.50));
+    const winMvpBonus = Math.min(35, (matchesWon * 8) + (mvpCount * 12) + Math.max(0, Math.round(delta * 40)));
+    const combatCorePts = Math.min(350, Math.max(100, Math.round(100 + (kdNorm * 125) + (killsNorm * 95) + winMvpBonus)));
+    const totalPantheonPts = Math.max(100, Math.min(350, combatCorePts + (fanBoosts * 5)) + founderBonus);
 
     return {
       nick: p.nick,
@@ -5634,6 +5718,1082 @@
       document.getElementById('galCap').value = '';
     }
   };
+
+
+  // =========================================================================
+  // МОДУЛЬ v0.8.0: ИСПРАВЛЕНИЕ ВСЕХ ФУНКЦИЙ АДМИНКИ, ЕДИНОЕ ОКНО РАЗДЕЛОВ,
+  // HD-КАРТОЧКИ БОТА (БЕЗ ЛИШНЕГО ТЕКСТА — ТОЛЬКО ССЫЛКА), ЕЖЕНЕДЕЛЬНЫЙ ОТЧЁТ
+  // В ГРУППУ, ПОБЕДЫ СО СКРИНОМ В ТГК, КОНСТРУКТОР МАГАЗИНА И ЖУРНАЛ ЛОГОВ
+  // =========================================================================
+
+  let currentAdminRoleMode = localStorage.getItem('c6e_admin_role_mode') || 'founder';
+  let currentLogFilterMode = 'all';
+  let cachedShopProducts = [];
+  let cachedJoinApplications = [];
+  let cachedRecruitmentOpen = true;
+
+  // Запись любого действия Админа или Основателя в единый журнал логов понятным языком
+  async function logAdminAction(actionTitle, detailsText) {
+    try {
+      const roleLabel = currentAdminRoleMode === 'founder' ? 'Основатель Kas' : 'Администратор';
+      const ref = doc(db, DB_COLLECTION, "security_logs");
+      const snap = await getDoc(ref);
+      let logs = (snap.exists() && Array.isArray(snap.data().logs)) ? snap.data().logs : [];
+      logs.push({
+        id: Date.now() + Math.floor(Math.random() * 100),
+        date: new Date().toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }),
+        action: `🛠️ АДМИН: ${actionTitle}`,
+        actor: roleLabel,
+        details: detailsText,
+        ip: currentVisitorIp || 'Admin Panel',
+        deviceId: currentVisitorDevId || 'ADMIN',
+        deviceInfo: currentVisitorDevInfo || 'Command Center',
+        isAlert: false,
+        logType: 'admin'
+      });
+      if (logs.length > 100) logs = logs.slice(-100);
+      await setDoc(ref, { logs }, { merge: true });
+    } catch (e) {}
+  }
+
+  window.filterAdminActivityLogs = (mode) => {
+    currentLogFilterMode = mode || 'all';
+    renderFilteredSecurityLogs();
+  };
+
+  function renderFilteredSecurityLogs() {
+    const logsCont = document.getElementById('securityLogsList');
+    if (!logsCont) return;
+    const sortedLogs = [...(cachedSecurityLogs || [])].reverse();
+    const filtered = sortedLogs.filter(l => {
+      const act = String(l.action || '');
+      const isAlert = Boolean(l.isAlert || act.includes('⚠️') || act.includes('🚨'));
+      const isAdm = Boolean(l.logType === 'admin' || act.includes('АДМИН'));
+      if (currentLogFilterMode === 'alert') return isAlert;
+      if (currentLogFilterMode === 'admin') return isAdm;
+      if (currentLogFilterMode === 'user') return !isAdm && !isAlert;
+      return true;
+    });
+
+    logsCont.innerHTML = filtered.length === 0
+      ? '<span class="item-sub" style="padding:10px;">В этой категории пока нет записей</span>'
+      : filtered.map(l => {
+          const act = String(l.action || 'ДЕЙСТВИЕ');
+          const isAlert = Boolean(l.isAlert || act.includes('⚠️') || act.includes('🚨'));
+          const isAdm = Boolean(l.logType === 'admin' || act.includes('АДМИН'));
+          const isAlreadyBanned = (cachedBannedUsers || []).some(b =>
+            (l.deviceId && b.deviceId === l.deviceId) ||
+            (l.ip && l.ip !== 'Скрыт / VPN' && b.ip === l.ip)
+          );
+          const safeIp = (l.ip || '').replace(/'/g, "\\'");
+          const safeDev = (l.deviceId || '').replace(/'/g, "\\'");
+          const safeActor = (l.actor || 'Гость').replace(/'/g, "\\'");
+          const borderCol = isAlert ? '#ff5263' : (isAdm ? '#f5b041' : '#38bdf8');
+          const badgeHtml = isAlert
+            ? '<span style="background:#ff5263; color:#fff; font-size:8px; padding:2px 6px; border-radius:4px; margin-right:6px; font-family:var(--font-tech);">ТРЕВОГА</span>'
+            : (isAdm
+                ? '<span style="background:#f5b041; color:#07080b; font-size:8px; font-weight:900; padding:2px 6px; border-radius:4px; margin-right:6px; font-family:var(--font-tech);">АДМИН</span>'
+                : '<span style="background:rgba(56,189,248,0.2); border:1px solid #38bdf8; color:#38bdf8; font-size:8px; padding:2px 6px; border-radius:4px; margin-right:6px; font-family:var(--font-tech);">ИГРОК</span>');
+
+          return `
+            <div class="list-item" style="border-left:3px solid ${borderCol}; background:${isAlert ? 'rgba(212,38,56,0.12)' : 'rgba(255,255,255,0.03)'}; align-items:flex-start;">
+              <div class="item-info">
+                <b style="color:#fff; font-size:12px;">
+                  ${badgeHtml}${act} — <span style="color:#f5b041;">${l.actor || 'Пользователь'}</span>
+                  <span style="font-size:9px; color:var(--silver-muted); font-weight:400;"> • ${l.date || ''}</span>
+                </b>
+                <div class="item-sub" style="color:#e5e0d8; margin:4px 0; font-size:11px;">${l.details || ''}</div>
+                <div class="item-sub" style="font-family:monospace; color:var(--silver-muted); font-size:9.5px;">
+                  IP: <b>${l.ip || '—'}</b> | ID: <b>${l.deviceId || '—'}</b>
+                </div>
+              </div>
+              <div class="item-actions founder-only-block">
+                ${isAdm ? '' : (isAlreadyBanned
+                  ? `<span style="font-size:9px; color:var(--accent-light); font-family:var(--font-tech); padding:4px 6px; border:1px solid var(--accent-light); border-radius:4px;">В БАНЕ</span>`
+                  : `<button type="button" class="btn-icon ban" title="Забанить" onclick="window.banUserQuick('${safeIp}', '${safeDev}', '${safeActor}')"><i class="fas fa-ban"></i></button>`
+                )}
+              </div>
+            </div>
+          `;
+        }).join('');
+  }
+
+  // 1. ПЕРЕКЛЮЧЕНИЕ РЕЖИМА: АДМИНИСТРАТОР vs ОСНОВАТЕЛЬ KAS
+  window.setAdminPanelRoleMode = (mode) => {
+    currentAdminRoleMode = mode === 'admin' ? 'admin' : 'founder';
+    try { localStorage.setItem('c6e_admin_role_mode', currentAdminRoleMode); } catch (e) {}
+
+    const btnAdm = document.getElementById('mode-btn-admin');
+    const btnFnd = document.getElementById('mode-btn-founder');
+    if (btnAdm) btnAdm.classList.toggle('active', currentAdminRoleMode === 'admin');
+    if (btnFnd) btnFnd.classList.toggle('active', currentAdminRoleMode === 'founder');
+
+    if (currentAdminRoleMode === 'admin') {
+      document.body.classList.add('admin-helper-mode');
+      showToast("⚡ Включён упрощённый Режим Администратора (без секретных настроек Основателя)");
+    } else {
+      document.body.classList.remove('admin-helper-mode');
+      showToast("👑 Включён полный Режим Основателя Kas");
+    }
+  };
+
+  // Защита APEX RANK от изменений обычным администратором
+  const origAdjustPantheon = window.adjustPantheonBonus;
+  window.adjustPantheonBonus = async (pKey, deltaPts) => {
+    if (currentAdminRoleMode !== 'founder') {
+      return showToast("Управлять очками APEX RANK может только Основатель Kas!", true);
+    }
+    await origAdjustPantheon(pKey, deltaPts);
+    await logAdminAction("APEX RANK PTS", `Изменил бонусные очки бойца (${pKey}) на ${deltaPts >= 0 ? '+' + deltaPts : deltaPts} PTS`);
+  };
+
+  const origResetWeeklyPantheon = window.resetWeeklyPantheonBoosts;
+  window.resetWeeklyPantheonBoosts = async () => {
+    if (currentAdminRoleMode !== 'founder') {
+      return showToast("Сбрасывать сезон APEX RANK может только Основатель Kas!", true);
+    }
+    await origResetWeeklyPantheon();
+    await logAdminAction("СБРОС СЕЗОНА APEX RANK", "Запустил новую неделю гонки за 900 Gold");
+  };
+
+  // 2. ЕДИНАЯ КНОПКА «ПАНЕЛЬ УПРАВЛЕНИЯ (РАЗДЕЛЫ)» — МОДАЛЬНОЕ ОКНО БЕЗ ПРОКРУТКИ ВСЕГО ЛИСТА
+  const ADMIN_HUB_SECTIONS = [
+    { id: 'cat-matches', title: 'Матчи, Сканер Таба и Праки', desc: 'Занести сыгранный матч со скрином, открыть прак или расписание', icon: 'fa-trophy', color: '#f5b041', founderOnly: false },
+    { id: 'cat-v5', title: 'Профили, Чат (12ч) и Верификация', desc: 'Одобрить бойца [C6E], выдать галочку ✓ DEV или права Админа', icon: 'fa-id-badge', color: '#00e676', founderOnly: false },
+    { id: 'cat-shop', title: 'Магазин и Товары (Валюта G)', desc: 'Добавление карточек товаров, скидок % и цен в Gold (G)', icon: 'fa-shopping-bag', color: '#f5b041', founderOnly: true },
+    { id: 'cat-roster', title: 'Состав [C6E] и APEX RANK (900G)', desc: 'Карточки игроков основы/резерва и управление очками APEX RANK', icon: 'fa-shield-alt', color: '#38bdf8', founderOnly: false },
+    { id: 'cat-news', title: 'Новости и Обновления сайта', desc: 'Публикация карточек обновлений и новостей в ТГК', icon: 'fa-bolt', color: '#f5b041', founderOnly: true },
+    { id: 'cat-security', title: 'Журнал Логов Админа и Игроков', desc: 'Все действия админа и пользователей на сайте + бан-лист Shield', icon: 'fa-clipboard-list', color: '#ff5263', founderOnly: false },
+    { id: 'cat-media', title: 'Медиа, Видео и История клана', desc: 'YouTube-видео, галерея скриншотов и дорожная карта', icon: 'fa-photo-video', color: '#a855f7', founderOnly: false },
+    { id: 'all', title: 'Показать все блоки сразу', desc: 'Развернуть полный список всех инструментов на одном экране', icon: 'fa-th-large', color: '#9e9689', founderOnly: false }
+  ];
+
+  window.openAdminControlHubModal = () => {
+    let modal = document.getElementById('adminControlHubModal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'adminControlHubModal';
+      modal.style.cssText = 'position:fixed; inset:0; z-index:99000; background:rgba(5,6,10,0.88); backdrop-filter:blur(10px); display:none; align-items:center; justify-content:center; padding:14px;';
+      document.body.appendChild(modal);
+    }
+
+    const visibleItems = ADMIN_HUB_SECTIONS.filter(s => currentAdminRoleMode === 'founder' || !s.founderOnly);
+    modal.innerHTML = `
+      <div style="width:min(95vw, 680px); max-height:86vh; overflow-y:auto; background:linear-gradient(165deg, #151824 0%, #08090e 100%); border:1.5px solid #f5b041; border-radius:22px; padding:20px; box-shadow:0 25px 70px rgba(0,0,0,0.95);">
+        <div style="display:flex; justify-content:space-between; align-items:center; padding-bottom:12px; margin-bottom:14px; border-bottom:1px solid rgba(255,255,255,0.08);">
+          <div>
+            <div style="font-family:var(--font-tech); font-size:14px; font-weight:900; color:#f5b041;">
+              <i class="fas fa-th-large"></i> ПАНЕЛЬ УПРАВЛЕНИЯ // ВЫБЕРИТЕ НУЖНЫЙ РАЗДЕЛ
+            </div>
+            <div style="font-size:11px; color:var(--silver-muted); margin-top:2px;">
+              Нажми на карточку нужного инструмента — откроется только он без лишней прокрутки!
+            </div>
+          </div>
+          <button type="button" class="chip-btn" style="padding:8px 12px; border-color:#f5b041; color:#f5b041;" onclick="document.getElementById('adminControlHubModal').style.display='none'">
+            ЗАКРЫТЬ ✕
+          </button>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:12px;">
+          ${visibleItems.map(item => `
+            <button type="button" onclick="window.selectAdminSectionFromHub('${item.id}', '${item.title}')" style="display:flex; align-items:flex-start; gap:12px; padding:14px; border-radius:16px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.09); color:#fff; cursor:pointer; text-align:left; transition:0.2s;">
+              <div style="width:42px; height:42px; border-radius:12px; background:rgba(245,176,65,0.12); border:1px solid ${item.color}; color:${item.color}; display:flex; align-items:center; justify-content:center; font-size:17px; flex-shrink:0;">
+                <i class="fas ${item.icon}"></i>
+              </div>
+              <div>
+                <div style="font-family:var(--font-tech); font-size:11.5px; font-weight:900; color:#fff;">${item.title}</div>
+                <div style="font-size:10px; color:var(--silver-muted); margin-top:3px; line-height:1.35;">${item.desc}</div>
+              </div>
+            </button>
+          `).join('')}
+        </div>
+      </div>
+    `;
+    modal.style.display = 'flex';
+  };
+
+  window.selectAdminSectionFromHub = (catId, titleText) => {
+    const modal = document.getElementById('adminControlHubModal');
+    if (modal) modal.style.display = 'none';
+
+    const actualCat = catId === 'cat-shop' ? 'cat-v5' : catId;
+    window.filterPanels(actualCat, null);
+
+    const badge = document.getElementById('currentActiveToolBadge');
+    if (badge) {
+      badge.innerHTML = `РАЗДЕЛ: <b style="color:#f5b041;">${titleText.toUpperCase()}</b>`;
+    }
+    if (catId === 'cat-shop') {
+      setTimeout(() => {
+        document.getElementById('admProdTitle')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 150);
+    }
+  };
+
+  // 3. ПРЕМИАЛЬНЫЙ ГЕНЕРАТОР HD-КАРТОЧЕК (1280x720) ДЛЯ TELEGRAM (СО СКРИНШОТОМ ПОБЕДЫ И ЕЖЕНЕДЕЛЬНОЙ СТАТИСТИКОЙ!)
+  function loadCanvasImage(src) {
+    return new Promise((resolve) => {
+      if (!src) return resolve(null);
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => resolve(img);
+      img.onerror = () => resolve(null);
+      img.src = src;
+    });
+  }
+
+  async function generateC6EUltraCardBlob(cardConfig = {}) {
+    const {
+      badge = 'CYBER 6 ESPORTS // OFFICIAL',
+      title = 'CYBER 6 ESPORTS [C6E]',
+      subtitle = '',
+      lines = [],
+      accentColor = '#f5b041',
+      screenshotSrc = null,
+      weeklyKpis = null
+    } = cardConfig;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = 1280;
+    canvas.height = 720;
+    const ctx = canvas.getContext('2d');
+
+    // 1. Фон Obsidian & Solar Gold
+    const bgGrad = ctx.createLinearGradient(0, 0, 1280, 720);
+    bgGrad.addColorStop(0, '#0d1018');
+    bgGrad.addColorStop(0.55, '#07080b');
+    bgGrad.addColorStop(1, '#16120a');
+    ctx.fillStyle = bgGrad;
+    ctx.fillRect(0, 0, 1280, 720);
+
+    const radGlow = ctx.createRadialGradient(1020, 350, 30, 1020, 350, 360);
+    radGlow.addColorStop(0, 'rgba(245, 176, 65, 0.24)');
+    radGlow.addColorStop(0.6, 'rgba(245, 176, 65, 0.06)');
+    radGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = radGlow;
+    ctx.fillRect(0, 0, 1280, 720);
+
+    // Сетка
+    ctx.strokeStyle = 'rgba(245, 176, 65, 0.035)';
+    ctx.lineWidth = 1;
+    for (let x = 0; x < 1280; x += 64) {
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 720); ctx.stroke();
+    }
+    for (let y = 0; y < 720; y += 64) {
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(1280, y); ctx.stroke();
+    }
+
+    // Золотая рамка
+    ctx.strokeStyle = 'rgba(245, 176, 65, 0.42)';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(28, 28, 1224, 664);
+
+    const goldGrad = ctx.createLinearGradient(0, 0, 1280, 0);
+    goldGrad.addColorStop(0, accentColor || '#f5b041');
+    goldGrad.addColorStop(0.5, '#ffe89e');
+    goldGrad.addColorStop(1, '#9a6508');
+    ctx.fillStyle = goldGrad;
+    ctx.fillRect(28, 28, 1224, 5);
+    ctx.fillRect(28, 28, 5, 664);
+
+    const cleanCanvasText = (str) => String(str || '')
+      .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE00}-\u{FE0F}]/gu, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    // Верхний бейдж
+    ctx.fillStyle = 'rgba(245, 176, 65, 0.14)';
+    ctx.fillRect(64, 56, 560, 38);
+    ctx.strokeStyle = accentColor || '#f5b041';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(64, 56, 560, 38);
+
+    ctx.fillStyle = accentColor || '#f5b041';
+    ctx.font = '800 15px Orbitron, Montserrat, sans-serif';
+    ctx.fillText(cleanCanvasText(badge).toUpperCase().slice(0, 46), 82, 81);
+
+    // Заголовок и подзаголовок
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '900 36px Orbitron, Montserrat, sans-serif';
+    ctx.fillText(cleanCanvasText(title).toUpperCase().slice(0, 38), 64, 142);
+
+    if (subtitle) {
+      ctx.fillStyle = accentColor || '#f5b041';
+      ctx.font = '700 19px Montserrat, sans-serif';
+      ctx.fillText(cleanCanvasText(subtitle).slice(0, 64), 64, 178);
+    }
+
+    // РЕЖИМ A: ЕЖЕНЕДЕЛЬНЫЙ ОТЧЁТ КЛАНА И ИГРОКОВ (4 KPI БЛОКА + ТАБЛИЦА ИГРОКОВ)
+    if (weeklyKpis && Array.isArray(weeklyKpis) && weeklyKpis.length === 4) {
+      const boxW = 272;
+      const boxH = 86;
+      weeklyKpis.forEach((kpi, idx) => {
+        const bx = 64 + idx * (boxW + 18);
+        const by = 198;
+        ctx.fillStyle = 'rgba(245, 176, 65, 0.10)';
+        ctx.fillRect(bx, by, boxW, boxH);
+        ctx.strokeStyle = 'rgba(245, 176, 65, 0.45)';
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(bx, by, boxW, boxH);
+
+        ctx.fillStyle = '#9e9689';
+        ctx.font = '800 12px Orbitron, Montserrat, sans-serif';
+        ctx.fillText(cleanCanvasText(kpi.label).toUpperCase(), bx + 16, by + 28);
+
+        ctx.fillStyle = kpi.color || '#ffffff';
+        ctx.font = '900 24px Orbitron, Montserrat, sans-serif';
+        ctx.fillText(cleanCanvasText(kpi.value), bx + 16, by + 64);
+      });
+
+      let rowY = 330;
+      lines.slice(0, 6).forEach((rawLine, idx) => {
+        const cleanLine = cleanCanvasText(rawLine);
+        ctx.fillStyle = idx === 0 ? 'rgba(245, 176, 65, 0.14)' : 'rgba(255, 255, 255, 0.04)';
+        ctx.fillRect(64, rowY - 30, 1144, 44);
+        ctx.strokeStyle = idx === 0 ? 'rgba(245, 176, 65, 0.55)' : 'rgba(255, 255, 255, 0.08)';
+        ctx.strokeRect(64, rowY - 30, 1144, 44);
+
+        ctx.fillStyle = accentColor || '#f5b041';
+        ctx.fillRect(64, rowY - 30, 5, 44);
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '700 18px Montserrat, sans-serif';
+        ctx.fillText(cleanLine.slice(0, 82), 86, rowY - 2);
+        rowY += 50;
+      });
+    } else {
+      // РЕЖИМ B: КАРТОЧКА СО СКРИНШОТОМ ТАБА СПРАВА (ПОБЕДА С ПРАКА) ИЛИ ЛОГОТИПОМ C6E СПРАВА
+      let proofDrawn = false;
+      if (screenshotSrc) {
+        const shotImg = await loadCanvasImage(screenshotSrc);
+        if (shotImg) {
+          proofDrawn = true;
+          ctx.save();
+          ctx.fillStyle = '#050608';
+          ctx.fillRect(720, 195, 492, 410);
+          ctx.strokeStyle = accentColor || '#00e676';
+          ctx.lineWidth = 2.5;
+          ctx.strokeRect(720, 195, 492, 410);
+          ctx.drawImage(shotImg, 724, 199, 484, 402);
+
+          ctx.fillStyle = 'rgba(7, 8, 11, 0.88)';
+          ctx.fillRect(724, 199, 250, 30);
+          ctx.fillStyle = accentColor || '#00e676';
+          ctx.font = '900 12px Orbitron, sans-serif';
+          ctx.fillText('OFFICIAL STANDOFF 2 TAB PROOF', 736, 219);
+          ctx.restore();
+        }
+      }
+
+      if (!proofDrawn) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(1050, 355, 142, 0, Math.PI * 2);
+        ctx.strokeStyle = accentColor || '#f5b041';
+        ctx.lineWidth = 3.5;
+        ctx.shadowColor = accentColor || '#f5b041';
+        ctx.shadowBlur = 26;
+        ctx.stroke();
+        ctx.restore();
+
+        const logoImg = document.getElementById('hiddenBrandLogo');
+        if (logoImg && logoImg.complete && logoImg.naturalWidth > 0) {
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(1050, 355, 134, 0, Math.PI * 2);
+          ctx.clip();
+          ctx.drawImage(logoImg, 916, 221, 268, 268);
+          ctx.restore();
+        }
+      }
+
+      const lineW = proofDrawn ? 635 : 790;
+      let startY = 236;
+      lines.slice(0, 6).forEach((rawLine, idx) => {
+        const cleanLine = cleanCanvasText(rawLine);
+        ctx.fillStyle = idx === 0 ? 'rgba(245, 176, 65, 0.13)' : 'rgba(255, 255, 255, 0.04)';
+        ctx.fillRect(64, startY - 34, lineW, 50);
+        ctx.strokeStyle = idx === 0 ? 'rgba(245, 176, 65, 0.55)' : 'rgba(255, 255, 255, 0.08)';
+        ctx.strokeRect(64, startY - 34, lineW, 50);
+
+        ctx.fillStyle = accentColor || '#f5b041';
+        ctx.fillRect(64, startY - 34, 5, 50);
+
+        ctx.fillStyle = '#f7f4ef';
+        ctx.font = '700 18.5px Montserrat, sans-serif';
+        ctx.fillText(cleanLine.slice(0, proofDrawn ? 46 : 58), 86, startY - 3);
+        startY += 60;
+      });
+    }
+
+    // Нижний колонтитул
+    ctx.fillStyle = 'rgba(245, 176, 65, 0.25)';
+    ctx.fillRect(64, 634, 1148, 1);
+    ctx.fillStyle = '#9e9689';
+    ctx.font = '800 14px Orbitron, Montserrat, sans-serif';
+    ctx.fillText('CYBER 6 ESPORTS [C6E]  •  OFFICIAL PORTAL: CYBER6ESPORTS.GITHUB.IO', 64, 664);
+
+    const founderTag = (TG_CONFIG.founderUsername || '@kascheff').toUpperCase();
+    ctx.fillStyle = '#f5b041';
+    ctx.fillText(`FOUNDER: ${founderTag}`, 980, 664);
+
+    return new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.93));
+  }
+
+  // Универсальная отправка карточки в ТГК или в Группу (В ТЕКСТЕ ВСЕГДА ТОЛЬКО ССЫЛКА НА САЙТ!)
+  async function sendCleanCardToTelegram({ target = 'channel', linkLabel = 'CYBER 6 ESPORTS [C6E] — Открыть официальный портал', cardConfig = {} }) {
+    try {
+      const activeToken = await ensureBotTokenLoaded();
+      if (!activeToken) {
+        showToast("Сначала сохраните токен бота в настройках Основателя!", true);
+        return false;
+      }
+      const chatId = target === 'group' ? (TG_CONFIG.groupId || TG_CONFIG.channelId) : (TG_CONFIG.channelId || TG_CONFIG.groupId);
+      const photoBlob = await generateC6EUltraCardBlob(cardConfig);
+      const shortLinkCaption = `🔗 <a href="${TG_CONFIG.siteUrl}">${linkLabel}</a>`;
+
+      if (photoBlob) {
+        const fd = new FormData();
+        fd.append('chat_id', chatId);
+        fd.append('photo', photoBlob, 'c6e_card.jpg');
+        fd.append('caption', shortLinkCaption);
+        fd.append('parse_mode', 'HTML');
+
+        const res = await fetch(`https://api.telegram.org/bot${activeToken}/sendPhoto`, {
+          method: 'POST',
+          body: fd
+        });
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.description || 'Ошибка отправки карточки');
+        return true;
+      }
+      return false;
+    } catch (err) {
+      showToast("Ошибка ТГ-бота: " + err.message, true);
+      return false;
+    }
+  }
+
+  // Переопределяем все функции отправки в Telegram так, чтобы ВСЁ уходило карточкой и только со ссылкой!
+  // 1) ЕЖЕНЕДЕЛЬНЫЙ ОТЧЁТ О КЛАНЕ И ИГРОКАХ -> СТРОГО В ГРУППУ (groupId) С КАРТОЧКОЙ И ДЕТАЛЬНОЙ АНАЛИТИКОЙ
+  window.publishWeeklyReportToTG = async () => {
+    const sourceRoster = allKnownRosterPlayers.length > 0 ? allKnownRosterPlayers : cachedRoster;
+    if (sourceRoster.length === 0) return showToast("Сначала добавьте игроков в Состав!", true);
+    showToast("Генерирую карточку Еженедельного отчёта клана и отправляю в Группу...");
+
+    // Считаем статистику клана по пракам/матчам
+    const totalMatches = cachedHistory.length;
+    let wins = 0, losses = 0, totalClanKills = 0, totalClanDeaths = 0;
+
+    cachedHistory.forEach(m => {
+      const ourS = parseInt(m.our, 10) || 0;
+      const theirS = parseInt(m.their, 10) || 0;
+      if (ourS > theirS) wins++;
+      else losses++;
+      (m.players || []).forEach(p => {
+        totalClanKills += parseInt(p.kills, 10) || 0;
+        totalClanDeaths += parseInt(p.deaths, 10) || 0;
+      });
+    });
+
+    const statsList = sourceRoster.map(p => computeAdminPlayerStats(p));
+    statsList.sort((a, b) => parseFloat(b.liveKd) - parseFloat(a.liveKd));
+
+    if (totalClanKills === 0 && statsList.length > 0) {
+      statsList.forEach(s => {
+        totalClanKills += s.kills || 0;
+        totalClanDeaths += s.deaths || 0;
+      });
+    }
+
+    const avgRosterKd = statsList.length > 0
+      ? (statsList.reduce((acc, s) => acc + (parseFloat(s.liveKd) || 1), 0) / statsList.length).toFixed(2)
+      : '1.00';
+    const clanKd = totalClanDeaths > 0 ? (totalClanKills / totalClanDeaths).toFixed(2) : avgRosterKd;
+    const winRatePct = totalMatches > 0 ? Math.round((wins / totalMatches) * 100) : 100;
+
+    const weeklyKpis = [
+      { label: 'СЫГРАНО ПРАКОВ', value: `${totalMatches} МАТЧЕЙ`, color: '#ffffff' },
+      { label: 'ПОБЕДЫ / ПОРАЖЕНИЯ', value: `${wins}W / ${losses}L (${winRatePct}%)`, color: '#00e676' },
+      { label: 'ОБЩИЙ К/Д КЛАНА', value: `${clanKd} K/D`, color: '#f5b041' },
+      { label: 'УБИЙСТВА / СМЕРТИ', value: `${totalClanKills} У / ${totalClanDeaths} С`, color: '#38bdf8' }
+    ];
+
+    const playerLines = statsList.slice(0, 6).map((st, i) => {
+      return `#${i + 1} ${st.nick}  |  Убийств: ${st.kills}  |  Смертей: ${st.deaths}  |  K/D: ${st.liveKd}  |  APEX: ${st.totalPantheonPts} PTS`;
+    });
+
+    const ok = await sendCleanCardToTelegram({
+      target: 'group',
+      linkLabel: 'Подробная статистика и Еженедельный отчёт на сайте CYBER 6 ESPORTS [C6E]',
+      cardConfig: {
+        badge: 'WEEKLY CLAN & PLAYERS REPORT // [C6E]',
+        title: 'ЕЖЕНЕДЕЛЬНЫЙ ОТЧЁТ КЛАНА [C6E]',
+        subtitle: `ПРАКОВ: ${totalMatches}  |  ПОБЕД: ${wins} / ПОРАЖЕНИЙ: ${losses}  |  К/Д КЛАНА: ${clanKd}`,
+        weeklyKpis,
+        lines: playerLines,
+        accentColor: '#f5b041'
+      }
+    });
+
+    if (ok) {
+      showToast("Карточка Еженедельного отчёта отправлена в Группу!");
+      await logAdminAction("ЕЖЕНЕДЕЛЬНЫЙ ОТЧЁТ", `Отправил карточку отчёта в группу (Матчей: ${totalMatches}, K/D клана: ${clanKd})`);
+    }
+  };
+
+  // 2) ОТПРАВКА МАТЧА (ПОБЕДА С ПРАКА СО СКРИНШОТОМ -> В ТГК, ОСТАЛЬНЫЕ ОТЧЁТЫ -> В ГРУППУ)
+  window.publishMatchItemToTG = async (matchId) => {
+    const m = cachedHistory.find(item => item.id === matchId);
+    if (!m) return;
+    const ourScore = parseInt(m.our, 10) || 0;
+    const theirScore = parseInt(m.their, 10) || 0;
+    const isWin = ourScore > theirScore;
+    const ourPlayers = m.players || [];
+
+    const totalMatchKills = ourPlayers.reduce((s, p) => s + (parseInt(p.kills, 10) || 0), 0);
+    const totalMatchDeaths = ourPlayers.reduce((s, p) => s + (parseInt(p.deaths, 10) || 0), 0);
+
+    const cardLines = ourPlayers.slice(0, 5).map(p => `${p.nick}  —  ${p.kills} У / ${p.deaths} С  (K/D: ${p.kd})`);
+    cardLines.unshift(`Командные Убийства / Смерти: ${totalMatchKills} У / ${totalMatchDeaths} С  •  MVP: ${m.mvp || 'C6E'}`);
+
+    const targetDest = isWin ? 'channel' : 'group';
+    showToast(isWin ? "Формирую победную карточку со скрином для ТГК..." : "Формирую карточку отчёта о матче для Группы...");
+
+    const ok = await sendCleanCardToTelegram({
+      target: targetDest,
+      linkLabel: `Смотреть полный Таб и скрин матча [C6E] ${ourScore}:${theirScore} ${m.enemy} на сайте`,
+      cardConfig: {
+        badge: isWin ? `VICTORY // ${m.tour || 'SCRIM'} • ${m.map || 'STANDOFF 2'}` : `MATCH REPORT // ${m.map || 'STANDOFF 2'}`,
+        title: `[C6E]  ${ourScore} : ${theirScore}  ${m.enemy}`,
+        subtitle: isWin ? `ПОБЕДА CYBER 6 ESPORTS НА КАРТЕ ${(m.map || 'DUNE').toUpperCase()}` : `ИТОГИ МАТЧА НА КАРТЕ ${(m.map || 'DUNE').toUpperCase()}`,
+        lines: cardLines,
+        screenshotSrc: m.proofImg || null,
+        accentColor: isWin ? '#00e676' : '#f5b041'
+      }
+    });
+
+    if (ok) {
+      showToast(isWin ? "Победная карточка со скрином опубликована в ТГК!" : "Карточка отчёта о матче отправлена в Группу!");
+    }
+  };
+
+  // Авто-вызов при сохранении нового матча (addHistory)
+  const origAddHistory = window.addHistory;
+  window.addHistory = async () => {
+    const enemy = document.getElementById('hEnemy').value.trim();
+    const our = document.getElementById('hOur').value.trim() || '13';
+    const their = document.getElementById('hTheir').value.trim() || '0';
+    await origAddHistory();
+    if (enemy) {
+      await logAdminAction("ДОБАВЛЕН МАТЧ В ИСТОРИЮ", `Сохранил результат матча [C6E] ${our}:${their} ${enemy}`);
+    }
+  };
+
+  // 3) ОТПРАВКА НОВОСТИ И ОБНОВЛЕНИЯ САЙТА В ТГК (СТРОГО КАРТОЧКОЙ + ССЫЛКА)
+  window.publishNewsItemToTG = async (newsId) => {
+    const n = cachedNews.find(item => item.id === newsId);
+    if (!n) return;
+    const cleanBody = formatNewsHtmlForTelegram(n.text).replace(/<[^>]+>/g, '');
+    const shortLines = cleanBody.split('\n').map(s => s.trim()).filter(Boolean).slice(0, 5);
+
+    const ok = await sendCleanCardToTelegram({
+      target: 'channel',
+      linkLabel: `${n.title} — Читать на сайте CYBER 6 ESPORTS [C6E]`,
+      cardConfig: {
+        badge: `PORTAL UPDATE & NEWS // ${n.tag || 'C6E'}`,
+        title: n.tag === 'ОБНОВЛЕНИЕ' ? 'САЙТ [C6E] ОБНОВЛЕН!' : n.title,
+        subtitle: `${n.title} • ${n.date || ''}`,
+        lines: shortLines.length ? shortLines : ['Официальное обновление портала Cyber 6 Esports [C6E]'],
+        accentColor: '#f5b041'
+      }
+    });
+    if (ok) showToast("Карточка новости опубликована в ТГК!");
+  };
+
+  // 4) ОТПРАВКА КАРТОЧКИ БОЙЦА И ПОЛНОГО СОСТАВА (ТОЛЬКО ССЫЛКА В ТЕКСТЕ)
+  window.publishSinglePlayerToTG = async (nick) => {
+    const p = cachedRoster.find(item => item.nick === nick);
+    if (!p) return;
+    const st = computeAdminPlayerStats(p);
+    const ok = await sendCleanCardToTelegram({
+      target: 'channel',
+      linkLabel: `Открыть досье бойца ${p.nick} на сайте CYBER 6 ESPORTS [C6E]`,
+      cardConfig: {
+        badge: 'CYBER 6 ESPORTS // PRO ROSTER CARD',
+        title: p.nick,
+        subtitle: `РОЛЬ: ${p.role}  |  LIVE K/D: ${st.liveKd}  |  APEX RANK: ${st.totalPantheonPts} PTS`,
+        lines: [
+          `Ранг: ${p.stats ? p.stats.rank : 'The Legend'}  |  Матчей в Табе: ${st.matchesPlayed}`,
+          `Убийств в Табах: ${st.kills}  |  Смертей: ${st.deaths}`,
+          `Девайс: ${p.device || 'Mobile'}  |  Сенса: ${p.settings || 'Default'}`,
+          `Оружие: ${p.weapon || 'AKR / AWM'}`,
+          `Девиз: "${p.quote || 'Dominate. Evolve. Conquer.'}"`
+        ],
+        accentColor: '#f5b041'
+      }
+    });
+    if (ok) showToast(`Карточка бойца ${p.nick} отправлена!`);
+  };
+
+  window.publishFullRosterToTG = async () => {
+    if (cachedRoster.length === 0) return showToast("В составе пока нет игроков!", true);
+    const cardLines = cachedRoster.slice(0, 6).map((p, idx) => {
+      const st = computeAdminPlayerStats(p);
+      return `#${idx + 1} ${p.nick} — ${p.role} | K/D: ${st.liveKd} | Убийств: ${st.kills} | ${st.totalPantheonPts} PTS`;
+    });
+    const ok = await sendCleanCardToTelegram({
+      target: 'channel',
+      linkLabel: 'Актуальный состав и карточки бойцов на сайте CYBER 6 ESPORTS [C6E]',
+      cardConfig: {
+        badge: 'STANDOFF 2 DIVISION // OFFICIAL LINEUP',
+        title: 'СОСТАВ CYBER 6 ESPORTS',
+        subtitle: 'АКТИВНЫЙ БОЕВОЙ РОСТЕР ОРГАНИЗАЦИИ [C6E]',
+        lines: cardLines,
+        accentColor: '#f5b041'
+      }
+    });
+    if (ok) showToast("Карточка полного состава отправлена!");
+  };
+
+  // 5) ОТПРАВКА КАРТОЧКИ APEX RANK (900 GOLD)
+  window.publishPantheonWinnersToTG = async () => {
+    const source = allKnownRosterPlayers.length > 0 ? allKnownRosterPlayers : cachedRoster;
+    if (source.length === 0) return showToast("Сначала добавьте игроков в Состав!", true);
+    const ranked = source.map(p => computeAdminPlayerStats(p)).sort((a, b) => b.totalPantheonPts - a.totalPantheonPts);
+    const p1 = ranked[0] || { nick: 'TBA', totalPantheonPts: 100, liveKd: '1.00', kills: 0 };
+    const cardLines = ranked.slice(0, 6).map((st, idx) => {
+      const prize = idx === 0 ? '1 МЕСТО (500G)' : (idx === 1 ? '2 МЕСТО (250G)' : (idx === 2 ? '3 МЕСТО (150G)' : `#${idx + 1} В РЕЙТИНГЕ`));
+      return `${prize}: ${st.nick} — ${st.totalPantheonPts} PTS (K/D: ${st.liveKd} | Убийств: ${st.kills})`;
+    });
+    const ok = await sendCleanCardToTelegram({
+      target: 'channel',
+      linkLabel: 'Рейтинг APEX RANK (900 GOLD) на сайте CYBER 6 ESPORTS [C6E]',
+      cardConfig: {
+        badge: 'APEX RANK [C6E] // WEEKLY 900 GOLD PRIZE POOL',
+        title: 'РЕЙТИНГ БОЙЦОВ APEX RANK',
+        subtitle: `ЛИДЕР НЕДЕЛИ НА 500 GOLD: ${p1.nick} (${p1.totalPantheonPts} PTS)`,
+        lines: cardLines,
+        accentColor: '#f5b041'
+      }
+    });
+    if (ok) showToast("Карточка APEX RANK опубликована!");
+  };
+
+  // 6) СОЗДАНИЕ СЛОТА ПРАКА ИЛИ ПРЯМОЙ БРОНИ С СОПЕРНИКОМ (БЕЗ СМЕЩЕНИЯ ЧАСОВОГО ПОЯСА + КАРТОЧКА В ГРУППУ)
+  window.setQuickPracTime = (daysAdd, hour) => {
+    const d = new Date();
+    d.setDate(d.getDate() + daysAdd);
+    const pad = (n) => String(n).padStart(2, '0');
+    const formatted = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(hour)}:00`;
+    document.getElementById('pracDateInput').value = formatted;
+    showToast(`Выбрано время: ${daysAdd === 0 ? 'Сегодня' : 'Завтра'} в ${pad(hour)}:00 МСК`);
+  };
+
+  window.createPracSlot = async () => {
+    const dateInput = document.getElementById('pracDateInput').value;
+    const format = document.getElementById('pracFormatInput').value || 'BO1';
+    const server = document.getElementById('pracServerInput').value || 'Россия, Москва';
+    const autoSch = document.getElementById('pracAutoSchedule').checked;
+
+    const bookedClan = (document.getElementById('pracBookedClanInput')?.value || '').trim();
+    const bookedCap = (document.getElementById('pracBookedCapInput')?.value || '').trim();
+    const bookedMapsRaw = (document.getElementById('pracBookedMapsInput')?.value || '').trim();
+
+    if (!dateInput) return showToast("Выберите дату и время прака (или нажмите кнопку Сегодня 18:00 / 20:00)!", true);
+
+    // Сохраняем ровно то время, которое выбрал Админ (без сдвига часового пояса телефона!)
+    const [datePart, timePart] = dateInput.split('T');
+    const [y, m, d] = (datePart || '').split('-').map(Number);
+    const monthsRu = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+    const humanDate = (d && m) ? `${d} ${monthsRu[m - 1]}` : datePart;
+    const humanTime = (timePart || '19:00').slice(0, 5);
+    const displayTime = `${humanDate}, ${humanTime} (МСК)`;
+
+    const isDirectBooking = bookedClan.length > 0;
+    const parsedMaps = bookedMapsRaw ? bookedMapsRaw.split(',').map(s => s.trim()).filter(Boolean) : ['Sandstone', 'Province'];
+
+    const newSlot = {
+      id: Date.now(),
+      isoDate: new Date(dateInput).toISOString(),
+      displayTime,
+      format,
+      server,
+      status: isDirectBooking ? 'booked' : 'open',
+      team: isDirectBooking ? {
+        clanName: bookedClan,
+        captain: bookedCap || 'Капитан',
+        capId: '—',
+        contact: bookedCap.startsWith('@') ? bookedCap : '@captain',
+        format,
+        maps: parsedMaps,
+        lineup: 'Основной состав',
+        ip: 'Добавлено Админом',
+        deviceId: 'ADMIN'
+      } : null
+    };
+
+    if (await updateArray("practices", "list", newSlot)) {
+      if (autoSch) {
+        const shortDate = (d && m) ? `${String(d).padStart(2, '0')}.${String(m).padStart(2, '0')}` : humanDate;
+        await updateArray("schedule", "list", {
+          id: Date.now() + 1,
+          day: `ПРАК / ${shortDate}`,
+          time: humanTime,
+          type: 'CW',
+          event: isDirectBooking ? `Прак: [C6E] VS ${bookedClan} (${format})` : `Прак [C6E] (${format}) — Свободный слот`,
+          status: 'upcoming'
+        });
+      }
+
+      await sendCleanCardToTelegram({
+        target: 'group',
+        linkLabel: isDirectBooking
+          ? `Карточка брони прака [C6E] VS ${bookedClan} на сайте`
+          : 'Забронировать этот слот прака на сайте CYBER 6 ESPORTS [C6E]',
+        cardConfig: {
+          badge: isDirectBooking ? `SCRIM BOOKED // ${format}` : `OPEN SCRIM SLOT // ${format}`,
+          title: isDirectBooking ? `[C6E] VS ${bookedClan.toUpperCase()}` : '[C6E] ОТКРЫЛ СЛОТ НА ПРАК',
+          subtitle: `ДАТА И ВРЕМЯ: ${displayTime.toUpperCase()}`,
+          lines: isDirectBooking ? [
+            `Статус: ЗАБРОНИРОВАН НА САЙТЕ`,
+            `Клан соперника: ${bookedClan}`,
+            `Капитан / Связь: ${bookedCap || 'По договоренности'}`,
+            `Карты матча: ${parsedMaps.join(', ')}`,
+            `Формат: ${format}  |  Сервер: ${server}`
+          ] : [
+            `Статус: СВОБОДНЫЙ СЛОТ (ОТКРЫТА БРОНЬ)`,
+            `Дата и время игры: ${displayTime}`,
+            `Формат матча: ${format}`,
+            `Сервер / Регион: ${server}`,
+            `Выбрать карты и забронировать можно на сайте [C6E]`
+          ],
+          accentColor: isDirectBooking ? '#f5b041' : '#00e676'
+        }
+      });
+
+      await logAdminAction(
+        isDirectBooking ? "СОЗДАНА БРОНЬ ПРАКА" : "ОТКРЫТ СЛОТ ПРАКА",
+        isDirectBooking ? `Создал бронь прака [C6E] VS ${bookedClan} на ${displayTime}` : `Открыл свободный слот на прак: ${displayTime} (${format})`
+      );
+
+      showToast(isDirectBooking ? `Бронь с ${bookedClan} появилась на сайте и отправлена карточкой в Группу!` : "Свободный слот появился на сайте и отправлен карточкой в Группу!");
+      document.getElementById('pracDateInput').value = '';
+      if (document.getElementById('pracBookedClanInput')) document.getElementById('pracBookedClanInput').value = '';
+      if (document.getElementById('pracBookedCapInput')) document.getElementById('pracBookedCapInput').value = '';
+      if (document.getElementById('pracBookedMapsInput')) document.getElementById('pracBookedMapsInput').value = '';
+    }
+  };
+
+  window.publishOpenPracsToTG = async () => {
+    const openList = (cachedPracs || []).filter(p => p.status === 'open');
+    const bookedList = (cachedPracs || []).filter(p => p.status === 'booked');
+    if (openList.length === 0 && bookedList.length === 0) {
+      return showToast("Сначала создайте хотя бы один слот прака!", true);
+    }
+    const lines = [
+      ...openList.slice(0, 3).map(s => `СВОБОДЕН: ${s.displayTime} (${s.format || 'BO1'} • ${s.server || 'Москва'})`),
+      ...bookedList.slice(0, 3).map(s => `БРОНЬ: ${s.displayTime} — [C6E] VS ${s.team ? s.team.clanName : 'Соперник'}`)
+    ];
+    const ok = await sendCleanCardToTelegram({
+      target: 'group',
+      linkLabel: 'Записаться на прак и посмотреть сетку CW на сайте CYBER 6 ESPORTS [C6E]',
+      cardConfig: {
+        badge: 'PRO SCRIMS SCHEDULE // [C6E]',
+        title: 'СЕТКА ПРАКОВ CYBER 6 ESPORTS',
+        subtitle: `СВОБОДНЫХ СЛОТОВ: ${openList.length}  |  ЗАБРОНИРОВАНО: ${bookedList.length}`,
+        lines,
+        accentColor: '#f5b041'
+      }
+    });
+    if (ok) showToast("Карточка сетки праков отправлена в Группу!");
+  };
+
+  window.sendQuickCustomTgMessage = async (dest) => {
+    const inp = document.getElementById('admQuickTgBroadcastText');
+    const text = (inp?.value || '').trim();
+    if (!text) return showToast("Введите текст объявления для карточки!", true);
+    inp.value = '';
+    const ok = await sendCleanCardToTelegram({
+      target: dest === 'group' ? 'group' : 'channel',
+      linkLabel: 'Официальный портал CYBER 6 ESPORTS [C6E]',
+      cardConfig: {
+        badge: 'OFFICIAL STATEMENT // FOUNDER KAS',
+        title: 'ОБЪЯВЛЕНИЕ ШТАБА [C6E]',
+        subtitle: `ОТ ОСНОВАТЕЛЯ: ${(TG_CONFIG.founderUsername || '@kascheff').toUpperCase()}`,
+        lines: [text],
+        accentColor: '#f5b041'
+      }
+    });
+    if (ok) showToast(dest === 'group' ? "Карточка отправлена в Группу!" : "Карточка отправлена в ТГК!");
+  };
+
+  // 7. ОТКРЫТИЕ И ЗАКРЫТИЕ ЗАЯВОК В КЛАН НА САЙТЕ + 4 ШАБЛОНА РАСПИСАНИЯ + СМЕНА БАННЕРА ГЛАВНОЙ
+  window.toggleClanRecruitmentOpen = async () => {
+    cachedRecruitmentOpen = !cachedRecruitmentOpen;
+    try {
+      await setDoc(doc(db, DB_COLLECTION, "about"), { recruitmentOpen: cachedRecruitmentOpen }, { merge: true });
+      await logAdminAction(
+        cachedRecruitmentOpen ? "ОТКРЫТ НАБОР В КЛАН" : "ЗАКРЫТ НАБОР В КЛАН",
+        cachedRecruitmentOpen ? "Открыл приём заявок на вступление в [C6E] на сайте" : "Закрыл приём заявок на вступление в [C6E] на сайте"
+      );
+      showToast(cachedRecruitmentOpen ? "🟢 Приём заявок в клан на сайте ОТКРЫТ!" : "🔴 Приём заявок в клан на сайте ЗАКРЫТ!");
+    } catch (e) {
+      showToast("Ошибка переключения статуса набора", true);
+    }
+  };
+
+  onSnapshot(doc(db, DB_COLLECTION, "about"), (snap) => {
+    if (!snap.exists()) return;
+    const d = snap.data();
+    if (typeof d.recruitmentOpen === 'boolean') {
+      cachedRecruitmentOpen = d.recruitmentOpen;
+      const badge = document.getElementById('admRecruitmentStatusBadge');
+      if (badge) {
+        badge.innerText = cachedRecruitmentOpen ? 'НАБОР В КЛАН: ОТКРЫТ' : 'НАБОР В КЛАН: ЗАКРЫТ';
+        badge.style.color = cachedRecruitmentOpen ? '#00e676' : '#ff5263';
+        badge.style.borderColor = cachedRecruitmentOpen ? '#00e676' : '#ff5263';
+        badge.style.background = cachedRecruitmentOpen ? 'rgba(0,230,118,0.15)' : 'rgba(255,82,99,0.15)';
+      }
+    }
+  });
+
+  onSnapshot(doc(db, DB_COLLECTION, "reviews"), (snap) => {
+    if (!snap.exists()) return;
+    const apps = Array.isArray(snap.data().c6e_applications) ? snap.data().c6e_applications : [];
+    cachedJoinApplications = apps;
+    const cntEl = document.getElementById('admJoinAppsCount');
+    const listEl = document.getElementById('adminJoinApplicationsList');
+    if (cntEl) cntEl.innerText = String(apps.length);
+    if (listEl) {
+      listEl.innerHTML = apps.length === 0
+        ? '<span class="item-sub">Новых анкет пока нет</span>'
+        : apps.slice().reverse().map(a => `
+            <div class="list-item" style="border-left:3px solid #00e676;">
+              <div class="item-info">
+                <b>${a.nick || 'Кандидат'} <span style="color:#f5b041; font-size:10px;">(${a.role || 'Боец'})</span></b>
+                <span class="item-sub">Часы: ${a.hours || '—'} • Ранг: ${a.rank || '—'} • TG: <b>${a.tg || '—'}</b> • ${a.date || ''}</span>
+              </div>
+            </div>
+          `).join('');
+    }
+  });
+
+  window.clearJoinApplicationsList = async () => {
+    if (!confirm("Очистить список прочитанных заявок на вступление?")) return;
+    try {
+      await setDoc(doc(db, DB_COLLECTION, "reviews"), { c6e_applications: [] }, { merge: true });
+      showToast("Список анкет очищен");
+    } catch (e) {}
+  };
+
+  window.quickAddAdminScheduleTemplate = async (type, timeStr, eventTitle) => {
+    const now = new Date();
+    const weekday = now.toLocaleDateString('ru-RU', { weekday: 'long' }).toUpperCase();
+    const shortDate = now.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' });
+    const item = {
+      id: Date.now(),
+      day: `${weekday} / ${shortDate}`,
+      time: timeStr,
+      type,
+      event: eventTitle,
+      status: 'upcoming'
+    };
+    if (await updateArray("schedule", "list", item)) {
+      await logAdminAction("ШАБЛОН РАСПИСАНИЯ", `Добавил событие «${eventTitle}» на ${timeStr} МСК`);
+      showToast(`Добавлено в расписание: ${eventTitle} (${timeStr} МСК)!`);
+    }
+  };
+
+  window.openAdminHeroBannerSetter = () => {
+    pickImageForInput(async (dataUrl) => {
+      try {
+        await setDoc(doc(db, DB_COLLECTION, "about"), { heroBanner: dataUrl }, { merge: true });
+        await logAdminAction("БАННЕР ГЛАВНОГО ЭКРАНА", "Обновил широкоформатный баннер позади главной аватарки [C6E]");
+        showToast("Баннер главного экрана на сайте успешно обновлён!");
+      } catch (e) {
+        showToast("Ошибка сохранения баннера", true);
+      }
+    });
+  };
+
+  // 8. КОНСТРУКТОР МАГАЗИНА И ТОВАРОВ В ВАЛЮТЕ GOLD (G) + ВЫДАЧА РОЛИ АДМИНА И МЕДАЛЕЙ
+  const shopImgInp = document.getElementById('shopProductImageInput');
+  if (shopImgInp) {
+    shopImgInp.addEventListener('change', async (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      try {
+        const compressed = await compressImageFile(file, 720, 0.82);
+        const inp = document.getElementById('admProdImage');
+        if (inp) inp.value = compressed;
+        showToast("Фото товара загружено!");
+      } catch (err) {
+        showToast("Ошибка сжатия фото", true);
+      }
+    });
+  }
+
+  function renderAdminShopProductsList() {
+    const cont = document.getElementById('adminShopProductsList');
+    const cntEl = document.getElementById('admShopProductsCount');
+    if (cntEl) cntEl.innerText = String(cachedShopProducts.length);
+    if (!cont) return;
+
+    cont.innerHTML = cachedShopProducts.length === 0
+      ? '<span class="item-sub">На витрине пока используются стандартные товары. Добавьте свой первый товар выше!</span>'
+      : cachedShopProducts.map(prod => {
+          const disc = parseInt(prod.discountPct, 10) || 0;
+          return `
+            <div class="list-item" style="border-left:3px solid #f5b041;">
+              <div style="display:flex; align-items:center; gap:10px; min-width:0; flex:1;">
+                <img src="${prod.image || 'logo.png'}" onerror="this.src='logo.png'" style="width:40px; height:40px; border-radius:8px; object-fit:cover; border:1px solid rgba(245,176,65,0.4);">
+                <div class="item-info" style="min-width:0;">
+                  <b>${prod.title} <span style="color:#f5b041;">• ${prod.priceGold} G</span> ${disc > 0 ? `<span style="background:#e11d48; color:#fff; font-size:8.5px; padding:1px 5px; border-radius:4px;">-${disc}%</span>` : ''}</b>
+                  <span class="item-sub">${prod.badge || 'SHOP'} • Контакт: ${prod.contact || '@kascheff'}</span>
+                </div>
+              </div>
+              <div class="item-actions">
+                <button type="button" class="btn-icon edit" title="Изменить товар" onclick="window.editShopProductCard(${prod.id})"><i class="fas fa-pen"></i></button>
+                <button type="button" class="btn-icon del" title="Удалить товар" onclick="window.deleteShopProductCard(${prod.id})"><i class="fas fa-trash"></i></button>
+              </div>
+            </div>
+          `;
+        }).join('');
+  }
+
+  onSnapshot(doc(db, DB_COLLECTION, "shop_config"), (snap) => {
+    if (!snap.exists()) return;
+    const d = snap.data();
+    cachedShopProducts = Array.isArray(d.products) ? d.products : [];
+    renderAdminShopProductsList();
+  });
+
+  window.resetShopProductForm = () => {
+    ['admProdEditId', 'admProdTitle', 'admProdBadge', 'admProdPrice', 'admProdImage', 'admProdDesc'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+    const discEl = document.getElementById('admProdDiscount');
+    if (discEl) discEl.value = '0';
+    const contEl = document.getElementById('admProdContact');
+    if (contEl) contEl.value = TG_CONFIG.founderUsername || '@kascheff';
+  };
+
+  window.saveShopProductCard = async () => {
+    if (currentAdminRoleMode !== 'founder') {
+      return showToast("Управлять товарами магазина может только Основатель Kas!", true);
+    }
+    const title = (document.getElementById('admProdTitle')?.value || '').trim();
+    const priceGold = parseInt(document.getElementById('admProdPrice')?.value || '0', 10);
+    if (!title || !priceGold || priceGold <= 0) {
+      return showToast("Укажите название товара и цену в Gold (G)!", true);
+    }
+
+    const editId = document.getElementById('admProdEditId')?.value;
+    const badge = (document.getElementById('admProdBadge')?.value || 'VIP ITEM').trim();
+    const discountPct = Math.min(90, Math.max(0, parseInt(document.getElementById('admProdDiscount')?.value || '0', 10) || 0));
+    const contact = (document.getElementById('admProdContact')?.value || '@kascheff').trim();
+    const image = normalizeImageUrl((document.getElementById('admProdImage')?.value || '').trim());
+    const desc = (document.getElementById('admProdDesc')?.value || '').trim() || 'Официальный товар магазина CYBER 6 ESPORTS [C6E].';
+
+    const prodObj = {
+      id: editId ? parseInt(editId, 10) : Date.now(),
+      title,
+      badge,
+      priceGold,
+      discountPct,
+      contact,
+      image,
+      desc
+    };
+
+    try {
+      const ref = doc(db, DB_COLLECTION, "shop_config");
+      const snap = await getDoc(ref);
+      let products = (snap.exists() && Array.isArray(snap.data().products)) ? [...snap.data().products] : [];
+      const idx = products.findIndex(p => p.id === prodObj.id);
+      if (idx >= 0) products[idx] = prodObj;
+      else products.push(prodObj);
+
+      await setDoc(ref, { products }, { merge: true });
+      await setDoc(doc(db, DB_COLLECTION, "reviews"), { c6e_shop_products: products }, { merge: true }).catch(() => {});
+      await logAdminAction("МАГАЗИН [G]", `Сохранил карточку товара «${title}» (${priceGold} G, скидка ${discountPct}%)`);
+      window.resetShopProductForm();
+      showToast(`Товар «${title}» (${priceGold} G) сохранён на витрине магазина!`);
+    } catch (e) {
+      showToast("Ошибка сохранения товара", true);
+    }
+  };
+
+  window.editShopProductCard = (id) => {
+    const p = cachedShopProducts.find(item => item.id === id);
+    if (!p) return;
+    document.getElementById('admProdEditId').value = p.id;
+    document.getElementById('admProdTitle').value = p.title || '';
+    document.getElementById('admProdBadge').value = p.badge || '';
+    document.getElementById('admProdPrice').value = p.priceGold || 100;
+    document.getElementById('admProdDiscount').value = p.discountPct || 0;
+    document.getElementById('admProdContact').value = p.contact || '@kascheff';
+    document.getElementById('admProdImage').value = p.image || '';
+    document.getElementById('admProdDesc').value = p.desc || '';
+    showToast(`Редактирование товара: ${p.title}`);
+  };
+
+  window.deleteShopProductCard = async (id) => {
+    if (!confirm("Удалить этот товар с витрины магазина?")) return;
+    try {
+      const products = cachedShopProducts.filter(p => p.id !== id);
+      await setDoc(doc(db, DB_COLLECTION, "shop_config"), { products }, { merge: true });
+      await setDoc(doc(db, DB_COLLECTION, "reviews"), { c6e_shop_products: products }, { merge: true }).catch(() => {});
+      showToast("Товар удалён из магазина");
+    } catch (e) {}
+  };
+
+  // ВЫДАЧА ПРАВ АДМИНИСТРАТОРА САЙТА И МЕДАЛЕЙ ПО ВЫБОРУ ПРОФИЛЯ
+  window.toggleUserSiteAdminRole = async (profileId) => {
+    if (currentAdminRoleMode !== 'founder') {
+      return showToast("Выдавать права Администратора может только Основатель Kas!", true);
+    }
+    const target = adminProfilesCache.find(x => x.profileId === profileId);
+    if (!target) return;
+    const nextAdmin = !Boolean(target.isSiteAdmin);
+    await updateEveryProfileMirror(profileId, (p) => ({
+      ...p,
+      isSiteAdmin: nextAdmin
+    }));
+    await logAdminAction("ПРАВА АДМИНА", `${nextAdmin ? 'Выдал' : 'Снял'} права Администратора сайта игроку ${target.nick}`);
+    showToast(nextAdmin ? `🔑 Игроку ${target.nick} выдана роль Администратора сайта!` : `У игрока ${target.nick} снята роль Администратора.`);
+  };
+
+  window.awardProfileMedalPrompt = async (profileId) => {
+    const target = adminProfilesCache.find(x => x.profileId === profileId);
+    if (!target) return;
+    const medalText = prompt(`Введите название медали для профиля ${target.nick} (или оставьте пустым для сброса медалей):`, "CHAMPION APEX RANK [C6E]");
+    if (medalText === null) return;
+    const cleanMedal = medalText.trim();
+    await updateEveryProfileMirror(profileId, (p) => {
+      const curMedals = Array.isArray(p.medals) ? [...p.medals] : [];
+      const updatedMedals = cleanMedal ? [...new Set([...curMedals, cleanMedal])] : [];
+      return { ...p, medals: updatedMedals };
+    });
+    await logAdminAction("МЕДАЛЬ ПРОФИЛЯ", cleanMedal ? `Выдал медаль «${cleanMedal}» игроку ${target.nick}` : `Очистил медали игрока ${target.nick}`);
+    showToast(cleanMedal ? `Медаль «${cleanMedal}» добавлена в профиль ${target.nick}!` : `Медали игрока ${target.nick} очищены.`);
+  };
+
+  // Инициализация стартового режима и открытие первой компактной вкладки (без гигантской простыни)
+  setTimeout(() => {
+    window.setAdminPanelRoleMode(currentAdminRoleMode);
+    window.filterPanels('cat-matches', document.getElementById('adm-fbtn-matches'));
+    const subSnap = onSnapshot(doc(db, DB_COLLECTION, "security_logs"), (snap) => {
+      if (snap.exists()) {
+        cachedSecurityLogs = snap.data().logs || [];
+        cachedBannedUsers = snap.data().banned || [];
+        renderFilteredSecurityLogs();
+      }
+    });
+  }, 200);
+
 </script>
 </body>
 </html>
