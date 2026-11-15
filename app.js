@@ -5007,3 +5007,51 @@ function renderRecruitmentStatusGrid(recData) {
 renderStreakAndLevelUI();
 renderTacticalMapGuide();
 renderHomePickemWidget();
+
+
+// ============================================================================
+// 10. PWA & APK ENGINE: РЕГИСТРАЦИЯ SERVICE WORKER (sw.js) И УСТАНОВКА ПРИЛОЖЕНИЯ В 1 ТАП
+// ============================================================================
+let deferredPwaInstallPrompt = null;
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
+}
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPwaInstallPrompt = e;
+  const homeBtn = document.getElementById('home-install-app-btn');
+  if (homeBtn) homeBtn.style.display = 'inline-flex';
+});
+
+window.addEventListener('appinstalled', () => {
+  deferredPwaInstallPrompt = null;
+  const homeBtn = document.getElementById('home-install-app-btn');
+  if (homeBtn) homeBtn.style.display = 'none';
+  if (window.showNotify) {
+    window.showNotify("Приложение CYBER 6 ESPORTS успешно установлено на ваше устройство!", "success");
+  }
+});
+
+window.installCyber6App = async () => {
+  triggerHaptic(15);
+  if (deferredPwaInstallPrompt) {
+    deferredPwaInstallPrompt.prompt();
+    const { outcome } = await deferredPwaInstallPrompt.userChoice;
+    if (outcome === 'accepted') {
+      deferredPwaInstallPrompt = null;
+      const homeBtn = document.getElementById('home-install-app-btn');
+      if (homeBtn) homeBtn.style.display = 'none';
+    }
+    return;
+  }
+  // Если уже установлено или браузер (iOS Safari / встроенный браузер) требует установку через меню
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+  if (isStandalone) {
+    return window.showNotify("Вы уже используете установленное приложение CYBER 6 ESPORTS!", "success");
+  }
+  window.showNotify("Чтобы установить приложение: нажмите ⋮ (меню браузера в углу) ➔ «Добавить на гл. экран» / «Установить приложение»!", "success");
+};
