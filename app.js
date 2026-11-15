@@ -2203,7 +2203,7 @@ onSnapshot(doc(db, DB_COLLECTION, "practices"), (snap) => {
   const allSlots = snap.data().list;
   allSlots.sort((a, b) => new Date(a.isoDate) - new Date(b.isoDate));
 
-  const openSlots = allSlots.filter(s => s.status === 'open' && new Date(s.isoDate) > new Date());
+  const openSlots = allSlots.filter(s => s.status === 'open' && (!s.isoDate || (new Date(s.isoDate).getTime() + 36 * 3600 * 1000) > Date.now()));
   if (slotsGrid) {
     if (!openSlots.length) {
       slotsGrid.innerHTML = '<div style="font-size:12px; color:var(--silver-muted); padding:15px; grid-column:1/-1; text-align:center; border:1px dashed var(--glass-border); border-radius:8px;">Сейчас все слоты заняты. Загляните чуть позже!</div>';
@@ -2794,8 +2794,8 @@ window.submitPrac = async (e) => {
                   `🗺 <b>КАРТЫ:</b> ${maps.join(', ')}\n` +
                   `📝 <b>СОСТАВ:</b> ${escapeHTML(lineup || 'Не указан')}`;
 
-    await sendToBot(TG_CONFIG.channelId, tgMsg);
-    window.showNotify("Прак забронирован и добавлен в Расписание!", "success");
+    await sendToBot(TG_CONFIG.groupId || TG_CONFIG.channelId, tgMsg);
+    window.showNotify("Прак забронирован и отправлен в группу управления [C6E]!", "success");
     e.target.reset();
   } catch (err) {
     window.showNotify(err.message, "error");
@@ -3273,26 +3273,38 @@ function getDisplayTagAndBadge(prof) {
   };
 }
 
+// ЗОЛОТОЙ ПЯТИУГОЛЬНИК С БУКВОЙ 'G' (ОФИЦИАЛЬНАЯ ВАЛЮТА GOLD НА САЙТЕ)
+function renderGoldPentagonSVG(size = 18) {
+  return `<span class="gold-g-emblem" style="width:${size}px; height:${size}px;"><svg viewBox="0 0 28 28"><defs><linearGradient id="gPentG" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ffe89e"/><stop offset="55%" stop-color="#f5b041"/><stop offset="100%" stop-color="#9a6508"/></linearGradient></defs><polygon points="14,2 26,10.5 21.5,25 6.5,25 2,10.5" fill="url(#gPentG)" stroke="#fff3c4" stroke-width="1.5"/><text x="14" y="19" text-anchor="middle" fill="#07080b" font-family="Orbitron, sans-serif" font-weight="900" font-size="13">G</text></svg></span>`;
+}
+window.renderGoldPentagonSVG = renderGoldPentagonSVG;
+
 function updateHeaderProfileChipUI() {
   const imgEl = document.getElementById('hp-avatar-img');
   const wrapEl = document.querySelector('#header-profile-chip .hp-avatar-wrap');
   const nickEl = document.getElementById('hp-nick-line');
-  const subEl = document.getElementById('hp-sub-line');
-  if (!nickEl || !subEl) return;
+  if (!nickEl) return;
 
   if (!myLocalProfile || !myLocalProfile.nick) {
-    nickEl.innerText = 'Создать профиль';
-    subEl.innerHTML = '💎 Гость портала';
+    if (imgEl) imgEl.src = 'logo.png';
+    nickEl.innerText = 'Профиль';
     return;
   }
 
-  const info = getDisplayTagAndBadge(myLocalProfile);
   if (imgEl) imgEl.src = myLocalProfile.avatar || 'logo.png';
   if (wrapEl) {
-    wrapEl.className = `hp-avatar-wrap ${myLocalProfile.frameStyle || 'frame-c6e-mirror'}`;
+    wrapEl.className = 'hp-avatar-wrap';
   }
-  nickEl.innerHTML = `<span>${escapeHTML(myLocalProfile.countryFlag || '🌍')} ${info.tagStr ? escapeHTML(info.tagStr) + ' ' : ''}${escapeHTML(myLocalProfile.nick)}</span> ${renderDevVerifiedCheckHTML(myLocalProfile)}`;
-  subEl.innerHTML = `${info.isDev ? '⚡ Разработчик' : (info.isApprovedC6E ? '🛡️ Боец [C6E]' : '💎 Гость')} • ❤️ ${myLocalProfile.likes || 0}`;
+  // В правом верхнем углу строго только установленная аватарка, чистый ник и синяя галочка разработчика
+  nickEl.innerHTML = `<span style="overflow:hidden; text-overflow:ellipsis;">${escapeHTML(myLocalProfile.nick)}</span> ${renderDevVerifiedCheckHTML(myLocalProfile)}`;
+
+  // Показываем кнопку быстрого входа в Админ-панель, если пользователю выдана админка или статус разработчика
+  const admWrap = document.getElementById('hub-admin-access-wrap');
+  if (admWrap) {
+    const canAdmin = Boolean(myLocalProfile.isSiteAdmin || hasDeveloperBadge(myLocalProfile));
+    admWrap.style.display = canAdmin ? 'block' : 'none';
+  }
+
   if (typeof window.refreshAppHubProfile === 'function') window.refreshAppHubProfile();
 }
 
@@ -3760,6 +3772,7 @@ window.saveMyUserProfile = async () => {
     ip: clientSecurityMeta.ip || 'Определяется...',
     device: clientSecurityMeta.deviceInfo,
     isDeveloper: Boolean(existingMem && (existingMem.isDeveloper || existingMem.devBadge)) || (nick.toLowerCase() === 'kas'),
+    isSiteAdmin: Boolean(existingMem && existingMem.isSiteAdmin) || (nick.toLowerCase() === 'kas'),
     rejectionHandled: c6eStatus !== 'rejected'
   };
 
@@ -4484,99 +4497,165 @@ onSnapshot(doc(db, DB_COLLECTION, "global_chat"), (snap) => {
   } else {
     globalChatMessages = [];
   }
+  updateUnreadChatBadgeUI();
   renderGlobalChatSection();
 });
+
+function updateUnreadChatBadgeUI() {
+  const badge = document.getElementById('chat-unread-badge');
+  if (!badge) return;
+  const chatSec = document.getElementById('chat');
+  const isChatOpen = chatSec && chatSec.classList.contains('active');
+  if (isChatOpen) {
+    window.markGlobalChatAsRead();
+    return;
+  }
+  const lastReadTs = parseInt(localStorage.getItem('c6e_chat_last_read_ts') || '0', 10) || 0;
+  const myId = myLocalProfile ? myLocalProfile.profileId : '';
+  const unreadCount = globalChatMessages.filter(m => (m.ts || 0) > lastReadTs && m.senderId !== myId).length;
+  if (unreadCount > 0) {
+    badge.style.display = 'inline-flex';
+    badge.innerText = unreadCount > 99 ? '99+' : String(unreadCount);
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+window.markGlobalChatAsRead = () => {
+  try {
+    localStorage.setItem('c6e_chat_last_read_ts', String(Date.now()));
+  } catch (e) {}
+  const badge = document.getElementById('chat-unread-badge');
+  if (badge) badge.style.display = 'none';
+};
 
 // ============================================================================
 // РАЗДЕЛ «МАГАЗИН [C6E]» (ЭЛЕГАНТНЫЙ КИБЕР-МАРКЕТ С АЖИОТАЖЕМ)
 // ============================================================================
+const DEFAULT_SHOP_PRODUCTS = [
+  {
+    id: 101,
+    title: 'PRO КОНФИГ И РАСКЛАДКА ОСНОВЫ [C6E]',
+    desc: 'Полный пакет настроек чувствительности, ускорения, прицела и кастомной раскладки в 4 пальца от ведущих снайперов и рифлеров нашего состава.',
+    priceGold: 150,
+    discountPct: 25,
+    badge: 'PRO CONFIG',
+    image: '',
+    contact: '@kascheff'
+  },
+  {
+    id: 102,
+    title: 'VIP-СТАТУС И ЗОЛОТАЯ РАМКА ПРОФИЛЯ',
+    desc: 'Эксклюзивная именная рамка профиля на портале [C6E], выделение сообщений в Общем чате, медаль VIP-участника и приоритет на праках.',
+    priceGold: 250,
+    discountPct: 20,
+    badge: 'VIP STATUS',
+    image: '',
+    contact: '@kascheff'
+  },
+  {
+    id: 103,
+    title: 'ПЕРСОНАЛЬНЫЙ РАЗБОР ИГРЫ И ТРЕНИРОВКА',
+    desc: 'Индивидуальная тренировка 1-на-1 на полигоне и разбор твоих ошибок на картах Dune / Province / Sandstone с капитаном и основой [C6E].',
+    priceGold: 400,
+    discountPct: 0,
+    badge: 'COACHING',
+    image: '',
+    contact: '@kascheff'
+  },
+  {
+    id: 104,
+    title: 'СЛОТ В ЗАКРЫТЫЙ ТУРНИР CYBER 6 CUP',
+    desc: 'Гарантированный пропуск на закрытый еженедельный турнир [C6E] с призовым фондом в Голде и прямой трансляцией.',
+    priceGold: 100,
+    discountPct: 30,
+    badge: 'TOURNAMENT',
+    image: '',
+    contact: '@kascheff'
+  }
+];
+
 function renderShopSection() {
   const root = document.getElementById('c6e-shop-root');
   if (!root) return;
 
-  const waitCount = Array.isArray(shopConfigData.waitlist) ? shopConfigData.waitlist.length : 0;
-  const isWaiting = Array.isArray(shopConfigData.waitlist) && shopConfigData.waitlist.some(w => w.deviceId === clientSecurityMeta.deviceId);
+  const products = (Array.isArray(shopConfigData.products) && shopConfigData.products.length > 0)
+    ? shopConfigData.products
+    : DEFAULT_SHOP_PRODUCTS;
 
-  const teaserItems = [
-    { icon: 'fa-coins', color: 'var(--silver)', badge: 'LOCKED // SOON', title: 'ПАКИ ГОЛДЫ & GOLD PASS', desc: 'Мгновенное пополнение Голды и боевых пропусков Standoff 2 по закрытому курсу для участников портала [C6E].' },
-    { icon: 'fa-sliders-h', color: 'var(--accent-light)', badge: 'PRO CONFIGS', title: 'ПРИВАТНЫЕ НАСТРОЙКИ БОЙЦОВ [C6E]', desc: 'Эксклюзивные паки кастомной раскладки, точной сенсы, прицелов и секретов оттяжки от основы Cyber 6 Esports.' },
-    { icon: 'fa-crown', color: 'var(--silver)', badge: 'VIP STATUS', title: 'КАСТОМНЫЕ VIP-РАМКИ И БАННЕРЫ', desc: 'Уникальные зеркальные рамки профиля, выделенный ник в Общем чате и приоритетный слот на праках.' },
-    { icon: 'fa-trophy', color: 'var(--accent-light)', badge: 'TOURNAMENT SLOTS', title: 'БИЛЕТЫ НА ЗАКРЫТЫЕ ТУРНИРЫ C6E', desc: 'Прямые инвайты на еженедельные дуэли 1v1, 2v2 и 5v5 с гарантированным призовым фондом в Голде.' }
-  ];
+  const founderContact = (shopConfigData.founderUsername || TG_CONFIG.founderUsername || '@kascheff').replace(/^@/, '');
 
   root.innerHTML = `
-    <div class="shop-vault-hero">
-      <div style="display:inline-flex; align-items:center; gap:7px; padding:5px 14px; border-radius:20px; background:rgba(255,179,0,0.14); border:1px solid #ffb300; color:#ffb300; font-family:var(--font-tech); font-size:9.5px; font-weight:900; letter-spacing:1.2px; margin-bottom:12px;">
-        <i class="fas fa-lock"></i> SECRET CYBER MARKET // BY FOUNDER KAS
+    <div class="shop-vault-hero" style="padding:24px 20px;">
+      <div style="display:inline-flex; align-items:center; gap:8px; padding:5px 14px; border-radius:20px; background:rgba(245,176,65,0.12); border:1px solid rgba(245,176,65,0.45); color:#f5b041; font-family:var(--font-tech); font-size:9px; font-weight:900; letter-spacing:1.2px; margin-bottom:10px;">
+        ${renderGoldPentagonSVG(16)} OFFICIAL CYBER MARKET // ВАЛЮТА GOLD
       </div>
-      <h2 style="font-family:var(--font-tech); font-size:clamp(20px, 4vw, 28px); font-weight:900; color:#fff; margin:0 0 8px 0; letter-spacing:1px;">
-        ${escapeHTML(shopConfigData.title || 'КИБЕР-МАРКЕТ CYBER 6 ESPORTS [C6E]')}
+      <h2 style="font-family:var(--font-tech); font-size:clamp(19px, 4vw, 26px); font-weight:900; color:#fff; margin:0 0 6px 0; letter-spacing:1px;">
+        ${escapeHTML(shopConfigData.title || 'МАГАЗИН CYBER 6 ESPORTS [C6E]')}
       </h2>
-      <div style="font-family:var(--font-tech); font-size:11px; color:var(--accent-light); font-weight:800; letter-spacing:1.5px; margin-bottom:14px;">
-        ${escapeHTML(shopConfigData.subtitle || 'ЗАКРЫТЫЙ АУКЦИОН И ЭКСКЛЮЗИВНЫЙ ИГРОВОЙ КОНТЕНТ')}
-      </div>
-      <p style="max-width:640px; margin:0 auto 20px auto; font-size:13px; color:#d4d6dc; line-height:1.65;">
-        ${escapeHTML(shopConfigData.hypeText)}
+      <p style="max-width:620px; margin:0 auto; font-size:12px; color:var(--silver-muted); line-height:1.6;">
+        ${escapeHTML(shopConfigData.hypeText || 'Официальный магазин организации [C6E]. Все товары и привилегии оцениваются в игровой валюте Gold (G).')}
       </p>
-
-      <div style="display:flex; justify-content:center; align-items:center; gap:12px; flex-wrap:wrap;">
-        <button type="button" class="boost-btn" style="width:auto; padding:12px 22px; font-size:11px;" onclick="window.joinShopWaitlist()">
-          <i class="fas fa-bell"></i> ${isWaiting ? '✅ ВЫ В СПИСКЕ ПЕРВЫХ ПОКУПАТЕЛЕЙ' : 'УВЕДОМИТЬ МЕНЯ ОБ ОТКРЫТИИ ПЕРВЫМ'}
-        </button>
-        <span style="padding:10px 14px; border-radius:10px; background:rgba(255,255,255,0.04); border:1px solid var(--glass-border); font-family:var(--font-tech); font-size:10px; color:var(--silver);">
-          🔥 Уже ждут открытия: <b style="color:#ffb300;">${waitCount + 24}</b> игроков
-        </span>
-      </div>
     </div>
 
-    <div class="shop-teaser-grid">
-      ${teaserItems.map(item => `
-        <div class="shop-teaser-card">
-          <div>
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-              <span style="width:38px; height:38px; border-radius:10px; background:rgba(255,255,255,0.04); border:1px solid ${item.color}; color:${item.color}; display:inline-flex; align-items:center; justify-content:center; font-size:16px;">
-                <i class="fas ${item.icon}"></i>
-              </span>
-              <span style="font-family:var(--font-tech); font-size:8.5px; font-weight:800; color:${item.color}; background:rgba(0,0,0,0.5); padding:3px 8px; border-radius:6px; border:1px solid ${item.color};">
-                🔒 ${item.badge}
-              </span>
+    <div class="shop-products-grid">
+      ${products.map(prod => {
+        const price = parseInt(prod.priceGold, 10) || 100;
+        const disc = Math.min(90, Math.max(0, parseInt(prod.discountPct, 10) || 0));
+        const oldPrice = disc > 0 ? Math.round(price / (1 - disc / 100)) : 0;
+        const contactClean = String(prod.contact || founderContact).replace(/^@/, '');
+        const tgBuyUrl = `https://t.me/${contactClean}`;
+
+        return `
+          <div class="shop-product-card">
+            <div>
+              <div class="shop-prod-banner">
+                ${prod.image
+                  ? `<img src="${escapeHTML(prod.image)}" alt="${escapeHTML(prod.title)}" onerror="this.style.display='none'">`
+                  : `<div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+                       ${renderGoldPentagonSVG(48)}
+                       <span style="font-family:var(--font-tech); font-size:9px; color:var(--silver-muted); letter-spacing:1.5px;">CYBER 6 STORE</span>
+                     </div>`
+                }
+                ${prod.badge ? `<span class="shop-prod-badge">${escapeHTML(prod.badge)}</span>` : ''}
+                ${disc > 0 ? `<span class="shop-prod-discount">СКИДКА -${disc}%</span>` : ''}
+              </div>
+
+              <div class="shop-prod-body">
+                <div>
+                  <h3 style="font-family:var(--font-tech); font-size:13px; font-weight:900; color:#fff; margin:0 0 7px 0; line-height:1.35;">
+                    ${escapeHTML(prod.title)}
+                  </h3>
+                  <p style="font-size:11.5px; color:var(--silver-muted); line-height:1.55; margin:0;">
+                    ${escapeHTML(prod.desc || '')}
+                  </p>
+                </div>
+
+                <div class="shop-price-row">
+                  <div>
+                    <div style="font-size:8.5px; font-family:var(--font-tech); color:var(--silver-muted); text-transform:uppercase;">СТОИМОСТЬ:</div>
+                    <div class="shop-price-val">
+                      ${renderGoldPentagonSVG(20)}
+                      <span>${price}</span>
+                      <span style="font-size:10px; font-weight:800;">GOLD</span>
+                      ${oldPrice > price ? `<span class="shop-price-old">${oldPrice} G</span>` : ''}
+                    </div>
+                  </div>
+
+                  <a href="${tgBuyUrl}" target="_blank" style="text-decoration:none;">
+                    <button type="button" class="chip-btn" style="background:linear-gradient(135deg, #f5b041, #b87b14); color:#07080b; border-color:#ffe099; font-weight:900; padding:8px 14px; font-size:9.5px; border-radius:20px;">
+                      КУПИТЬ ➔
+                    </button>
+                  </a>
+                </div>
+              </div>
             </div>
-            <h3 style="font-family:var(--font-tech); font-size:13px; font-weight:800; color:#fff; margin:0 0 8px 0;">
-              ${item.title}
-            </h3>
-            <p style="font-size:11.5px; color:var(--silver-muted); line-height:1.55; margin:0 0 14px 0;">
-              ${item.desc}
-            </p>
           </div>
-          <div style="padding-top:10px; border-top:1px solid rgba(255,255,255,0.06); display:flex; justify-content:space-between; align-items:center; font-family:var(--font-tech); font-size:9.5px; color:#888;">
-            <span>ДОСТУП ПО ПРОФИЛЮ [C6E]</span>
-            <span style="color:#ffb300;">СКОРО ➔</span>
-          </div>
-        </div>
-      `).join('')}
+        `;
+      }).join('')}
     </div>
   `;
 }
-
-window.joinShopWaitlist = async () => {
-  if (checkIfCurrentUserBanned()) return;
-  try {
-    const ref = doc(db, DB_COLLECTION, "shop_config");
-    const snap = await getDoc(ref);
-    let waitlist = (snap.exists() && Array.isArray(snap.data().waitlist)) ? [...snap.data().waitlist] : [];
-    if (waitlist.some(w => w.deviceId === clientSecurityMeta.deviceId)) {
-      return window.showNotify("Вы уже записаны в VIP-лист ожидания Магазина [C6E]!", "success");
-    }
-    waitlist.push({
-      deviceId: clientSecurityMeta.deviceId,
-      nick: myLocalProfile ? myLocalProfile.nick : 'Гость',
-      ts: Date.now()
-    });
-    await setDoc(ref, { waitlist }, { merge: true });
-    addPersonalNotification("🛒 Вы в VIP-списке Магазина [C6E]!", "Как только Основатель Kas откроет продажи, вы получите персональное уведомление.", "success");
-    window.showNotify("🔥 Вы добавлены в список ожидания Магазина [C6E]!", "success");
-  } catch (e) {}
-};
 
 onSnapshot(doc(db, DB_COLLECTION, "shop_config"), (snap) => {
   if (snap.exists()) {
@@ -4854,10 +4933,10 @@ window.renderPostReactionsHTML = (itemKey) => {
   const counts = globalReactionsMap[itemKey] || { fire: 7, crown: 4, heart: 5, bolt: 3 };
   const myReact = localStorage.getItem('c6e_react_' + itemKey) || '';
   const emojis = [
-    { k: 'fire', icon: '🔥', val: counts.fire || 7 },
-    { k: 'crown', icon: '👑', val: counts.crown || 4 },
-    { k: 'heart', icon: '❤️', val: counts.heart || 5 },
-    { k: 'bolt', icon: '⚡', val: counts.bolt || 3 }
+    { k: 'fire', icon: '<i class="fas fa-fire" style="color:#f5b041;"></i>', val: counts.fire || 7 },
+    { k: 'crown', icon: '<i class="fas fa-crown" style="color:#f5b041;"></i>', val: counts.crown || 4 },
+    { k: 'heart', icon: '<i class="fas fa-heart" style="color:#e11d48;"></i>', val: counts.heart || 5 },
+    { k: 'bolt', icon: '<i class="fas fa-bolt" style="color:#38bdf8;"></i>', val: counts.bolt || 3 }
   ];
   return `
     <div class="c6e-reactions-bar" onclick="event.stopPropagation();">
