@@ -1121,6 +1121,9 @@
         <button type="button" class="btn-tg-action" style="background:linear-gradient(135deg, #f5b041, #b87b14); color:#07080b; padding:8px 14px;" onclick="window.toggleClanRecruitmentOpen()">
           <i class="fas fa-door-open"></i> ОТКРЫТЬ / ЗАКРЫТЬ ЗАЯВКИ НА САЙТЕ
         </button>
+        <button type="button" class="btn-tg-action" style="background:linear-gradient(135deg, #00e676, #059669); color:#07080b; padding:8px 14px;" onclick="window.restoreOldRosterFromCloud()">
+          <i class="fas fa-history"></i> ♻️ ВОССТАНОВИТЬ СТАРЫЙ СОСТАВ И K/D ИЗ БАЗЫ
+        </button>
         <button type="button" class="btn-tg-action founder-only-block" onclick="window.openAdminHeroBannerSetter()">
           <i class="fas fa-image"></i> СМЕНИТЬ БАННЕР ЗА АВАТАРКОЙ НА ГЛАВНОЙ
         </button>
@@ -6793,6 +6796,148 @@
       }
     });
   }, 200);
+
+
+  // =========================================================================
+  // 9. АВТО-БЭКАП И ВОССТАНОВЛЕНИЕ СТАРОГО СОСТАВА И ИХ K/D В 1 КЛИК
+  // =========================================================================
+
+  // Каждый раз при добавлении/изменении состава сохраняем резервную копию в reviews.c6e_roster_backup и localStorage
+  const origAddPlayer = window.addPlayer;
+  window.addPlayer = async () => {
+    await origAddPlayer();
+    setTimeout(async () => {
+      if (cachedRoster && cachedRoster.length > 0 && currentRosterType === 'roster_main') {
+        try { localStorage.setItem('c6e_admin_roster_backup', JSON.stringify(cachedRoster)); } catch (e) {}
+        try { await setDoc(doc(db, DB_COLLECTION, "reviews"), { c6e_roster_backup: cachedRoster }, { merge: true }); } catch (e) {}
+      }
+    }, 500);
+  };
+
+  window.restoreOldRosterFromCloud = async () => {
+    showToast("🔍 Ищу всех игроков состава и их статистику в Табах матчей, Профилях и Бэкапах...");
+    try {
+      const map = new Map();
+
+      // 1. Проверяем локальный бэкап в браузере админа/основателя
+      ['c6e_admin_roster_backup', 'c6e_roster_main_backup_v8'].forEach(k => {
+        try {
+          const raw = localStorage.getItem(k);
+          if (raw) {
+            const arr = JSON.parse(raw);
+            if (Array.isArray(arr)) {
+              arr.forEach(p => {
+                if (p && p.nick) map.set(normalizeAdminNickKey(p.nick), p);
+              });
+            }
+          }
+        } catch (e) {}
+      });
+
+      // 2. Проверяем облачный бэкап в reviews.c6e_roster_backup
+      try {
+        const revSnap = await getDoc(doc(db, DB_COLLECTION, "reviews"));
+        if (revSnap.exists() && Array.isArray(revSnap.data().c6e_roster_backup)) {
+          revSnap.data().c6e_roster_backup.forEach(p => {
+            if (p && p.nick) map.set(normalizeAdminNickKey(p.nick), p);
+          });
+        }
+      } catch (e) {}
+
+      // 3. Проверяем текущих игроков в roster_main и roster_reserve
+      [...knownMainList, ...knownReserveList, ...cachedRoster].forEach(p => {
+        if (p && p.nick) map.set(normalizeAdminNickKey(p.nick), p);
+      });
+
+      // 4. Извлекаем всех игроков [C6E] и их реальные Киллы/Смерти/K/D из Истории Матчей (siteData/history)
+      const histSnap = await getDoc(doc(db, DB_COLLECTION, "history"));
+      const histList = (histSnap.exists() && Array.isArray(histSnap.data().list)) ? histSnap.data().list : cachedHistory;
+
+      const killsTracker = {};
+      const deathsTracker = {};
+
+      (histList || []).forEach(m => {
+        (m.players || []).forEach(mp => {
+          if (!mp || !mp.nick) return;
+          const key = normalizeAdminNickKey(mp.nick);
+          if (!key) return;
+          killsTracker[key] = (killsTracker[key] || 0) + (parseInt(mp.kills, 10) || 0);
+          deathsTracker[key] = (deathsTracker[key] || 0) + (parseInt(mp.deaths, 10) || 0);
+
+          if (!map.has(key)) {
+            const calcKd = deathsTracker[key] > 0 ? (killsTracker[key] / deathsTracker[key]).toFixed(2) : (mp.kd || "1.15");
+            const cleanNick = String(mp.nick).includes('[C6E]') ? mp.nick : `[C6E] ${String(mp.nick).replace(/^\[[^\]]+\]\s*/, '')}`;
+            map.set(key, {
+              nick: cleanNick,
+              role: "Player",
+              img: "logo.png",
+              quote: "Cyber 6 Esports",
+              device: "Mobile 120 FPS",
+              settings: "Default",
+              weapon: "AKR / M4",
+              stats: {
+                kd: String(calcKd),
+                rank: "The Legend"
+              }
+            });
+          } else {
+            const cur = map.get(key);
+            if (deathsTracker[key] > 0 && (!cur.stats || !cur.stats.kd || cur.stats.kd === '1.0')) {
+              cur.stats = { ...(cur.stats || {}), kd: (killsTracker[key] / deathsTracker[key]).toFixed(2) };
+            }
+          }
+        });
+      });
+
+      // 5. Извлекаем всех подтверждённых бойцов [C6E] из базы Профилей (siteData/profiles + зеркала)
+      (adminProfilesCache || []).forEach(prof => {
+        if (!prof || !prof.nick) return;
+        const isC6E = prof.c6eStatus === 'approved' || prof.isDeveloper || String(prof.clanTag || '').toUpperCase().includes('C6E');
+        if (!isC6E) return;
+        const key = normalizeAdminNickKey(prof.nick);
+        if (!key) return;
+        const cleanNick = String(prof.nick).includes('[C6E]') ? prof.nick : `[C6E] ${String(prof.nick).replace(/^\[[^\]]+\]\s*/, '')}`;
+        if (!map.has(key)) {
+          map.set(key, {
+            nick: cleanNick,
+            role: prof.isDeveloper ? "Founder / IGL" : "Player",
+            img: prof.avatar || "logo.png",
+            quote: prof.bio || "Cyber 6 Esports",
+            device: "Mobile",
+            settings: "Default",
+            weapon: "AKR / AWM",
+            stats: {
+              kd: String(prof.kd || "1.20"),
+              rank: "The Legend"
+            }
+          });
+        } else {
+          const cur = map.get(key);
+          if (prof.avatar && prof.avatar !== 'logo.png' && (!cur.img || cur.img === 'logo.png')) {
+            cur.img = prof.avatar;
+          }
+          if (prof.kd && (!cur.stats || !cur.stats.kd || cur.stats.kd === '1.0')) {
+            cur.stats = { ...(cur.stats || {}), kd: String(prof.kd) };
+          }
+        }
+      });
+
+      const restoredList = Array.from(map.values());
+      if (restoredList.length === 0) {
+        return showToast("В Табах матчей и профилях пока не найдено записей бойцов [C6E].", true);
+      }
+
+      await setDoc(doc(db, DB_COLLECTION, "roster_main"), { list: restoredList });
+      await setDoc(doc(db, DB_COLLECTION, "reviews"), { c6e_roster_backup: restoredList }, { merge: true }).catch(() => {});
+      try { localStorage.setItem('c6e_admin_roster_backup', JSON.stringify(restoredList)); } catch (e) {}
+
+      await logAdminAction("ВОССТАНОВЛЕНИЕ СОСТАВА", `Восстановил ${restoredList.length} бойцов старого состава вместе с их K/D и статистикой Табов`);
+      showToast(`✅ Восстановлено бойцов в состав: ${restoredList.length}! Все их K/D и статистика Табов синхронизированы!`);
+    } catch (err) {
+      console.error(err);
+      showToast("Ошибка восстановления: " + err.message, true);
+    }
+  };
 
 </script>
 </body>
