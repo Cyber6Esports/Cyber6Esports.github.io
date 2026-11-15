@@ -44,6 +44,7 @@
 </head>
 <body>
 
+<canvas id="cyber-particles-canvas"></canvas>
 <div class="scanlines"></div>
 <div class="bg-logo"></div>
 
@@ -83,6 +84,7 @@
 
 <input type="file" id="guestAvatarFileInput" accept="image/*" style="display:none;">
 <input type="file" id="guestBannerFileInput" accept="image/*" style="display:none;">
+<input type="file" id="heroBannerFileInput" accept="image/*" style="display:none;">
 
 <!-- ВЕРХНЯЯ ПАНЕЛЬ ПРИЛОЖЕНИЯ (БЕЗ СТАРОГО ГАМБУРГЕРА — НАВИГАЦИЯ ВНИЗУ ЭКРАНА) -->
 <nav class="navbar">
@@ -95,6 +97,10 @@
   </div>
 
   <div class="nav-top-actions" style="display:flex; align-items:center; gap:7px; margin-left:auto;">
+    <button type="button" id="theme-switcher-btn" class="nav-icon-btn" onclick="if(window.openThemeModal) window.openThemeModal()" title="Тема оформления сайта">
+      <i class="fas fa-palette"></i>
+    </button>
+
     <button type="button" id="nav-music-btn" class="nav-icon-btn" onclick="toggleAmbient()" title="Фоновая кибер-атмосфера">
       <i class="fas fa-music" id="nav-music-icon"></i>
     </button>
@@ -120,69 +126,89 @@
 
         <!-- 1. ГЛАВНЫЙ ЭКРАН В СТИЛЕ ПРИЛОЖЕНИЯ (OBSIDIAN & SOLAR GOLD DASHBOARD) -->
   <section id="home" class="active" style="display: block; opacity: 1; transform: translateY(0);">
-    <div class="card cyber-hero-v5" style="border-color: rgba(245, 176, 65, 0.28) !important;">
-      <div class="hero-top-meta">
-        <span class="hero-live-pill" style="border-color:rgba(245,176,65,0.35); color:#f5b041;">
-          <span class="online-dot-pulse" style="background:#f5b041; box-shadow:0 0 8px #f5b041;"></span> PORTAL v0.5.0 • NIGHT CYBER EDITION
-        </span>
-        <span class="hero-dev-pill" style="border-color:rgba(245,176,65,0.35); color:#f3ece0;" onclick="if(window.openSiteReleaseModal) window.openSiteReleaseModal()">
-          <span class="c6e-dev-verified-badge" style="width:13px; height:13px; font-size:7.5px;">✓</span> DEV: KAS (@kas_0ff)
-        </span>
+    <!-- ЖИВОЙ ИНФОРМАЦИОННЫЙ ТИКЕР САЙТА -->
+    <div class="cyber-live-ticker">
+      <span class="ticker-badge"><i class="fas fa-bolt"></i> LIVE HUB</span>
+      <div class="ticker-text" id="home-cyber-ticker-text">
+        CYBER 6 ESPORTS [C6E] • WEEKLY APEX RANK 900 GOLD PRIZE POOL • PRO SCRIMS & MATCH TABS SYNC
       </div>
+    </div>
 
-      <!-- СВЕТЯЩЕЕСЯ ЗОЛОТОЕ КОЛЬЦО-ОРЕОЛ ВОКРУГ ЛОГОТИПА (КАК НА СКРИНЕ) -->
-      <div class="solar-eclipse-stage">
-        <div class="solar-eclipse-ring"></div>
-        <img src="logo.png" alt="Cyber 6 Esports" class="eclipse-inner-img" onerror="this.style.display='none'">
-      </div>
+    <div class="card cyber-hero-v5">
+      <!-- КАСТОМНЫЙ ШИРОКИЙ БАННЕР ПОЗАДИ ГЛАВНОЙ АВАТАРКИ -->
+      <div class="hero-banner-stage-wrap" id="hero-custom-banner-bg">
+        <div class="hero-banner-overlay-shade"></div>
 
-      <h2 class="hero-title" style="letter-spacing:4px; font-size:clamp(22px, 5.5vw, 34px); margin-bottom:4px;">
-        CYBER <span style="color:#f5b041;">6</span> ESPORTS
-      </h2>
-      <div id="typing-text" style="margin-bottom: 12px; color:#9e9689; letter-spacing:2.5px; font-size:10px;">
-        DOMINATE • EVOLVE • CONQUER
-      </div>
-
-      <div style="margin-bottom: 16px;">
-        <span class="solar-level-pill"><i class="fas fa-crown"></i> PANTHEON PRIZE POOL • 900 GOLD</span>
-      </div>
-
-      <!-- КНОПКА-КАПСУЛА С КРУГЛОЙ ИКОНКОЙ ▶ СПРАВА (КАК ENTER FOCUS MODE НА СКРИНЕ) -->
-      <button type="button" class="btn-glitch" style="max-width:340px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; padding:10px 12px 10px 22px !important;" onclick="selectTab('pantheon', document.getElementById('dock-btn-center'))">
-        <span>ВОЙТИ В ПАНТЕОН [C6E]</span>
-        <span style="width:32px; height:32px; border-radius:50%; background:rgba(245,176,65,0.18); border:1px solid #f5b041; color:#f5b041; display:inline-flex; align-items:center; justify-content:center; font-size:11px;">
-          <i class="fas fa-play"></i>
-        </span>
-      </button>
-      <button type="button" id="home-install-app-btn" class="chip-btn" style="display:none; max-width:340px; width:100%; margin:8px auto 0 auto; padding:10px 16px; border-radius:30px; border-color:#f5b041; color:#f5b041; background:rgba(245,176,65,0.12); font-weight:900; font-size:10px; justify-content:center; align-items:center; gap:8px;" onclick="window.installCyber6App()">
-        <i class="fas fa-download"></i> УСТАНОВИТЬ ПРИЛОЖЕНИЕ CYBER 6 НА ТЕЛЕФОН
-      </button>
-
-      <!-- БЫСТРЫЕ ИКОНКИ ДЕЙСТВИЙ (КАК QUICK ACTIONS: SEND / RECEIVE / TOP UP / MORE НА СКРИНЕ) -->
-      <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; margin-top:18px; padding-top:16px; border-top:1px solid rgba(255,255,255,0.06);">
-        <div style="cursor:pointer; text-align:center;" onclick="selectTab('team', null)">
-          <div style="width:42px; height:42px; border-radius:50%; margin:0 auto 6px auto; background:rgba(255,255,255,0.03); border:1px solid rgba(245,176,65,0.3); color:#f5b041; display:flex; align-items:center; justify-content:center; font-size:15px;">
-            <i class="fas fa-users"></i>
+        <div class="hero-top-meta" style="width:100%; margin-bottom:4px;">
+          <span class="hero-live-pill">
+            <span class="online-dot-pulse" style="background:var(--accent); box-shadow:0 0 8px var(--accent);"></span> PORTAL v0.8.0 • PRO EDITION
+          </span>
+          <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+            <button type="button" class="hero-banner-edit-btn" id="hero-change-banner-btn" onclick="if(window.openHeroBannerPicker) window.openHeroBannerPicker()" title="Поставить любой баннер за аватаркой">
+              <i class="fas fa-image"></i> БАННЕР
+            </button>
+            <span class="hero-dev-pill" onclick="if(window.openSiteReleaseModal) window.openSiteReleaseModal()" style="cursor:pointer;">
+              <span class="c6e-dev-verified-badge" style="width:13px; height:13px; font-size:7.5px;">✓</span> DEV: KAS (@kas_0ff)
+            </span>
           </div>
-          <div style="font-size:10px; font-weight:700; color:var(--silver);">Состав</div>
         </div>
-        <div style="cursor:pointer; text-align:center;" onclick="selectTab('practice', document.getElementById('dock-btn-practice'))">
-          <div style="width:42px; height:42px; border-radius:50%; margin:0 auto 6px auto; background:rgba(255,255,255,0.03); border:1px solid rgba(245,176,65,0.3); color:#f5b041; display:flex; align-items:center; justify-content:center; font-size:15px;">
-            <i class="fas fa-crosshairs"></i>
-          </div>
-          <div style="font-size:10px; font-weight:700; color:var(--silver);">Праки (CW)</div>
+
+        <!-- СВЕТЯЩЕЕСЯ КОЛЬЦО СТРОГО ПО РАЗМЕРУ АВАТАРКИ -->
+        <div class="solar-eclipse-stage">
+          <div class="solar-eclipse-ring"></div>
+          <img src="logo.png" id="hero-main-avatar-img" alt="Cyber 6 Esports" class="eclipse-inner-img" onerror="this.style.display='none'">
         </div>
-        <div style="cursor:pointer; text-align:center;" onclick="selectTab('shop', null)">
-          <div style="width:42px; height:42px; border-radius:50%; margin:0 auto 6px auto; background:rgba(255,255,255,0.03); border:1px solid rgba(245,176,65,0.3); color:#f5b041; display:flex; align-items:center; justify-content:center; font-size:15px;">
-            <i class="fas fa-shopping-bag"></i>
-          </div>
-          <div style="font-size:10px; font-weight:700; color:var(--silver);">Магазин</div>
+      </div>
+
+      <div class="hero-body-pad" style="text-align:center;">
+        <h2 class="hero-title" style="letter-spacing:4px; font-size:clamp(22px, 5.5vw, 34px); margin-bottom:4px;">
+          CYBER <span class="text-accent">6</span> ESPORTS
+        </h2>
+        <div id="typing-text" style="margin-bottom: 12px; color:#9e9689; letter-spacing:2.5px; font-size:10px;">
+          DOMINATE • EVOLVE • CONQUER
         </div>
-        <div style="cursor:pointer; text-align:center;" onclick="selectTab('app-hub', document.getElementById('dock-btn-hub'))">
-          <div style="width:42px; height:42px; border-radius:50%; margin:0 auto 6px auto; background:rgba(255,255,255,0.03); border:1px solid rgba(245,176,65,0.3); color:#f5b041; display:flex; align-items:center; justify-content:center; font-size:15px;">
-            <i class="fas fa-th-large"></i>
+
+        <div style="margin-bottom: 16px;">
+          <span class="solar-level-pill"><i class="fas fa-crown"></i> APEX RANK PRIZE POOL • 900 GOLD</span>
+        </div>
+
+        <button type="button" class="btn-glitch" style="max-width:340px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; padding:10px 12px 10px 22px !important;" onclick="selectTab('pantheon', document.getElementById('dock-btn-center'))">
+          <span>ОТКРЫТЬ РЕЙТИНГ APEX RANK</span>
+          <span style="width:32px; height:32px; border-radius:50%; background:var(--accent-dim); border:1px solid var(--accent); color:var(--accent); display:inline-flex; align-items:center; justify-content:center; font-size:11px;">
+            <i class="fas fa-play"></i>
+          </span>
+        </button>
+
+        <button type="button" id="home-install-app-btn" class="chip-btn" style="display:none; max-width:340px; width:100%; margin:8px auto 0 auto; padding:10px 16px; border-radius:30px; border-color:var(--accent); color:var(--accent); background:var(--accent-dim); font-weight:900; font-size:10px; justify-content:center; align-items:center; gap:8px;" onclick="window.installCyber6App()">
+          <i class="fas fa-download"></i> УСТАНОВИТЬ ПРИЛОЖЕНИЕ CYBER 6 НА ТЕЛЕФОН
+        </button>
+
+        <!-- БЫСТРЫЕ КНОПКИ ДЕЙСТВИЙ С ВЕКТОРНЫМИ SVG -->
+        <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; margin-top:18px; padding-top:16px; border-top:1px solid rgba(255,255,255,0.06);">
+          <div style="cursor:pointer; text-align:center;" onclick="selectTab('team', document.getElementById('dock-btn-team'))">
+            <div style="width:42px; height:42px; border-radius:14px; margin:0 auto 6px auto; background:rgba(255,255,255,0.03); border:1px solid rgba(var(--accent-rgb),0.32); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:15px;">
+              <i class="fas fa-shield-alt"></i>
+            </div>
+            <div style="font-size:10px; font-weight:700; color:var(--silver);">Состав</div>
           </div>
-          <div style="font-size:10px; font-weight:700; color:var(--silver);">Все разделы</div>
+          <div style="cursor:pointer; text-align:center;" onclick="selectTab('practice', document.getElementById('dock-btn-practice'))">
+            <div style="width:42px; height:42px; border-radius:14px; margin:0 auto 6px auto; background:rgba(255,255,255,0.03); border:1px solid rgba(var(--accent-rgb),0.32); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:15px;">
+              <i class="fas fa-crosshairs"></i>
+            </div>
+            <div style="font-size:10px; font-weight:700; color:var(--silver);">Праки (CW)</div>
+          </div>
+          <div style="cursor:pointer; text-align:center;" onclick="selectTab('shop', document.getElementById('dock-btn-shop'))">
+            <div style="width:42px; height:42px; border-radius:14px; margin:0 auto 6px auto; background:rgba(255,255,255,0.03); border:1px solid rgba(var(--accent-rgb),0.32); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:15px;">
+              <i class="fas fa-gem"></i>
+            </div>
+            <div style="font-size:10px; font-weight:700; color:var(--silver);">Магазин G</div>
+          </div>
+          <div style="cursor:pointer; text-align:center;" onclick="if(window.openThemeModal) window.openThemeModal()">
+            <div style="width:42px; height:42px; border-radius:14px; margin:0 auto 6px auto; background:rgba(255,255,255,0.03); border:1px solid rgba(var(--accent-rgb),0.32); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:15px;">
+              <i class="fas fa-palette"></i>
+            </div>
+            <div style="font-size:10px; font-weight:700; color:var(--silver);">Тема сайта</div>
+          </div>
         </div>
       </div>
     </div>
@@ -205,7 +231,7 @@
         </div>
       </div>
       <button type="button" id="home-claim-streak-btn" class="chip-btn" style="border-color:#f5b041; color:#f5b041; padding:9px 14px; font-weight:900; font-size:10px;" onclick="window.claimDailyPortalStreak()">
-        🔥 ОТМЕТИТЬСЯ (+15 ⚡)
+        <i class="fas fa-bolt"></i> ОТМЕТИТЬСЯ (+15 XP)
       </button>
     </div>
 
@@ -250,7 +276,7 @@
       <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; padding-bottom:12px; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.06);">
         <div>
           <div style="font-family:var(--font-tech); font-size:12px; font-weight:900; color:#fff; display:flex; align-items:center; gap:8px;">
-            <i class="fas fa-crown" style="color:#f5b041;"></i> ТОП-3 ПАНТЕОНА // ГОНКА ЗА 900 GOLD
+            <i class="fas fa-crown" style="color:#f5b041;"></i> ТОП-3 APEX RANK // ГОНКА ЗА 900 GOLD
           </div>
           <div style="font-size:10px; color:var(--silver-muted); margin-top:2px;">
             Очки PTS считаются автоматически по K/D из официальных Табов матчей + бусты зрителей
@@ -261,7 +287,7 @@
         </button>
       </div>
       <div id="home-pantheon-mini-grid" class="home-podium-mini-grid">
-        <div style="font-size:11px; color:var(--silver-muted); padding:12px; text-align:center;">Синхронизация лидеров Пантеона...</div>
+        <div style="font-size:11px; color:var(--silver-muted); padding:12px; text-align:center;">Синхронизация лидеров APEX RANK...</div>
       </div>
     </div>
 
@@ -273,7 +299,7 @@
             <span class="online-dot-pulse" style="background:#f5b041; box-shadow:0 0 8px #f5b041;"></span> ИГРОКИ ОНЛАЙН И ПРОФИЛИ СООБЩЕСТВА [C6E]
           </div>
           <div style="font-size:10px; color:var(--silver-muted); margin-top:3px;">
-            Нажми на карточку любого игрока, чтобы посмотреть его баннер, K/D, страну и поставить ❤️ лайк
+            Нажми на карточку любого игрока, чтобы посмотреть его баннер, K/D, страну и поставить лайк
           </div>
         </div>
         <div class="community-counters-strip">
@@ -295,7 +321,7 @@
         <button type="button" class="chip-btn comm-filter-btn active" id="comm-flt-all" style="border-color:#f5b041; color:#fff;" onclick="window.setHomeCommunityFilter('all')">ALL</button>
         <button type="button" class="chip-btn comm-filter-btn" id="comm-flt-c6e" onclick="window.setHomeCommunityFilter('c6e')">БОЙЦЫ [C6E]</button>
         <button type="button" class="chip-btn comm-filter-btn" id="comm-flt-guest" onclick="window.setHomeCommunityFilter('guest')">ГОСТИ</button>
-        <button type="button" class="chip-btn comm-filter-btn" id="comm-flt-top" onclick="window.setHomeCommunityFilter('top')">ТОП ❤️</button>
+        <button type="button" class="chip-btn comm-filter-btn" id="comm-flt-top" onclick="window.setHomeCommunityFilter('top')">ТОП ЛАЙКОВ</button>
       </div>
 
       <div id="home-online-profiles-grid" class="online-profiles-showcase">
@@ -349,7 +375,7 @@
           </div>
           <div class="solar-step-node active" onclick="selectTab('pantheon', document.getElementById('dock-btn-center'))" style="cursor:pointer;">
             <div class="solar-step-circle">4</div>
-            <div class="solar-step-lbl">ПАНТЕОН<br>900 GOLD</div>
+            <div class="solar-step-lbl">APEX RANK<br>900 GOLD</div>
           </div>
         </div>
       </div>
@@ -408,7 +434,7 @@
       </div>
 
       <div style="margin-bottom:8px;">
-        <span id="hub-profile-badge-pill" class="solar-level-pill">💎 ГОСТЬ ПОРТАЛА</span>
+        <span id="hub-profile-badge-pill" class="solar-level-pill">ГОСТЬ ПОРТАЛА</span>
       </div>
       <div id="hub-profile-medals" class="profile-medals-row"></div>
 
@@ -419,11 +445,11 @@
           <div id="hub-stat-kd" style="font-family:var(--font-tech); font-size:18px; font-weight:900; color:#fff; margin-top:3px;">1.20</div>
         </div>
         <div style="border-left:1px solid rgba(255,255,255,0.06); border-right:1px solid rgba(255,255,255,0.06);">
-          <div style="font-size:10px; color:var(--silver-muted);">Лайков ❤️</div>
+          <div style="font-size:10px; color:var(--silver-muted);">Лайков</div>
           <div id="hub-stat-likes" style="font-family:var(--font-tech); font-size:18px; font-weight:900; color:#f5b041; margin-top:3px;">0</div>
         </div>
         <div>
-          <div style="font-size:10px; color:var(--silver-muted);">Активность ⚡</div>
+          <div style="font-size:10px; color:var(--silver-muted);">Очки XP</div>
           <div id="hub-stat-pts" style="font-family:var(--font-tech); font-size:18px; font-weight:900; color:#fff; margin-top:3px;">20</div>
         </div>
       </div>
@@ -437,6 +463,16 @@
         </a>
       </div>
       <div class="solar-menu-list">
+        <button type="button" class="solar-menu-row featured" onclick="if(window.openThemeModal) window.openThemeModal()">
+          <div class="solar-menu-left">
+            <span class="solar-menu-icon"><i class="fas fa-palette"></i></span>
+            <div>
+              <div class="solar-menu-title">Тема оформления сайта (4 стиля)</div>
+              <div class="solar-menu-sub">По умолчанию: Тёмно-Золотая (Obsidian Gold), Рубин, Сапфир, Изумруд</div>
+            </div>
+          </div>
+          <i class="fas fa-chevron-right solar-menu-arrow"></i>
+        </button>
         <button type="button" class="solar-menu-row featured" id="hub-install-app-row" onclick="window.installCyber6App()">
           <div class="solar-menu-left">
             <span class="solar-menu-icon"><i class="fas fa-mobile-alt"></i></span>
@@ -451,8 +487,8 @@
           <div class="solar-menu-left">
             <span class="solar-menu-icon"><i class="fas fa-crown"></i></span>
             <div>
-              <div class="solar-menu-title">Пантеон [C6E] • Гонка за 900 GOLD</div>
-              <div class="solar-menu-sub">Еженедельный рейтинг бойцов (500 / 250 / 150G) и бусты</div>
+              <div class="solar-menu-title">APEX RANK [C6E] • Гонка за 900 GOLD</div>
+              <div class="solar-menu-sub">Рейтинг бойцов (100–350 PTS по Киллам и K/D) • Приз 900G</div>
             </div>
           </div>
           <i class="fas fa-chevron-right solar-menu-arrow"></i>
@@ -599,7 +635,7 @@
   <!-- НОВЫЙ ИННОВАЦИОННЫЙ РАЗДЕЛ: ПАНТЕОН [C6E] (ЕЖЕНЕДЕЛЬНАЯ ГОНКА ЗА 500 / 250 / 150 ГОЛДЫ ОТ ОСНОВАТЕЛЯ) -->
   <section id="pantheon">
     <div id="pantheon-root">
-      <div class="text-center" style="padding: 30px; color: var(--silver-muted);">Загрузка Пантеона [C6E]...</div>
+      <div class="text-center" style="padding: 30px; color: var(--silver-muted);">Загрузка рейтинга APEX RANK [C6E]...</div>
     </div>
   </section>
 
@@ -734,8 +770,8 @@
 
     <div class="sub-filter-bar">
       <button class="sub-filter-btn active" onclick="filterHistory('all', this)">Все матчи</button>
-      <button class="sub-filter-btn" onclick="filterHistory('win', this)">Только победы 🏆</button>
-      <button class="sub-filter-btn" onclick="filterHistory('proof', this)">Со скриншотом 📸</button>
+      <button class="sub-filter-btn" onclick="filterHistory('win', this)"><i class="fas fa-trophy text-accent"></i> Только победы</button>
+      <button class="sub-filter-btn" onclick="filterHistory('proof', this)"><i class="fas fa-camera text-accent"></i> Со скриншотом</button>
     </div>
 
     <div id="full-history-container">
@@ -796,16 +832,16 @@
       </div>
       <div id="join-roles-status-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(135px, 1fr)); gap:8px;">
         <div style="padding:8px 10px; border-radius:10px; background:rgba(255,255,255,0.03); border:1px solid rgba(245,176,65,0.3); font-size:11px; display:flex; justify-content:space-between;">
-          <span>🎯 Sniper</span><b style="color:#f5b041;">ОТКРЫТО</b>
+          <span><i class="fas fa-crosshairs text-accent"></i> Sniper</span><b style="color:#f5b041;">ОТКРЫТО</b>
         </div>
         <div style="padding:8px 10px; border-radius:10px; background:rgba(255,255,255,0.03); border:1px solid rgba(245,176,65,0.3); font-size:11px; display:flex; justify-content:space-between;">
-          <span>🧠 IGL / Капитан</span><b style="color:#f5b041;">ОТКРЫТО</b>
+          <span><i class="fas fa-chess-king text-accent"></i> IGL / Капитан</span><b style="color:#f5b041;">ОТКРЫТО</b>
         </div>
         <div style="padding:8px 10px; border-radius:10px; background:rgba(255,255,255,0.03); border:1px solid rgba(245,176,65,0.3); font-size:11px; display:flex; justify-content:space-between;">
-          <span>💥 Entry Fragger</span><b style="color:#f5b041;">ОТКРЫТО</b>
+          <span><i class="fas fa-bolt text-accent"></i> Entry Fragger</span><b style="color:#f5b041;">ОТКРЫТО</b>
         </div>
         <div style="padding:8px 10px; border-radius:10px; background:rgba(255,255,255,0.03); border:1px solid rgba(245,176,65,0.3); font-size:11px; display:flex; justify-content:space-between;">
-          <span>🛡️ Support</span><b style="color:#f5b041;">ОТКРЫТО</b>
+          <span><i class="fas fa-shield-alt text-accent"></i> Support</span><b style="color:#f5b041;">ОТКРЫТО</b>
         </div>
       </div>
     </div>
@@ -814,7 +850,12 @@
         <h2 class="font-tech text-silver" style="margin-bottom: 5px;">JOIN <span class="text-accent">CYBER 6</span></h2>
         <p style="font-size: 12px; color: var(--silver-muted);">Анкета кандидата будет отправлена в Telegram штаба C6E.</p>
       </div>
-      <form onsubmit="sendToTelegram(event)" autocomplete="off" style="margin-top: 20px;">
+      <div id="join-closed-notice" style="display:none; margin-top:16px; padding:22px 16px; border-radius:16px; background:rgba(255,42,84,0.10); border:1px solid rgba(255,42,84,0.45); text-align:center;">
+        <div style="font-size:28px; color:#ff2a54; margin-bottom:8px;"><i class="fas fa-lock"></i></div>
+        <div style="font-family:var(--font-tech); font-size:14px; font-weight:900; color:#fff; margin-bottom:6px;">НАБОР В КЛАН [C6E] ВРЕМЕННО ЗАКРЫТ</div>
+        <div id="join-closed-reason-text" style="font-size:12px; color:var(--silver-muted);">Администрация временно приостановила приём новых заявок. Следите за новостями портала!</div>
+      </div>
+      <form id="join-application-form" onsubmit="sendToTelegram(event)" autocomplete="off" style="margin-top: 20px;">
         <div class="form-group">
           <label class="form-label">Ваш игровой ник</label>
           <input type="text" id="nick" class="form-input" placeholder="Например: C6E | Player" required>
@@ -894,7 +935,7 @@
 
   const SECTION_TITLES_MAP = {
     'home': 'COMMAND HUB',
-    'pantheon': 'ПАНТЕОН • 900 GOLD',
+    'pantheon': 'APEX RANK • 900 GOLD',
     'chat': 'ОБЩИЙ ЧАТ 12Ч',
     'shop': 'CYBER MARKET [C6E]',
     'team': 'СОСТАВ КЛАНА',
@@ -982,30 +1023,51 @@
     if (lb) lb.classList.remove('active');
   };
 
-  window.toggleAmbient = function() {
-    const audio = document.getElementById('bg-music');
-    const icon = document.getElementById('btn-icon');
-    const status = document.getElementById('player-status');
-    if (!audio) return;
-    if (audio.paused) {
-      audio.play().then(() => {
-        icon.className = 'fas fa-pause';
-        status.innerText = "PLAYING";
-        status.style.color = "var(--success)";
-      }).catch(() => {
-        if (window.showNotify) window.showNotify("Добавьте music.mp3 или нажмите еще раз", "error");
-      });
-    } else {
-      audio.pause();
-      icon.className = 'fas fa-play';
-      status.innerText = "PAUSED";
-      status.style.color = "var(--silver-muted)";
-    }
-  };
-</script>
+  </script>
 
 
 <!-- ПЛАВАЮЩАЯ ЭМБЛЕМА ОБЩЕГО ЧАТА (СПРАВА ЧУТЬ ВЫШЕ НИЖНЕЙ ПАНЕЛИ С КРАСНЫМ СЧЁТЧИКОМ НОВЫХ СООБЩЕНИЙ) -->
+
+<!-- ДИАЛОГ РАЗРЕШЕНИЯ НА ВКЛЮЧЕНИЕ ФОНОВОГО ПРОИГРЫВАТЕЛЯ ПРИ ВХОДЕ НА САЙТ -->
+<div id="c6e-welcome-audio-prompt">
+  <div style="display:flex; align-items:center; gap:12px;">
+    <div style="width:42px; height:42px; border-radius:12px; background:var(--accent-dim); border:1px solid var(--accent); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;">
+      <i class="fas fa-headphones-alt"></i>
+    </div>
+    <div>
+      <div style="font-family:var(--font-tech); font-size:11.5px; font-weight:900; color:#fff;">КИБЕР-АТМОСФЕРА CYBER 6 ESPORTS</div>
+      <div style="font-size:10.5px; color:var(--silver-muted); margin-top:2px;">Включить фоновую музыку проигрывателя во время просмотра сайта?</div>
+    </div>
+  </div>
+  <div style="display:flex; gap:8px;">
+    <button type="button" class="btn-glitch" style="flex:1; padding:9px 12px !important; font-size:10px !important; margin:0;" onclick="window.acceptWelcomeAudio(true)">
+      <i class="fas fa-play" style="margin-right:6px;"></i> ВКЛЮЧИТЬ МУЗЫКУ
+    </button>
+    <button type="button" class="chip-btn" style="padding:9px 14px; font-size:10px;" onclick="window.acceptWelcomeAudio(false)">
+      БЕЗ ЗВУКА
+    </button>
+  </div>
+</div>
+
+<!-- ВСПЛЫВАЮЩЕЕ УВЕДОМЛЕНИЕ ОБ УСТАНОВКЕ САЙТА КАК ПРИЛОЖЕНИЯ (С КНОПКОЙ ОТКАЗА) -->
+<div id="c6e-pwa-install-toast">
+  <div style="display:flex; align-items:center; gap:10px; min-width:0;">
+    <img src="logo.png" alt="C6E" style="width:36px; height:36px; border-radius:10px; border:1px solid var(--accent); flex-shrink:0;" onerror="this.style.display='none'">
+    <div style="min-width:0;">
+      <div style="font-family:var(--font-tech); font-size:10.5px; font-weight:900; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">ПРИЛОЖЕНИЕ CYBER 6 ESPORTS</div>
+      <div style="font-size:9.5px; color:var(--silver-muted);">Установи наш сайт как приложение на рабочий стол телефона!</div>
+    </div>
+  </div>
+  <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
+    <button type="button" class="chip-btn" style="background:var(--accent); color:#07080b; border-color:var(--accent); font-weight:900; padding:7px 11px; font-size:9.5px;" onclick="window.installCyber6App()">
+      УСТАНОВИТЬ
+    </button>
+    <button type="button" class="chip-btn" style="padding:7px 9px; font-size:10px; color:var(--silver-muted);" title="Больше не показывать" onclick="window.dismissPwaInstallToast()">
+      ✕
+    </button>
+  </div>
+</div>
+
 <button type="button" id="floating-chat-fab" onclick="selectTab('chat', this)" title="Общий чат игроков [C6E]">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
     <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
