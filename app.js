@@ -5857,3 +5857,110 @@ setTimeout(() => {
   }
   requestAnimationFrame(draw);
 })();
+
+
+// ============================================================================
+// АВТО-ВОССТАНОВЛЕНИЕ СТАРОГО СОСТАВА И ИХ K/D ИЗ ТАБОВ МАТЧЕЙ, ПРОФИЛЕЙ И БЭКАПА
+// ============================================================================
+let rosterBackupMirror = [];
+
+onSnapshot(doc(db, DB_COLLECTION, "reviews"), (snap) => {
+  if (snap.exists() && Array.isArray(snap.data().c6e_roster_backup) && snap.data().c6e_roster_backup.length > 0) {
+    rosterBackupMirror = snap.data().c6e_roster_backup;
+    if (mainRosterData.length === 0) {
+      mainRosterData = [...rosterBackupMirror];
+      renderAllRosters();
+      renderPantheonSection();
+    }
+  }
+});
+
+function buildRecoveredRosterFromCloudSources() {
+  const map = new Map();
+
+  // 1) Сначала проверяем локальный и облачный бэкап состава
+  let localSavedRoster = [];
+  try {
+    const raw = localStorage.getItem('c6e_roster_main_backup_v8');
+    if (raw) localSavedRoster = JSON.parse(raw);
+  } catch (e) {}
+
+  [...rosterBackupMirror, ...localSavedRoster].forEach(p => {
+    if (!p || !p.nick) return;
+    const key = normalizeNickKey(p.nick);
+    if (key) map.set(key, { ...p });
+  });
+
+  // 2) Собираем всех бойцов нашего состава из сыгранных Табов (siteData/history)
+  (allHistoryData || []).forEach(m => {
+    (m.players || []).forEach(mp => {
+      if (!mp || !mp.nick) return;
+      const key = normalizeNickKey(mp.nick);
+      if (!key) return;
+      const cleanNick = String(mp.nick).includes('[C6E]') ? mp.nick : `[C6E] ${String(mp.nick).replace(/^\[[^\]]+\]\s*/, '')}`;
+      if (!map.has(key)) {
+        map.set(key, {
+          nick: cleanNick,
+          role: "Main Roster",
+          img: "logo.png",
+          quote: "Dominate. Evolve. Conquer.",
+          device: "120 FPS Mobile",
+          settings: "Pro Default",
+          weapon: "AKR / AWM",
+          stats: {
+            kd: String(mp.kd || "1.15"),
+            rank: "The Legend"
+          }
+        });
+      }
+    });
+  });
+
+  // 3) Обогащаем данными из подтверждённых профилей бойцов [C6E] (аватарка, K/D, ID)
+  (allProfilesList || []).forEach(prof => {
+    if (!prof || !prof.nick) return;
+    const isC6E = prof.c6eStatus === 'approved' || hasDeveloperBadge(prof) || String(prof.clanTag || '').toUpperCase().includes('C6E');
+    if (!isC6E) return;
+    const key = normalizeNickKey(prof.nick);
+    if (!key) return;
+    const cleanNick = String(prof.nick).includes('[C6E]') ? prof.nick : `[C6E] ${String(prof.nick).replace(/^\[[^\]]+\]\s*/, '')}`;
+    const existing = map.get(key) || {
+      nick: cleanNick,
+      role: hasDeveloperBadge(prof) ? "Founder / IGL" : "Main Roster",
+      img: prof.avatar || "logo.png",
+      quote: prof.bio || "Cyber 6 Esports",
+      device: "120 FPS",
+      settings: "Custom",
+      weapon: "AKR / AWM",
+      stats: {
+        kd: String(prof.kd || "1.20"),
+        rank: "The Legend"
+      }
+    };
+    if (prof.avatar && prof.avatar !== 'logo.png' && (!existing.img || existing.img === 'logo.png')) {
+      existing.img = prof.avatar;
+    }
+    if (prof.kd && (!existing.stats || !existing.stats.kd || existing.stats.kd === '1.0')) {
+      existing.stats = { ...(existing.stats || {}), kd: String(prof.kd) };
+    }
+    map.set(key, existing);
+  });
+
+  return Array.from(map.values());
+}
+
+// Автоматически сохраняем бэкап, когда в roster_main есть игроки, или восстанавливаем, если он пуст
+setInterval(() => {
+  if (mainRosterData && mainRosterData.length > 0) {
+    try {
+      localStorage.setItem('c6e_roster_main_backup_v8', JSON.stringify(mainRosterData));
+    } catch (e) {}
+  } else {
+    const recovered = buildRecoveredRosterFromCloudSources();
+    if (recovered.length > 0) {
+      mainRosterData = recovered;
+      renderAllRosters();
+      renderPantheonSection();
+    }
+  }
+}, 2800);
