@@ -19,7 +19,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
-  <link rel="stylesheet" href="style.css?v=11">
+  <link rel="stylesheet" href="style.css?v=12">
   <script>
     (function() {
       try {
@@ -80,7 +80,7 @@
 
 <!-- ВЕРХНЯЯ ПАНЕЛЬ ПРИЛОЖЕНИЯ (БЕЗ СТАРОГО ГАМБУРГЕРА — НАВИГАЦИЯ ВНИЗУ ЭКРАНА) -->
 <nav class="navbar">
-  <div class="nav-brand" onclick="selectTab('home', document.getElementById('dock-btn-home'))">
+  <div class="nav-brand" onclick="selectTab('home', document.getElementById('dock-btn-center'))">
     <img src="logo.png" alt="C6E" onerror="this.style.display='none'"> 
     <div class="nav-brand-text">
       <h1>CYBER <span class="six-num">6</span></h1>
@@ -88,27 +88,23 @@
     </div>
   </div>
 
-  <div class="nav-top-actions" style="display:flex; align-items:center; gap:6px; margin-left:auto;">
-    <button type="button" id="nav-music-btn" class="nav-icon-btn" onclick="toggleAmbient()" title="Фоновая кибер-атмосфера (Музыка)">
+  <div class="nav-top-actions" style="display:flex; align-items:center; gap:7px; margin-left:auto;">
+    <button type="button" id="nav-music-btn" class="nav-icon-btn" onclick="toggleAmbient()" title="Фоновая кибер-атмосфера">
       <i class="fas fa-music" id="nav-music-icon"></i>
     </button>
 
-    <button type="button" id="theme-switcher-btn" class="nav-icon-btn" onclick="if(window.openThemeSwitcherModal) window.openThemeSwitcherModal()" title="Сменить палитру сайта">
-      <i class="fas fa-palette" style="color:var(--accent-light);"></i>
-    </button>
-
-    <button type="button" id="notif-bell-btn" class="nav-icon-btn" onclick="if(window.openNotificationsModal) window.openNotificationsModal()" title="Уведомления и упоминания">
+    <button type="button" id="notif-bell-btn" class="nav-icon-btn" onclick="if(window.openNotificationsModal) window.openNotificationsModal()" title="Центр уведомлений">
       <i class="fas fa-bell"></i>
       <span id="notif-badge-count" class="notif-count-pill" style="display:none;">0</span>
     </button>
 
-    <div id="header-profile-chip" class="header-profile-chip" onclick="selectTab('app-hub', document.getElementById('dock-btn-hub'))" title="Открыть профиль и все разделы">
-      <div class="hp-avatar-wrap frame-c6e-gold">
+    <div id="header-profile-chip" class="header-profile-chip" onclick="selectTab('app-hub', document.getElementById('dock-btn-hub'))" title="Открыть профиль и разделы">
+      <div class="hp-avatar-wrap">
         <img id="hp-avatar-img" src="logo.png" alt="Avatar" onerror="this.src='logo.png'">
       </div>
       <div class="hp-info">
         <div id="hp-nick-line" class="hp-nick">Профиль</div>
-        <div id="hp-sub-line" class="hp-sub">💎 Гость</div>
+        <div id="hp-sub-line" class="hp-sub" style="display:none;"></div>
       </div>
     </div>
   </div>
@@ -424,6 +420,13 @@
       </div>
 
       <!-- НАВИГАЦИОННЫЙ СПИСОК ВСЕХ РАЗДЕЛОВ САЙТА СО СТРЕЛКАМИ '>' (1:1 КАК НА СКРИНШОТЕ) -->
+      <div id="hub-admin-access-wrap" style="display:none; margin-bottom:12px;">
+        <a href="admin.html" style="text-decoration:none;">
+          <button type="button" class="btn-glitch" style="border-color:#f5b041 !important; color:#f5b041 !important;">
+            <i class="fas fa-user-shield" style="margin-right:8px;"></i> ОТКРЫТЬ ПАНЕЛЬ УПРАВЛЕНИЯ АДМИНА [C6E]
+          </button>
+        </a>
+      </div>
       <div class="solar-menu-list">
         <button type="button" class="solar-menu-row featured" onclick="selectTab('pantheon', document.getElementById('dock-btn-center'))">
           <div class="solar-menu-left">
@@ -915,12 +918,18 @@
       el.classList.remove('active');
     });
     const dockMap = {
-      'home': 'dock-btn-home',
-      'chat': 'dock-btn-chat',
-      'pantheon': 'dock-btn-center',
+      'shop': 'dock-btn-shop',
       'practice': 'dock-btn-practice',
+      'team': 'dock-btn-team',
+      'home': 'dock-btn-center',
+      'news': 'dock-btn-news',
       'app-hub': 'dock-btn-hub'
     };
+    const chatFab = document.getElementById('floating-chat-fab');
+    if (chatFab) chatFab.classList.toggle('active', tabId === 'chat');
+    if (tabId === 'chat' && typeof window.markGlobalChatAsRead === 'function') {
+      window.markGlobalChatAsRead();
+    }
     const dockId = dockMap[tabId] || 'dock-btn-hub';
     const dockEl = document.getElementById(dockId);
     if (dockEl) dockEl.classList.add('active');
@@ -977,35 +986,79 @@
 </script>
 
 
-<!-- НИЖНЯЯ НАВИГАЦИОННАЯ ДОК-ПАНЕЛЬ ПРИЛОЖЕНИЯ С ЦЕНТРАЛЬНОЙ ЗОЛОТОЙ КНОПКОЙ (КАК НА СКРИНШОТЕ) -->
+<!-- ПЛАВАЮЩАЯ ЭМБЛЕМА ОБЩЕГО ЧАТА (СПРАВА ЧУТЬ ВЫШЕ НИЖНЕЙ ПАНЕЛИ С КРАСНЫМ СЧЁТЧИКОМ НОВЫХ СООБЩЕНИЙ) -->
+<button type="button" id="floating-chat-fab" onclick="selectTab('chat', this)" title="Общий чат игроков [C6E]">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+    <line x1="8" y1="11" x2="16" y2="11"></line>
+    <line x1="8" y1="15" x2="13" y2="15"></line>
+  </svg>
+  <span id="chat-unread-badge">0</span>
+</button>
+
+<!-- НИЖНЯЯ НАВИГАЦИОННАЯ ДОК-ПАНЕЛЬ САЙТА:
+     [Магазин] [Праки] [Состав C6E] (Главная — Дом в центре) [Новости] [Разделы] -->
 <nav id="c6e-bottom-dock">
-  <button type="button" class="dock-nav-item active" id="dock-btn-home" onclick="selectTab('home', this)">
-    <i class="fas fa-home"></i>
-    <span class="dock-lbl">Главная</span>
+  <!-- 1. МАГАЗИН С ЭМБЛЕМОЙ -->
+  <button type="button" class="dock-nav-item" id="dock-btn-shop" onclick="selectTab('shop', this)">
+    <svg class="dock-svg-icon" viewBox="0 0 24 24">
+      <polygon points="12,2 22,8.5 18.5,21 5.5,21 2,8.5"></polygon>
+      <text x="12" y="16" text-anchor="middle" fill="currentColor" stroke="none" font-family="Orbitron, sans-serif" font-weight="900" font-size="10">G</text>
+    </svg>
+    <span class="dock-lbl">Магазин</span>
   </button>
 
-  <button type="button" class="dock-nav-item" id="dock-btn-chat" onclick="selectTab('chat', this)">
-    <i class="fas fa-comments"></i>
-    <span class="dock-lbl">Чат</span>
-  </button>
-
-  <div class="dock-center-orb-wrap" id="dock-btn-center" onclick="selectTab('pantheon', this)" title="Пантеон [C6E] • 900 GOLD">
-    <div class="dock-center-orb-inner">
-      <img src="logo.png" alt="C6E" onerror="this.style.display='none'; this.parentElement.innerHTML='<i class=\'fas fa-crown\'></i>';">
-    </div>
-  </div>
-
+  <!-- 2. ПРАКИ (CW) -->
   <button type="button" class="dock-nav-item" id="dock-btn-practice" onclick="selectTab('practice', this)">
-    <i class="fas fa-crosshairs"></i>
+    <svg class="dock-svg-icon" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9"></circle>
+      <line x1="12" y1="3" x2="12" y2="7"></line>
+      <line x1="12" y1="17" x2="12" y2="21"></line>
+      <line x1="3" y1="12" x2="7" y2="12"></line>
+      <line x1="17" y1="12" x2="21" y2="12"></line>
+      <circle cx="12" cy="12" r="2"></circle>
+    </svg>
     <span class="dock-lbl">Праки</span>
   </button>
 
+  <!-- 3. СОСТАВ C6E -->
+  <button type="button" class="dock-nav-item" id="dock-btn-team" onclick="selectTab('team', this)">
+    <svg class="dock-svg-icon" viewBox="0 0 24 24">
+      <path d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3z"></path>
+      <path d="M9 12l2 2 4-4"></path>
+    </svg>
+    <span class="dock-lbl">Состав</span>
+  </button>
+
+  <!-- 4. ЦЕНТРАЛЬНАЯ КНОПКА — ГЛАВНЫЙ РАЗДЕЛ (ЭМБЛЕМА ДОМИКА СО СТИЛЕМ) -->
+  <div class="dock-center-orb-wrap active" id="dock-btn-center" onclick="selectTab('home', this)" title=" Главная страница [C6E]">
+    <div class="dock-center-orb-inner">
+      <svg class="dock-home-svg" viewBox="0 0 24 24">
+        <path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1v-9.5z"></path>
+      </svg>
+    </div>
+  </div>
+
+  <!-- 5. НОВОСТИ (ЧУТЬ ПРАВЕЕ СЕРЕДИНЫ) -->
+  <button type="button" class="dock-nav-item" id="dock-btn-news" onclick="selectTab('news', this)">
+    <svg class="dock-svg-icon" viewBox="0 0 24 24">
+      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+    </svg>
+    <span class="dock-lbl">Новости</span>
+  </button>
+
+  <!-- 6. ДРУГИЕ РАЗДЕЛЫ (СПРАВА) -->
   <button type="button" class="dock-nav-item" id="dock-btn-hub" onclick="selectTab('app-hub', this)">
-    <i class="fas fa-user-astronaut"></i>
+    <svg class="dock-svg-icon" viewBox="0 0 24 24">
+      <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+      <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+      <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
+      <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
+    </svg>
     <span class="dock-lbl">Разделы</span>
   </button>
 </nav>
 
-<script type="module" src="app.js?v=11"></script>
+<script type="module" src="app.js?v=12"></script>
 </body>
 </html>
