@@ -3,7 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="theme-color" content="#0b0c0e">
+  <meta name="theme-color" content="#07080b">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="CYBER 6">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="logo.png">
   <meta name="description" content="Официальный сайт киберспортивной организации Cyber 6 Esports (C6E). Доминируй. Развивайся. Побеждай.">
   <meta name="keywords" content="Cyber 6 Esports, C6E, Standoff 2, Cybersport, Clan, Tournaments">
 
@@ -147,6 +153,9 @@
         <span style="width:32px; height:32px; border-radius:50%; background:rgba(245,176,65,0.18); border:1px solid #f5b041; color:#f5b041; display:inline-flex; align-items:center; justify-content:center; font-size:11px;">
           <i class="fas fa-play"></i>
         </span>
+      </button>
+      <button type="button" id="home-install-app-btn" class="chip-btn" style="display:none; max-width:340px; width:100%; margin:8px auto 0 auto; padding:10px 16px; border-radius:30px; border-color:#f5b041; color:#f5b041; background:rgba(245,176,65,0.12); font-weight:900; font-size:10px; justify-content:center; align-items:center; gap:8px;" onclick="window.installCyber6App()">
+        <i class="fas fa-download"></i> УСТАНОВИТЬ ПРИЛОЖЕНИЕ CYBER 6 НА ТЕЛЕФОН
       </button>
 
       <!-- БЫСТРЫЕ ИКОНКИ ДЕЙСТВИЙ (КАК QUICK ACTIONS: SEND / RECEIVE / TOP UP / MORE НА СКРИНЕ) -->
@@ -428,6 +437,16 @@
         </a>
       </div>
       <div class="solar-menu-list">
+        <button type="button" class="solar-menu-row featured" id="hub-install-app-row" onclick="window.installCyber6App()">
+          <div class="solar-menu-left">
+            <span class="solar-menu-icon"><i class="fas fa-mobile-alt"></i></span>
+            <div>
+              <div class="solar-menu-title">Установить приложение CYBER 6 ESPORTS</div>
+              <div class="solar-menu-sub">Добавить официальное полноэкранное приложение [C6E] на главный экран телефона</div>
+            </div>
+          </div>
+          <i class="fas fa-download solar-menu-arrow"></i>
+        </button>
         <button type="button" class="solar-menu-row featured" onclick="selectTab('pantheon', document.getElementById('dock-btn-center'))">
           <div class="solar-menu-left">
             <span class="solar-menu-icon"><i class="fas fa-crown"></i></span>
