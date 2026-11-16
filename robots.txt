@@ -1,7 +1,7 @@
 ============================================================================
 ​OFFICIAL ROBOTS.TXT — CYBER 6 ESPORTS [C6E]
 ​Portal: https://cyber6esports.github.io/
-​Founder & Developer: Kas (@kas_0ff)
+​Founder & Developer: Kas (@kascheff)
 ​============================================================================
 ​User-agent: *
 Allow: /
