@@ -874,10 +874,16 @@
       line-height: 1.35;
     }
 
-    /* Скрываем старую длинную полоску filter-bar, т.к. теперь есть удобная кнопка ПАНЕЛЬ УПРАВЛЕНИЯ */
+    /* Компактная скролл-панель быстрых вкладок + кнопка ПАНЕЛЬ УПРАВЛЕНИЯ */
     .filter-bar {
-      display: none !important;
+      display: flex !important;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 8px 4px 12px 4px;
+      margin-bottom: 14px;
+      scrollbar-width: none;
     }
+    .filter-bar::-webkit-scrollbar { display: none; }
 
     /* В Режиме Администратора скрываем блоки, предназначенные только для Основателя Kas */
     body.admin-helper-mode .founder-only-block {
@@ -2108,6 +2114,25 @@
   let cachedPantheon = { boosts: {}, bonusPts: {} };
   let lastFocusedNameInput = null;
   let rawFullResProofDataUrl = null;
+  let knownMainList = [];
+  let knownReserveList = [];
+  let adminProfilesMain = [];
+  let adminProfilesMirrorRev = [];
+  let adminProfilesMirrorPrac = [];
+  let adminProfilesMirrorSec = [];
+  let adminProfilesCache = [];
+  let currentRosterType = "roster_main";
+  let rosterUnsub = null;
+  let currentAdminRoleMode = localStorage.getItem('c6e_admin_role_mode') || 'founder';
+  let currentLogFilterMode = 'all';
+  let cachedShopProducts = [];
+  let cachedJoinApplications = [];
+  let cachedRecruitmentOpen = true;
+  let adminChatMain = [];
+  let adminChatRev = [];
+  let adminChatPrac = [];
+  let adminChatSec = [];
+  let adminChatPurgeTs = 0;
 
   function showToast(msg, isError = false) {
     const container = document.getElementById('toast-container');
@@ -2440,168 +2465,8 @@
     return new Blob([u8arr], { type: mime });
   }
 
-  async function generateC6ECardBlob({ badge = 'CYBER 6 ESPORTS', title = 'CYBER 6 ESPORTS [C6E]', subtitle = '', lines = [], accentColor = '#f5b041' }) {
-    const canvas = document.createElement('canvas');
-    canvas.width = 1280;
-    canvas.height = 720;
-    const ctx = canvas.getContext('2d');
-
-    // 1. Глубокий обсидианово-золотой фон (Obsidian & Solar Gold Broadcast)
-    const bgGrad = ctx.createLinearGradient(0, 0, 1280, 720);
-    bgGrad.addColorStop(0, '#0c0e14');
-    bgGrad.addColorStop(0.55, '#07080b');
-    bgGrad.addColorStop(1, '#16120a');
-    ctx.fillStyle = bgGrad;
-    ctx.fillRect(0, 0, 1280, 720);
-
-    // 2. Мягкое золотое свечение (Solar Eclipse Halo) справа позади логотипа
-    const radGlow = ctx.createRadialGradient(1020, 350, 30, 1020, 350, 340);
-    radGlow.addColorStop(0, 'rgba(245, 176, 65, 0.25)');
-    radGlow.addColorStop(0.6, 'rgba(245, 176, 65, 0.06)');
-    radGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
-    ctx.fillStyle = radGlow;
-    ctx.fillRect(0, 0, 1280, 720);
-
-    // 3. Тонкая кибер-сетка
-    ctx.strokeStyle = 'rgba(245, 176, 65, 0.035)';
-    ctx.lineWidth = 1;
-    for (let x = 0; x < 1280; x += 64) {
-      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 720); ctx.stroke();
-    }
-    for (let y = 0; y < 720; y += 64) {
-      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(1280, y); ctx.stroke();
-    }
-
-    // 4. Внешняя золотая рамка трансляции
-    ctx.strokeStyle = 'rgba(245, 176, 65, 0.38)';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(28, 28, 1224, 664);
-
-    // Акцентная золотая линия сверху и слева
-    const goldGrad = ctx.createLinearGradient(0, 0, 1280, 0);
-    goldGrad.addColorStop(0, '#f5b041');
-    goldGrad.addColorStop(0.5, '#ffe89e');
-    goldGrad.addColorStop(1, '#9a6508');
-    ctx.fillStyle = goldGrad;
-    ctx.fillRect(28, 28, 1224, 5);
-    ctx.fillRect(28, 28, 5, 664);
-
-    // 5. Светящееся золотое кольцо-ореол и логотип [C6E] справа
-    ctx.save();
-    ctx.beginPath();
-    ctx.arc(1045, 340, 155, 0, Math.PI * 2);
-    ctx.strokeStyle = 'rgba(245, 176, 65, 0.55)';
-    ctx.lineWidth = 3.5;
-    ctx.shadowColor = '#f5b041';
-    ctx.shadowBlur = 28;
-    ctx.stroke();
-    ctx.restore();
-
-    const logoImg = document.getElementById('hiddenBrandLogo');
-    if (logoImg && logoImg.complete && logoImg.naturalWidth > 0) {
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(1045, 340, 138, 0, Math.PI * 2);
-      ctx.clip();
-      ctx.drawImage(logoImg, 907, 202, 276, 276);
-      ctx.restore();
-    }
-
-    // 6. Функция очистки текста от системных смайликов (чтобы на Canvas не было квадратиков)
-    const cleanCanvasText = (str) => {
-      return String(str || '')
-        .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE00}-\u{FE0F}]/gu, '')
-        .replace(/\s+/g, ' ')
-        .trim();
-    };
-
-    // 7. Рисуем золотой пятиугольник 'G' и верхний бейдж
-    const cleanBadge = cleanCanvasText(badge).toUpperCase() || 'CYBER 6 ESPORTS // OFFICIAL';
-    ctx.fillStyle = 'rgba(245, 176, 65, 0.14)';
-    ctx.fillRect(68, 62, 520, 40);
-    ctx.strokeStyle = '#f5b041';
-    ctx.lineWidth = 1.5;
-    ctx.strokeRect(68, 62, 520, 40);
-
-    // Векторный золотой пятиугольник G внутри бейджа
-    ctx.save();
-    ctx.translate(92, 82);
-    ctx.beginPath();
-    for (let i = 0; i < 5; i++) {
-      const ang = (i * 2 * Math.PI) / 5 - Math.PI / 2;
-      const px = Math.cos(ang) * 12;
-      const py = Math.sin(ang) * 12;
-      if (i === 0) ctx.moveTo(px, py);
-      else ctx.lineTo(px, py);
-    }
-    ctx.closePath();
-    ctx.fillStyle = '#f5b041';
-    ctx.fill();
-    ctx.fillStyle = '#07080b';
-    ctx.font = '900 12px Orbitron, Montserrat, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('G', 0, 1);
-    ctx.restore();
-
-    ctx.fillStyle = '#f5b041';
-    ctx.font = '800 16px Orbitron, Montserrat, sans-serif';
-    ctx.fillText(cleanBadge.slice(0, 42), 116, 88);
-
-    // 8. Главный заголовок и подзаголовок
-    const cleanTitle = cleanCanvasText(title).toUpperCase();
-    ctx.fillStyle = '#ffffff';
-    ctx.font = '900 40px Orbitron, Montserrat, sans-serif';
-    ctx.fillText(cleanTitle.slice(0, 34), 68, 156);
-
-    if (subtitle) {
-      const cleanSub = cleanCanvasText(subtitle);
-      ctx.fillStyle = '#f5b041';
-      ctx.font = '700 21px Montserrat, sans-serif';
-      ctx.fillText(cleanSub.slice(0, 56), 68, 196);
-    }
-
-    // 9. Карточки строк данных с векторными золотыми маркерами
-    let startY = 252;
-    lines.slice(0, 6).forEach((rawLine, idx) => {
-      const cleanLine = cleanCanvasText(rawLine);
-      ctx.fillStyle = idx === 0 ? 'rgba(245, 176, 65, 0.12)' : (idx % 2 === 0 ? 'rgba(255, 255, 255, 0.045)' : 'rgba(255, 255, 255, 0.025)');
-      ctx.fillRect(68, startY - 34, 780, 50);
-      ctx.strokeStyle = idx === 0 ? 'rgba(245, 176, 65, 0.55)' : 'rgba(255, 255, 255, 0.08)';
-      ctx.lineWidth = 1;
-      ctx.strokeRect(68, startY - 34, 780, 50);
-
-      // Левая золотая полоска строки
-      ctx.fillStyle = idx === 0 ? '#f5b041' : (idx === 1 ? '#e4e4e2' : (idx === 2 ? '#cd7f32' : '#f5b041'));
-      ctx.fillRect(68, startY - 34, 5, 50);
-
-      // Номер строки в золотом квадрате
-      ctx.fillStyle = 'rgba(245, 176, 65, 0.18)';
-      ctx.fillRect(84, startY - 23, 28, 28);
-      ctx.fillStyle = '#f5b041';
-      ctx.font = '900 14px Orbitron, sans-serif';
-      ctx.fillText(String(idx + 1), 93, startY - 4);
-
-      // Текст строки
-      ctx.fillStyle = '#f7f4ef';
-      ctx.font = '700 20px Montserrat, sans-serif';
-      ctx.fillText(cleanLine.slice(0, 58), 126, startY - 2);
-      startY += 60;
-    });
-
-    // 10. Нижний колонтитул трансляции
-    ctx.fillStyle = 'rgba(245, 176, 65, 0.25)';
-    ctx.fillRect(68, 632, 1144, 1);
-
-    ctx.fillStyle = '#9e9689';
-    ctx.font = '800 14px Orbitron, Montserrat, sans-serif';
-    ctx.fillText('CYBER 6 ESPORTS [C6E]  •  OFFICIAL PORTAL: CYBER6ESPORTS.GITHUB.IO', 68, 662);
-
-    const founderTag = (TG_CONFIG.founderUsername || '@kascheff').toUpperCase();
-    ctx.fillStyle = '#f5b041';
-    ctx.fillText(`FOUNDER: ${founderTag}`, 980, 662);
-
-    return new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.92));
+  async function generateC6ECardBlob(cardConfig = {}) {
+    return await generateC6EUltraCardBlob(cardConfig);
   }
   const renderCyberCardBlob = (title, subtitle, lines, badge) => generateC6ECardBlob({ badge: badge || 'CYBER 6 ESPORTS', title, subtitle, lines });
 
@@ -2616,74 +2481,21 @@
     return TG_CONFIG.token;
   }
 
-  async function publishToTelegramChannel({ htmlText, imageSource = null, cardConfig = null }) {
-    try {
-      const activeToken = await ensureBotTokenLoaded();
-      if (!activeToken) {
-        showToast("Сначала вставьте новый токен от @BotFather в верхнем блоке!", true);
-        return false;
-      }
-
-      let photoBlob = null;
-      let externalPhotoUrl = null;
-
-      if (imageSource && imageSource.startsWith('data:image')) {
-        photoBlob = dataURLtoBlob(imageSource);
-      } else if (imageSource && /^https?:\/\//i.test(imageSource)) {
-        externalPhotoUrl = imageSource;
-      } else if (cardConfig) {
-        photoBlob = await generateC6ECardBlob(cardConfig);
-      }
-
-      if (photoBlob) {
-        const formData = new FormData();
-        formData.append('chat_id', TG_CONFIG.channelId);
-        formData.append('photo', photoBlob, 'c6e_post.jpg');
-        formData.append('caption', htmlText.slice(0, 1020));
-        formData.append('parse_mode', 'HTML');
-
-        const res = await fetch(`https://api.telegram.org/bot${activeToken}/sendPhoto`, {
-          method: 'POST',
-          body: formData
-        });
-        const data = await res.json();
-        if (!data.ok) throw new Error(data.description || 'TG sendPhoto error');
-        return true;
-      }
-
-      if (externalPhotoUrl) {
-        const res = await fetch(`https://api.telegram.org/bot${activeToken}/sendPhoto`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            chat_id: TG_CONFIG.channelId,
-            photo: externalPhotoUrl,
-            caption: htmlText.slice(0, 1020),
-            parse_mode: 'HTML'
-          })
-        });
-        const data = await res.json();
-        if (data.ok) return true;
-      }
-
-      const res = await fetch(`https://api.telegram.org/bot${activeToken}/sendMessage`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          chat_id: TG_CONFIG.channelId,
-          text: htmlText,
-          parse_mode: 'HTML',
-          disable_web_page_preview: false
-        })
-      });
-      const data = await res.json();
-      if (!data.ok) throw new Error(data.description || 'TG sendMessage error');
-      return true;
-    } catch (err) {
-      console.error("Ошибка публикации в ТГК:", err);
-      showToast("Ошибка ТГ-бота: " + err.message, true);
-      return false;
-    }
+  async function publishToTelegramChannel({ htmlText, imageSource = null, cardConfig = null, target = 'channel', linkLabel = 'CYBER 6 ESPORTS [C6E] — Открыть официальный портал' }) {
+    const mergedConfig = {
+      ...(cardConfig || {
+        badge: 'CYBER 6 ESPORTS // OFFICIAL',
+        title: 'CYBER 6 ESPORTS [C6E]',
+        subtitle: 'ОФИЦИАЛЬНОЕ УВЕДОМЛЕНИЕ ПОРТАЛА',
+        lines: [String(htmlText || '').replace(/<[^>]+>/g, '').trim()]
+      }),
+      screenshotSrc: (cardConfig && cardConfig.screenshotSrc) ? cardConfig.screenshotSrc : imageSource
+    };
+    return await sendCleanCardToTelegram({
+      target,
+      linkLabel,
+      cardConfig: mergedConfig
+    });
   }
 
   function formatNewsHtmlForTelegram(rawHtml) {
@@ -4189,8 +4001,6 @@
     });
   }
 
-  let knownMainList = [];
-  let knownReserveList = [];
   function syncAllKnownRoster() {
     const map = new Map();
     [...knownMainList, ...knownReserveList].forEach(p => {
@@ -4520,20 +4330,9 @@
     });
 
     listenToDoc(DB_COLLECTION, "global_chat", (data) => {
-      const cont = document.getElementById('adminChatMessagesList');
-      if (!cont) return;
-      const msgs = Array.isArray(data.messages) ? data.messages : [];
-      cont.innerHTML = msgs.length === 0
-        ? '<span class="item-sub">Сообщений в чате пока нет</span>'
-        : msgs.slice().reverse().map(m => `
-            <div class="list-item">
-              <div class="item-info">
-                <b>${m.countryFlag || '🌍'} ${m.clanTag ? '[' + m.clanTag + '] ' : ''}${m.nick} <span style="font-size:9px; color:var(--silver-muted);">${m.timeStr || ''}</span></b>
-                <span class="item-sub" style="color:#eee;">${m.text}</span>
-              </div>
-              <button class="btn-icon del" onclick="window.deleteSingleChatMsg(${m.id})"><i class="fas fa-trash"></i></button>
-            </div>
-          `).join('');
+      if (data.lastPurgeTs && data.lastPurgeTs > adminChatPurgeTs) adminChatPurgeTs = data.lastPurgeTs;
+      adminChatMain = Array.isArray(data.messages) ? data.messages : [];
+      renderAdminChatPanelUI();
     });
 
     listenToDoc(DB_COLLECTION, "shop_config", (data) => {
@@ -4549,6 +4348,11 @@
       if (Array.isArray(data.c6e_profiles)) {
         adminProfilesMirrorRev = data.c6e_profiles;
         refreshMergedAdminProfiles();
+      }
+      if (data.c6e_chat_purge && data.c6e_chat_purge > adminChatPurgeTs) adminChatPurgeTs = data.c6e_chat_purge;
+      if (Array.isArray(data.c6e_chat)) {
+        adminChatRev = data.c6e_chat;
+        renderAdminChatPanelUI();
       }
       const list = data.list || [];
       document.getElementById('reviewsList').innerHTML = list.slice().reverse().map(r => {
@@ -4876,7 +4680,7 @@
   // Генерация фирменного 1280x720 баннера обновления от лица Разработчика Kas
   async function buildKasReleaseBannerDataUrl(ver, featuresList) {
     try {
-      const blob = await generateC6EBrandCardBlob({
+      const blob = await generateC6EUltraCardBlob({
         badge: `OFFICIAL SITE UPDATE ${ver.toUpperCase()} // DEVELOPED BY KAS (@kas_0ff)`,
         title: `ОБНОВЛЕНИЕ ПОРТАЛА CYBER 6 ESPORTS ${ver.toUpperCase()}`,
         subtitle: 'НОВЫЕ ВОЗМОЖНОСТИ ДЛЯ БОЙЦОВ СОСТАВА И ГОСТЕЙ САЙТА',
@@ -5029,11 +4833,6 @@
   // =========================================================================
   // ФУНКЦИИ УПРАВЛЕНИЯ v0.5.0 В АДМИНКЕ: ПРОФИЛИ, ЗАЯВКИ В [C6E], ЧАТ, МАГАЗИН
   // =========================================================================
-  let adminProfilesMain = [];
-  let adminProfilesMirrorRev = [];
-  let adminProfilesMirrorPrac = [];
-  let adminProfilesMirrorSec = [];
-  let adminProfilesCache = [];
 
   function mergeAdminProfiles(...arrays) {
     const map = new Map();
@@ -5075,6 +4874,14 @@
     try { await setDoc(doc(db, DB_COLLECTION, "reviews"), { c6e_profiles: updatedList }, { merge: true }); } catch (e2) {}
     try { await setDoc(doc(db, DB_COLLECTION, "practices"), { c6e_profiles: updatedList }, { merge: true }); } catch (e3) {}
     try { await setDoc(doc(db, DB_COLLECTION, "security_logs"), { c6e_profiles: updatedList }, { merge: true }); } catch (e4) {}
+  }
+
+  async function updateEveryProfileMirror(profileId, updaterFn) {
+    let list = [...adminProfilesCache];
+    const idx = list.findIndex(p => p && p.profileId === profileId);
+    if (idx === -1) return;
+    list[idx] = { ...updaterFn(list[idx]), adminUpdatedAt: Date.now() };
+    await saveAdminProfilesEverywhere(list);
   }
 
   function refreshMergedAdminProfiles() {
@@ -5324,33 +5131,82 @@
         }).join('');
   }
 
+  function getMergedAdminChatMessages() {
+    const map = new Map();
+    const now = Date.now();
+    const retention = 12 * 60 * 60 * 1000;
+    [adminChatRev, adminChatPrac, adminChatSec, adminChatMain].forEach(arr => {
+      if (!Array.isArray(arr)) return;
+      arr.forEach(m => {
+        if (!m || !m.id || !m.text) return;
+        if ((now - (m.ts || 0)) >= retention) return;
+        if ((m.ts || 0) < (adminChatPurgeTs || 0)) return;
+        map.set(String(m.id), m);
+      });
+    });
+    const list = Array.from(map.values());
+    list.sort((a, b) => (a.ts || 0) - (b.ts || 0));
+    return list.slice(-90);
+  }
+
+  function renderAdminChatPanelUI() {
+    const cont = document.getElementById('adminChatMessagesList');
+    if (!cont) return;
+    const msgs = getMergedAdminChatMessages();
+    cont.innerHTML = msgs.length === 0
+      ? '<span class="item-sub">Сообщений в чате пока нет</span>'
+      : msgs.slice().reverse().map(m => `
+          <div class="list-item">
+            <div class="item-info">
+              <b>${m.clanTag ? '[' + String(m.clanTag).replace(/[\[\]]/g, '') + '] ' : ''}${m.nick || 'Игрок'} <span style="font-size:9px; color:var(--silver-muted);">${m.timeStr || ''}</span></b>
+              <span class="item-sub" style="color:#eee;">${m.text}</span>
+            </div>
+            <button class="btn-icon del" onclick="window.deleteSingleChatMsg(${m.id})"><i class="fas fa-trash"></i></button>
+          </div>
+        `).join('');
+  }
+
+  async function saveAdminChatToAllMirrors(messages, purgeTs = null) {
+    const tsVal = purgeTs || adminChatPurgeTs || Date.now();
+    if (purgeTs) adminChatPurgeTs = purgeTs;
+    adminChatMain = messages;
+    adminChatRev = messages;
+    adminChatPrac = messages;
+    adminChatSec = messages;
+    renderAdminChatPanelUI();
+    try { localStorage.setItem('c6e_chat_local_mirror_v8', JSON.stringify(messages)); } catch (e) {}
+    try { await setDoc(doc(db, DB_COLLECTION, "global_chat"), { messages, lastPurgeTs: tsVal }, { merge: true }); } catch (e1) {}
+    try { await setDoc(doc(db, DB_COLLECTION, "reviews"), { c6e_chat: messages, c6e_chat_purge: tsVal }, { merge: true }); } catch (e2) {}
+    try { await setDoc(doc(db, DB_COLLECTION, "practices"), { c6e_chat: messages, c6e_chat_purge: tsVal }, { merge: true }); } catch (e3) {}
+    try { await setDoc(doc(db, DB_COLLECTION, "security_logs"), { c6e_chat: messages, c6e_chat_purge: tsVal }, { merge: true }); } catch (e4) {}
+  }
+
   window.sendAdminFounderChatMsg = async () => {
     const inp = document.getElementById('adminChatInput');
     const text = (inp?.value || '').trim();
     if (!text) return;
     inp.value = '';
     try {
-      const ref = doc(db, DB_COLLECTION, "global_chat");
-      const snap = await getDoc(ref);
       const now = Date.now();
-      let messages = (snap.exists() && Array.isArray(snap.data().messages)) ? snap.data().messages : [];
+      const messages = [...getMergedAdminChatMessages()];
       messages.push({
         id: now,
         senderId: 'FOUNDER_KAS',
-        nick: 'Kas',
+        nick: currentAdminRoleMode === 'founder' ? 'Kas' : 'Admin [C6E]',
         clanTag: 'C6E',
         c6eStatus: 'approved',
-        isFounder: true,
+        isFounder: currentAdminRoleMode === 'founder',
+        isDeveloper: currentAdminRoleMode === 'founder',
         avatar: 'logo.png',
         frameStyle: 'frame-c6e-gold',
-        countryFlag: '👑',
+        countryFlag: '',
         text,
         timeStr: new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }),
         ts: now
       });
-      await setDoc(ref, { messages, lastPurgeTs: (snap.exists() && snap.data().lastPurgeTs) ? snap.data().lastPurgeTs : now }, { merge: true });
-      await setDoc(doc(db, DB_COLLECTION, "reviews"), { c6e_chat: messages }, { merge: true }).catch(() => {});
-      showToast("👑 Сообщение от Основателя Kas отправлено в общий чат!");
+      await saveAdminChatToAllMirrors(messages);
+      await logAdminAction("ЧАТ ПОРТАЛА", `Отправил сообщение в общий чат: "${text.slice(0, 50)}"`);
+      showToast("Сообщение отправлено в общий чат и синхронизировано на всех устройствах!");
     } catch (e) {
       showToast("Ошибка отправки в чат", true);
     }
@@ -5359,21 +5215,18 @@
   window.clearGlobalChatNow = async () => {
     if (!confirm("Очистить все сообщения в Общем чате прямо сейчас?")) return;
     try {
-      await setDoc(doc(db, DB_COLLECTION, "global_chat"), { messages: [], lastPurgeTs: Date.now() });
-      await setDoc(doc(db, DB_COLLECTION, "reviews"), { c6e_chat: [], c6e_chat_purge: Date.now() }, { merge: true }).catch(() => {});
-      showToast("🧹 Общий чат полностью очищен!");
+      const now = Date.now();
+      await saveAdminChatToAllMirrors([], now);
+      await logAdminAction("ОЧИСТКА ЧАТА", "Полностью очистил Общий чат портала");
+      showToast("Общий чат полностью очищен!");
     } catch (e) {}
   };
 
   window.deleteSingleChatMsg = async (msgId) => {
     try {
-      const ref = doc(db, DB_COLLECTION, "global_chat");
-      const snap = await getDoc(ref);
-      if (!snap.exists()) return;
-      const messages = (snap.data().messages || []).filter(m => m.id !== msgId);
-      await setDoc(ref, { messages }, { merge: true });
-      await setDoc(doc(db, DB_COLLECTION, "reviews"), { c6e_chat: messages }, { merge: true }).catch(() => {});
-      showToast("Сообщение удалено");
+      const messages = getMergedAdminChatMessages().filter(m => String(m.id) !== String(msgId));
+      await saveAdminChatToAllMirrors(messages);
+      showToast("Сообщение удалено из чата");
     } catch (e) {}
   };
 
@@ -5407,6 +5260,10 @@
       adminProfilesMirrorPrac = snap.data().c6e_profiles;
       refreshMergedAdminProfiles();
     }
+    if (snap.exists() && Array.isArray(snap.data().c6e_chat)) {
+      adminChatPrac = snap.data().c6e_chat;
+      renderAdminChatPanelUI();
+    }
   });
 
   onSnapshot(doc(db, DB_COLLECTION, "security_logs"), (snap) => {
@@ -5414,25 +5271,20 @@
       adminProfilesMirrorSec = snap.data().c6e_profiles;
       refreshMergedAdminProfiles();
     }
+    if (snap.exists() && Array.isArray(snap.data().c6e_chat)) {
+      adminChatSec = snap.data().c6e_chat;
+      renderAdminChatPanelUI();
+    }
   });
 
   setTimeout(refreshMergedAdminProfiles, 300);
 
   onSnapshot(doc(db, DB_COLLECTION, "global_chat"), (snap) => {
-    const cont = document.getElementById('adminChatMessagesList');
-    if (!cont) return;
-    const msgs = (snap.exists() && Array.isArray(snap.data().messages)) ? snap.data().messages : [];
-    cont.innerHTML = msgs.length === 0
-      ? '<span class="item-sub">Сообщений в чате пока нет</span>'
-      : msgs.slice().reverse().map(m => `
-          <div class="list-item">
-            <div class="item-info">
-              <b>${m.countryFlag || '🌍'} ${m.clanTag ? '[' + m.clanTag + '] ' : ''}${m.nick} <span style="font-size:9px; color:var(--silver-muted);">${m.timeStr || ''}</span></b>
-              <span class="item-sub" style="color:#eee;">${m.text}</span>
-            </div>
-            <button class="btn-icon del" onclick="window.deleteSingleChatMsg(${m.id})"><i class="fas fa-trash"></i></button>
-          </div>
-        `).join('');
+    if (snap.exists()) {
+      if (snap.data().lastPurgeTs && snap.data().lastPurgeTs > adminChatPurgeTs) adminChatPurgeTs = snap.data().lastPurgeTs;
+      adminChatMain = Array.isArray(snap.data().messages) ? snap.data().messages : [];
+      renderAdminChatPanelUI();
+    }
   });
 
   onSnapshot(doc(db, DB_COLLECTION, "shop_config"), (snap) => {
@@ -5575,8 +5427,6 @@
     showToast("Таймер сброшен");
   };
 
-  let currentRosterType = "roster_main";
-  let rosterUnsub = null;
 
   window.loadRoster = () => { 
     currentRosterType = document.getElementById('rosterType').value; 
@@ -5729,11 +5579,6 @@
   // В ГРУППУ, ПОБЕДЫ СО СКРИНОМ В ТГК, КОНСТРУКТОР МАГАЗИНА И ЖУРНАЛ ЛОГОВ
   // =========================================================================
 
-  let currentAdminRoleMode = localStorage.getItem('c6e_admin_role_mode') || 'founder';
-  let currentLogFilterMode = 'all';
-  let cachedShopProducts = [];
-  let cachedJoinApplications = [];
-  let cachedRecruitmentOpen = true;
 
   // Запись любого действия Админа или Основателя в единый журнал логов понятным языком
   async function logAdminAction(actionTitle, detailsText) {
@@ -5951,9 +5796,9 @@
       title = 'CYBER 6 ESPORTS [C6E]',
       subtitle = '',
       lines = [],
-      accentColor = '#f5b041',
+      weeklyKpis = null,
       screenshotSrc = null,
-      weeklyKpis = null
+      accentColor = '#f5b041'
     } = cardConfig;
 
     const canvas = document.createElement('canvas');
@@ -5961,33 +5806,34 @@
     canvas.height = 720;
     const ctx = canvas.getContext('2d');
 
-    // 1. Фон Obsidian & Solar Gold
+    // 1. Глубокий обсидианово-золотой фон
     const bgGrad = ctx.createLinearGradient(0, 0, 1280, 720);
     bgGrad.addColorStop(0, '#0d1018');
     bgGrad.addColorStop(0.55, '#07080b');
-    bgGrad.addColorStop(1, '#16120a');
+    bgGrad.addColorStop(1, '#161209');
     ctx.fillStyle = bgGrad;
     ctx.fillRect(0, 0, 1280, 720);
 
-    const radGlow = ctx.createRadialGradient(1020, 350, 30, 1020, 350, 360);
+    // 2. Радиальное золотое свечение
+    const radGlow = ctx.createRadialGradient(1020, 340, 20, 1020, 340, 360);
     radGlow.addColorStop(0, 'rgba(245, 176, 65, 0.24)');
     radGlow.addColorStop(0.6, 'rgba(245, 176, 65, 0.06)');
     radGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
     ctx.fillStyle = radGlow;
     ctx.fillRect(0, 0, 1280, 720);
 
-    // Сетка
-    ctx.strokeStyle = 'rgba(245, 176, 65, 0.035)';
+    // 3. Кибер-сетка
+    ctx.strokeStyle = 'rgba(245, 176, 65, 0.04)';
     ctx.lineWidth = 1;
-    for (let x = 0; x < 1280; x += 64) {
+    for (let x = 0; x < 1280; x += 48) {
       ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 720); ctx.stroke();
     }
-    for (let y = 0; y < 720; y += 64) {
+    for (let y = 0; y < 720; y += 48) {
       ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(1280, y); ctx.stroke();
     }
 
-    // Золотая рамка
-    ctx.strokeStyle = 'rgba(245, 176, 65, 0.42)';
+    // 4. Внешняя рамка и золотой акцент
+    ctx.strokeStyle = 'rgba(245, 176, 65, 0.38)';
     ctx.lineWidth = 2;
     ctx.strokeRect(28, 28, 1224, 664);
 
@@ -6004,94 +5850,163 @@
       .replace(/\s+/g, ' ')
       .trim();
 
-    // Верхний бейдж
+    const fitFont = (text, weight, maxPx, minPx, family, maxW) => {
+      let sz = maxPx;
+      while (sz > minPx) {
+        ctx.font = `${weight} ${sz}px ${family}`;
+        if (ctx.measureText(text).width <= maxW) break;
+        sz -= 1;
+      }
+      return sz;
+    };
+
+    const wrapTextLines = (text, maxW) => {
+      const words = String(text || '').split(' ').filter(Boolean);
+      if (!words.length) return [''];
+      const out = [];
+      let cur = words[0];
+      for (let i = 1; i < words.length; i++) {
+        const test = cur + ' ' + words[i];
+        if (ctx.measureText(test).width <= maxW) {
+          cur = test;
+        } else {
+          out.push(cur);
+          cur = words[i];
+        }
+      }
+      out.push(cur);
+      return out;
+    };
+
+    const hasWeeklyKpis = Boolean(weeklyKpis && Array.isArray(weeklyKpis) && weeklyKpis.length === 4);
+    let proofDrawn = false;
+    let shotImg = null;
+    if (!hasWeeklyKpis && screenshotSrc) {
+      shotImg = await loadCanvasImage(screenshotSrc);
+      if (shotImg) proofDrawn = true;
+    }
+
+    const headerMaxW = hasWeeklyKpis ? 1140 : (proofDrawn ? 635 : 815);
+
+    // Верхний бейдж (полный текст без обрезки!)
+    const badgeStr = cleanCanvasText(badge).toUpperCase() || 'CYBER 6 ESPORTS // OFFICIAL';
+    fitFont(badgeStr, '800', 15, 11, 'Orbitron, Montserrat, sans-serif', headerMaxW - 36);
+    const badgeBoxW = Math.min(headerMaxW, Math.max(380, Math.ceil(ctx.measureText(badgeStr).width) + 40));
     ctx.fillStyle = 'rgba(245, 176, 65, 0.14)';
-    ctx.fillRect(64, 56, 560, 38);
+    ctx.fillRect(64, 50, badgeBoxW, 36);
     ctx.strokeStyle = accentColor || '#f5b041';
     ctx.lineWidth = 1.5;
-    ctx.strokeRect(64, 56, 560, 38);
+    ctx.strokeRect(64, 50, badgeBoxW, 36);
 
     ctx.fillStyle = accentColor || '#f5b041';
-    ctx.font = '800 15px Orbitron, Montserrat, sans-serif';
-    ctx.fillText(cleanCanvasText(badge).toUpperCase().slice(0, 46), 82, 81);
+    ctx.fillText(badgeStr, 82, 74);
 
-    // Заголовок и подзаголовок
+    // Заголовок (с поддержкой авто-масштабирования и переноса до 2 строк — без обрезки!)
+    const titleStr = cleanCanvasText(title).toUpperCase();
+    fitFont(titleStr, '900', hasWeeklyKpis ? 32 : 34, 19, 'Orbitron, Montserrat, sans-serif', headerMaxW);
+    const titleLines = wrapTextLines(titleStr, headerMaxW).slice(0, 2);
     ctx.fillStyle = '#ffffff';
-    ctx.font = '900 36px Orbitron, Montserrat, sans-serif';
-    ctx.fillText(cleanCanvasText(title).toUpperCase().slice(0, 38), 64, 142);
+    let curY = 124;
+    titleLines.forEach((tl) => {
+      fitFont(tl, '900', titleLines.length > 1 ? 25 : (hasWeeklyKpis ? 32 : 34), 17, 'Orbitron, Montserrat, sans-serif', headerMaxW);
+      ctx.fillText(tl, 64, curY);
+      curY += titleLines.length > 1 ? 30 : 36;
+    });
 
+    // Подзаголовок (полный текст без обрезки!)
     if (subtitle) {
+      const subStr = cleanCanvasText(subtitle);
+      fitFont(subStr, '700', 18, 12.5, 'Montserrat, sans-serif', headerMaxW);
+      const subLines = wrapTextLines(subStr, headerMaxW).slice(0, 2);
       ctx.fillStyle = accentColor || '#f5b041';
-      ctx.font = '700 19px Montserrat, sans-serif';
-      ctx.fillText(cleanCanvasText(subtitle).slice(0, 64), 64, 178);
+      subLines.forEach((sl) => {
+        fitFont(sl, '700', subLines.length > 1 ? 15.5 : 18, 12, 'Montserrat, sans-serif', headerMaxW);
+        ctx.fillText(sl, 64, curY);
+        curY += 23;
+      });
     }
 
     // РЕЖИМ A: ЕЖЕНЕДЕЛЬНЫЙ ОТЧЁТ КЛАНА И ИГРОКОВ (4 KPI БЛОКА + ТАБЛИЦА ИГРОКОВ)
-    if (weeklyKpis && Array.isArray(weeklyKpis) && weeklyKpis.length === 4) {
+    if (hasWeeklyKpis) {
       const boxW = 272;
-      const boxH = 86;
+      const boxH = 82;
+      const kpiTopY = Math.max(188, curY + 6);
       weeklyKpis.forEach((kpi, idx) => {
         const bx = 64 + idx * (boxW + 18);
-        const by = 198;
+        const by = kpiTopY;
         ctx.fillStyle = 'rgba(245, 176, 65, 0.10)';
         ctx.fillRect(bx, by, boxW, boxH);
         ctx.strokeStyle = 'rgba(245, 176, 65, 0.45)';
         ctx.lineWidth = 1.5;
         ctx.strokeRect(bx, by, boxW, boxH);
 
+        const lblTxt = cleanCanvasText(kpi.label).toUpperCase();
         ctx.fillStyle = '#9e9689';
-        ctx.font = '800 12px Orbitron, Montserrat, sans-serif';
-        ctx.fillText(cleanCanvasText(kpi.label).toUpperCase(), bx + 16, by + 28);
+        fitFont(lblTxt, '800', 12, 9.5, 'Orbitron, Montserrat, sans-serif', boxW - 24);
+        ctx.fillText(lblTxt, bx + 14, by + 26);
 
+        const valTxt = cleanCanvasText(kpi.value);
         ctx.fillStyle = kpi.color || '#ffffff';
-        ctx.font = '900 24px Orbitron, Montserrat, sans-serif';
-        ctx.fillText(cleanCanvasText(kpi.value), bx + 16, by + 64);
+        fitFont(valTxt, '900', 22, 13, 'Orbitron, Montserrat, sans-serif', boxW - 24);
+        ctx.fillText(valTxt, bx + 14, by + 60);
       });
 
-      let rowY = 330;
-      lines.slice(0, 6).forEach((rawLine, idx) => {
+      let rowY = kpiTopY + boxH + 16;
+      const rowW = 1144;
+      const maxRows = lines.slice(0, 6);
+      const availH = 622 - rowY;
+      const gap = 6;
+
+      maxRows.forEach((rawLine, idx) => {
         const cleanLine = cleanCanvasText(rawLine);
+        ctx.font = '700 17px Montserrat, sans-serif';
+        let wrapped = wrapTextLines(cleanLine, rowW - 36);
+        if (wrapped.length > 2) {
+          ctx.font = '700 14.5px Montserrat, sans-serif';
+          wrapped = wrapTextLines(cleanLine, rowW - 36).slice(0, 2);
+        }
+        const lineH = wrapped.length > 1 ? 18 : 20;
+        const boxH = Math.max(38, Math.min(Math.floor(availH / Math.max(1, maxRows.length)) - gap, wrapped.length * lineH + 16));
+
         ctx.fillStyle = idx === 0 ? 'rgba(245, 176, 65, 0.14)' : 'rgba(255, 255, 255, 0.04)';
-        ctx.fillRect(64, rowY - 30, 1144, 44);
+        ctx.fillRect(64, rowY, rowW, boxH);
         ctx.strokeStyle = idx === 0 ? 'rgba(245, 176, 65, 0.55)' : 'rgba(255, 255, 255, 0.08)';
-        ctx.strokeRect(64, rowY - 30, 1144, 44);
+        ctx.strokeRect(64, rowY, rowW, boxH);
 
         ctx.fillStyle = accentColor || '#f5b041';
-        ctx.fillRect(64, rowY - 30, 5, 44);
+        ctx.fillRect(64, rowY, 5, boxH);
 
         ctx.fillStyle = '#ffffff';
-        ctx.font = '700 18px Montserrat, sans-serif';
-        ctx.fillText(cleanLine.slice(0, 82), 86, rowY - 2);
-        rowY += 50;
+        const totalTextH = wrapped.length * lineH;
+        let textY = rowY + Math.round((boxH - totalTextH) / 2) + lineH - 4;
+        wrapped.forEach((wl) => {
+          fitFont(wl, '700', wrapped.length > 1 ? 15.5 : 17.5, 12, 'Montserrat, sans-serif', rowW - 36);
+          ctx.fillText(wl, 86, textY);
+          textY += lineH;
+        });
+        rowY += boxH + gap;
       });
     } else {
       // РЕЖИМ B: КАРТОЧКА СО СКРИНШОТОМ ТАБА СПРАВА (ПОБЕДА С ПРАКА) ИЛИ ЛОГОТИПОМ C6E СПРАВА
-      let proofDrawn = false;
-      if (screenshotSrc) {
-        const shotImg = await loadCanvasImage(screenshotSrc);
-        if (shotImg) {
-          proofDrawn = true;
-          ctx.save();
-          ctx.fillStyle = '#050608';
-          ctx.fillRect(720, 195, 492, 410);
-          ctx.strokeStyle = accentColor || '#00e676';
-          ctx.lineWidth = 2.5;
-          ctx.strokeRect(720, 195, 492, 410);
-          ctx.drawImage(shotImg, 724, 199, 484, 402);
+      if (proofDrawn && shotImg) {
+        ctx.save();
+        ctx.fillStyle = '#050608';
+        ctx.fillRect(720, 185, 492, 420);
+        ctx.strokeStyle = accentColor || '#00e676';
+        ctx.lineWidth = 2.5;
+        ctx.strokeRect(720, 185, 492, 420);
+        ctx.drawImage(shotImg, 724, 189, 484, 412);
 
-          ctx.fillStyle = 'rgba(7, 8, 11, 0.88)';
-          ctx.fillRect(724, 199, 250, 30);
-          ctx.fillStyle = accentColor || '#00e676';
-          ctx.font = '900 12px Orbitron, sans-serif';
-          ctx.fillText('OFFICIAL STANDOFF 2 TAB PROOF', 736, 219);
-          ctx.restore();
-        }
-      }
-
-      if (!proofDrawn) {
+        ctx.fillStyle = 'rgba(7, 8, 11, 0.88)';
+        ctx.fillRect(724, 189, 255, 30);
+        ctx.fillStyle = accentColor || '#00e676';
+        ctx.font = '900 12px Orbitron, sans-serif';
+        ctx.fillText('OFFICIAL STANDOFF 2 TAB PROOF', 736, 209);
+        ctx.restore();
+      } else {
         ctx.save();
         ctx.beginPath();
-        ctx.arc(1050, 355, 142, 0, Math.PI * 2);
+        ctx.arc(1055, 360, 138, 0, Math.PI * 2);
         ctx.strokeStyle = accentColor || '#f5b041';
         ctx.lineWidth = 3.5;
         ctx.shadowColor = accentColor || '#f5b041';
@@ -6103,29 +6018,48 @@
         if (logoImg && logoImg.complete && logoImg.naturalWidth > 0) {
           ctx.save();
           ctx.beginPath();
-          ctx.arc(1050, 355, 134, 0, Math.PI * 2);
+          ctx.arc(1055, 360, 130, 0, Math.PI * 2);
           ctx.clip();
-          ctx.drawImage(logoImg, 916, 221, 268, 268);
+          ctx.drawImage(logoImg, 925, 230, 260, 260);
           ctx.restore();
         }
       }
 
-      const lineW = proofDrawn ? 635 : 790;
-      let startY = 236;
-      lines.slice(0, 6).forEach((rawLine, idx) => {
+      const lineW = proofDrawn ? 635 : 815;
+      let rowY = Math.max(206, curY + 10);
+      const maxRows = lines.slice(0, 6);
+      const availH = 620 - rowY;
+      const gap = 8;
+
+      maxRows.forEach((rawLine, idx) => {
         const cleanLine = cleanCanvasText(rawLine);
+        ctx.font = '700 17px Montserrat, sans-serif';
+        let wrapped = wrapTextLines(cleanLine, lineW - 36);
+        if (wrapped.length > 2) {
+          ctx.font = '700 14.5px Montserrat, sans-serif';
+          wrapped = wrapTextLines(cleanLine, lineW - 36).slice(0, 3);
+        }
+        const lineH = wrapped.length >= 3 ? 17 : 20;
+        const boxH = Math.max(44, Math.min(Math.floor(availH / Math.max(1, maxRows.length)) - gap, wrapped.length * lineH + 18));
+
         ctx.fillStyle = idx === 0 ? 'rgba(245, 176, 65, 0.13)' : 'rgba(255, 255, 255, 0.04)';
-        ctx.fillRect(64, startY - 34, lineW, 50);
+        ctx.fillRect(64, rowY, lineW, boxH);
         ctx.strokeStyle = idx === 0 ? 'rgba(245, 176, 65, 0.55)' : 'rgba(255, 255, 255, 0.08)';
-        ctx.strokeRect(64, startY - 34, lineW, 50);
+        ctx.strokeRect(64, rowY, lineW, boxH);
 
         ctx.fillStyle = accentColor || '#f5b041';
-        ctx.fillRect(64, startY - 34, 5, 50);
+        ctx.fillRect(64, rowY, 5, boxH);
 
         ctx.fillStyle = '#f7f4ef';
-        ctx.font = '700 18.5px Montserrat, sans-serif';
-        ctx.fillText(cleanLine.slice(0, proofDrawn ? 46 : 58), 86, startY - 3);
-        startY += 60;
+        const totalTextH = wrapped.length * lineH;
+        let textY = rowY + Math.round((boxH - totalTextH) / 2) + lineH - 4;
+        wrapped.forEach((wl) => {
+          fitFont(wl, '700', wrapped.length > 1 ? 15.5 : 17.5, 12, 'Montserrat, sans-serif', lineW - 36);
+          ctx.fillText(wl, 86, textY);
+          textY += lineH;
+        });
+
+        rowY += boxH + gap;
       });
     }
 
@@ -6142,6 +6076,8 @@
 
     return new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.93));
   }
+
+  const generateC6EBrandCardBlob = (cfg) => generateC6EUltraCardBlob(cfg);
 
   // Универсальная отправка карточки в ТГК или в Группу (В ТЕКСТЕ ВСЕГДА ТОЛЬКО ССЫЛКА НА САЙТ!)
   async function sendCleanCardToTelegram({ target = 'channel', linkLabel = 'CYBER 6 ESPORTS [C6E] — Открыть официальный портал', cardConfig = {} }) {
