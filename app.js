@@ -807,6 +807,14 @@ let currentScheduleFilter = 'all';
 let mainRosterData = [];
 let reserveRosterData = [];
 let pantheonMeta = { boosts: {}, bonusPts: {} }; // Данные активности и бустов Пантеона в Firebase
+const CHAT_RETENTION_MS = 12 * 60 * 60 * 1000; // 12 часов
+let chatMirrorRev = [];
+let chatMirrorPrac = [];
+let chatMirrorSec = [];
+let chatMainCloud = [];
+let profilesFromMainDoc = [];
+let profilesFromMirrorDoc = [];
+let rosterBackupMirror = [];
 
 let activeRosterTab = 'main';
 let activePlayerIdx = 0;
@@ -999,6 +1007,9 @@ function computePlayerLiveAnalytics(playerObj) {
     : Math.max(0, Math.min(0.45, (baseKd - 0.70) / 1.50));
   const winMvpBonus = Math.min(35, (matchesWon * 8) + (mvpCount * 12) + Math.max(0, Math.round(delta * 40)));
   // Строгий боевой диапазон 100..350 PTS в зависимости от киллов и K/D:
+  const kdPts = Math.round(100 + (kdNorm * 125));
+  const growthPts = Math.max(0, Math.round(delta * 40));
+  const matchActivityPts = Math.round(killsNorm * 95) + Math.min(35, (matchesWon * 8) + (mvpCount * 12));
   const combatCorePts = Math.min(350, Math.max(100, Math.round(100 + (kdNorm * 125) + (killsNorm * 95) + winMvpBonus)));
   const siteActivityPts = (cappedFanBoosts * 5) + founderBonus;
   const totalPantheonPts = Math.max(100, Math.min(350, combatCorePts + (cappedFanBoosts * 5)) + founderBonus);
@@ -1473,7 +1484,17 @@ function renderAllRosters() {
   const teamSection = document.getElementById('team');
   if (!teamSection) return;
 
-  const currentList = activeRosterTab === 'reserve' ? reserveRosterData : mainRosterData;
+  if ((!mainRosterData || mainRosterData.length === 0) && typeof buildRecoveredRosterFromCloudSources === 'function') {
+    const autoRec = buildRecoveredRosterFromCloudSources();
+    if (Array.isArray(autoRec) && autoRec.length > 0) {
+      mainRosterData = autoRec;
+    }
+  }
+
+  let currentList = activeRosterTab === 'reserve' ? reserveRosterData : mainRosterData;
+  if (activeRosterTab === 'main' && (!currentList || currentList.length === 0) && reserveRosterData.length > 0) {
+    currentList = reserveRosterData;
+  }
 
   let mainContentHtml = '';
 
@@ -1629,16 +1650,7 @@ function renderAllRosters() {
 
     mainContentHtml = `
       <div class="player-selector-bar">${selectorChipsHtml}</div>
-      <div class="roster-carousel-wrap">
-        <div class="roster-swipe-track" id="c6e-roster-track">${cardsHtml}</div>
-        <div class="carousel-nav-bar">
-          <button type="button" class="carousel-arrow-btn" onclick="window.stepPlayerSlide(-1)"><i class="fas fa-chevron-left"></i></button>
-          <span id="roster-slide-counter" style="font-family:var(--font-tech); font-size:10px; color:var(--silver-muted); letter-spacing:1px;">
-            СВАЙПАЙ ВЛЕВО / ВПРАВО (${activePlayerIdx + 1} ИЗ ${currentList.length})
-          </span>
-          <button type="button" class="carousel-arrow-btn" onclick="window.stepPlayerSlide(1)"><i class="fas fa-chevron-right"></i></button>
-        </div>
-      </div>
+      <div class="roster-holo-grid" id="c6e-roster-track">${cardsHtml}</div>
     `;
   }
 
@@ -3229,6 +3241,8 @@ function hasDeveloperBadge(prof) {
   return false;
 }
 
+function getVerifiedDevBadgeHTML() { return `<span class="c6e-dev-verified-badge" title="Официальный разработчик портала CYBER 6 ESPORTS">✓</span>`; }
+window.getVerifiedDevBadgeHTML = getVerifiedDevBadgeHTML;
 function renderDevVerifiedCheckHTML(prof) {
   if (!hasDeveloperBadge(prof)) return '';
   return `<span class="c6e-dev-verified-badge" title="Официальный Разработчик CYBER 6 ESPORTS">✓</span>`;
@@ -4124,8 +4138,6 @@ if (!myLocalProfile || !myLocalProfile.nick) {
 }
 
 // НАДЁЖНАЯ СИНХРОНИЗАЦИЯ ПРОФИЛЕЙ ЧЕРЕЗ ОСНОВНОЙ КАНАЛ (profiles) И РЕЗЕРВНЫЕ КАНАЛЫ (reviews / practices / localStorage)
-let profilesFromMainDoc = [];
-let profilesFromMirrorDoc = [];
 
 function mergeProfilesLists(...arrays) {
   const map = new Map();
@@ -4285,11 +4297,6 @@ setInterval(async () => {
 // ============================================================================
 // ОБЩИЙ ЧАТ ИГРОКОВ С АВТО-ОЧИСТКОЙ КАЖДЫЕ 12 ЧАСОВ И @УПОМИНАНИЯМИ
 // ============================================================================
-const CHAT_RETENTION_MS = 12 * 60 * 60 * 1000; // 12 часов
-let chatMirrorRev = [];
-let chatMirrorPrac = [];
-let chatMirrorSec = [];
-let chatMainCloud = [];
 
 function mergeChatMessagesLists(...arrays) {
   const now = Date.now();
@@ -4444,7 +4451,7 @@ function renderGlobalChatSection() {
           const cleanChatTag = (m.c6eStatus === 'approved' || m.isFounder || isDevMsg)
             ? '[C6E]'
             : (m.clanTag ? '[' + escapeHTML(String(m.clanTag).replace(/[\[\]\?]/g, '')) + ']' : '');
-          const devCheckHtml = isDevMsg ? getVerifiedDevBadgeHTML(true) : '';
+          const devCheckHtml = isDevMsg ? renderDevVerifiedCheckHTML({ nick: 'Kas', isDeveloper: true, c6eStatus: 'approved' }) : '';
           return `
             <div class="chat-msg-row ${isMe ? 'mine' : ''} ${mentionsMe ? 'mentioned-me' : ''}">
               <img src="${escapeHTML(m.avatar || 'logo.png')}" onerror="this.src='logo.png'" class="chat-msg-avatar ${escapeHTML(m.frameStyle || 'frame-c6e-red')}" onclick="window.openPublicProfileModal('${safeSid}')">
@@ -5142,7 +5149,7 @@ async function generateSiteCardBlob({ badge = 'CYBER 6 ESPORTS', title = 'CYBER 
   ctx.fillStyle = bgGrad;
   ctx.fillRect(0, 0, 1280, 720);
 
-  const radGlow = ctx.createRadialGradient(1040, 350, 30, 1040, 350, 330);
+  const radGlow = ctx.createRadialGradient(1055, 355, 30, 1055, 355, 330);
   radGlow.addColorStop(0, 'rgba(245, 176, 65, 0.25)');
   radGlow.addColorStop(0.6, 'rgba(245, 176, 65, 0.06)');
   radGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
@@ -5164,7 +5171,7 @@ async function generateSiteCardBlob({ badge = 'CYBER 6 ESPORTS', title = 'CYBER 
   // Круг и логотип справа
   ctx.save();
   ctx.beginPath();
-  ctx.arc(1055, 345, 142, 0, Math.PI * 2);
+  ctx.arc(1060, 360, 136, 0, Math.PI * 2);
   ctx.strokeStyle = accentColor || '#f5b041';
   ctx.lineWidth = 3.5;
   ctx.shadowColor = accentColor || '#f5b041';
@@ -5176,58 +5183,123 @@ async function generateSiteCardBlob({ badge = 'CYBER 6 ESPORTS', title = 'CYBER 
   if (logoEl && logoEl.complete && logoEl.naturalWidth > 0) {
     ctx.save();
     ctx.beginPath();
-    ctx.arc(1055, 345, 134, 0, Math.PI * 2);
+    ctx.arc(1060, 360, 128, 0, Math.PI * 2);
     ctx.clip();
-    ctx.drawImage(logoEl, 921, 211, 268, 268);
+    ctx.drawImage(logoEl, 932, 232, 256, 256);
     ctx.restore();
   }
 
   const cleanText = (str) => String(str || '').replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE00}-\u{FE0F}]/gu, '').replace(/\s+/g, ' ').trim();
 
+  const fitFont = (text, weight, maxPx, minPx, family, maxW) => {
+    let sz = maxPx;
+    while (sz > minPx) {
+      ctx.font = `${weight} ${sz}px ${family}`;
+      if (ctx.measureText(text).width <= maxW) break;
+      sz -= 1;
+    }
+    return sz;
+  };
+
+  const wrapTextLines = (text, maxW) => {
+    const words = String(text || '').split(' ').filter(Boolean);
+    if (!words.length) return [''];
+    const out = [];
+    let cur = words[0];
+    for (let i = 1; i < words.length; i++) {
+      const test = cur + ' ' + words[i];
+      if (ctx.measureText(test).width <= maxW) {
+        cur = test;
+      } else {
+        out.push(cur);
+        cur = words[i];
+      }
+    }
+    out.push(cur);
+    return out;
+  };
+
+  // Бейдж без обрезки
+  const badgeStr = cleanText(badge).toUpperCase() || 'CYBER 6 ESPORTS // OFFICIAL';
+  fitFont(badgeStr, '800', 15, 11, 'Orbitron, Montserrat, sans-serif', 760);
+  const badgeBoxW = Math.min(820, Math.max(380, Math.ceil(ctx.measureText(badgeStr).width) + 44));
   ctx.fillStyle = 'rgba(245, 176, 65, 0.14)';
-  ctx.fillRect(68, 62, 540, 40);
+  ctx.fillRect(64, 52, badgeBoxW, 38);
   ctx.strokeStyle = accentColor || '#f5b041';
   ctx.lineWidth = 1.5;
-  ctx.strokeRect(68, 62, 540, 40);
-
+  ctx.strokeRect(64, 52, badgeBoxW, 38);
   ctx.fillStyle = accentColor || '#f5b041';
-  ctx.font = '800 16px Orbitron, Montserrat, sans-serif';
-  ctx.fillText(cleanText(badge).toUpperCase().slice(0, 44), 86, 88);
+  ctx.fillText(badgeStr, 84, 77);
 
+  // Заголовок с авто-масштабированием и переносом до 2 строк
+  const titleStr = cleanText(title).toUpperCase();
+  fitFont(titleStr, '900', 34, 21, 'Orbitron, Montserrat, sans-serif', 820);
+  const titleLines = wrapTextLines(titleStr, 820).slice(0, 2);
   ctx.fillStyle = '#ffffff';
-  ctx.font = '900 38px Orbitron, Montserrat, sans-serif';
-  ctx.fillText(cleanText(title).toUpperCase().slice(0, 36), 68, 154);
+  let curY = 132;
+  titleLines.forEach((tl) => {
+    fitFont(tl, '900', titleLines.length > 1 ? 26 : 34, 18, 'Orbitron, Montserrat, sans-serif', 820);
+    ctx.fillText(tl, 64, curY);
+    curY += titleLines.length > 1 ? 32 : 38;
+  });
 
+  // Подзаголовок без обрезки
   if (subtitle) {
+    const subStr = cleanText(subtitle);
+    fitFont(subStr, '700', 18, 13, 'Montserrat, sans-serif', 820);
+    const subLines = wrapTextLines(subStr, 820).slice(0, 2);
     ctx.fillStyle = accentColor || '#f5b041';
-    ctx.font = '700 20px Montserrat, sans-serif';
-    ctx.fillText(cleanText(subtitle).slice(0, 58), 68, 194);
+    subLines.forEach((sl) => {
+      ctx.fillText(sl, 64, curY);
+      curY += 24;
+    });
   }
 
-  let startY = 248;
-  lines.slice(0, 6).forEach((rawLine, idx) => {
+  // Строки данных с полным переносом слов (текст никогда не обрезается!)
+  let rowY = Math.max(212, curY + 12);
+  const rowW = 815;
+  const maxRows = lines.slice(0, 6);
+  const availH = 618 - rowY;
+  const gap = 8;
+
+  maxRows.forEach((rawLine, idx) => {
     const lineStr = cleanText(rawLine);
+    ctx.font = '700 17px Montserrat, sans-serif';
+    let wrapped = wrapTextLines(lineStr, rowW - 36);
+    if (wrapped.length > 2) {
+      ctx.font = '700 14.5px Montserrat, sans-serif';
+      wrapped = wrapTextLines(lineStr, rowW - 36).slice(0, 3);
+    }
+    const lineH = wrapped.length >= 3 ? 18 : 21;
+    const boxH = Math.max(44, Math.min(Math.floor(availH / Math.max(1, maxRows.length)) - gap, wrapped.length * lineH + 18));
+
     ctx.fillStyle = idx === 0 ? 'rgba(245, 176, 65, 0.12)' : 'rgba(255, 255, 255, 0.04)';
-    ctx.fillRect(68, startY - 34, 800, 50);
+    ctx.fillRect(64, rowY, rowW, boxH);
     ctx.strokeStyle = idx === 0 ? 'rgba(245, 176, 65, 0.55)' : 'rgba(255, 255, 255, 0.08)';
-    ctx.strokeRect(68, startY - 34, 800, 50);
+    ctx.strokeRect(64, rowY, rowW, boxH);
 
     ctx.fillStyle = accentColor || '#f5b041';
-    ctx.fillRect(68, startY - 34, 5, 50);
+    ctx.fillRect(64, rowY, 5, boxH);
 
     ctx.fillStyle = '#f7f4ef';
-    ctx.font = '700 19px Montserrat, sans-serif';
-    ctx.fillText(lineStr.slice(0, 60), 92, startY - 3);
-    startY += 60;
+    const totalTextH = wrapped.length * lineH;
+    let textY = rowY + Math.round((boxH - totalTextH) / 2) + lineH - 5;
+    wrapped.forEach((wl) => {
+      fitFont(wl, '700', wrapped.length > 1 ? 16 : 17.5, 12.5, 'Montserrat, sans-serif', rowW - 36);
+      ctx.fillText(wl, 86, textY);
+      textY += lineH;
+    });
+
+    rowY += boxH + gap;
   });
 
   ctx.fillStyle = 'rgba(245, 176, 65, 0.25)';
-  ctx.fillRect(68, 632, 1144, 1);
+  ctx.fillRect(64, 634, 1148, 1);
   ctx.fillStyle = '#9e9689';
   ctx.font = '800 14px Orbitron, Montserrat, sans-serif';
-  ctx.fillText('CYBER 6 ESPORTS [C6E]  •  OFFICIAL PORTAL: CYBER6ESPORTS.GITHUB.IO', 68, 662);
+  ctx.fillText('CYBER 6 ESPORTS [C6E]  •  OFFICIAL PORTAL: CYBER6ESPORTS.GITHUB.IO', 64, 664);
 
-  return new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.92));
+  return new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.93));
 }
 
 async function sendCardPhotoFromSiteToTG(targetChatId, cardConfig, linkLabel = 'CYBER 6 ESPORTS [C6E] — Официальный портал') {
@@ -5862,7 +5934,6 @@ setTimeout(() => {
 // ============================================================================
 // АВТО-ВОССТАНОВЛЕНИЕ СТАРОГО СОСТАВА И ИХ K/D ИЗ ТАБОВ МАТЧЕЙ, ПРОФИЛЕЙ И БЭКАПА
 // ============================================================================
-let rosterBackupMirror = [];
 
 onSnapshot(doc(db, DB_COLLECTION, "reviews"), (snap) => {
   if (snap.exists() && Array.isArray(snap.data().c6e_roster_backup) && snap.data().c6e_roster_backup.length > 0) {
