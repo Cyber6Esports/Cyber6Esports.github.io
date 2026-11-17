@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="gold">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#07080b">
+  <title>404 — CYBER 6 ESPORTS [C6E] | Официальный портал</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Orbitron:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    // Умный маршрутизатор чистых ссылок для сайта организации CYBER 6 ESPORTS (cyber6esports.github.io)
+    (function() {
+      var path = (window.location.pathname || '').replace(/\/+$/, '').toLowerCase();
+      var directMap = {
+        '/admin': '/admin.html',
+        '/panel': '/admin.html',
+        '/home': '/#home',
+        '/feed': '/#home',
+        '/team': '/#team',
+        '/roster': '/#team',
+        '/practice': '/#practice',
+        '/scrims': '/#practice',
+        '/cw': '/#practice',
+        '/pantheon': '/#pantheon',
+        '/apex': '/#pantheon',
+        '/shop': '/#shop',
+        '/market': '/#shop',
+        '/chat': '/#chat',
+        '/news': '/#news',
+        '/history': '/#history',
+        '/matches': '/#history',
+        '/schedule': '/#schedule',
+        '/join': '/#join',
+        '/reviews': '/#reviews',
+        '/about': '/#about',
+        '/media': '/#media'
+      };
+      if (directMap[path]) {
+        window.location.replace(directMap[path]);
+      }
+    })();
+  </script>
+
+  <style>
+    :root {
+      --bg-dark: #07080b;
+      --gold: #f5b041;
+      --gold-light: #ffe08a;
+      --gold-dim: rgba(245, 176, 65, 0.14);
+      --gold-glow: rgba(245, 176, 65, 0.45);
+      --silver: #f5f2eb;
+      --silver-muted: #9e9689;
+      --font-tech: 'Orbitron', sans-serif;
+      --font-main: 'Montserrat', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      min-height: 100vh;
+      background-color: var(--bg-dark);
+      background-image:
+        radial-gradient(circle at 50% 25%, rgba(245, 176, 65, 0.16) 0%, transparent 52%),
+        radial-gradient(circle at 15% 85%, rgba(212, 38, 56, 0.10) 0%, transparent 45%),
+        linear-gradient(160deg, #0d1017 0%, #06070a 60%, #120f08 100%);
+      color: var(--silver);
+      font-family: var(--font-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .cyber-grid-overlay {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-size: 42px 42px;
+      background-image:
+        linear-gradient(to right, rgba(245, 176, 65, 0.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(245, 176, 65, 0.04) 1px, transparent 1px);
+      z-index: 0;
+    }
+
+    .c6e-404-card {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 480px;
+      padding: 36px 28px 30px 28px;
+      border-radius: 22px;
+      background: linear-gradient(160deg, rgba(24, 27, 38, 0.78) 0%, rgba(10, 12, 18, 0.92) 100%);
+      backdrop-filter: blur(28px) saturate(160%);
+      -webkit-backdrop-filter: blur(28px) saturate(160%);
+      border: 1px solid rgba(245, 176, 65, 0.34);
+      border-top: 1px solid rgba(255, 224, 138, 0.6);
+      box-shadow:
+        0 28px 70px rgba(0, 0, 0, 0.88),
+        0 0 38px rgba(245, 176, 65, 0.15),
+        inset 0 1px 1px rgba(255, 255, 255, 0.2);
+      text-align: center;
+    }
+
+    .logo-ring-404 {
+      width: 86px;
+      height: 86px;
+      margin: 0 auto 16px auto;
+      border-radius: 50%;
+      padding: 3px;
+      background: linear-gradient(135deg, var(--gold-light), var(--gold), #8c5a08);
+      box-shadow: 0 0 26px var(--gold-glow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-ring-404 img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #07080b;
+    }
+
+    .badge-404 {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 13px;
+      border-radius: 20px;
+      background: var(--gold-dim);
+      border: 1px solid rgba(245, 176, 65, 0.45);
+      font-family: var(--font-tech);
+      font-size: 9.5px;
+      font-weight: 800;
+      color: var(--gold);
+      letter-spacing: 1.5px;
+      margin-bottom: 12px;
+    }
+
+    .code-404 {
+      font-family: var(--font-tech);
+      font-size: 56px;
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: 3px;
+      background: linear-gradient(180deg, #ffffff 0%, var(--gold-light) 55%, var(--gold) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 8px 28px rgba(245, 176, 65, 0.35);
+      margin-bottom: 8px;
+    }
+
+    .title-404 {
+      font-family: var(--font-tech);
+      font-size: 16px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+
+    .desc-404 {
+      font-size: 12.5px;
+      color: var(--silver-muted);
+      line-height: 1.55;
+      margin-bottom: 22px;
+    }
+
+    .btn-primary-gold {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 13px 20px;
+      border-radius: 12px;
+      border: 1px solid var(--gold-light);
+      background: linear-gradient(135deg, #f5b041 0%, #b87b14 100%);
+      color: #07080b;
+      font-family: var(--font-tech);
+      font-size: 11.5px;
+      font-weight: 900;
+      letter-spacing: 0.8px;
+      text-decoration: none;
+      text-transform: uppercase;
+      box-shadow: 0 8px 24px rgba(245, 176, 65, 0.4);
+      transition: 0.22s ease;
+    }
+    .btn-primary-gold:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(245, 176, 65, 0.65);
+    }
+
+    .quick-links-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .quick-chip {
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--silver);
+      font-family: var(--font-tech);
+      font-size: 10px;
+      font-weight: 700;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: 0.2s ease;
+    }
+    .quick-chip:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+      background: var(--gold-dim);
+    }
+
+    .footer-meta {
+      margin-top: 20px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255, 255, 255, 0.07);
+      font-size: 10px;
+      color: var(--silver-muted);
+      font-family: var(--font-tech);
+      letter-spacing: 0.8px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="cyber-grid-overlay"></div>
+
+<div class="c6e-404-card">
+  <div class="logo-ring-404">
+    <img src="/logo.png" alt="CYBER 6 ESPORTS" onerror="this.style.display='none'">
+  </div>
+
+  <div class="badge-404">
+    <i class="fas fa-shield-alt"></i> CYBER 6 ESPORTS [C6E] // PORTAL GUARD
+  </div>
+
+  <div class="code-404">404</div>
+  <h1 class="title-404">СЕКТОР НЕ НАЙДЕН</h1>
+  <p class="desc-404">
+    Запрошенная страница перемещена или не существует. Выберите нужный раздел официального портала <b>CYBER 6 ESPORTS</b> ниже:
+  </p>
+
+  <a href="https://cyber6esports.github.io/" class="btn-primary-gold">
+    <i class="fas fa-home"></i> ВЕРНУТЬСЯ НА ГЛАВНУЮ [C6E]
+  </a>
+
+  <div class="quick-links-grid">
+    <a href="https://cyber6esports.github.io/#team" class="quick-chip">
+      <i class="fas fa-users" style="color:var(--gold);"></i> Состав [C6E]
+    </a>
+    <a href="https://cyber6esports.github.io/#practice" class="quick-chip">
+      <i class="fas fa-crosshairs" style="color:var(--gold);"></i> Праки (CW)
+    </a>
+    <a href="https://cyber6esports.github.io/#pantheon" class="quick-chip">
+      <i class="fas fa-crown" style="color:var(--gold);"></i> APEX RANK
+    </a>
+    <a href="https://cyber6esports.github.io/#chat" class="quick-chip">
+      <i class="fas fa-comments" style="color:var(--gold);"></i> Общий чат
+    </a>
+  </div>
+
+  <div class="footer-meta">
+    FOUNDER & DEV: <span style="color:var(--gold);">KAS (@KAS_0FF)</span> • OFFICIAL PORTAL
+  </div>
+</div>
+
+</body>
+</html>
