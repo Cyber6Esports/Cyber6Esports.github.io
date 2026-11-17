@@ -1055,8 +1055,72 @@
     }
 
     localStorage.setItem('last_seen_' + tabId, Date.now());
+    try {
+      var routeSlugMap = {
+        'home': '/feed',
+        'team': '/team',
+        'practice': '/practice',
+        'shop': '/shop',
+        'pantheon': '/apex-rank',
+        'chat': '/chat',
+        'news': '/news',
+        'history': '/matches',
+        'schedule': '/schedule',
+        'join': '/recruitment',
+        'reviews': '/reviews',
+        'about': '/about',
+        'media': '/media',
+        'app-hub': '/menu'
+      };
+      var cleanSlug = routeSlugMap[tabId] || ('/' + tabId);
+      if (window.location.pathname !== cleanSlug) {
+        window.history.pushState({ tabId: tabId }, '', cleanSlug);
+      }
+    } catch (e) {}
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  // При входе на сайт сразу убираем /index.html и ставим чистый URL раздела (например /feed)
+  (function initCleanClubUrl() {
+    var pathToTab = {
+      '/': 'home',
+      '/index.html': 'home',
+      '/feed': 'home',
+      '/home': 'home',
+      '/team': 'team',
+      '/roster': 'team',
+      '/practice': 'practice',
+      '/scrims': 'practice',
+      '/shop': 'shop',
+      '/apex-rank': 'pantheon',
+      '/pantheon': 'pantheon',
+      '/chat': 'chat',
+      '/news': 'news',
+      '/matches': 'history',
+      '/history': 'history',
+      '/schedule': 'schedule',
+      '/recruitment': 'join',
+      '/join': 'join',
+      '/reviews': 'reviews',
+      '/about': 'about',
+      '/media': 'media',
+      '/menu': 'app-hub'
+    };
+    var curPath = (window.location.pathname || '/').replace(/\/+$/, '') || '/';
+    var startTab = pathToTab[curPath] || 'home';
+    window.addEventListener('DOMContentLoaded', function() {
+      if (curPath === '/' || curPath === '/index.html') {
+        try { window.history.replaceState({ tabId: 'home' }, '', '/feed'); } catch (e) {}
+      } else if (pathToTab[curPath]) {
+        window.selectTab(startTab);
+      }
+    });
+    window.addEventListener('popstate', function(ev) {
+      var p = (window.location.pathname || '/').replace(/\/+$/, '') || '/';
+      var t = (ev.state && ev.state.tabId) ? ev.state.tabId : (pathToTab[p] || 'home');
+      window.selectTab(t);
+    });
+  })();
 
   window.toggleMenu = function() {
     const dd = document.getElementById('navDropdown');
