@@ -1,290 +1,1279 @@
 <!DOCTYPE html>
-<html lang="ru" data-theme="gold">
+<html lang="ru">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="theme-color" content="#07080b">
-  <title>404 — CYBER 6 ESPORTS [C6E] | Официальный портал</title>
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="CYBER 6">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="logo.png">
+  <meta name="description" content="Официальный портал киберспортивной организации CYBER 6 ESPORTS [C6E] по Standoff 2. Боевой ростер, рейтинг APEX RANK (900 Gold), запись на праки (CW), матчи и магазин.">
+  <meta name="keywords" content="Cyber 6 Esports, C6E, Кибер 6 Испортс, Standoff 2, Стандофф 2, киберспорт, клан C6E, праки Standoff 2, APEX RANK, Kas, @kas_0ff">
+  <meta name="author" content="Kas (Джораев Неджи Ганиевич, @kas_0ff)">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <link rel="canonical" href="https://cyber6esports.github.io/">
+  <link rel="sitemap" type="application/xml" title="Sitemap" href="https://cyber6esports.github.io/sitemap.xml">
+
+  <title>CYBER 6 ESPORTS [C6E] — Официальный портал киберспортивной организации Standoff 2</title>
+  
+  <!-- OPEN GRAPH & TELEGRAM / VK OFFICIAL CARD PREVIEW -->
+  <meta property="og:site_name" content="CYBER 6 ESPORTS [C6E]">
+  <meta property="og:title" content="CYBER 6 ESPORTS [C6E] — Официальный киберспортивный портал">
+  <meta property="og:description" content="Официальный портал организации Cyber 6 Esports [C6E] по Standoff 2. Боевой состав, рейтинг APEX RANK на 900 Gold, расписание праков (CW) и новости штаба.">
+  <meta property="og:url" content="https://cyber6esports.github.io/">
+  <meta property="og:image" content="https://cyber6esports.github.io/logo.png">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ru_RU">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="CYBER 6 ESPORTS [C6E] — Official Esports Portal">
+  <meta name="twitter:description" content="Официальный портал киберспортивной организации Cyber 6 Esports [C6E] по Standoff 2.">
+  <meta name="twitter:image" content="https://cyber6esports.github.io/logo.png">
+
+  <!-- ОФИЦИАЛЬНЫЙ ПАСПОРТ ОРГАНИЗАЦИИ ДЛЯ GOOGLE SEARCH (SCHEMA.ORG JSON-LD) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "SportsOrganization",
+        "@id": "https://cyber6esports.github.io/#organization",
+        "name": "CYBER 6 ESPORTS",
+        "alternateName": ["C6E", "[C6E] Cyber 6 Esports", "Кибер 6 Испортс"],
+        "url": "https://cyber6esports.github.io/",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://cyber6esports.github.io/logo.png"
+        },
+        "image": "https://cyber6esports.github.io/logo.png",
+        "sport": "Esports / Standoff 2",
+        "foundingDate": "2026-11",
+        "description": "Официальная киберспортивная организация CYBER 6 ESPORTS [C6E] в дисциплине Standoff 2. Турнирные матчи, праки (CW), рейтинг бойцов APEX RANK и командная экосистема.",
+        "founder": {
+          "@type": "Person",
+          "name": "Kas (Джораев Неджи Ганиевич)",
+          "alternateName": "@kas_0ff",
+          "jobTitle": "Founder, General Director & Team Leader"
+        },
+        "sameAs": [
+          "https://t.me/kas_0ff",
+          "https://vk.ru/airex_team"
+        ]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://cyber6esports.github.io/#website",
+        "url": "https://cyber6esports.github.io/",
+        "name": "CYBER 6 ESPORTS [C6E] — Официальный сайт",
+        "inLanguage": "ru-RU",
+        "publisher": {
+          "@id": "https://cyber6esports.github.io/#organization"
+        }
+      }
+    ]
+  }
+  </script>
+  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Orbitron:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+  
+  <link rel="stylesheet" href="style.css?v=12">
   <script>
-    // Умный маршрутизатор чистых ссылок для сайта организации CYBER 6 ESPORTS (cyber6esports.github.io)
     (function() {
-      var path = (window.location.pathname || '').replace(/\/+$/, '').toLowerCase();
-      var directMap = {
-        '/admin': '/admin.html',
-        '/panel': '/admin.html',
-        '/home': '/#home',
-        '/feed': '/#home',
-        '/team': '/#team',
-        '/roster': '/#team',
-        '/practice': '/#practice',
-        '/scrims': '/#practice',
-        '/cw': '/#practice',
-        '/pantheon': '/#pantheon',
-        '/apex': '/#pantheon',
-        '/shop': '/#shop',
-        '/market': '/#shop',
-        '/chat': '/#chat',
-        '/news': '/#news',
-        '/history': '/#history',
-        '/matches': '/#history',
-        '/schedule': '/#schedule',
-        '/join': '/#join',
-        '/reviews': '/#reviews',
-        '/about': '/#about',
-        '/media': '/#media'
-      };
-      if (directMap[path]) {
-        window.location.replace(directMap[path]);
+      try {
+        var savedTheme = localStorage.getItem('c6e_theme_color') || 'gold';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        var rawProf = localStorage.getItem('c6e_user_profile_v5');
+        var prof = rawProf ? JSON.parse(rawProf) : null;
+        if (!prof || !prof.nick || prof.c6eStatus === 'rejected') {
+          document.documentElement.classList.add('c6e-gate-locked');
+        }
+      } catch (e) {
+        document.documentElement.classList.add('c6e-gate-locked');
       }
     })();
   </script>
-
-  <style>
-    :root {
-      --bg-dark: #07080b;
-      --gold: #f5b041;
-      --gold-light: #ffe08a;
-      --gold-dim: rgba(245, 176, 65, 0.14);
-      --gold-glow: rgba(245, 176, 65, 0.45);
-      --silver: #f5f2eb;
-      --silver-muted: #9e9689;
-      --font-tech: 'Orbitron', sans-serif;
-      --font-main: 'Montserrat', sans-serif;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    body {
-      min-height: 100vh;
-      background-color: var(--bg-dark);
-      background-image:
-        radial-gradient(circle at 50% 25%, rgba(245, 176, 65, 0.16) 0%, transparent 52%),
-        radial-gradient(circle at 15% 85%, rgba(212, 38, 56, 0.10) 0%, transparent 45%),
-        linear-gradient(160deg, #0d1017 0%, #06070a 60%, #120f08 100%);
-      color: var(--silver);
-      font-family: var(--font-main);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .cyber-grid-overlay {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      background-size: 42px 42px;
-      background-image:
-        linear-gradient(to right, rgba(245, 176, 65, 0.04) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(245, 176, 65, 0.04) 1px, transparent 1px);
-      z-index: 0;
-    }
-
-    .c6e-404-card {
-      position: relative;
-      z-index: 1;
-      width: 100%;
-      max-width: 480px;
-      padding: 36px 28px 30px 28px;
-      border-radius: 22px;
-      background: linear-gradient(160deg, rgba(24, 27, 38, 0.78) 0%, rgba(10, 12, 18, 0.92) 100%);
-      backdrop-filter: blur(28px) saturate(160%);
-      -webkit-backdrop-filter: blur(28px) saturate(160%);
-      border: 1px solid rgba(245, 176, 65, 0.34);
-      border-top: 1px solid rgba(255, 224, 138, 0.6);
-      box-shadow:
-        0 28px 70px rgba(0, 0, 0, 0.88),
-        0 0 38px rgba(245, 176, 65, 0.15),
-        inset 0 1px 1px rgba(255, 255, 255, 0.2);
-      text-align: center;
-    }
-
-    .logo-ring-404 {
-      width: 86px;
-      height: 86px;
-      margin: 0 auto 16px auto;
-      border-radius: 50%;
-      padding: 3px;
-      background: linear-gradient(135deg, var(--gold-light), var(--gold), #8c5a08);
-      box-shadow: 0 0 26px var(--gold-glow);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .logo-ring-404 img {
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      object-fit: cover;
-      background: #07080b;
-    }
-
-    .badge-404 {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 5px 13px;
-      border-radius: 20px;
-      background: var(--gold-dim);
-      border: 1px solid rgba(245, 176, 65, 0.45);
-      font-family: var(--font-tech);
-      font-size: 9.5px;
-      font-weight: 800;
-      color: var(--gold);
-      letter-spacing: 1.5px;
-      margin-bottom: 12px;
-    }
-
-    .code-404 {
-      font-family: var(--font-tech);
-      font-size: 56px;
-      font-weight: 900;
-      line-height: 1;
-      letter-spacing: 3px;
-      background: linear-gradient(180deg, #ffffff 0%, var(--gold-light) 55%, var(--gold) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      text-shadow: 0 8px 28px rgba(245, 176, 65, 0.35);
-      margin-bottom: 8px;
-    }
-
-    .title-404 {
-      font-family: var(--font-tech);
-      font-size: 16px;
-      font-weight: 800;
-      color: #ffffff;
-      letter-spacing: 1px;
-      margin-bottom: 10px;
-      text-transform: uppercase;
-    }
-
-    .desc-404 {
-      font-size: 12.5px;
-      color: var(--silver-muted);
-      line-height: 1.55;
-      margin-bottom: 22px;
-    }
-
-    .btn-primary-gold {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      width: 100%;
-      padding: 13px 20px;
-      border-radius: 12px;
-      border: 1px solid var(--gold-light);
-      background: linear-gradient(135deg, #f5b041 0%, #b87b14 100%);
-      color: #07080b;
-      font-family: var(--font-tech);
-      font-size: 11.5px;
-      font-weight: 900;
-      letter-spacing: 0.8px;
-      text-decoration: none;
-      text-transform: uppercase;
-      box-shadow: 0 8px 24px rgba(245, 176, 65, 0.4);
-      transition: 0.22s ease;
-    }
-    .btn-primary-gold:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 30px rgba(245, 176, 65, 0.65);
-    }
-
-    .quick-links-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-top: 12px;
-    }
-
-    .quick-chip {
-      padding: 10px 12px;
-      border-radius: 10px;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: var(--silver);
-      font-family: var(--font-tech);
-      font-size: 10px;
-      font-weight: 700;
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      transition: 0.2s ease;
-    }
-    .quick-chip:hover {
-      border-color: var(--gold);
-      color: var(--gold);
-      background: var(--gold-dim);
-    }
-
-    .footer-meta {
-      margin-top: 20px;
-      padding-top: 14px;
-      border-top: 1px solid rgba(255, 255, 255, 0.07);
-      font-size: 10px;
-      color: var(--silver-muted);
-      font-family: var(--font-tech);
-      letter-spacing: 0.8px;
-    }
-  </style>
 </head>
 <body>
 
-<div class="cyber-grid-overlay"></div>
+<canvas id="cyber-particles-canvas"></canvas>
+<div class="scanlines"></div>
+<div class="bg-logo"></div>
 
-<div class="c6e-404-card">
-  <div class="logo-ring-404">
-    <img src="/logo.png" alt="CYBER 6 ESPORTS" onerror="this.style.display='none'">
+<!-- ПОЛНОЭКРАННЫЙ ПРОСМОТР СКРИНШОТА-ДОКАЗАТЕЛЬСТВА ПОБЕДЫ -->
+<div id="proof-lightbox" onclick="closeProofLightbox()">
+  <div style="display:flex; justify-content:space-between; align-items:center; width:min(96vw, 800px); margin-bottom:10px;">
+    <span class="font-tech text-silver" style="font-size:12px;"><i class="fas fa-shield-alt text-accent"></i> ОФИЦИАЛЬНОЕ ДОКАЗАТЕЛЬСТВО МАТЧА C6E</span>
+    <button class="btn-glitch" style="width:auto; padding:6px 14px; font-size:10px;" onclick="closeProofLightbox()">ЗАКРЫТЬ ✕</button>
   </div>
+  <img id="proof-lightbox-img" src="" alt="Match Proof">
+</div>
 
-  <div class="badge-404">
-    <i class="fas fa-shield-alt"></i> CYBER 6 ESPORTS [C6E] // PORTAL GUARD
+<!-- ЭКРАН ЗАГРУЗКИ -->
+<div id="preloader">
+  <div class="loader-logo-wrap">
+    <div class="loader-spinner"></div>
+    <img src="logo.png" alt="C6E" onerror="this.style.display='none'">
   </div>
-
-  <div class="code-404">404</div>
-  <h1 class="title-404">СЕКТОР НЕ НАЙДЕН</h1>
-  <p class="desc-404">
-    Запрошенная страница перемещена или не существует. Выберите нужный раздел официального портала <b>CYBER 6 ESPORTS</b> ниже:
-  </p>
-
-  <a href="https://cyber6esports.github.io/" class="btn-primary-gold">
-    <i class="fas fa-home"></i> ВЕРНУТЬСЯ НА ГЛАВНУЮ [C6E]
-  </a>
-
-  <div class="quick-links-grid">
-    <a href="https://cyber6esports.github.io/#team" class="quick-chip">
-      <i class="fas fa-users" style="color:var(--gold);"></i> Состав [C6E]
-    </a>
-    <a href="https://cyber6esports.github.io/#practice" class="quick-chip">
-      <i class="fas fa-crosshairs" style="color:var(--gold);"></i> Праки (CW)
-    </a>
-    <a href="https://cyber6esports.github.io/#pantheon" class="quick-chip">
-      <i class="fas fa-crown" style="color:var(--gold);"></i> APEX RANK
-    </a>
-    <a href="https://cyber6esports.github.io/#chat" class="quick-chip">
-      <i class="fas fa-comments" style="color:var(--gold);"></i> Общий чат
-    </a>
-  </div>
-
-  <div class="footer-meta">
-    FOUNDER & DEV: <span style="color:var(--gold);">KAS (@KAS_0FF)</span> • OFFICIAL PORTAL
+  <div style="margin-top: 16px; font-family: var(--font-tech); letter-spacing: 3px; font-size: 12px; color: var(--silver); font-weight: 700;">
+    CYBER <span style="color: var(--accent-light);">6</span> ESPORTS
   </div>
 </div>
 
+<!-- ФОНОВЫЙ ПЛЕЕР -->
+<div id="ambient-player">
+  <div class="play-state-icon" id="music-btn" onclick="toggleAmbient()" style="cursor: pointer; color: var(--silver);">
+    <i class="fas fa-play" id="btn-icon"></i>
+  </div>
+  <div style="display: flex; flex-direction: column;">
+    <span style="font-size: 8px; color: var(--silver-muted); font-family: var(--font-tech); letter-spacing: 1px;">AMBIENT MODE</span>
+    <span id="player-status" style="font-size: 10px; font-weight: 700;">OFFLINE</span>
+  </div>
+  <audio id="bg-music" loop>
+    <source src="music.mp3" type="audio/mpeg">
+  </audio>
+</div>
+
+<input type="file" id="guestAvatarFileInput" accept="image/*" style="display:none;">
+<input type="file" id="guestBannerFileInput" accept="image/*" style="display:none;">
+<input type="file" id="heroBannerFileInput" accept="image/*" style="display:none;">
+
+<!-- ВЕРХНЯЯ ПАНЕЛЬ ПРИЛОЖЕНИЯ (БЕЗ СТАРОГО ГАМБУРГЕРА — НАВИГАЦИЯ ВНИЗУ ЭКРАНА) -->
+<nav class="navbar">
+  <div class="nav-brand" onclick="selectTab('home', document.getElementById('dock-btn-center'))">
+    <img src="logo.png" alt="C6E" onerror="this.style.display='none'"> 
+    <div class="nav-brand-text">
+      <h1>CYBER <span class="six-num">6</span></h1>
+      <span class="nav-brand-sub" id="nav-active-section-lbl">COMMAND HUB</span>
+    </div>
+  </div>
+
+  <div class="nav-top-actions" style="display:flex; align-items:center; gap:7px; margin-left:auto;">
+    <button type="button" id="theme-switcher-btn" class="nav-icon-btn" onclick="if(window.openThemeModal) window.openThemeModal()" title="Тема оформления сайта">
+      <i class="fas fa-palette"></i>
+    </button>
+
+    <button type="button" id="nav-music-btn" class="nav-icon-btn" onclick="toggleAmbient()" title="Фоновая кибер-атмосфера">
+      <i class="fas fa-music" id="nav-music-icon"></i>
+    </button>
+
+    <button type="button" id="notif-bell-btn" class="nav-icon-btn" onclick="if(window.openNotificationsModal) window.openNotificationsModal()" title="Центр уведомлений">
+      <i class="fas fa-bell"></i>
+      <span id="notif-badge-count" class="notif-count-pill" style="display:none;">0</span>
+    </button>
+
+    <div id="header-profile-chip" class="header-profile-chip" onclick="selectTab('app-hub', document.getElementById('dock-btn-hub'))" title="Открыть профиль и разделы">
+      <div class="hp-avatar-wrap">
+        <img id="hp-avatar-img" src="logo.png" alt="Avatar" onerror="this.src='logo.png'">
+      </div>
+      <div class="hp-info">
+        <div id="hp-nick-line" class="hp-nick">Профиль</div>
+        <div id="hp-sub-line" class="hp-sub" style="display:none;"></div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+
+        <!-- 1. ГЛАВНЫЙ ЭКРАН В СТИЛЕ ПРИЛОЖЕНИЯ (OBSIDIAN & SOLAR GOLD DASHBOARD) -->
+  <section id="home" class="active" style="display: block; opacity: 1; transform: translateY(0);">
+    <!-- ЖИВОЙ ИНФОРМАЦИОННЫЙ ТИКЕР САЙТА -->
+    <div class="cyber-live-ticker">
+      <span class="ticker-badge"><i class="fas fa-bolt"></i> LIVE HUB</span>
+      <div class="ticker-text" id="home-cyber-ticker-text">
+        CYBER 6 ESPORTS [C6E] • WEEKLY APEX RANK 900 GOLD PRIZE POOL • PRO SCRIMS & MATCH TABS SYNC
+      </div>
+    </div>
+
+    <div class="card cyber-hero-v5">
+      <!-- КАСТОМНЫЙ ШИРОКИЙ БАННЕР ПОЗАДИ ГЛАВНОЙ АВАТАРКИ -->
+      <div class="hero-banner-stage-wrap" id="hero-custom-banner-bg">
+        <div class="hero-banner-overlay-shade"></div>
+
+        <div class="hero-top-meta" style="width:100%; margin-bottom:4px;">
+          <span class="hero-live-pill">
+            <span class="online-dot-pulse" style="background:var(--accent); box-shadow:0 0 8px var(--accent);"></span> PORTAL v0.8.0 • PRO EDITION
+          </span>
+          <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+            <button type="button" class="hero-banner-edit-btn" id="hero-change-banner-btn" onclick="if(window.openHeroBannerPicker) window.openHeroBannerPicker()" title="Поставить любой баннер за аватаркой">
+              <i class="fas fa-image"></i> БАННЕР
+            </button>
+            <span class="hero-dev-pill" onclick="if(window.openSiteReleaseModal) window.openSiteReleaseModal()" style="cursor:pointer;">
+              <span class="c6e-dev-verified-badge" style="width:13px; height:13px; font-size:7.5px;">✓</span> DEV: KAS (@kas_0ff)
+            </span>
+          </div>
+        </div>
+
+        <!-- СВЕТЯЩЕЕСЯ КОЛЬЦО СТРОГО ПО РАЗМЕРУ АВАТАРКИ -->
+        <div class="solar-eclipse-stage">
+          <div class="solar-eclipse-ring"></div>
+          <img src="logo.png" id="hero-main-avatar-img" alt="Cyber 6 Esports" class="eclipse-inner-img" onerror="this.style.display='none'">
+        </div>
+      </div>
+
+      <div class="hero-body-pad" style="text-align:center;">
+        <h2 class="hero-title" style="letter-spacing:4px; font-size:clamp(22px, 5.5vw, 34px); margin-bottom:4px;">
+          CYBER <span class="text-accent">6</span> ESPORTS
+        </h2>
+        <div id="typing-text" style="margin-bottom: 12px; color:#9e9689; letter-spacing:2.5px; font-size:10px;">
+          DOMINATE • EVOLVE • CONQUER
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <span class="solar-level-pill"><i class="fas fa-crown"></i> APEX RANK PRIZE POOL • 900 GOLD</span>
+        </div>
+
+        <button type="button" class="btn-glitch" style="max-width:340px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; padding:10px 12px 10px 22px !important;" onclick="selectTab('pantheon', document.getElementById('dock-btn-center'))">
+          <span>ОТКРЫТЬ РЕЙТИНГ APEX RANK</span>
+          <span style="width:32px; height:32px; border-radius:50%; background:var(--accent-dim); border:1px solid var(--accent); color:var(--accent); display:inline-flex; align-items:center; justify-content:center; font-size:11px;">
+            <i class="fas fa-play"></i>
+          </span>
+        </button>
+
+        <button type="button" id="home-install-app-btn" class="chip-btn" style="display:none; max-width:340px; width:100%; margin:8px auto 0 auto; padding:10px 16px; border-radius:30px; border-color:var(--accent); color:var(--accent); background:var(--accent-dim); font-weight:900; font-size:10px; justify-content:center; align-items:center; gap:8px;" onclick="window.installCyber6App()">
+          <i class="fas fa-download"></i> УСТАНОВИТЬ ПРИЛОЖЕНИЕ CYBER 6 НА ТЕЛЕФОН
+        </button>
+
+        <!-- БЫСТРЫЕ КНОПКИ ДЕЙСТВИЙ С ВЕКТОРНЫМИ SVG -->
+        <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; margin-top:18px; padding-top:16px; border-top:1px solid rgba(255,255,255,0.06);">
+          <div style="cursor:pointer; text-align:center;" onclick="selectTab('team', document.getElementById('dock-btn-team'))">
+            <div style="width:42px; height:42px; border-radius:14px; margin:0 auto 6px auto; background:rgba(255,255,255,0.03); border:1px solid rgba(var(--accent-rgb),0.32); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:15px;">
+              <i class="fas fa-shield-alt"></i>
+            </div>
+            <div style="font-size:10px; font-weight:700; color:var(--silver);">Состав</div>
+          </div>
+          <div style="cursor:pointer; text-align:center;" onclick="selectTab('practice', document.getElementById('dock-btn-practice'))">
+            <div style="width:42px; height:42px; border-radius:14px; margin:0 auto 6px auto; background:rgba(255,255,255,0.03); border:1px solid rgba(var(--accent-rgb),0.32); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:15px;">
+              <i class="fas fa-crosshairs"></i>
+            </div>
+            <div style="font-size:10px; font-weight:700; color:var(--silver);">Праки (CW)</div>
+          </div>
+          <div style="cursor:pointer; text-align:center;" onclick="selectTab('shop', document.getElementById('dock-btn-shop'))">
+            <div style="width:42px; height:42px; border-radius:14px; margin:0 auto 6px auto; background:rgba(255,255,255,0.03); border:1px solid rgba(var(--accent-rgb),0.32); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:15px;">
+              <i class="fas fa-gem"></i>
+            </div>
+            <div style="font-size:10px; font-weight:700; color:var(--silver);">Магазин G</div>
+          </div>
+          <div style="cursor:pointer; text-align:center;" onclick="if(window.openThemeModal) window.openThemeModal()">
+            <div style="width:42px; height:42px; border-radius:14px; margin:0 auto 6px auto; background:rgba(255,255,255,0.03); border:1px solid rgba(var(--accent-rgb),0.32); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:15px;">
+              <i class="fas fa-palette"></i>
+            </div>
+            <div style="font-size:10px; font-weight:700; color:var(--silver);">Тема сайта</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+        <!-- БЛОК ЕЖЕДНЕВНОЙ АКТИВНОСТИ 'FOCUS STREAK & LEVEL' (КАК '23 DAYS' НА ЗОЛОТОМ РЕФЕРЕНСЕ) -->
+    <div class="solar-streak-card" id="home-streak-widget">
+      <div style="display:flex; align-items:center; gap:14px;">
+        <div class="streak-flame-orb">
+          <i class="fas fa-fire"></i>
+        </div>
+        <div>
+          <div style="font-family:var(--font-tech); font-size:9px; color:var(--silver-muted); letter-spacing:1.2px;">
+            PORTAL STREAK // СЕРИЯ АКТИВНОСТИ И УРОВЕНЬ
+          </div>
+          <div style="display:flex; align-items:baseline; gap:10px; margin-top:3px; flex-wrap:wrap;">
+            <span class="streak-big-num" id="home-streak-days-val">1</span>
+            <span style="font-family:var(--font-tech); font-size:10px; color:var(--silver); font-weight:800;">ДНЕЙ ПОДРЯД</span>
+            <span class="solar-level-pill" id="home-user-level-pill" style="padding:2px 10px; font-size:8.5px;">LEVEL 1</span>
+          </div>
+        </div>
+      </div>
+      <button type="button" id="home-claim-streak-btn" class="chip-btn" style="border-color:#f5b041; color:#f5b041; padding:9px 14px; font-weight:900; font-size:10px;" onclick="window.claimDailyPortalStreak()">
+        <i class="fas fa-bolt"></i> ОТМЕТИТЬСЯ (+15 XP)
+      </button>
+    </div>
+
+    <!-- КРУГОВОЙ ДАШБОРД СТАТИСТИКИ (КАК БЛОК OVERALL PROGRESS 78% НА СКРИНШОТЕ) -->
+    <div class="solar-dashboard-widget">
+      <div class="solar-ring-box">
+        <svg class="solar-ring-svg" viewBox="0 0 100 100">
+          <circle class="solar-ring-bg" cx="50" cy="50" r="42"></circle>
+          <circle class="solar-ring-fill" id="home-winrate-ring-circle" cx="50" cy="50" r="42" stroke-dasharray="264" stroke-dashoffset="66"></circle>
+        </svg>
+        <div class="solar-ring-center">
+          <div class="solar-ring-val" id="win-rate-display">0%</div>
+          <div class="solar-ring-lbl">WIN RATE</div>
+        </div>
+      </div>
+
+      <div class="solar-metrics-list">
+        <div style="font-family:var(--font-tech); font-size:9.5px; color:var(--silver-muted); letter-spacing:1.2px; margin-bottom:2px;">
+          OVERALL TELEMETRY // СЕЗОН [C6E]
+        </div>
+        <div class="solar-metric-row" onclick="selectTab('history', null)" style="cursor:pointer;">
+          <span><span class="solar-dot"></span>Сыграно матчей</span>
+          <b id="total-games-display" style="font-family:var(--font-tech); color:#fff;">0</b>
+        </div>
+        <div class="solar-metric-row" onclick="selectTab('pantheon', document.getElementById('dock-btn-center'))" style="cursor:pointer;">
+          <span><span class="solar-dot"></span>Призовой фонд</span>
+          <b style="font-family:var(--font-tech); color:#f5b041;">900 GOLD</b>
+        </div>
+        <div class="solar-metric-row" onclick="document.getElementById('home-community-hub')?.scrollIntoView({behavior:'smooth'})" style="cursor:pointer;">
+          <span><span class="solar-dot"></span>Профилей в базе</span>
+          <b id="home-stat-profiles-count" style="font-family:var(--font-tech); color:#fff;">1</b>
+        </div>
+        <div class="solar-metric-row" onclick="selectTab('chat', document.getElementById('dock-btn-chat'))" style="cursor:pointer;">
+          <span><span class="solar-dot"></span>Активность чата</span>
+          <b id="home-chat-live-pill" style="font-family:var(--font-tech); color:#f5b041;">LIVE</b>
+        </div>
+      </div>
+    </div>
+
+    <!-- ЖИВОЙ МИНИ-ПОДИУМ ТОП-3 ПАНТЕОНА НА ГЛАВНОЙ -->
+    <div class="card home-pantheon-widget" id="home-pantheon-mini-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; padding-bottom:12px; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.06);">
+        <div>
+          <div style="font-family:var(--font-tech); font-size:12px; font-weight:900; color:#fff; display:flex; align-items:center; gap:8px;">
+            <i class="fas fa-crown" style="color:#f5b041;"></i> ТОП-3 APEX RANK // ГОНКА ЗА 900 GOLD
+          </div>
+          <div style="font-size:10px; color:var(--silver-muted); margin-top:2px;">
+            Очки PTS считаются автоматически по K/D из официальных Табов матчей + бусты зрителей
+          </div>
+        </div>
+        <button type="button" class="chip-btn" style="border-color:rgba(245,176,65,0.45); color:#f5b041;" onclick="selectTab('pantheon', document.getElementById('dock-btn-center'))">
+          ОТКРЫТЬ ➔
+        </button>
+      </div>
+      <div id="home-pantheon-mini-grid" class="home-podium-mini-grid">
+        <div style="font-size:11px; color:var(--silver-muted); padding:12px; text-align:center;">Синхронизация лидеров APEX RANK...</div>
+      </div>
+    </div>
+
+    <!-- РАДАР ОНЛАЙНА И ИГРОВЫХ ПРОФИЛЕЙ ГОСТЕЙ И БОЙЦОВ -->
+    <div class="card community-radar-card" id="home-community-hub">
+      <div class="community-radar-header">
+        <div>
+          <div style="font-family:var(--font-tech); font-size:12px; font-weight:900; color:#fff; display:flex; align-items:center; gap:8px;">
+            <span class="online-dot-pulse" style="background:#f5b041; box-shadow:0 0 8px #f5b041;"></span> ИГРОКИ ОНЛАЙН И ПРОФИЛИ СООБЩЕСТВА [C6E]
+          </div>
+          <div style="font-size:10px; color:var(--silver-muted); margin-top:3px;">
+            Нажми на карточку любого игрока, чтобы посмотреть его баннер, K/D, страну и поставить лайк
+          </div>
+        </div>
+        <div class="community-counters-strip">
+          <div class="comm-counter-pill online">
+            <span class="lbl">ОНЛАЙН</span>
+            <span class="val" id="comm-online-count" style="color:#f5b041;">1</span>
+          </div>
+          <div class="comm-counter-pill total">
+            <span class="lbl">ВСЕГО</span>
+            <span class="val" id="comm-total-count">1</span>
+          </div>
+          <button type="button" class="chip-btn" style="border-color:rgba(245,176,65,0.45); color:#f5b041;" onclick="if(window.openMyProfileModal) window.openMyProfileModal(false)">
+            <i class="fas fa-sliders-h"></i> Настроить
+          </button>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:6px; overflow-x:auto; padding-bottom:10px; margin-bottom:10px;">
+        <button type="button" class="chip-btn comm-filter-btn active" id="comm-flt-all" style="border-color:#f5b041; color:#fff;" onclick="window.setHomeCommunityFilter('all')">ALL</button>
+        <button type="button" class="chip-btn comm-filter-btn" id="comm-flt-c6e" onclick="window.setHomeCommunityFilter('c6e')">БОЙЦЫ [C6E]</button>
+        <button type="button" class="chip-btn comm-filter-btn" id="comm-flt-guest" onclick="window.setHomeCommunityFilter('guest')">ГОСТИ</button>
+        <button type="button" class="chip-btn comm-filter-btn" id="comm-flt-top" onclick="window.setHomeCommunityFilter('top')">ТОП ЛАЙКОВ</button>
+      </div>
+
+      <div id="home-online-profiles-grid" class="online-profiles-showcase">
+        <div style="font-size:11px; color:var(--silver-muted); padding:14px; text-align:center;">Загрузка профилей игроков...</div>
+      </div>
+    </div>
+
+    <!-- MATCH CENTER + ДОРОЖНАЯ КАРТА МИССИИ (КАК MISSION ROADMAP 1-2-3-4 НА СКРИНЕ) -->
+    <div class="card match-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 10px; margin-bottom: 15px;">
+        <span class="font-tech text-silver" style="font-size: 11px;"><i class="fas fa-satellite-dish text-accent"></i> MATCH CENTER // ТЕЛЕМЕТРИЯ МАТЧЕЙ</span>
+        <span id="match-status" style="font-size: 9px; font-family: var(--font-tech); color: #f5b041; background: rgba(245,176,65,0.1); border: 1px solid rgba(245,176,65,0.35); padding: 3px 8px; border-radius: 4px;">OFFLINE</span>
+      </div>
+      
+      <div class="match-teams" style="display: flex; align-items: center; justify-content: space-between;">
+        <div class="text-center" style="flex: 1;">
+          <div class="font-tech" style="font-size: 24px; font-weight: 800; color: var(--silver);">C<span class="text-accent">6</span>E</div>
+          <div style="font-size: 10px; color: var(--text-gray);">Cyber 6 Esports</div>
+        </div>
+        <div style="font-family: var(--font-tech); font-size: 18px; color: #f5b041; font-style: italic; font-weight: 700;">VS</div>
+        <div class="text-center" style="flex: 1;">
+          <div class="font-tech" style="font-size: 24px; font-weight: 800; color: var(--silver);" id="enemy-name-display">TBA</div>
+          <div style="font-size: 10px; color: var(--text-gray);">Opponent</div>
+        </div>
+      </div>
+
+      <div id="countdown" class="countdown">
+        <span style="font-size: 12px; color: var(--silver-muted); align-self: center;">ОЖИДАНИЕ АНОНСА...</span>
+      </div>
+
+      <div id="home-pickem-box" style="margin-top:14px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.06);"></div>
+      <div id="home-latest-match-box" style="margin-top:16px; padding-top:14px; border-top:1px dashed rgba(255,255,255,0.1);"></div>
+
+      <!-- ДОРОЖНАЯ КАРТА КАК ВНИЗУ РЕФЕРЕНС-СКРИНШОТА -->
+      <div style="margin-top:18px; padding-top:14px; border-top:1px solid rgba(255,255,255,0.06);">
+        <div style="font-family:var(--font-tech); font-size:9px; color:var(--silver-muted); letter-spacing:1.2px; margin-bottom:4px;">
+          CURRENT MISSION // ПУТЬ К ДОМИНАЦИИ [C6E]
+        </div>
+        <div class="solar-roadmap-strip">
+          <div class="solar-step-node active" onclick="if(window.openMyProfileModal) window.openMyProfileModal(false)" style="cursor:pointer;">
+            <div class="solar-step-circle">1</div>
+            <div class="solar-step-lbl">ПРОФИЛЬ<br>[C6E]</div>
+          </div>
+          <div class="solar-step-node active" onclick="selectTab('practice', document.getElementById('dock-btn-practice'))" style="cursor:pointer;">
+            <div class="solar-step-circle">2</div>
+            <div class="solar-step-lbl">ПРАКИ &<br>ТАБЫ</div>
+          </div>
+          <div class="solar-step-node active" onclick="selectTab('team', null)" style="cursor:pointer;">
+            <div class="solar-step-circle">3</div>
+            <div class="solar-step-lbl">РОСТ<br>LIVE K/D</div>
+          </div>
+          <div class="solar-step-node active" onclick="selectTab('pantheon', document.getElementById('dock-btn-center'))" style="cursor:pointer;">
+            <div class="solar-step-circle">4</div>
+            <div class="solar-step-lbl">APEX RANK<br>900 GOLD</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+        <!-- ИНТЕРАКТИВНАЯ БАЗА КАРТ И ТАКТИК STANDOFF 2 ОТ СОСТАВА [C6E] -->
+    <div class="card" id="home-tactical-maps-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+        <div>
+          <div style="font-family:var(--font-tech); font-size:12px; font-weight:900; color:#fff; display:flex; align-items:center; gap:8px;">
+            <i class="fas fa-map-marked-alt" style="color:#f5b041;"></i> ТАКТИЧЕСКАЯ БАЗА КАРТ STANDOFF 2 // РАЗБОР ОТ [C6E]
+          </div>
+          <div style="font-size:10px; color:var(--silver-muted); margin-top:2px;">
+            Фирменные тайминги, ключевые позиции снайпера и раскидки от основного состава CYBER 6 ESPORTS
+          </div>
+        </div>
+      </div>
+      <div class="map-tactics-tabs" id="c6e-map-tactics-tabs"></div>
+      <div id="c6e-map-tactics-content" class="map-tac-box"></div>
+    </div>
+
+    <div class="card">
+      <h3 class="font-tech" style="font-size: 13px; margin-top: 0; margin-bottom: 15px; color: var(--silver);">
+        <i class="fas fa-bolt text-accent"></i> ПОСЛЕДНИЕ СОБЫТИЯ И ОБНОВЛЕНИЯ
+      </h3>
+      <div id="home-news-feed">
+        <div class="text-center" style="font-size: 12px; color: #666; padding: 20px;">Загрузка данных...</div>
+      </div>
+      <button class="btn-glitch" onclick="selectTab('news', null)" style="margin-top: 10px;">
+        ОТКРЫТЬ ВСЕ НОВОСТИ
+      </button>
+    </div>
+  </section>
+
+  <!-- ЭКРАН ПРОФИЛЯ И ВСЕХ РАЗДЕЛОВ ПРИЛОЖЕНИЯ (1:1 КАК ЭКРАН 'MY PROFILE' СЛЕВА ВВЕРХУ НА СКРИНШОТЕ) -->
+  <section id="app-hub">
+    <div class="card" style="text-align:center; padding:24px 18px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+        <span style="font-family:var(--font-tech); font-size:10px; color:var(--silver-muted); letter-spacing:1.5px;">MY PROFILE & COMMAND MENU</span>
+        <button type="button" class="chip-btn" style="border-color:rgba(245,176,65,0.45); color:#f5b041;" onclick="if(window.openMyProfileModal) window.openMyProfileModal(false)">
+          <i class="fas fa-pen"></i> Изменить профиль
+        </button>
+      </div>
+
+      <!-- АВАТАРКА ИГРОКА В СВЕТЯЩЕМСЯ ЗОЛОТОМ КОЛЬЦЕ-ОРЕОЛЕ -->
+      <div class="solar-eclipse-stage" onclick="if(window.openMyProfileModal) window.openMyProfileModal(false)" style="cursor:pointer;">
+        <div class="solar-eclipse-ring"></div>
+        <img id="hub-profile-avatar" src="logo.png" alt="Avatar" class="eclipse-inner-img" onerror="this.src='logo.png'">
+      </div>
+
+      <h2 id="hub-profile-nick" style="font-family:var(--font-tech); font-size:22px; font-weight:900; color:#fff; letter-spacing:2px; margin:0 0 4px 0; display:flex; align-items:center; justify-content:center; gap:6px;">
+        ИГРОК [C6E]
+      </h2>
+      <div id="hub-profile-sub" style="font-size:10px; color:var(--silver-muted); letter-spacing:2px; text-transform:uppercase; margin-bottom:12px;">
+        FOCUS • DISCIPLINE • VICTORY
+      </div>
+
+      <div style="margin-bottom:8px;">
+        <span id="hub-profile-badge-pill" class="solar-level-pill">ГОСТЬ ПОРТАЛА</span>
+      </div>
+      <div id="hub-profile-medals" class="profile-medals-row"></div>
+
+      <!-- 3 КОЛОНКИ СТАТИСТИКИ ПРОФИЛЯ (КАК Days 746 / Habits 24 / Focus Hrs 2,145 НА СКРИНЕ) -->
+      <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; padding:14px 8px; border-top:1px solid rgba(255,255,255,0.06); border-bottom:1px solid rgba(255,255,255,0.06); margin-bottom:16px;">
+        <div>
+          <div style="font-size:10px; color:var(--silver-muted);">Действующий K/D</div>
+          <div id="hub-stat-kd" style="font-family:var(--font-tech); font-size:18px; font-weight:900; color:#fff; margin-top:3px;">1.20</div>
+        </div>
+        <div style="border-left:1px solid rgba(255,255,255,0.06); border-right:1px solid rgba(255,255,255,0.06);">
+          <div style="font-size:10px; color:var(--silver-muted);">Лайков</div>
+          <div id="hub-stat-likes" style="font-family:var(--font-tech); font-size:18px; font-weight:900; color:#f5b041; margin-top:3px;">0</div>
+        </div>
+        <div>
+          <div style="font-size:10px; color:var(--silver-muted);">Очки XP</div>
+          <div id="hub-stat-pts" style="font-family:var(--font-tech); font-size:18px; font-weight:900; color:#fff; margin-top:3px;">20</div>
+        </div>
+      </div>
+
+      <!-- НАВИГАЦИОННЫЙ СПИСОК ВСЕХ РАЗДЕЛОВ САЙТА СО СТРЕЛКАМИ '>' (1:1 КАК НА СКРИНШОТЕ) -->
+      <div id="hub-admin-access-wrap" style="display:none; margin-bottom:12px;">
+        <a href="admin.html" style="text-decoration:none;">
+          <button type="button" class="btn-glitch" style="border-color:#f5b041 !important; color:#f5b041 !important;">
+            <i class="fas fa-user-shield" style="margin-right:8px;"></i> ОТКРЫТЬ ПАНЕЛЬ УПРАВЛЕНИЯ АДМИНА [C6E]
+          </button>
+        </a>
+      </div>
+      <div class="solar-menu-list">
+        <button type="button" class="solar-menu-row featured" onclick="if(window.openThemeModal) window.openThemeModal()">
+          <div class="solar-menu-left">
+            <span class="solar-menu-icon"><i class="fas fa-palette"></i></span>
+            <div>
+              <div class="solar-menu-title">Тема оформления сайта (4 стиля)</div>
+              <div class="solar-menu-sub">По умолчанию: Тёмно-Золотая (Obsidian Gold), Рубин, Сапфир, Изумруд</div>
+            </div>
+          </div>
+          <i class="fas fa-chevron-right solar-menu-arrow"></i>
+        </button>
+        <button type="button" class="solar-menu-row featured" id="hub-install-app-row" onclick="window.installCyber6App()">
+          <div class="solar-menu-left">
+            <span class="solar-menu-icon"><i class="fas fa-mobile-alt"></i></span>
+            <div>
+              <div class="solar-menu-title">Установить приложение CYBER 6 ESPORTS</div>
+              <div class="solar-menu-sub">Добавить официальное полноэкранное приложение [C6E] на главный экран телефона</div>
+            </div>
+          </div>
+          <i class="fas fa-download solar-menu-arrow"></i>
+        </button>
+        <button type="button" class="solar-menu-row featured" onclick="selectTab('pantheon', document.getElementById('dock-btn-center'))">
+          <div class="solar-menu-left">
+            <span class="solar-menu-icon"><i class="fas fa-crown"></i></span>
+            <div>
+              <div class="solar-menu-title">APEX RANK [C6E] • Гонка за 900 GOLD</div>
+              <div class="solar-menu-sub">Рейтинг бойцов (100–350 PTS по Киллам и K/D) • Приз 900G</div>
+            </div>
+          </div>
+          <i class="fas fa-chevron-right solar-menu-arrow"></i>
+        </button>
+
+        <button type="button" class="solar-menu-row" onclick="selectTab('team', null)">
+          <div class="solar-menu-left">
+            <span class="solar-menu-icon"><i class="fas fa-users"></i></span>
+            <div>
+              <div class="solar-menu-title">Состав организации (Main & Reserve)</div>
+              <div class="solar-menu-sub">Карточки бойцов [C6E], LIVE K/D, настройки и девайсы</div>
+            </div>
+          </div>
+          <i class="fas fa-chevron-right solar-menu-arrow"></i>
+        </button>
+
+        <button type="button" class="solar-menu-row" onclick="selectTab('chat', document.getElementById('dock-btn-chat'))">
+          <div class="solar-menu-left">
+            <span class="solar-menu-icon"><i class="fas fa-comments"></i></span>
+            <div>
+              <div class="solar-menu-title">Общий чат игроков (12ч)</div>
+              <div class="solar-menu-sub">Живое общение гостей и бойцов с упоминаниями @Ник</div>
+            </div>
+          </div>
+          <i class="fas fa-chevron-right solar-menu-arrow"></i>
+        </button>
+
+        <button type="button" class="solar-menu-row" onclick="selectTab('shop', null)">
+          <div class="solar-menu-left">
+            <span class="solar-menu-icon"><i class="fas fa-shopping-bag"></i></span>
+            <div>
+              <div class="solar-menu-title">Магазин [C6E] • Cyber Market</div>
+              <div class="solar-menu-sub">Паки Голды, приватные конфиги, VIP-рамки и слоты</div>
+            </div>
+          </div>
+          <i class="fas fa-chevron-right solar-menu-arrow"></i>
+        </button>
+
+        <button type="button" class="solar-menu-row" onclick="selectTab('practice', document.getElementById('dock-btn-practice'))">
+          <div class="solar-menu-left">
+            <span class="solar-menu-icon"><i class="fas fa-crosshairs"></i></span>
+            <div>
+              <div class="solar-menu-title">Запись на Праки (CW)</div>
+              <div class="solar-menu-sub">Бронирование свободного слота на матч против [C6E]</div>
+            </div>
+          </div>
+          <i class="fas fa-chevron-right solar-menu-arrow"></i>
+        </button>
+
+        <button type="button" class="solar-menu-row" onclick="selectTab('history', null)">
+          <div class="solar-menu-left">
+            <span class="solar-menu-icon"><i class="fas fa-trophy"></i></span>
+            <div>
+              <div class="solar-menu-title">История матчей и Двойные Табы</div>
+              <div class="solar-menu-sub">Официальные результаты, статистика 5v5 и скриншоты</div>
+            </div>
+          </div>
+          <i class="fas fa-chevron-right solar-menu-arrow"></i>
+        </button>
+
+        <button type="button" class="solar-menu-row" onclick="selectTab('schedule', null)">
+          <div class="solar-menu-left">
+            <span class="solar-menu-icon"><i class="far fa-calendar-alt"></i></span>
+            <div>
+              <div class="solar-menu-title">Расписание праков и турниров</div>
+              <div class="solar-menu-sub">Календарь предстоящих игр и тренировок состава</div>
+            </div>
+          </div>
+          <i class="fas fa-chevron-right solar-menu-arrow"></i>
+        </button>
+
+        <button type="button" class="solar-menu-row" onclick="selectTab('news', null)">
+          <div class="solar-menu-left">
+            <span class="solar-menu-icon"><i class="fas fa-bolt"></i></span>
+            <div>
+              <div class="solar-menu-title">Новости и Патч-ноуты от Kas</div>
+              <div class="solar-menu-sub">Официальные анонсы и обновления платформы</div>
+            </div>
+          </div>
+          <i class="fas fa-chevron-right solar-menu-arrow"></i>
+        </button>
+
+        <button type="button" class="solar-menu-row" onclick="selectTab('media', null)">
+          <div class="solar-menu-left">
+            <span class="solar-menu-icon"><i class="fas fa-play-circle"></i></span>
+            <div>
+              <div class="solar-menu-title">Медиа и Галерея</div>
+              <div class="solar-menu-sub">Хайлайты, мувики и лучшие моменты клана</div>
+            </div>
+          </div>
+          <i class="fas fa-chevron-right solar-menu-arrow"></i>
+        </button>
+
+        <button type="button" class="solar-menu-row" onclick="selectTab('about', null)">
+          <div class="solar-menu-left">
+            <span class="solar-menu-icon"><i class="fas fa-shield-alt"></i></span>
+            <div>
+              <div class="solar-menu-title">Инфо и История организации</div>
+              <div class="solar-menu-sub">Дорожная карта развития CYBER 6 ESPORTS</div>
+            </div>
+          </div>
+          <i class="fas fa-chevron-right solar-menu-arrow"></i>
+        </button>
+
+        <button type="button" class="solar-menu-row" onclick="selectTab('reviews', null)">
+          <div class="solar-menu-left">
+            <span class="solar-menu-icon"><i class="fas fa-star"></i></span>
+            <div>
+              <div class="solar-menu-title">Отзывы об игроках и клане</div>
+              <div class="solar-menu-sub">Мнения соперников и участников сообщества</div>
+            </div>
+          </div>
+          <i class="fas fa-chevron-right solar-menu-arrow"></i>
+        </button>
+
+        <button type="button" class="solar-menu-row featured" onclick="selectTab('join', null)">
+          <div class="solar-menu-left">
+            <span class="solar-menu-icon"><i class="fas fa-user-plus"></i></span>
+            <div>
+              <div class="solar-menu-title">Подать заявку на вступление в [C6E]</div>
+              <div class="solar-menu-sub">Анкета кандидата в основной или резервный состав</div>
+            </div>
+          </div>
+          <i class="fas fa-chevron-right solar-menu-arrow"></i>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- НОВЫЙ РАЗДЕЛ v0.5.0: ОБЩИЙ ЧАТ ИГРОКОВ (АВТО-ОЧИСТКА КАЖДЫЕ 12 ЧАСОВ + @УПОМИНАНИЯ) -->
+  <section id="chat">
+    <div id="global-chat-root">
+      <div class="text-center" style="padding:30px; color:var(--silver-muted);">Загрузка общего чата [C6E]...</div>
+    </div>
+  </section>
+
+  <!-- НОВЫЙ РАЗДЕЛ v0.5.0: МАГАЗИН [C6E] (ЭКСКЛЮЗИВНЫЙ КИБЕР-МАРКЕТ) -->
+  <section id="shop">
+    <div id="c6e-shop-root">
+      <div class="text-center" style="padding:30px; color:var(--silver-muted);">Загрузка кибер-маркета [C6E]...</div>
+    </div>
+  </section>
+
+  <!-- НОВЫЙ ИННОВАЦИОННЫЙ РАЗДЕЛ: ПАНТЕОН [C6E] (ЕЖЕНЕДЕЛЬНАЯ ГОНКА ЗА 500 / 250 / 150 ГОЛДЫ ОТ ОСНОВАТЕЛЯ) -->
+  <section id="pantheon">
+    <div id="pantheon-root">
+      <div class="text-center" style="padding: 30px; color: var(--silver-muted);">Загрузка рейтинга APEX RANK [C6E]...</div>
+    </div>
+  </section>
+
+  <!-- 2. СОСТАВ -->
+  <section id="team">
+    <div class="text-center" style="margin-bottom: 25px;">
+      <h2 class="font-tech text-silver" style="margin-bottom: 5px;">MAIN <span class="text-accent">ROSTER</span></h2>
+      <p style="font-size: 10px; color: var(--silver-muted); margin: 0;">Нажми на карточку игрока, чтобы открыть настройки и девайс</p>
+    </div>
+    <div class="roster-grid" id="dynamic-roster"></div>
+    
+    <div class="text-center" style="margin: 45px 0 25px 0;">
+      <h2 class="font-tech" style="color: var(--silver-muted);">RESERVE SQUAD</h2>
+    </div>
+    <div class="roster-grid" id="dynamic-roster-reserve"></div>
+  </section>
+
+  <!-- 3. ПЕРЕДОВЫЕ ПРАКИ (CW / SCRIMS) -->
+  <section id="practice">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title"><i class="fas fa-crosshairs text-accent"></i> ВЫЗВАТЬ C6E НА ПРАК (CW)</span>
+        <span style="font-size: 10px; background: var(--accent-dim); border: 1px solid var(--accent); padding: 4px 10px; border-radius: 4px; color: var(--silver); font-family: var(--font-tech);">PRO MATCHMAKING</span>
+      </div>
+      
+      <p style="font-size: 12px; color: var(--silver-muted); margin-bottom: 16px;">Нажмите на удобный свободный слот ниже, выберите карты пика и отправьте вызов штабу Cyber 6 Esports.</p>
+
+      <form id="prac-form" onsubmit="submitPrac(event)">
+        <input type="hidden" id="prac-slot-select" required>
+        <div class="form-group">
+          <label class="form-label" style="color: var(--accent-light);"><i class="far fa-clock"></i> 1. НАЖМИТЕ НА СВОБОДНЫЙ СЛОТ (ВРЕМЯ МСК):</label>
+          <div id="prac-slots-grid" class="slots-grid">
+            <div style="font-size:12px; color:#666; padding:10px;">Загрузка доступных слотов...</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">2. НАЗВАНИЕ ВАШЕГО КЛАНА / КОМАНДЫ</label>
+          <input type="text" id="pc-clan" class="form-input" placeholder="Например: Saints" required>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px;">
+          <div class="form-group">
+            <label class="form-label">НИК КАПИТАНА</label>
+            <input type="text" id="pc-cap" class="form-input" placeholder="Nick" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">ИГРОВОЙ ID КАПИТАНА</label>
+            <input type="number" id="pc-id" class="form-input" placeholder="12345678" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">TELEGRAM КАПИТАНА</label>
+            <input type="text" id="pc-contact" class="form-input" placeholder="@username" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">3. ВЫБЕРИТЕ КАРТЫ ДЛЯ ИГРЫ (НАЖМИТЕ НА КАРТУ):</label>
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px; margin-top: 8px;">
+            <label class="map-label"><input type="checkbox" class="map-check" value="Sandstone" style="display:none;"> <i class="fas fa-map-marker-alt text-accent"></i> Sandstone</label>
+            <label class="map-label"><input type="checkbox" class="map-check" value="Rust" style="display:none;"> <i class="fas fa-map-marker-alt text-accent"></i> Rust</label>
+            <label class="map-label"><input type="checkbox" class="map-check" value="Dune" style="display:none;"> <i class="fas fa-map-marker-alt text-accent"></i> Dune</label>
+            <label class="map-label"><input type="checkbox" class="map-check" value="Province" style="display:none;"> <i class="fas fa-map-marker-alt text-accent"></i> Province</label>
+            <label class="map-label"><input type="checkbox" class="map-check" value="Breeze" style="display:none;"> <i class="fas fa-map-marker-alt text-accent"></i> Breeze</label>
+            <label class="map-label"><input type="checkbox" class="map-check" value="Zone 9" style="display:none;"> <i class="fas fa-map-marker-alt text-accent"></i> Zone 9</label>
+            <label class="map-label"><input type="checkbox" class="map-check" value="Hanami" style="display:none;"> <i class="fas fa-map-marker-alt text-accent"></i> Hanami</label>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">4. ВАШ СОСТАВ НА ИГРУ (5 БОЙЦОВ)</label>
+          <textarea id="pc-lineup" class="form-input" rows="2" placeholder="Nick1, Nick2, Nick3, Nick4, Nick5"></textarea>
+        </div>
+
+        <button type="submit" class="btn-glitch" style="margin-top: 10px;"><i class="fas fa-bolt" style="margin-right:8px;"></i> ПОДТВЕРДИТЬ И ЗАБРОНИРОВАТЬ ПРАК</button>
+      </form>
+    </div>
+    
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title"><i class="fas fa-shield-alt text-accent"></i> ПОДТВЕРЖДЕННЫЕ МАТЧИ (РАСПИСАНИЕ CW)</span>
+      </div>
+      <div id="public-booked-list"></div>
+    </div>
+  </section>
+
+  <!-- 4. ИНФО И СОЦСЕТИ -->
+  <section id="about">
+    <div class="card">
+      <h3 class="font-tech text-center text-silver" style="margin-top: 0;">HISTORY & <span class="text-accent">ROADMAP</span></h3>
+      <div class="roadmap-container" id="roadmap-container" style="position: relative; padding-left: 20px; margin-top: 20px;">
+        <div class="text-center" style="color: #666; font-size: 12px;">Загрузка истории...</div>
+      </div>
+    </div>
+
+    <div class="card text-center">
+      <h3 class="font-tech text-silver" style="margin-top: 0;">OFFICIAL SOCIAL LINKS</h3>
+      <div style="font-size: 30px; display: flex; justify-content: center; gap: 28px; margin-top: 15px;">
+        <a href="https://t.me/AIREXTEAM" target="_blank" class="text-silver"><i class="fab fa-telegram"></i></a>
+        <a href="https://www.tiktok.com/@airex_team" target="_blank" class="text-silver"><i class="fab fa-tiktok"></i></a>
+        <a href="https://youtube.com/@airex_team.official" target="_blank" class="text-silver"><i class="fab fa-youtube"></i></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. НОВОСТИ -->
+  <section id="news">
+    <div class="text-center" style="margin-bottom: 20px;">
+      <h2 class="font-tech text-silver">NEWS <span class="text-accent">FEED</span></h2>
+    </div>
+    <div id="dynamic-news-container"></div>
+  </section>
+
+  <!-- 6. МЕДИА -->
+  <section id="media">
+    <div class="card">
+      <h3 class="font-tech text-silver" style="margin-top: 0;"><i class="fab fa-youtube text-accent"></i> LATEST VIDEO</h3>
+      <div id="video-container" style="position: relative; width: 100%; padding-bottom: 56.25%; background: #000; border-radius: 8px; overflow: hidden;"></div>
+    </div>
+    <div class="card">
+      <h3 class="font-tech text-silver" style="margin-top: 0;"><i class="far fa-images text-accent"></i> GALLERY</h3>
+      <div class="gallery-grid" id="gallery-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px;"></div>
+    </div> 
+  </section>
+
+  <!-- 7. ИСТОРИЯ МАТЧЕЙ + СКРИНШОТ-ДОКАЗАТЕЛЬСТВО И ТАБЛИЦА K/D -->
+  <section id="history">
+    <div class="text-center" style="margin-bottom: 18px;">
+      <h2 class="font-tech text-silver" style="margin-bottom: 6px;">MATCH <span class="text-accent">HISTORY & PROOFS</span></h2>
+      <p style="font-size: 11px; color: var(--silver-muted); margin: 0;">Нажми на любой матч, чтобы увидеть скриншот-доказательство победы и K/D участников</p>
+    </div>
+
+    <div class="sub-filter-bar">
+      <button class="sub-filter-btn active" onclick="filterHistory('all', this)">Все матчи</button>
+      <button class="sub-filter-btn" onclick="filterHistory('win', this)"><i class="fas fa-trophy text-accent"></i> Только победы</button>
+      <button class="sub-filter-btn" onclick="filterHistory('proof', this)"><i class="fas fa-camera text-accent"></i> Со скриншотом</button>
+    </div>
+
+    <div id="full-history-container">
+      <div style="text-align: center; padding: 20px; color: #666;">Загрузка истории...</div>
+    </div>
+  </section>
+
+  <!-- 8. ОТЗЫВЫ -->
+  <section id="reviews">
+    <div class="card">
+      <h3 class="font-tech text-silver" style="margin-top: 0;">ОСТАВИТЬ ОТЗЫВ</h3>
+      <form id="review-form" onsubmit="window.submitReview(event)">
+        <div class="form-group">
+          <input type="text" id="rev-nick" class="form-input" placeholder="Ваш никнейм" required>
+        </div>
+        <div class="form-group">
+          <select id="rev-target" class="form-input">
+            <option value="Команде C6E">Всей команде C6E</option>
+            <option value="Капитану">Капитану</option>
+            <option value="Менеджеру">Менеджеру</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <textarea id="rev-text" class="form-input" rows="3" placeholder="Ваше сообщение..." required></textarea>
+        </div>
+        <button type="submit" class="btn-glitch">ОТПРАВИТЬ ОТЗЫВ</button>
+      </form>
+    </div>
+    <div id="reviews-container"></div>
+  </section>
+
+  <!-- 9. РАСПИСАНИЕ (WEEKLY OPS С ФИЛЬТРАМИ) -->
+  <section id="schedule">
+    <div class="text-center" style="margin-bottom: 18px;">
+      <h2 class="font-tech text-silver" style="margin-bottom: 6px;">WEEKLY <span class="text-accent">OPS</span></h2>
+      <p style="font-size: 11px; color: var(--silver-muted); letter-spacing: 1px; margin: 0;">ОПЕРАТИВНЫЙ ГРАФИК МАТЧЕЙ И ТРЕНИРОВОК (МСК)</p>
+    </div>
+
+    <div class="sub-filter-bar">
+      <button class="sub-filter-btn active" onclick="filterSchedule('all', this)">Весь график</button>
+      <button class="sub-filter-btn" onclick="filterSchedule('CW', this)">Праки (CW)</button>
+      <button class="sub-filter-btn" onclick="filterSchedule('CUP', this)">Турниры (CUP)</button>
+      <button class="sub-filter-btn" onclick="filterSchedule('TRAIN', this)">Тренировки</button>
+    </div>
+
+    <div class="schedule-grid" id="dynamic-schedule-grid">
+      <div class="text-center" style="grid-column: 1/-1; padding: 20px; color: #666; font-size: 11px;">
+        Загрузка расписания...
+      </div>
+    </div>
+  </section>
+
+  <!-- 10. ЗАЯВКА В КОМАНДУ -->
+  <section id="join">
+    <div class="card" id="join-recruitment-status-bar" style="padding:16px 18px; margin-bottom:14px;">
+      <div style="font-family:var(--font-tech); font-size:11px; font-weight:900; color:#f5b041; margin-bottom:8px; display:flex; align-items:center; gap:7px;">
+        <i class="fas fa-bullseye"></i> СТАТУС НАБОРА ПО РОЛЯМ В [C6E] (RECRUITMENT LIVE)
+      </div>
+      <div id="join-roles-status-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(135px, 1fr)); gap:8px;">
+        <div style="padding:8px 10px; border-radius:10px; background:rgba(255,255,255,0.03); border:1px solid rgba(245,176,65,0.3); font-size:11px; display:flex; justify-content:space-between;">
+          <span><i class="fas fa-crosshairs text-accent"></i> Sniper</span><b style="color:#f5b041;">ОТКРЫТО</b>
+        </div>
+        <div style="padding:8px 10px; border-radius:10px; background:rgba(255,255,255,0.03); border:1px solid rgba(245,176,65,0.3); font-size:11px; display:flex; justify-content:space-between;">
+          <span><i class="fas fa-chess-king text-accent"></i> IGL / Капитан</span><b style="color:#f5b041;">ОТКРЫТО</b>
+        </div>
+        <div style="padding:8px 10px; border-radius:10px; background:rgba(255,255,255,0.03); border:1px solid rgba(245,176,65,0.3); font-size:11px; display:flex; justify-content:space-between;">
+          <span><i class="fas fa-bolt text-accent"></i> Entry Fragger</span><b style="color:#f5b041;">ОТКРЫТО</b>
+        </div>
+        <div style="padding:8px 10px; border-radius:10px; background:rgba(255,255,255,0.03); border:1px solid rgba(245,176,65,0.3); font-size:11px; display:flex; justify-content:space-between;">
+          <span><i class="fas fa-shield-alt text-accent"></i> Support</span><b style="color:#f5b041;">ОТКРЫТО</b>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="text-center">
+        <h2 class="font-tech text-silver" style="margin-bottom: 5px;">JOIN <span class="text-accent">CYBER 6</span></h2>
+        <p style="font-size: 12px; color: var(--silver-muted);">Анкета кандидата будет отправлена в Telegram штаба C6E.</p>
+      </div>
+      <div id="join-closed-notice" style="display:none; margin-top:16px; padding:22px 16px; border-radius:16px; background:rgba(255,42,84,0.10); border:1px solid rgba(255,42,84,0.45); text-align:center;">
+        <div style="font-size:28px; color:#ff2a54; margin-bottom:8px;"><i class="fas fa-lock"></i></div>
+        <div style="font-family:var(--font-tech); font-size:14px; font-weight:900; color:#fff; margin-bottom:6px;">НАБОР В КЛАН [C6E] ВРЕМЕННО ЗАКРЫТ</div>
+        <div id="join-closed-reason-text" style="font-size:12px; color:var(--silver-muted);">Администрация временно приостановила приём новых заявок. Следите за новостями портала!</div>
+      </div>
+      <form id="join-application-form" onsubmit="sendToTelegram(event)" autocomplete="off" style="margin-top: 20px;">
+        <div class="form-group">
+          <label class="form-label">Ваш игровой ник</label>
+          <input type="text" id="nick" class="form-input" placeholder="Например: C6E | Player" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Отыгранные часы в Standoff 2</label>
+          <input type="number" id="hours" class="form-input" placeholder="Кол-во часов (например: 2500)" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Ваша основная роль</label>
+          <select id="role" class="form-input">
+            <option>Капитан (IGL)</option>
+            <option>Снайпер (AWP)</option>
+            <option>Энтри-фрагер</option>
+            <option>Опен-фрагер</option>
+            <option>Люркер</option>
+            <option>Саппорт</option>
+            <option>Рифлер</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Ваш наилучший ранг в ММ / Напарниках</label>
+          <input type="text" id="best_rank" class="form-input" placeholder="Например: The Legend / Elite" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Ваш Telegram для связи</label>
+          <input type="text" id="tg_username" class="form-input" placeholder="@username" required>
+        </div>
+
+        <button type="submit" class="btn-glitch">ОТПРАВИТЬ АНКЕТУ</button>
+      </form>
+    </div>
+  </section>
+
+  <footer style="text-align: center; color: var(--silver-muted); opacity: 0.6; font-size: 9px; font-family: var(--font-tech); text-transform: uppercase; margin-top: 40px;">
+    <p>&copy; 2026 CYBER 6 ESPORTS (C6E) — OFFICIAL PORTAL</p>
+  </footer>
+
+</div>
+
+<div id="notify-container" style="position: fixed; top: 85px; right: 16px; z-index: 10000; display: flex; flex-direction: column; gap: 10px; pointer-events: none;"></div>
+
+<script>
+  function hidePreloader() {
+    const preloader = document.getElementById('preloader');
+    if (preloader) {
+      preloader.style.opacity = '0';
+      setTimeout(() => { preloader.style.display = 'none'; }, 500);
+    }
+    typeWriter();
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => setTimeout(hidePreloader, 650));
+  } else {
+    setTimeout(hidePreloader, 650);
+  }
+
+  function typeWriter() {
+    const text = "STANDOFF 2 PROFESSIONAL TEAM";
+    let i = 0;
+    const el = document.getElementById('typing-text');
+    if (!el) return;
+    el.innerHTML = "";
+    function type() {
+      if (i < text.length) {
+        el.innerHTML += text.charAt(i);
+        i++;
+        setTimeout(type, 65);
+      }
+    }
+    type();
+  }
+
+  const SECTION_TITLES_MAP = {
+    'home': 'COMMAND HUB',
+    'pantheon': 'APEX RANK • 900 GOLD',
+    'chat': 'ОБЩИЙ ЧАТ 12Ч',
+    'shop': 'CYBER MARKET [C6E]',
+    'team': 'СОСТАВ КЛАНА',
+    'practice': 'ПРАКИ (CW)',
+    'schedule': 'РАСПИСАНИЕ',
+    'history': 'МАТЧИ И ТАБЫ',
+    'news': 'НОВОСТИ И ОБНОВЫ',
+    'media': 'МЕДИА ХАБ',
+    'about': 'О КЛАНЕ [C6E]',
+    'reviews': 'ОТЗЫВЫ',
+    'join': 'ВСТУПИТЬ В [C6E]',
+    'app-hub': 'МОЙ ПРОФИЛЬ И РАЗДЕЛЫ'
+  };
+
+  window.selectTab = function(tabId, btn) {
+    try { if (navigator.vibrate) navigator.vibrate(10); } catch (e) {}
+    document.querySelectorAll('section').forEach(s => {
+      if (s.id !== tabId) {
+        s.classList.remove('active');
+        s.style.display = 'none';
+        s.style.opacity = '0';
+      }
+    });
+
+    const target = document.getElementById(tabId);
+    if (target) {
+      target.style.display = 'block';
+      requestAnimationFrame(() => {
+        target.classList.add('active');
+        target.style.opacity = '1';
+      });
+    }
+
+    const subLbl = document.getElementById('nav-active-section-lbl');
+    if (subLbl) {
+      subLbl.innerText = SECTION_TITLES_MAP[tabId] || 'PORTAL v0.5.0';
+    }
+
+    document.querySelectorAll('#c6e-bottom-dock .dock-nav-item, #c6e-bottom-dock .dock-center-orb-wrap').forEach(el => {
+      el.classList.remove('active');
+    });
+    const dockMap = {
+      'shop': 'dock-btn-shop',
+      'practice': 'dock-btn-practice',
+      'team': 'dock-btn-team',
+      'home': 'dock-btn-center',
+      'news': 'dock-btn-news',
+      'app-hub': 'dock-btn-hub'
+    };
+    const chatFab = document.getElementById('floating-chat-fab');
+    if (chatFab) chatFab.classList.toggle('active', tabId === 'chat');
+    if (tabId === 'chat' && typeof window.markGlobalChatAsRead === 'function') {
+      window.markGlobalChatAsRead();
+    }
+    const dockId = dockMap[tabId] || 'dock-btn-hub';
+    const dockEl = document.getElementById(dockId);
+    if (dockEl) dockEl.classList.add('active');
+
+    if (typeof window.refreshAppHubProfile === 'function') {
+      window.refreshAppHubProfile();
+    }
+
+    localStorage.setItem('last_seen_' + tabId, Date.now());
+    try {
+      var routeSlugMap = {
+        'home': '/feed',
+        'team': '/team',
+        'practice': '/practice',
+        'shop': '/shop',
+        'pantheon': '/apex-rank',
+        'chat': '/chat',
+        'news': '/news',
+        'history': '/matches',
+        'schedule': '/schedule',
+        'join': '/recruitment',
+        'reviews': '/reviews',
+        'about': '/about',
+        'media': '/media',
+        'app-hub': '/menu'
+      };
+      var cleanSlug = routeSlugMap[tabId] || ('/' + tabId);
+      if (window.location.pathname !== cleanSlug) {
+        window.history.pushState({ tabId: tabId }, '', cleanSlug);
+      }
+    } catch (e) {}
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // При входе на сайт сразу убираем /index.html и ставим чистый URL раздела (например /feed)
+  (function initCleanClubUrl() {
+    var pathToTab = {
+      '/': 'home',
+      '/index.html': 'home',
+      '/feed': 'home',
+      '/home': 'home',
+      '/team': 'team',
+      '/roster': 'team',
+      '/practice': 'practice',
+      '/scrims': 'practice',
+      '/shop': 'shop',
+      '/apex-rank': 'pantheon',
+      '/pantheon': 'pantheon',
+      '/chat': 'chat',
+      '/news': 'news',
+      '/matches': 'history',
+      '/history': 'history',
+      '/schedule': 'schedule',
+      '/recruitment': 'join',
+      '/join': 'join',
+      '/reviews': 'reviews',
+      '/about': 'about',
+      '/media': 'media',
+      '/menu': 'app-hub'
+    };
+    var curPath = (window.location.pathname || '/').replace(/\/+$/, '') || '/';
+    var startTab = pathToTab[curPath] || 'home';
+    window.addEventListener('DOMContentLoaded', function() {
+      if (curPath === '/' || curPath === '/index.html') {
+        try { window.history.replaceState({ tabId: 'home' }, '', '/feed'); } catch (e) {}
+      } else if (pathToTab[curPath]) {
+        window.selectTab(startTab);
+      }
+    });
+    window.addEventListener('popstate', function(ev) {
+      var p = (window.location.pathname || '/').replace(/\/+$/, '') || '/';
+      var t = (ev.state && ev.state.tabId) ? ev.state.tabId : (pathToTab[p] || 'home');
+      window.selectTab(t);
+    });
+  })();
+
+  window.toggleMenu = function() {
+    const dd = document.getElementById('navDropdown');
+    const btn = document.getElementById('menuBtn');
+    if (dd) dd.classList.toggle('active');
+    if (btn) btn.classList.toggle('active');
+  };
+
+  window.openProofLightbox = function(src) {
+    const lb = document.getElementById('proof-lightbox');
+    const img = document.getElementById('proof-lightbox-img');
+    if (lb && img && src) {
+      img.src = src;
+      lb.classList.add('active');
+    }
+  };
+
+  window.closeProofLightbox = function() {
+    const lb = document.getElementById('proof-lightbox');
+    if (lb) lb.classList.remove('active');
+  };
+
+  </script>
+
+
+<!-- ПЛАВАЮЩАЯ ЭМБЛЕМА ОБЩЕГО ЧАТА (СПРАВА ЧУТЬ ВЫШЕ НИЖНЕЙ ПАНЕЛИ С КРАСНЫМ СЧЁТЧИКОМ НОВЫХ СООБЩЕНИЙ) -->
+
+<!-- ДИАЛОГ РАЗРЕШЕНИЯ НА ВКЛЮЧЕНИЕ ФОНОВОГО ПРОИГРЫВАТЕЛЯ ПРИ ВХОДЕ НА САЙТ -->
+<div id="c6e-welcome-audio-prompt">
+  <div style="display:flex; align-items:center; gap:12px;">
+    <div style="width:42px; height:42px; border-radius:12px; background:var(--accent-dim); border:1px solid var(--accent); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;">
+      <i class="fas fa-headphones-alt"></i>
+    </div>
+    <div>
+      <div style="font-family:var(--font-tech); font-size:11.5px; font-weight:900; color:#fff;">КИБЕР-АТМОСФЕРА CYBER 6 ESPORTS</div>
+      <div style="font-size:10.5px; color:var(--silver-muted); margin-top:2px;">Включить фоновую музыку проигрывателя во время просмотра сайта?</div>
+    </div>
+  </div>
+  <div style="display:flex; gap:8px;">
+    <button type="button" class="btn-glitch" style="flex:1; padding:9px 12px !important; font-size:10px !important; margin:0;" onclick="window.acceptWelcomeAudio(true)">
+      <i class="fas fa-play" style="margin-right:6px;"></i> ВКЛЮЧИТЬ МУЗЫКУ
+    </button>
+    <button type="button" class="chip-btn" style="padding:9px 14px; font-size:10px;" onclick="window.acceptWelcomeAudio(false)">
+      БЕЗ ЗВУКА
+    </button>
+  </div>
+</div>
+
+<!-- ВСПЛЫВАЮЩЕЕ УВЕДОМЛЕНИЕ ОБ УСТАНОВКЕ САЙТА КАК ПРИЛОЖЕНИЯ (С КНОПКОЙ ОТКАЗА) -->
+<div id="c6e-pwa-install-toast">
+  <div style="display:flex; align-items:center; gap:10px; min-width:0;">
+    <img src="logo.png" alt="C6E" style="width:36px; height:36px; border-radius:10px; border:1px solid var(--accent); flex-shrink:0;" onerror="this.style.display='none'">
+    <div style="min-width:0;">
+      <div style="font-family:var(--font-tech); font-size:10.5px; font-weight:900; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">ПРИЛОЖЕНИЕ CYBER 6 ESPORTS</div>
+      <div style="font-size:9.5px; color:var(--silver-muted);">Установи наш сайт как приложение на рабочий стол телефона!</div>
+    </div>
+  </div>
+  <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
+    <button type="button" class="chip-btn" style="background:var(--accent); color:#07080b; border-color:var(--accent); font-weight:900; padding:7px 11px; font-size:9.5px;" onclick="window.installCyber6App()">
+      УСТАНОВИТЬ
+    </button>
+    <button type="button" class="chip-btn" style="padding:7px 9px; font-size:10px; color:var(--silver-muted);" title="Больше не показывать" onclick="window.dismissPwaInstallToast()">
+      ✕
+    </button>
+  </div>
+</div>
+
+<button type="button" id="floating-chat-fab" onclick="selectTab('chat', this)" title="Общий чат игроков [C6E]">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+    <line x1="8" y1="11" x2="16" y2="11"></line>
+    <line x1="8" y1="15" x2="13" y2="15"></line>
+  </svg>
+  <span id="chat-unread-badge">0</span>
+</button>
+
+  <!-- ОФИЦИАЛЬНЫЙ ВЕРИФИЦИРОВАННЫЙ ПАСПОРТ ПОРТАЛА В ФУТЕРЕ -->
+  <footer style="max-width: 600px; margin: 18px auto 96px auto; padding: 16px 18px; border-radius: 16px; background: linear-gradient(145deg, rgba(16, 19, 28, 0.92), rgba(8, 10, 15, 0.98)); border: 1px solid rgba(245, 176, 65, 0.24); text-align: center;">
+    <div style="display: inline-flex; align-items: center; gap: 7px; padding: 4px 12px; border-radius: 20px; background: rgba(245, 176, 65, 0.12); border: 1px solid rgba(245, 176, 65, 0.38); font-family: var(--font-tech); font-size: 9.5px; font-weight: 800; color: var(--accent); margin-bottom: 8px;">
+      <span class="c6e-dev-verified-badge" style="width: 13px; height: 13px; font-size: 8px;">✓</span> OFFICIAL VERIFIED ESPORTS PORTAL
+    </div>
+    <div style="font-family: var(--font-tech); font-size: 11px; font-weight: 900; color: #fff; letter-spacing: 0.8px;">
+      © 2026 CYBER 6 ESPORTS [C6E] • STANDOFF 2 DIVISION
+    </div>
+    <div style="font-size: 10.5px; color: var(--silver-muted); margin-top: 4px; line-height: 1.45;">
+      Официальный веб-портал организации. Все права защищены.<br>
+      Основатель и Генеральный директор: <b style="color: var(--accent);">Kas (Джораев Неджи Ганиевич • <a href="https://t.me/kas_0ff" target="_blank" rel="noopener" style="color: var(--accent); text-decoration: none;">@kas_0ff</a>)</b>
+    </div>
+  </footer>
+
+<!-- НИЖНЯЯ НАВИГАЦИОННАЯ ДОК-ПАНЕЛЬ САЙТА:
+     [Магазин] [Праки] [Состав C6E] (Главная — Дом в центре) [Новости] [Разделы] -->
+<nav id="c6e-bottom-dock">
+  <!-- 1. МАГАЗИН С ЭМБЛЕМОЙ -->
+  <button type="button" class="dock-nav-item" id="dock-btn-shop" onclick="selectTab('shop', this)">
+    <svg class="dock-svg-icon" viewBox="0 0 24 24">
+      <polygon points="12,2 22,8.5 18.5,21 5.5,21 2,8.5"></polygon>
+      <text x="12" y="16" text-anchor="middle" fill="currentColor" stroke="none" font-family="Orbitron, sans-serif" font-weight="900" font-size="10">G</text>
+    </svg>
+    <span class="dock-lbl">Магазин</span>
+  </button>
+
+  <!-- 2. ПРАКИ (CW) -->
+  <button type="button" class="dock-nav-item" id="dock-btn-practice" onclick="selectTab('practice', this)">
+    <svg class="dock-svg-icon" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9"></circle>
+      <line x1="12" y1="3" x2="12" y2="7"></line>
+      <line x1="12" y1="17" x2="12" y2="21"></line>
+      <line x1="3" y1="12" x2="7" y2="12"></line>
+      <line x1="17" y1="12" x2="21" y2="12"></line>
+      <circle cx="12" cy="12" r="2"></circle>
+    </svg>
+    <span class="dock-lbl">Праки</span>
+  </button>
+
+  <!-- 3. СОСТАВ C6E -->
+  <button type="button" class="dock-nav-item" id="dock-btn-team" onclick="selectTab('team', this)">
+    <svg class="dock-svg-icon" viewBox="0 0 24 24">
+      <path d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3z"></path>
+      <path d="M9 12l2 2 4-4"></path>
+    </svg>
+    <span class="dock-lbl">Состав</span>
+  </button>
+
+  <!-- 4. ЦЕНТРАЛЬНАЯ КНОПКА — ГЛАВНЫЙ РАЗДЕЛ (ЭМБЛЕМА ДОМИКА СО СТИЛЕМ) -->
+  <div class="dock-center-orb-wrap active" id="dock-btn-center" onclick="selectTab('home', this)" title=" Главная страница [C6E]">
+    <div class="dock-center-orb-inner">
+      <svg class="dock-home-svg" viewBox="0 0 24 24">
+        <path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1v-9.5z"></path>
+      </svg>
+    </div>
+  </div>
+
+  <!-- 5. НОВОСТИ (ЧУТЬ ПРАВЕЕ СЕРЕДИНЫ) -->
+  <button type="button" class="dock-nav-item" id="dock-btn-news" onclick="selectTab('news', this)">
+    <svg class="dock-svg-icon" viewBox="0 0 24 24">
+      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+    </svg>
+    <span class="dock-lbl">Новости</span>
+  </button>
+
+  <!-- 6. ДРУГИЕ РАЗДЕЛЫ (СПРАВА) -->
+  <button type="button" class="dock-nav-item" id="dock-btn-hub" onclick="selectTab('app-hub', this)">
+    <svg class="dock-svg-icon" viewBox="0 0 24 24">
+      <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+      <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+      <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
+      <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
+    </svg>
+    <span class="dock-lbl">Разделы</span>
+  </button>
+</nav>
+
+<script type="module" src="app.js?v=12"></script>
 </body>
 </html>
