@@ -2661,7 +2661,7 @@
     showToast("Формирую Еженедельный отчёт K/D для ТГК...");
 
     const statsList = cachedRoster.map(p => computeAdminPlayerStats(p));
-    statsList.sort((a, b) => parseFloat(b.liveKd) - parseFloat(a.liveKd));
+    statsList.sort((a, b) => (parseFloat(b.liveKd) - parseFloat(a.liveKd)) || ((b.kills || 0) - (a.kills || 0)));
 
     const topP = statsList[0];
     const bestGain = [...statsList].sort((a, b) => b.delta - a.delta)[0];
@@ -2786,10 +2786,10 @@
       });
     });
 
-    let liveKd = baseKd;
+    let liveKd = 0;
     let delta = 0;
-    if (matchesPlayed > 0) {
-      liveKd = (baseKd * 25 + kills) / (25 + deaths);
+    if (kills > 0 || deaths > 0) {
+      liveKd = deaths > 0 ? (kills / deaths) : kills;
       delta = liveKd - baseKd;
     }
 
