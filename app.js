@@ -5302,7 +5302,7 @@ async function generateSiteCardBlob({ badge = 'CYBER 6 ESPORTS', title = 'CYBER 
   return new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.93));
 }
 
-async function sendCardPhotoFromSiteToTG(targetChatId, cardConfig, linkLabel = 'CYBER 6 ESPORTS [C6E] — Официальный портал') {
+async function sendCardPhotoFromSiteToTG(targetChatId, cardConfig, linkLabel = 'CYBER 6 ESPORTS [C6E] — Официальный портал', sectionPath = '') {
   try {
     if (!TG_CONFIG.token) {
       const bSnap = await getDoc(doc(db, DB_COLLECTION, "bot_config"));
@@ -5317,7 +5317,9 @@ async function sendCardPhotoFromSiteToTG(targetChatId, cardConfig, linkLabel = '
 
     const chatId = targetChatId || TG_CONFIG.groupId || TG_CONFIG.channelId;
     const blob = await generateSiteCardBlob(cardConfig);
-    const shortLinkCaption = `🔗 <a href="https://cyber6esports.github.io/">${linkLabel}</a>`;
+    const cleanPath = String(sectionPath || '').replace(/^\/+|\/+$/g, '');
+    const targetLinkUrl = cleanPath ? `https://cyber6esports.github.io/${cleanPath}` : 'https://cyber6esports.github.io/';
+    const shortLinkCaption = `🔗 <a href="${targetLinkUrl}">${linkLabel}</a>`;
 
     if (blob) {
       const fd = new FormData();
@@ -5468,7 +5470,7 @@ window.sendToTelegram = async (e) => {
         accentColor: '#00e676'
       },
       `Заявка от ${nick} на портале CYBER 6 ESPORTS [C6E]`
-    );
+    , 'join');
 
     setCooldown('last_join_submit');
     window.showNotify("Ваша карточка-анкета отправлена в группу штаба [C6E]!", "success");
@@ -5577,7 +5579,7 @@ window.submitPrac = async (e) => {
         accentColor: '#f5b041'
       },
       `Бронь прака [C6E] VS ${clanName} на официальном сайте`
-    );
+    , 'practice');
 
     setCooldown('last_prac_submit');
     window.showNotify("Прак успешно забронирован! Карточка матча отправлена в группу [C6E].", "success");
