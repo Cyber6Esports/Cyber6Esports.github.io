@@ -1053,6 +1053,14 @@
     if (typeof window.refreshAppHubProfile === 'function') {
       window.refreshAppHubProfile();
     }
+    try {
+      if (!window.__c6eSuppressUrlPush) {
+        const cleanUrl = tabId === 'home' ? '/' : ('/' + tabId);
+        if (window.location.pathname !== cleanUrl || window.location.search) {
+          window.history.pushState({ tabId }, '', cleanUrl);
+        }
+      }
+    } catch (eUrl) {}
 
     localStorage.setItem('last_seen_' + tabId, Date.now());
     try {
@@ -1143,7 +1151,62 @@
     if (lb) lb.classList.remove('active');
   };
 
-  </script>
+  
+  // === DEEP-LINK ROUTER FOR https://cyber6esports.github.io/ & /team /history /news ... ===
+  (function initC6EDeepLinkRouter() {
+    const VALID_TABS = new Set([
+      'home', 'team', 'history', 'news', 'schedule', 'practice',
+      'pantheon', 'join', 'chat', 'shop', 'reviews', 'about', 'media', 'app-hub'
+    ]);
+    const ALIAS_MAP = {
+      'roster': 'team', 'players': 'team',
+      'matches': 'history', 'results': 'history', 'stats': 'history',
+      'apex': 'pantheon', 'rank': 'pantheon',
+      'pracs': 'practice', 'scrims': 'practice',
+      'apply': 'join', 'recruitment': 'join'
+    };
+    function resolveTabFromUrl() {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const qTab = (params.get('tab') || params.get('section') || '').trim().toLowerCase();
+        if (qTab) {
+          const mapped = ALIAS_MAP[qTab] || qTab;
+          if (VALID_TABS.has(mapped)) return mapped;
+        }
+        const pathSeg = (window.location.pathname || '/').replace(/^\/+|\/+$/g, '').split('/')[0].toLowerCase();
+        if (pathSeg && pathSeg !== 'index.html' && pathSeg !== '404.html') {
+          const mappedP = ALIAS_MAP[pathSeg] || pathSeg;
+          if (VALID_TABS.has(mappedP)) return mappedP;
+        }
+        const hashSeg = (window.location.hash || '').replace(/^#\/?/, '').toLowerCase();
+        if (hashSeg) {
+          const mappedH = ALIAS_MAP[hashSeg] || hashSeg;
+          if (VALID_TABS.has(mappedH)) return mappedH;
+        }
+      } catch (e) {}
+      return 'home';
+    }
+    function applyCurrentUrlTab() {
+      const targetTab = resolveTabFromUrl();
+      window.__c6eSuppressUrlPush = true;
+      if (typeof window.selectTab === 'function') {
+        window.selectTab(targetTab, null);
+      }
+      window.__c6eSuppressUrlPush = false;
+      try {
+        const cleanUrl = targetTab === 'home' ? '/' : ('/' + targetTab);
+        window.history.replaceState({ tabId: targetTab }, '', cleanUrl);
+      } catch (e) {}
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', applyCurrentUrlTab);
+    } else {
+      setTimeout(applyCurrentUrlTab, 0);
+    }
+    window.addEventListener('popstate', applyCurrentUrlTab);
+  })();
+
+</script>
 
 
 <!-- ПЛАВАЮЩАЯ ЭМБЛЕМА ОБЩЕГО ЧАТА (СПРАВА ЧУТЬ ВЫШЕ НИЖНЕЙ ПАНЕЛИ С КРАСНЫМ СЧЁТЧИКОМ НОВЫХ СООБЩЕНИЙ) -->
@@ -1274,6 +1337,6 @@
   </button>
 </nav>
 
-<script type="module" src="app.js?v=12"></script>
+<script type="module" src="app.js?v=82_12"></script>
 </body>
 </html>
