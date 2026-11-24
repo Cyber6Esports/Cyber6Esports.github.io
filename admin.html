@@ -2716,7 +2716,7 @@
       `────────────────────\n` +
       `${linesText}\n` +
       `────────────────────\n` +
-      `🔗 <a href="${TG_CONFIG.siteUrl}">Следить за расписанием и матчами на сайте [C6E]</a>`;
+      `🔗 <a href="https://cyber6esports.github.io/schedule">Следить за расписанием и матчами на сайте [C6E]</a>`;
 
     const ok = await publishToTelegramChannel({
       htmlText: htmlPost,
@@ -4497,7 +4497,7 @@
         `🌍 <b>Сервер:</b> ${server}\n` +
         `────────────────────\n` +
         `✅ Слот открыт! Забронировать время и выбрать карты можно на нашем сайте:\n` +
-        `🔗 <a href="${TG_CONFIG.siteUrl}">ЗАБРОНИРОВАТЬ ПРАК С [C6E]</a>`;
+        `🔗 <a href="https://cyber6esports.github.io/practice">ЗАБРОНИРОВАТЬ ПРАК С [C6E]</a>`;
 
       await publishToTelegramChannel({
         htmlText: htmlPost,
@@ -5405,7 +5405,7 @@
         `⚔️ <b>[C6E] CYBER 6 ESPORTS</b>  VS  <b>${enemy}</b>\n` +
         `⏰ <b>Начало:</b> <code>${readable} (МСК)</code>\n` +
         `────────────────────\n` +
-        `🔗 <a href="${TG_CONFIG.siteUrl}">Обратный отсчет в Матч-центре на сайте [C6E]</a>`;
+        `🔗 <a href="https://cyber6esports.github.io/schedule">Обратный отсчет в Матч-центре на сайте [C6E]</a>`;
 
       await publishToTelegramChannel({
         htmlText: htmlPost,
@@ -6080,7 +6080,7 @@
   const generateC6EBrandCardBlob = (cfg) => generateC6EUltraCardBlob(cfg);
 
   // Универсальная отправка карточки в ТГК или в Группу (В ТЕКСТЕ ВСЕГДА ТОЛЬКО ССЫЛКА НА САЙТ!)
-  async function sendCleanCardToTelegram({ target = 'channel', linkLabel = 'CYBER 6 ESPORTS [C6E] — Открыть официальный портал', cardConfig = {} }) {
+  async function sendCleanCardToTelegram({ target = 'channel', linkLabel = 'CYBER 6 ESPORTS [C6E] — Открыть официальный портал', sectionPath = '', cardConfig = {} }) {
     try {
       const activeToken = await ensureBotTokenLoaded();
       if (!activeToken) {
@@ -6089,7 +6089,10 @@
       }
       const chatId = target === 'group' ? (TG_CONFIG.groupId || TG_CONFIG.channelId) : (TG_CONFIG.channelId || TG_CONFIG.groupId);
       const photoBlob = await generateC6EUltraCardBlob(cardConfig);
-      const shortLinkCaption = `🔗 <a href="${TG_CONFIG.siteUrl}">${linkLabel}</a>`;
+      const baseUrl = String(TG_CONFIG.siteUrl || "https://cyber6esports.github.io/").replace(/\/+$/, "");
+      const cleanSec = String(sectionPath || "").replace(/^\/+|\/+$/g, "");
+      const finalLinkUrl = cleanSec ? `${baseUrl}/${cleanSec}` : `${baseUrl}/`;
+      const shortLinkCaption = `🔗 <a href="${finalLinkUrl}">${linkLabel}</a>`;
 
       if (photoBlob) {
         const fd = new FormData();
@@ -6165,6 +6168,7 @@
     const ok = await sendCleanCardToTelegram({
       target: 'group',
       linkLabel: 'Подробная статистика и Еженедельный отчёт на сайте CYBER 6 ESPORTS [C6E]',
+      sectionPath: 'history',
       cardConfig: {
         badge: 'WEEKLY CLAN & PLAYERS REPORT // [C6E]',
         title: 'ЕЖЕНЕДЕЛЬНЫЙ ОТЧЁТ КЛАНА [C6E]',
@@ -6202,6 +6206,7 @@
     const ok = await sendCleanCardToTelegram({
       target: targetDest,
       linkLabel: `Смотреть полный Таб и скрин матча [C6E] ${ourScore}:${theirScore} ${m.enemy} на сайте`,
+      sectionPath: 'history',
       cardConfig: {
         badge: isWin ? `VICTORY // ${m.tour || 'SCRIM'} • ${m.map || 'STANDOFF 2'}` : `MATCH REPORT // ${m.map || 'STANDOFF 2'}`,
         title: `[C6E]  ${ourScore} : ${theirScore}  ${m.enemy}`,
@@ -6239,6 +6244,7 @@
     const ok = await sendCleanCardToTelegram({
       target: 'channel',
       linkLabel: `${n.title} — Читать на сайте CYBER 6 ESPORTS [C6E]`,
+      sectionPath: 'news',
       cardConfig: {
         badge: `PORTAL UPDATE & NEWS // ${n.tag || 'C6E'}`,
         title: n.tag === 'ОБНОВЛЕНИЕ' ? 'САЙТ [C6E] ОБНОВЛЕН!' : n.title,
@@ -6258,6 +6264,7 @@
     const ok = await sendCleanCardToTelegram({
       target: 'channel',
       linkLabel: `Открыть досье бойца ${p.nick} на сайте CYBER 6 ESPORTS [C6E]`,
+      sectionPath: 'team',
       cardConfig: {
         badge: 'CYBER 6 ESPORTS // PRO ROSTER CARD',
         title: p.nick,
@@ -6284,6 +6291,7 @@
     const ok = await sendCleanCardToTelegram({
       target: 'channel',
       linkLabel: 'Актуальный состав и карточки бойцов на сайте CYBER 6 ESPORTS [C6E]',
+      sectionPath: 'team',
       cardConfig: {
         badge: 'STANDOFF 2 DIVISION // OFFICIAL LINEUP',
         title: 'СОСТАВ CYBER 6 ESPORTS',
@@ -6308,6 +6316,7 @@
     const ok = await sendCleanCardToTelegram({
       target: 'channel',
       linkLabel: 'Рейтинг APEX RANK (900 GOLD) на сайте CYBER 6 ESPORTS [C6E]',
+      sectionPath: 'pantheon',
       cardConfig: {
         badge: 'APEX RANK [C6E] // WEEKLY 900 GOLD PRIZE POOL',
         title: 'РЕЙТИНГ БОЙЦОВ APEX RANK',
@@ -6387,6 +6396,7 @@
 
       await sendCleanCardToTelegram({
         target: 'group',
+        sectionPath: 'practice',
         linkLabel: isDirectBooking
           ? `Карточка брони прака [C6E] VS ${bookedClan} на сайте`
           : 'Забронировать этот слот прака на сайте CYBER 6 ESPORTS [C6E]',
@@ -6437,6 +6447,7 @@
     const ok = await sendCleanCardToTelegram({
       target: 'group',
       linkLabel: 'Записаться на прак и посмотреть сетку CW на сайте CYBER 6 ESPORTS [C6E]',
+      sectionPath: 'practice',
       cardConfig: {
         badge: 'PRO SCRIMS SCHEDULE // [C6E]',
         title: 'СЕТКА ПРАКОВ CYBER 6 ESPORTS',
