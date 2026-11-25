@@ -2771,7 +2771,7 @@
     showToast("Загружаю скриншот Таба в Ultra-HD...");
     try {
       rawFullResProofDataUrl = await readFileAsRawDataUrl(file);
-      const compressedUrl = await compressImageFile(file, 1180, 0.85);
+      const compressedUrl = await compressImageFile(file, 720, 0.56);
       document.getElementById('hProofUrl').value = compressedUrl;
       updateProofPreview(compressedUrl);
       await scanStandoffScoreboard();
@@ -4340,7 +4340,7 @@
       return true;
     } catch (e) {
       console.error(e);
-      showToast("Ошибка сохранения!", true);
+      showToast("Ошибка сохранения: " + (e && e.message ? e.message : "лимит базы"), true);
       return false;
     }
   }
@@ -4359,12 +4359,51 @@
     } catch (e) { showToast("Ошибка удаления", true); }
   };
 
+  async function saveHistoryItemSafe(item) {
+    try {
+      const ref = doc(db, DB_COLLECTION, "history");
+      const snap = await getDoc(ref);
+      const list = (snap.exists() && Array.isArray(snap.data().list)) ? [...snap.data().list] : [];
+      list.push(item);
+
+      const MAX_BYTES = 900000; // Безопасный порог под жёстким лимитом Firestore (1 048 576 байт)
+      const measureBytes = (arr) => new TextEncoder().encode(JSON.stringify({ list: arr })).length;
+
+      let cleanedOldCount = 0;
+      if (measureBytes(list) > MAX_BYTES) {
+        // Освобождаем место: удаляем тяжёлые base64-скрины у самых старых матчей, сохраняя 100% их счёта, игроков и K/D!
+        for (let i = 0; i < list.length - 1 && measureBytes(list) > MAX_BYTES; i++) {
+          if (list[i] && typeof list[i].proofImg === 'string' && list[i].proofImg.startsWith('data:image')) {
+            list[i] = { ...list[i], proofImg: '' };
+            cleanedOldCount++;
+          }
+        }
+      }
+
+      // Крайний случай: если даже один новый скрин огромен — сохраняем статистику без base64
+      if (measureBytes(list) > MAX_BYTES && item.proofImg && item.proofImg.startsWith('data:image')) {
+        list[list.length - 1] = { ...item, proofImg: '' };
+      }
+
+      await setDoc(ref, { list }, { merge: true });
+      if (cleanedOldCount > 0) {
+        showToast(`Освобождено место в базе (очищены старые скрины у ${cleanedOldCount} давних праков, статистика сохранена).`);
+      }
+      return true;
+    } catch (e) {
+      console.error("saveHistoryItemSafe error:", e);
+      showToast("Ошибка сохранения матча: " + (e && e.message ? e.message : "сбой базы"), true);
+      return false;
+    }
+  }
+
   window.addHistory = async () => {
     const enemy = document.getElementById('hEnemy').value.trim();
     if (!enemy) return showToast("Укажите команду соперника!", true);
 
     const ourPlayers = readTableData('ourPlayersTbody');
     const enemyPlayers = readTableData('enemyPlayersTbody');
+    const hdProofForTg = rawFullResProofDataUrl || normalizeImageUrl(document.getElementById('hProofUrl').value);
 
     const item = {
       id: Date.now(),
@@ -4383,10 +4422,10 @@
       enemyPlayers: enemyPlayers
     };
 
-    if (await updateArray("history", "list", item)) {
+    if (await saveHistoryItemSafe(item)) {
       showToast("Матч сохранен на сайте!");
       if (document.getElementById('tgAutoPostMatch').checked) {
-        await sendMatchObjectToTG(item);
+        await sendMatchObjectToTG({ ...item, proofImg: hdProofForTg });
       }
       document.getElementById('hProofUrl').value = '';
       rawFullResProofDataUrl = null;
