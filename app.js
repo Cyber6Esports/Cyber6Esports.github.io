@@ -970,15 +970,14 @@ function computePlayerLiveAnalytics(playerObj) {
     }
   });
 
-  let liveKd = baseKd;
+  // ТОЧНЫЙ ЧИСТЫЙ K/D ПО ТАБАМ (синхронизирован с Админкой v0.9.0)
+  let liveKd = 0;
   let delta = 0;
-  let pureMatchKd = baseKd;
+  let pureMatchKd = 0;
 
-  if (matchesPlayed > 0) {
+  if (totalKills > 0 || totalDeaths > 0) {
     pureMatchKd = totalDeaths > 0 ? (totalKills / totalDeaths) : totalKills;
-    const baseWeightDeaths = 25;
-    const baseWeightKills = baseKd * baseWeightDeaths;
-    liveKd = (baseWeightKills + totalKills) / (baseWeightDeaths + totalDeaths);
+    liveKd = pureMatchKd;
     delta = liveKd - baseKd;
   }
 
@@ -1000,19 +999,18 @@ function computePlayerLiveAnalytics(playerObj) {
   const cappedFanBoosts = Math.min(20, fanBoosts); // Защита от накрутки: максимум 20 бустов (500 PTS) в неделю с сайта
   const founderBonus = (pantheonMeta.bonusPts && pantheonMeta.bonusPts[pKey]) ? parseInt(pantheonMeta.bonusPts[pKey], 10) : 0;
 
-  // НОВАЯ ФОРМУЛА APEX RANK (ОТ 100 ДО 350 PTS СИНХРОННО ОТ КИЛЛОВ И K/D!)
-  const kdNorm = Math.max(0, Math.min(1, (liveKd - 0.60) / 1.40)); // K/D от 0.60 до 2.00
-  const killsNorm = matchesPlayed > 0
-    ? Math.max(0, Math.min(1, totalKills / 75))
-    : Math.max(0, Math.min(0.45, (baseKd - 0.70) / 1.50));
-  const winMvpBonus = Math.min(35, (matchesWon * 8) + (mvpCount * 12) + Math.max(0, Math.round(delta * 40)));
-  // Строгий боевой диапазон 100..350 PTS в зависимости от киллов и K/D:
-  const kdPts = Math.round(100 + (kdNorm * 125));
-  const growthPts = Math.max(0, Math.round(delta * 40));
-  const matchActivityPts = Math.round(killsNorm * 95) + Math.min(35, (matchesWon * 8) + (mvpCount * 12));
-  const combatCorePts = Math.min(350, Math.max(100, Math.round(100 + (kdNorm * 125) + (killsNorm * 95) + winMvpBonus)));
-  const siteActivityPts = (cappedFanBoosts * 5) + founderBonus;
-  const totalPantheonPts = Math.max(100, Math.min(350, combatCorePts + (cappedFanBoosts * 5)) + founderBonus);
+  // ЧЕСТНАЯ И ПРОГРЕССИВНАЯ ФОРМУЛА APEX RANK v0.9.0 (синхронно с Админкой)
+  // 0 праков = 0 боевых PTS; за каждый прак, килл, ассист, победу, MVP и высокий K/D идёт честный ощутимый рост!
+  const fragPts = matchesPlayed > 0 ? ((totalKills * 3) + (totalAssists * 1)) : 0;
+  const matchActivityPts = matchesPlayed > 0 ? ((matchesPlayed * 25) + (matchesWon * 35) + (mvpCount * 50)) : 0;
+  const kdBonus = matchesPlayed > 0
+    ? (liveKd >= 1.0 ? Math.min(360, Math.round((liveKd - 1.0) * 180)) : Math.max(-40, Math.round((liveKd - 1.0) * 80)))
+    : 0;
+  const kdPts = Math.max(0, kdBonus);
+  const growthPts = fragPts;
+  const combatCorePts = matchesPlayed > 0 ? Math.max(20, fragPts + matchActivityPts + kdBonus) : 0;
+  const siteActivityPts = (cappedFanBoosts * 25) + founderBonus;
+  const totalPantheonPts = Math.max(0, combatCorePts + siteActivityPts);
 
   return {
     nick: playerObj.nick,
@@ -1788,7 +1786,7 @@ onSnapshot(doc(db, DB_COLLECTION, "roster_reserve"), (s) => {
 // =========================================================
 
 // ============================================================================
-// АВТО-СИСТЕМА ОБНОВЛЕНИЙ САЙТА И УВЕДОМЛЕНИЙ ОТ РАЗРАБОТЧИКА KAS (@kas_0ff)
+// АВТО-СИСТЕМА ОБНОВЛЕНИЙ САЙТА И УВЕДОМЛЕНИЙ ОТ РАЗРАБОТЧИКА KAS (@kascheff)
 // ============================================================================
 const DEFAULT_KAS_RELEASE = {
   id: 1794800000800,
@@ -1796,7 +1794,7 @@ const DEFAULT_KAS_RELEASE = {
   versionLabel: "v0.8.0 // APEX RANK & HOLO EDITION",
   date: "16.11.2026",
   tag: "ОБНОВЛЕНИЕ",
-  author: "Kas (@kas_0ff)",
+  author: "Kas (@kascheff)",
   shortLines: [
     "Рейтинг APEX RANK (100-350 PTS по Киллам и K/D)",
     "4 темы оформления (Тёмно-Золотая, Рубин, Сапфир, Изумруд)",
@@ -1811,7 +1809,7 @@ const DEFAULT_KAS_RELEASE = {
       <div style="display:flex; align-items:center; gap:12px;">
         <img src="logo.png" alt="C6E" onerror="this.style.display='none'" style="width:48px; height:48px; border-radius:50%; border:1.5px solid #f5b041; padding:4px; background:#07080b;">
         <div>
-          <div style="font-family:'Orbitron',sans-serif; font-size:9px; color:#f5b041; font-weight:900; letter-spacing:1px;">ПАТЧ v0.8.0 • DEV: KAS (@kas_0ff)</div>
+          <div style="font-family:'Orbitron',sans-serif; font-size:9px; color:#f5b041; font-weight:900; letter-spacing:1px;">ПАТЧ v0.8.0 • DEV: KAS (@kascheff)</div>
           <div style="font-family:'Orbitron',sans-serif; font-size:14px; font-weight:900; color:#fff; margin-top:2px;">APEX RANK & HOLO ROSTER EDITION</div>
         </div>
       </div>
@@ -1909,7 +1907,7 @@ function renderPublicNewsFeeds() {
               <div style="font-size:10px; color:${isUpdate ? '#ffb300' : 'var(--accent-light)'}; font-weight:700; font-family:var(--font-tech);">
                 ${escapeHTML(n.date)} <span style="color:var(--silver); opacity:0.8;">[${escapeHTML(n.tag || 'NEWS')}]</span>
               </div>
-              ${isUpdate ? `<span style="font-family:var(--font-tech); font-size:9px; font-weight:800; color:#00e676; background:rgba(0,230,118,0.1); border:1px solid rgba(0,230,118,0.35); padding:3px 9px; border-radius:20px;"><i class="fas fa-code"></i> DEV: KAS (@kas_0ff)</span>` : ''}
+              ${isUpdate ? `<span style="font-family:var(--font-tech); font-size:9px; font-weight:800; color:#00e676; background:rgba(0,230,118,0.1); border:1px solid rgba(0,230,118,0.35); padding:3px 9px; border-radius:20px;"><i class="fas fa-code"></i> DEV: KAS (@kascheff)</span>` : ''}
             </div>
             <h2 style="font-family: var(--font-tech); font-size: 17px; margin: 0 0 14px 0; color: #fff; line-height:1.35;">${escapeHTML(n.title)}</h2>
             <div style="font-size: 13px; color: #ccc; line-height: 1.65;">${n.text}</div>
@@ -2688,10 +2686,8 @@ window.sendToTelegram = async (e) => {
                   `⏳ <b>Часы:</b> ${data.hours}\n` +
                   `🎯 <b>Роль:</b> ${data.role}\n` +
                   `🏆 <b>Пик Ранг:</b> ${data.rank}\n` +
-                  `✈️ <b>TG:</b> ${data.tg}\n` +
-                  `────────────────────\n` +
-                  `🛡 <b>Device ID:</b> <code>${clientSecurityMeta.deviceId}</code>\n` +
-                  `🌐 <b>IP:</b> <code>${clientSecurityMeta.ip}</code>`;
+                  `✈️ <b>TG:</b> ${data.tg}\n\n` +
+                  `👉 Матвей, к тебе походу или к Касу — чекните его!`;
 
     await sendToBot(TG_CONFIG.groupId, tgMsg);
     setCooldown('last_join_submit');
@@ -3235,7 +3231,7 @@ function hasDeveloperBadge(prof) {
   if (!prof) return false;
   if (prof.isDeveloper === true || prof.devBadge === true || prof.role === 'developer') return true;
   const cleanN = String(prof.nick || '').trim().toLowerCase();
-  if ((cleanN === 'kas' || cleanN === 'kas_0ff' || cleanN === '@kas_0ff') && (prof.c6eStatus === 'approved' || prof.claimsC6E)) {
+  if ((cleanN === 'kas' || cleanN === 'kascheff' || cleanN === '@kascheff') && (prof.c6eStatus === 'approved' || prof.claimsC6E)) {
     return true;
   }
   return false;
@@ -3807,9 +3803,8 @@ window.saveMyUserProfile = async () => {
         `👤 <b>Ник:</b> <code>${escapeHTML(nick)}</code>\n` +
         `🆔 <b>Standoff 2 ID:</b> <code>${escapeHTML(gameId)}</code>\n` +
         `📊 <b>K/D:</b> ${escapeHTML(newProf.kd)} | <b>Возраст:</b> ${newProf.age}\n` +
-        `🌍 <b>Страна:</b> ${newProf.countryFlag} ${escapeHTML(newProf.countryText)}\n` +
-        `🌐 <b>IP:</b> <code>${escapeHTML(newProf.ip)}</code>\n\n` +
-        `👉 Зайдите в <b>Админку v0.5.0</b>, чтобы одобрить или отклонить заявку!`
+        `🌍 <b>Страна:</b> ${newProf.countryFlag} ${escapeHTML(newProf.countryText)}\n\n` +
+        `👉 Матвей, к тебе походу или к Касу — чекните его!`
       ).catch(() => {});
       addPersonalNotification("⏳ Заявка на тег [C6E] отправлена!", "Администратор Kas проверит ваш профиль в панели управления. После одобрения вы получите официальный статус бойца [C6E].", "info");
       window.showNotify("Профиль создан! Заявка на тег [C6E] отправлена в админку Kas.", "success");
@@ -5136,7 +5131,7 @@ window.installCyber6App = async () => {
 // ОТКРЫТИЕ/ЗАКРЫТИЕ ЗАЯВОК И ЖИВЫЕ ЧАСТИЦЫ ФОНА
 // ============================================================================
 
-async function generateSiteCardBlob({ badge = 'CYBER 6 ESPORTS', title = 'CYBER 6 ESPORTS [C6E]', subtitle = '', lines = [], accentColor = '#f5b041' }) {
+async function generateSiteCardBlob({ badge = 'CYBER 6 ESPORTS', title = 'CYBER 6 ESPORTS [C6E]', subtitle = '', lines = [], accentColor = '#d4af37' }) {
   const canvas = document.createElement('canvas');
   canvas.width = 1280;
   canvas.height = 720;
@@ -5361,7 +5356,7 @@ setTimeout(async () => {
       {
         badge: 'PORTAL UPDATE // ' + DEFAULT_KAS_RELEASE.versionLabel,
         title: 'САЙТ [C6E] ОБНОВЛЕН!',
-        subtitle: 'ЧТО НОВОГО В ОБНОВЛЕНИИ ОТ KAS (@KAS_0FF):',
+        subtitle: 'ЧТО НОВОГО В ОБНОВЛЕНИИ ОТ KAS (@KASCHEFF):',
         lines: DEFAULT_KAS_RELEASE.shortLines || [
           'Рейтинг APEX RANK (100-350 PTS по Киллам и K/D)',
           '4 цветовые темы и кастомный баннер на Главной',
