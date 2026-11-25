@@ -1667,7 +1667,7 @@
       <div style="background: linear-gradient(135deg, rgba(255,179,0,0.12), rgba(158,27,40,0.18)); border: 1px solid rgba(255,179,0,0.45); border-radius: 12px; padding: 14px; margin-bottom: 14px;">
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
           <span style="font-family:var(--font-tech); font-size:11px; font-weight:900; color:#ffb300;">
-            <i class="fas fa-bolt"></i> АВТО-ГЕНЕРАТОР ОБНОВЛЕНИЙ САЙТА ОТ ЛИЦА KAS (@kas_0ff)
+            <i class="fas fa-bolt"></i> АВТО-ГЕНЕРАТОР ОБНОВЛЕНИЙ САЙТА ОТ ЛИЦА KAS (@kascheff)
           </span>
           <span style="font-size:9px; font-family:var(--font-tech); color:var(--success); background:rgba(0,230,118,0.12); border:1px solid rgba(0,230,118,0.35); padding:2px 8px; border-radius:20px;">
             PUSH-УВЕДОМЛЕНИЕ ВСЕМ ИГРОКАМ НА САЙТЕ
@@ -2526,53 +2526,37 @@
   };
 
   async function sendMatchObjectToTG(m) {
-    showToast("Формирую пост о матче для ТГК...");
+    if (!m) return;
     const ourScore = parseInt(m.our, 10) || 0;
     const theirScore = parseInt(m.their, 10) || 0;
     const isWin = ourScore > theirScore;
-
-    const headerEmoji = isWin ? '🏆 <b>ПОБЕДА CYBER 6 ESPORTS [C6E]!</b>' : '⚔️ <b>РЕЗУЛЬТАТ МАТЧА [C6E]</b>';
     const ourPlayers = m.players || [];
-    const enemyPlayers = m.enemyPlayers || [];
+    const totalMatchKills = ourPlayers.reduce((s, p) => s + (parseInt(p.kills, 10) || 0), 0);
+    const totalMatchDeaths = ourPlayers.reduce((s, p) => s + (parseInt(p.deaths, 10) || 0), 0);
 
-    const ourRowsText = ourPlayers.map((p, i) => {
-      const kd = p.kd || (p.deaths > 0 ? (p.kills / p.deaths).toFixed(2) : p.kills);
-      return `${i + 1}. <b>${p.nick}</b> — <code>${p.kills} У / ${p.assists || 0} П / ${p.deaths} С</code> (K/D: <b>${kd}</b>)`;
-    }).join('\n');
+    const cardLines = ourPlayers.slice(0, 5).map(p => {
+      const kd = p.kd || (p.deaths > 0 ? (p.kills / p.deaths).toFixed(2) : Number(p.kills || 0).toFixed(2));
+      return `${p.nick}  —  ${p.kills} У / ${p.assists || 0} П / ${p.deaths} С  (K/D: ${kd})`;
+    });
+    cardLines.unshift(`Итог команды: ${totalMatchKills} У / ${totalMatchDeaths} С  •  MVP: ${m.mvp || 'C6E'}`);
 
-    let enemyTopText = '';
-    if (enemyPlayers.length > 0) {
-      const topE = [...enemyPlayers].sort((a, b) => (parseFloat(b.kd) || 0) - (parseFloat(a.kd) || 0))[0];
-      if (topE) enemyTopText = `\n🎯 <b>Лидер соперника:</b> ${topE.nick} (${topE.kills} У / ${topE.deaths} С • K/D: ${topE.kd})`;
-    }
+    const targetDest = isWin ? 'channel' : 'group';
+    showToast(isWin ? "Формирую победную карточку матча для ТГК..." : "Формирую карточку отчёта о матче для Группы...");
 
-    const htmlPost =
-      `${headerEmoji}\n` +
-      `────────────────────\n` +
-      `🛡 <b>[C6E] CYBER 6</b>  <code>${ourScore} : ${theirScore}</code>  <b>${m.enemy}</b>\n` +
-      `🗺 <b>Карта:</b> ${m.map || 'Dune'} | 🎮 <b>Режим:</b> ${m.tour || 'Турнир'}\n` +
-      `🌍 <b>Сервер:</b> ${m.server || 'Россия, Москва'}\n` +
-      (m.mvp ? `⭐ <b>MVP матча:</b> <code>${m.mvp}</code>\n` : '') +
-      `────────────────────\n` +
-      (ourRowsText ? `📊 <b>СТАТИСТИКА БОЙЦОВ [C6E]:</b>\n${ourRowsText}\n` : '') +
-      enemyTopText +
-      `\n\n🔗 <a href="${TG_CONFIG.siteUrl}">Открыть полный Таб и доказательство на сайте [C6E]</a>`;
-
-    const cardLines = ourPlayers.map(p => `${p.nick}  |  У: ${p.kills}   П: ${p.assists || 0}   С: ${p.deaths}   |   K/D: ${p.kd}`);
-
-    const ok = await publishToTelegramChannel({
-      htmlText: htmlPost,
-      imageSource: m.proofImg || null,
+    const ok = await sendCleanCardToTelegram({
+      target: targetDest,
+      linkLabel: `Смотреть полный Таб и скрин матча [C6E] ${ourScore}:${theirScore} ${m.enemy} на сайте`,
+      sectionPath: 'history',
       cardConfig: {
-        badge: `${m.tour || 'STANDOFF 2'} • ${m.map || 'DUNE'}`,
+        badge: isWin ? `VICTORY // ${m.tour || 'SCRIM'} • ${m.map || 'STANDOFF 2'}` : `MATCH REPORT // ${m.tour || 'SCRIM'} • ${m.map || 'STANDOFF 2'}`,
         title: `[C6E]  ${ourScore} : ${theirScore}  ${m.enemy}`,
-        subtitle: isWin ? 'VICTORY // OFFICIAL MATCH REPORT' : 'MATCH REPORT // TAB STATS',
-        lines: cardLines.length ? cardLines : [`MVP: ${m.mvp || 'Cyber 6 Esports'}`],
-        accentColor: isWin ? '#00e676' : '#d42638'
+        subtitle: isWin ? `ПОБЕДА CYBER 6 ESPORTS НА КАРТЕ ${(m.map || 'DUNE').toUpperCase()}` : `ИТОГИ МАТЧА НА КАРТЕ ${(m.map || 'DUNE').toUpperCase()}`,
+        lines: cardLines,
+        screenshotSrc: m.proofImg || null,
+        accentColor: isWin ? '#00e676' : '#d4af37'
       }
     });
-
-    if (ok) showToast("Отчёт о матче опубликован в ТГК!");
+    if (ok) showToast(isWin ? "Победная карточка матча опубликована в ТГК!" : "Карточка отчёта о матче отправлена в Группу!");
   }
 
   window.publishSinglePlayerToTG = async (nick) => {
@@ -2582,153 +2566,47 @@
   };
 
   async function sendPlayerCardToTG(p) {
+    if (!p) return;
     showToast(`Отправляю карточку ${p.nick} в ТГК...`);
     const st = computeAdminPlayerStats(p);
-    const deltaSign = st.delta >= 0 ? `▲ +${st.delta.toFixed(2)}` : `▼ ${st.delta.toFixed(2)}`;
-
-    const htmlPost =
-      `🛡 <b>ПРОФИЛЬ БОЙЦА CYBER 6 ESPORTS [C6E]</b>\n` +
-      `────────────────────\n` +
-      `👤 <b>Игрок:</b> <code>${p.nick}</code>\n` +
-      `🎯 <b>Роль:</b> ${p.role || 'Player'}\n` +
-      `📊 <b>LIVE K/D (с учетом Таба):</b> <code>${st.liveKd}</code> (${deltaSign})\n` +
-      `👑 <b>Рейтинг Пантеона:</b> <code>${st.totalPantheonPts} PTS</code>\n` +
-      `🏆 <b>Ранг:</b> ${p.stats ? p.stats.rank : 'The Legend'}\n` +
-      `────────────────────\n` +
-      `📱 <b>Девайс:</b> ${p.device || 'Mobile'}\n` +
-      `⚙️ <b>Сенса:</b> <code>${p.settings || 'Default'}</code>\n` +
-      `🔫 <b>Оружие:</b> ${p.weapon || 'AKR / AWM'}\n` +
-      `💬 <i>«${p.quote || 'Cyber 6 Esports'}»</i>\n\n` +
-      `🔗 <a href="${TG_CONFIG.siteUrl}">Профиль и досье на сайте [C6E]</a>`;
-
-    const ok = await publishToTelegramChannel({
-      htmlText: htmlPost,
-      imageSource: (p.img && p.img !== 'logo.png') ? p.img : null,
+    const ok = await sendCleanCardToTelegram({
+      target: 'channel',
+      linkLabel: `Открыть досье бойца ${p.nick} на сайте CYBER 6 ESPORTS [C6E]`,
+      sectionPath: 'team',
       cardConfig: {
-        badge: 'CYBER 6 ESPORTS // ROSTER CARD',
+        badge: 'CYBER 6 ESPORTS // PRO ROSTER CARD',
         title: p.nick,
-        subtitle: `РОЛЬ: ${p.role}  |  LIVE K/D: ${st.liveKd}  |  ${st.totalPantheonPts} PTS`,
+        subtitle: `РОЛЬ: ${p.role || 'Player'}  |  LIVE K/D: ${st.liveKd}  |  APEX RANK: ${st.totalPantheonPts} PTS`,
         lines: [
-          `Ранг: ${p.stats ? p.stats.rank : 'The Legend'}   |   Матчей в Табе: ${st.matchesPlayed}`,
-          `Статистика Таба: ${st.kills} Убийств / ${st.deaths} Смертей`,
-          `Девайс: ${p.device || 'Mobile'}   |   Сенса: ${p.settings || 'Default'}`,
-          `Любимое оружие: ${p.weapon || 'AKR / AWM'}`,
-          `Цитата: "${p.quote || 'No mercy.'}"`
-        ]
+          `Ранг: ${p.stats ? p.stats.rank : 'The Legend'}  |  Матчей в Табе: ${st.matchesPlayed}`,
+          `Статистика Табов: ${st.kills} У / ${st.assists || 0} П / ${st.deaths} С`,
+          `Девайс: ${p.device || 'Mobile'}  |  Сенса: ${p.settings || 'Default'}`,
+          `Оружие: ${p.weapon || 'AKR / AWM'}`,
+          `Девиз: "${p.quote || 'Cyber 6 Esports'}"`
+        ],
+        accentColor: '#d4af37'
       }
     });
-
     if (ok) showToast(`Карточка ${p.nick} опубликована в ТГК!`);
   }
 
-  window.publishFullRosterToTG = async () => {
-    if (cachedRoster.length === 0) return showToast("В составе пока нет игроков!", true);
-    showToast("Генерирую карточку состава [C6E] для ТГК...");
-
-    const rosterLinesText = cachedRoster.map((p, idx) => {
-      const st = computeAdminPlayerStats(p);
-      return `${idx + 1}. <b>${p.nick}</b> — ${p.role} | LIVE K/D: <code>${st.liveKd}</code> | <code>${st.totalPantheonPts} PTS</code>`;
-    }).join('\n');
-
-    const cardLines = cachedRoster.map((p, idx) => {
-      const st = computeAdminPlayerStats(p);
-      return `#${idx + 1}  ${p.nick}   —   ${p.role}   |   LIVE K/D: ${st.liveKd}   |   ${st.totalPantheonPts} PTS`;
-    });
-
-    const htmlPost =
-      `🔥 <b>АКТУАЛЬНЫЙ СОСТАВ CYBER 6 ESPORTS [C6E]</b>\n` +
-      `────────────────────\n` +
-      `${rosterLinesText}\n` +
-      `────────────────────\n` +
-      `📊 <i>K/D каждого бойца синхронизирован с послематчевыми Табами!</i>\n` +
-      `🔗 <a href="${TG_CONFIG.siteUrl}">Смотреть карточки и настройки игроков на сайте [C6E]</a>`;
-
-    const ok = await publishToTelegramChannel({
-      htmlText: htmlPost,
-      cardConfig: {
-        badge: 'STANDOFF 2 DIVISION // OFFICIAL LINEUP',
-        title: 'СОСТАВ CYBER 6 ESPORTS',
-        subtitle: `АКТИВНЫЙ РОСТЕР ОРГАНИЗАЦИИ [C6E]`,
-        lines: cardLines
-      }
-    });
-
-    if (ok) showToast("Полный состав [C6E] опубликован в ТГК!");
-  };
-
-  window.publishWeeklyReportToTG = async () => {
-    if (cachedRoster.length === 0) return showToast("Сначала добавьте игроков в Состав!", true);
-    showToast("Формирую Еженедельный отчёт K/D для ТГК...");
-
-    const statsList = cachedRoster.map(p => computeAdminPlayerStats(p));
-    statsList.sort((a, b) => (parseFloat(b.liveKd) - parseFloat(a.liveKd)) || ((b.kills || 0) - (a.kills || 0)));
-
-    const topP = statsList[0];
-    const bestGain = [...statsList].sort((a, b) => b.delta - a.delta)[0];
-
-    const reportRows = statsList.map((st, i) => {
-      const arrow = st.delta > 0.004 ? `🟢 ▲ +${st.delta.toFixed(2)}` : (st.delta < -0.004 ? `🔴 ▼ ${st.delta.toFixed(2)}` : `⚪ 0.00`);
-      return `${i + 1}. <b>${st.nick}</b> — LIVE K/D: <code>${st.liveKd}</code> (${arrow}) | <code>${st.totalPantheonPts} PTS</code>`;
-    }).join('\n');
-
-    const cardLines = statsList.map((st, i) => {
-      const sign = st.delta >= 0 ? `+${st.delta.toFixed(2)}` : st.delta.toFixed(2);
-      return `#${i + 1} ${st.nick}  |  LIVE K/D: ${st.liveKd} (${sign})  |  ${st.totalPantheonPts} PTS`;
-    });
-
-    const htmlPost =
-      `📈 <b>ЕЖЕНЕДЕЛЬНЫЙ ОТЧЁТ ПРОГРЕССА [C6E]</b>\n` +
-      `────────────────────\n` +
-      `🏆 <b>Лидер рейтинга:</b> <code>${topP.nick}</code> (${topP.liveKd} K/D)\n` +
-      `🚀 <b>Главный рост K/D:</b> <code>${bestGain.nick}</code> (${bestGain.delta >= 0 ? '+' : ''}${bestGain.delta.toFixed(2)})\n` +
-      `────────────────────\n` +
-      `📊 <b>ДИНАМИКА БОЙЦОВ ПО ИТОГАМ МАТЧЕЙ:</b>\n` +
-      `${reportRows}\n\n` +
-      `🔗 <a href="${TG_CONFIG.siteUrl}">Открыть подробное досье каждого игрока на сайте</a>`;
-
-    const ok = await publishToTelegramChannel({
-      htmlText: htmlPost,
-      cardConfig: {
-        badge: 'WEEKLY ANALYTICS // LIVE K/D SYNC',
-        title: 'ОТЧЁТ ПРОГРЕССА [C6E]',
-        subtitle: `ЛИДЕР НЕДЕЛИ: ${topP.nick} (${topP.liveKd} K/D)`,
-        lines: cardLines,
-        accentColor: '#00e676'
-      }
-    });
-
-    if (ok) showToast("Еженедельный отчёт опубликован в ТГК!");
-  };
-
   window.publishScheduleToTG = async () => {
     if (cachedSchedule.length === 0) return showToast("Расписание пока пусто!", true);
-    showToast("Отправляю Расписание в ТГК...");
-
-    const linesText = cachedSchedule.map(s => {
-      const icon = s.status === 'live' ? '🔴 LIVE' : (s.status === 'done' ? '✅' : '⏰');
-      return `${icon} <b>${s.day} | ${s.time} МСК</b> — [${s.type || 'OPS'}] ${s.event}`;
-    }).join('\n');
-
-    const cardLines = cachedSchedule.slice(0, 6).map(s => `${s.day} (${s.time} МСК)  —  ${s.event}`);
-
-    const htmlPost =
-      `📅 <b>ОПЕРАТИВНОЕ РАСПИСАНИЕ CYBER 6 ESPORTS [C6E]</b>\n` +
-      `────────────────────\n` +
-      `${linesText}\n` +
-      `────────────────────\n` +
-      `🔗 <a href="https://cyber6esports.github.io/schedule">Следить за расписанием и матчами на сайте [C6E]</a>`;
-
-    const ok = await publishToTelegramChannel({
-      htmlText: htmlPost,
+    showToast("Отправляю карточку Расписания в ТГК...");
+    const cardLines = cachedSchedule.slice(0, 6).map(s => `${s.day} (${s.time} МСК)  —  [${s.type || 'OPS'}] ${s.event}`);
+    const ok = await sendCleanCardToTelegram({
+      target: 'channel',
+      linkLabel: 'Оперативное расписание матчей и праков на сайте CYBER 6 ESPORTS [C6E]',
+      sectionPath: 'schedule',
       cardConfig: {
-        badge: 'WEEKLY OPS // SCHEDULE',
+        badge: 'WEEKLY OPS // OFFICIAL SCHEDULE',
         title: 'РАСПИСАНИЕ ИГР [C6E]',
         subtitle: 'ОФИЦИАЛЬНЫЙ ГРАФИК МАТЧЕЙ И ТРЕНИРОВОК (МСК)',
-        lines: cardLines
+        lines: cardLines,
+        accentColor: '#d4af37'
       }
     });
-
-    if (ok) showToast("Расписание опубликовано в ТГК!");
+    if (ok) showToast("Карточка расписания опубликована в ТГК!");
   };
 
   window.publishNewsItemToTG = async (newsId) => {
@@ -2738,38 +2616,29 @@
   };
 
   async function sendNewsObjectToTG(n) {
-    showToast("Публикую новость в ТГК...");
-    const imgMatch = (n.text || '').match(/<img[^>]+src=["']([^"']+)["']/i);
-    const extractedImg = imgMatch ? imgMatch[1] : null;
-    const cleanBody = formatNewsHtmlForTelegram(n.text);
-
-    const htmlPost =
-      `⚡ <b>[${n.tag || 'НОВОСТИ C6E'}] ${n.title}</b>\n` +
-      `📅 <i>${n.date}</i>\n` +
-      `────────────────────\n` +
-      `${cleanBody}\n\n` +
-      `🔗 <a href="${TG_CONFIG.siteUrl}">CYBER 6 ESPORTS | Официальный сайт</a>`;
-
-    const plainPreview = cleanBody.replace(/<[^>]+>/g, '').split('\n').filter(Boolean);
-
-    const ok = await publishToTelegramChannel({
-      htmlText: htmlPost,
-      imageSource: (extractedImg && extractedImg !== 'logo.png') ? extractedImg : null,
+    if (!n) return;
+    showToast("Публикую карточку новости в ТГК...");
+    const cleanBody = formatNewsHtmlForTelegram(n.text).replace(/<[^>]+>/g, '');
+    const shortLines = cleanBody.split('\n').map(s => s.trim()).filter(Boolean).slice(0, 5);
+    const ok = await sendCleanCardToTelegram({
+      target: 'channel',
+      linkLabel: `${n.title} — Читать на сайте CYBER 6 ESPORTS [C6E]`,
+      sectionPath: 'news',
       cardConfig: {
-        badge: `CYBER 6 ESPORTS // ${n.tag || 'NEWS'}`,
-        title: n.title,
-        subtitle: `ОФИЦИАЛЬНЫЙ ПРЕСС-ЦЕНТР [C6E] • ${n.date}`,
-        lines: plainPreview.length ? plainPreview : ['Подробности читайте в нашем официальном портале Cyber 6 Esports.']
+        badge: `PORTAL NEWS // ${n.tag || 'C6E'}`,
+        title: n.tag === 'ОБНОВЛЕНИЕ' ? 'САЙТ [C6E] ОБНОВЛЁН!' : n.title,
+        subtitle: `${n.title}  •  ${n.date || ''}`,
+        lines: shortLines.length ? shortLines : ['Подробности читайте на официальном портале Cyber 6 Esports [C6E].'],
+        accentColor: '#d4af37'
       }
     });
-
-    if (ok) showToast("Новость опубликована в ТГК!");
+    if (ok) showToast("Карточка новости опубликована в ТГК!");
   }
 
   function computeAdminPlayerStats(p) {
     const baseKd = parseFloat(p.stats && p.stats.kd ? String(p.stats.kd).replace(',', '.') : '1.00') || 1.00;
     const pKey = normalizeAdminNickKey(p.nick);
-    let kills = 0, deaths = 0, matchesPlayed = 0, matchesWon = 0, mvpCount = 0;
+    let kills = 0, assists = 0, deaths = 0, matchesPlayed = 0, matchesWon = 0, mvpCount = 0;
 
     cachedHistory.forEach(m => {
       const isWin = (parseInt(m.our, 10) || 0) > (parseInt(m.their, 10) || 0);
@@ -2779,6 +2648,7 @@
         const mKey = normalizeAdminNickKey(mp.nick);
         if (pKey && mKey && (mKey === pKey || mKey.includes(pKey) || pKey.includes(mKey))) {
           kills += parseInt(mp.kills, 10) || 0;
+          assists += parseInt(mp.assists, 10) || 0;
           deaths += parseInt(mp.deaths, 10) || 0;
           matchesPlayed++;
           if (isWin) matchesWon++;
@@ -2786,6 +2656,7 @@
       });
     });
 
+    // ТОЧНЫЙ ЧИСТЫЙ K/D ПО ТАБАМ (без искусственного сглаживания)
     let liveKd = 0;
     let delta = 0;
     if (kills > 0 || deaths > 0) {
@@ -2796,14 +2667,19 @@
     const rawFanBoosts = (cachedPantheon.boosts && cachedPantheon.boosts[pKey]) ? parseInt(cachedPantheon.boosts[pKey], 10) : 0;
     const fanBoosts = Math.min(20, rawFanBoosts);
     const founderBonus = (cachedPantheon.bonusPts && cachedPantheon.bonusPts[pKey]) ? parseInt(cachedPantheon.bonusPts[pKey], 10) : 0;
-    // ФОРМУЛА APEX RANK (СТРОГО ОТ 100 ДО 350 PTS В ЗАВИСИМОСТИ ОТ КИЛЛОВ И K/D!)
-    const kdNorm = Math.max(0, Math.min(1, (liveKd - 0.60) / 1.40));
-    const killsNorm = matchesPlayed > 0
-      ? Math.max(0, Math.min(1, kills / 75))
-      : Math.max(0, Math.min(0.45, (baseKd - 0.70) / 1.50));
-    const winMvpBonus = Math.min(35, (matchesWon * 8) + (mvpCount * 12) + Math.max(0, Math.round(delta * 40)));
-    const combatCorePts = Math.min(350, Math.max(100, Math.round(100 + (kdNorm * 125) + (killsNorm * 95) + winMvpBonus)));
-    const totalPantheonPts = Math.max(100, Math.min(350, combatCorePts + (fanBoosts * 5)) + founderBonus);
+
+    // ЧЕСТНАЯ И ПРОГРЕССИВНАЯ ФОРМУЛА APEX RANK (v0.9.0)
+    // 0 праков = 0 боевых очков (никаких халявных 155–185 PTS за неактивность!)
+    let combatPts = 0;
+    if (matchesPlayed > 0) {
+      const fragPts = (kills * 3) + (assists * 1);
+      const activityPts = (matchesPlayed * 25) + (matchesWon * 35) + (mvpCount * 50);
+      const kdBonus = liveKd >= 1.0
+        ? Math.min(360, Math.round((liveKd - 1.0) * 180))
+        : Math.max(-40, Math.round((liveKd - 1.0) * 80));
+      combatPts = Math.max(20, fragPts + activityPts + kdBonus);
+    }
+    const totalPantheonPts = Math.max(0, combatPts + (fanBoosts * 25) + founderBonus);
 
     return {
       nick: p.nick,
@@ -2812,13 +2688,17 @@
       liveKd: liveKd.toFixed(2),
       delta,
       kills,
+      assists,
       deaths,
       matchesPlayed,
+      matchesWon,
+      mvpCount,
       fanBoosts,
       founderBonus,
       totalPantheonPts
     };
   }
+
 
   // =========================================================================
   // PRO ULTRA-HD ИИ-СКАНЕР ТАБА STANDOFF 2
@@ -2922,11 +2802,18 @@
   const DEFAULT_C6E_ROSTER = [
     "[C6E] Kas",
     "[C6E] mART1N",
+    "[C6E] Flonix",
+    "[C6E] VAYZ",
+    "[C6E] Zalrexus",
     "[C6E] Z@Ir3xus",
-    "[C6E] w1nsezyy",
+    "[C6E] ttmatsoni",
+    "[C6E] retaike",
+    "[C6E] ulquiorraaa",
+    "[C6E] W1nsezyyy",
     "[C6E] krozz777",
-    "[C6E] Tr1ller",
     "[C6E] ツBerkutツ",
+    "[C6E] Burn",
+    "[C6E] Tr1ller",
     "[C6E] Неппи"
   ];
 
@@ -3106,30 +2993,94 @@
     return tag ? `[${tag}] ${name}`.trim() : name.trim();
   }
 
-  // Авто-определение сдвига экрана (зависит от стороны выреза камеры на телефоне)
-  function detectScoreboardDividerDx(fullData, W, H) {
-    const y0 = Math.round(0.68 * H);
-    const y1 = Math.round(0.90 * H);
-    const xL = Math.round(0.45 * W);
-    const xR = Math.round(0.55 * W);
-    let bestX = Math.round(0.5165 * W);
-    let bestGrad = -1;
+  // Авто-определение типа скриншота Таба: Послематчевая «СТАТИСТИКА» vs Внутриигровой TAB (с колонкой Money $)
+  function detectTabLayoutConfig(fullData, W, H) {
+    // 1. Проверяем яркость верхней полосы экрана (y = 2%..8%, x = 35%..95%)
+    // В послематчевом экране «СТАТИСТИКА» сверху темная шапка (meanLum < 72).
+    // Во внутриигровом TAB (во время матча) сверху светлое небо/HUD (meanLum >= 75).
+    let topSum = 0, topCnt = 0;
+    const ty0 = Math.round(0.02 * H), ty1 = Math.round(0.08 * H);
+    const tx0 = Math.round(0.35 * W), tx1 = Math.round(0.95 * W);
+    for (let y = ty0; y < ty1; y += 2) {
+      for (let x = tx0; x < tx1; x += 4) {
+        const p = (y * W + x) * 4;
+        topSum += (fullData[p] + fullData[p + 1] + fullData[p + 2]) / 3;
+        topCnt++;
+      }
+    }
+    const topLum = topSum / Math.max(1, topCnt);
+    const isInGame = topLum >= 72;
 
+    if (isInGame) {
+      // Внутриигровой TAB (1000001910.jpg): центрирован около x=0.500, строки y=0.355..0.72, справа есть колонка Money ($)
+      const y0 = Math.round(0.32 * H), y1 = Math.round(0.72 * H);
+      const xL = Math.round(0.47 * W), xR = Math.round(0.53 * W);
+      let bestX = Math.round(0.500 * W), bestGrad = -1;
+      for (let x = xL; x <= xR; x++) {
+        let sum = 0;
+        for (let y = y0; y < y1; y += 3) {
+          const iR = (y * W + Math.min(W - 1, x + 1)) * 4;
+          const iL = (y * W + Math.max(0, x - 1)) * 4;
+          const gR = (fullData[iR] + fullData[iR + 1] + fullData[iR + 2]) / 3;
+          const gL = (fullData[iL] + fullData[iL + 1] + fullData[iL + 2]) / 3;
+          sum += Math.abs(gR - gL);
+        }
+        if (sum > bestGrad) { bestGrad = sum; bestX = x; }
+      }
+      const dx = (bestX / W) - 0.500;
+      return {
+        mode: 'ingame',
+        dx,
+        nameSideBases: [0.112, 0.564],
+        nameWidthPct: 0.162,
+        nameYStart: 0.355,
+        nameYHeight: 0.036,
+        rowStep: 0.080,
+        statsYStart: 0.362,
+        statsYHeight: 0.036,
+        leftCols: [0.359, 0.385, 0.409, 0.444, 0.482],
+        // Справа пропускаем колонку Money (0.745..0.790) и читаем строго K, A, D, Score, Ping!
+        rightCols: [0.810, 0.835, 0.860, 0.895, 0.933],
+        colHalfW: 0.0145,
+        ctScoreBox: [0.452 + dx, 0.498 + dx, 0.236, 0.300],
+        tScoreBox:  [0.502 + dx, 0.556 + dx, 0.236, 0.300],
+        footerBox:  [0.048, 0.360, 0.742, 0.786]
+      };
+    }
+
+    // Послематчевый экран «СТАТИСТИКА» (стандартный): ищем вертикальный разделитель около 0.517
+    const y0 = Math.round(0.68 * H), y1 = Math.round(0.90 * H);
+    const xL = Math.round(0.45 * W), xR = Math.round(0.55 * W);
+    let bestX = Math.round(0.5165 * W), bestGrad = -1;
     for (let x = xL; x <= xR; x++) {
       let sum = 0;
       for (let y = y0; y < y1; y += 2) {
-        const idxR = (y * W + Math.min(W - 1, x + 1)) * 4;
-        const idxL = (y * W + Math.max(0, x - 2)) * 4;
-        const gR = (fullData[idxR] + fullData[idxR + 1] + fullData[idxR + 2]) / 3;
-        const gL = (fullData[idxL] + fullData[idxL + 1] + fullData[idxL + 2]) / 3;
+        const iR = (y * W + Math.min(W - 1, x + 1)) * 4;
+        const iL = (y * W + Math.max(0, x - 2)) * 4;
+        const gR = (fullData[iR] + fullData[iR + 1] + fullData[iR + 2]) / 3;
+        const gL = (fullData[iL] + fullData[iL + 1] + fullData[iL + 2]) / 3;
         sum += Math.abs(gR - gL);
       }
-      if (sum > bestGrad) {
-        bestGrad = sum;
-        bestX = x;
-      }
+      if (sum > bestGrad) { bestGrad = sum; bestX = x; }
     }
-    return (bestX / W) - 0.5165;
+    const dx = (bestX / W) - 0.5165;
+    return {
+      mode: 'postmatch',
+      dx,
+      nameSideBases: [0.1065, 0.5875],
+      nameWidthPct: 0.176,
+      nameYStart: 0.258,
+      nameYHeight: 0.036,
+      rowStep: 0.0872,
+      statsYStart: 0.269,
+      statsYHeight: 0.036,
+      leftCols: [0.3095, 0.3525, 0.3960, 0.4395, 0.4835],
+      rightCols: [0.7905, 0.8335, 0.8770, 0.9205, 0.9645],
+      colHalfW: 0.0185,
+      ctScoreBox: [0.462 + dx, 0.512 + dx, 0.125, 0.188],
+      tScoreBox:  [0.520 + dx, 0.572 + dx, 0.125, 0.188],
+      footerBox:  [0.010, 0.380, 0.925, 0.988]
+    };
   }
 
   function percentileFloat(arr, p) {
@@ -3140,25 +3091,24 @@
   }
 
   // Извлечение 10 полос никнеймов строго без нижней линии звезд ★ и без значков ранга
-  function buildNamesCompositeCanvas(srcCanvas, fullData, W, H, dx) {
-    const sideBases = [0.1065, 0.5875];
+  function buildNamesCompositeCanvas(srcCanvas, fullData, W, H, cfg) {
     const stripCanvases = [];
+    const dx = cfg.dx;
 
-    for (const sideBase of sideBases) {
+    for (const sideBase of cfg.nameSideBases) {
       for (let r = 0; r < 5; r++) {
-        const y0 = Math.max(0, Math.round((0.258 + r * 0.0872) * H));
-        const y1 = Math.min(H, Math.round((0.294 + r * 0.0872) * H));
-        const yMid0 = Math.max(0, Math.round((0.289 + r * 0.0872) * H));
-        const yMid1 = Math.min(H, Math.round((0.297 + r * 0.0872) * H));
-        const yBot0 = Math.max(0, Math.round((0.297 + r * 0.0872) * H));
-        const yBot1 = Math.min(H, Math.round((0.318 + r * 0.0872) * H));
+        const y0 = Math.max(0, Math.round((cfg.nameYStart + r * cfg.rowStep) * H));
+        const y1 = Math.min(H, Math.round((cfg.nameYStart + cfg.nameYHeight + r * cfg.rowStep) * H));
+        const yMid0 = Math.max(0, Math.round((cfg.nameYStart + cfg.nameYHeight - 0.005 + r * cfg.rowStep) * H));
+        const yMid1 = Math.min(H, Math.round((cfg.nameYStart + cfg.nameYHeight + 0.003 + r * cfg.rowStep) * H));
+        const yBot0 = yMid1;
+        const yBot1 = Math.min(H, Math.round((cfg.nameYStart + cfg.nameYHeight + 0.022 + r * cfg.rowStep) * H));
 
         const x0 = Math.max(0, Math.round((sideBase + dx) * W));
-        const x1 = Math.min(W, Math.round((sideBase + dx + 0.176) * W));
+        const x1 = Math.min(W, Math.round((sideBase + dx + cfg.nameWidthPct) * W));
         const sw = Math.max(16, x1 - x0);
         const sh = Math.max(8, y1 - y0);
 
-        // Оцениваем цвет фона строки по верхней и нижней 2px границе полосы
         const borderR = [], borderG = [], borderB = [];
         for (let x = x0; x < x1; x++) {
           for (const by of [y0, y0 + 1, y1 - 2, y1 - 1]) {
@@ -3168,11 +3118,10 @@
             borderB.push(fullData[p + 2]);
           }
         }
-        const bgR = percentileFloat(borderR, 50);
-        const bgG = percentileFloat(borderG, 50);
-        const bgB = percentileFloat(borderB, 50);
+        const bgR = percentileFloat(borderR, 45);
+        const bgG = percentileFloat(borderG, 45);
+        const bgB = percentileFloat(borderB, 45);
 
-        // Детектор значка ранга справа от ника (активность одновременно в top, mid и bot)
         const topAct = new Float32Array(sw);
         const midAct = new Float32Array(sw);
         const botAct = new Float32Array(sw);
@@ -3236,7 +3185,6 @@
           cutX = Math.min(cutX, lastActive + Math.max(4, Math.round(0.004 * W)));
         }
 
-        // Строим карту сигнала с локальным выравниванием яркости (чтобы серый клан-тег [C6E] был таким же четким, как ник)
         const sig = new Float32Array(cutX * sh);
         const colP98 = new Float32Array(cutX);
 
@@ -3265,7 +3213,7 @@
         const imgD = rawCtx.createImageData(cutX, sh);
 
         for (let cx = 0; cx < cutX; cx++) {
-          let locMax = 32.0;
+          let locMax = 30.0;
           const k0 = Math.max(0, cx - win0);
           const k1 = Math.min(cutX - 1, cx + win0);
           for (let k = k0; k <= k1; k++) {
@@ -3313,9 +3261,8 @@
   }
 
   // Поклеточное выделение всех 50 ячеек цифр (10 игроков × 5 колонок: У, П, С, Счет, Пинг)
-  function buildStatsGridCanvas(srcCanvas, fullData, W, H, dx) {
-    const leftCols = [0.3095, 0.3525, 0.3960, 0.4395, 0.4835];
-    const rightCols = [0.7905, 0.8335, 0.8770, 0.9205, 0.9645];
+  function buildStatsGridCanvas(srcCanvas, fullData, W, H, cfg) {
+    const dx = cfg.dx;
     const cellW = 130;
     const cellH = 84;
 
@@ -3326,15 +3273,15 @@
     gCtx.fillStyle = '#ffffff';
     gCtx.fillRect(0, 0, gridCanv.width, gridCanv.height);
 
-    [leftCols, rightCols].forEach((cols, sideIdx) => {
+    [cfg.leftCols, cfg.rightCols].forEach((cols, sideIdx) => {
       for (let r = 0; r < 5; r++) {
         const rowGlobal = sideIdx * 5 + r;
-        const y0 = Math.max(0, Math.round((0.269 + r * 0.0872) * H));
-        const y1 = Math.min(H, Math.round((0.305 + r * 0.0872) * H));
+        const y0 = Math.max(0, Math.round((cfg.statsYStart + r * cfg.rowStep) * H));
+        const y1 = Math.min(H, Math.round((cfg.statsYStart + cfg.statsYHeight + r * cfg.rowStep) * H));
         const sh = Math.max(8, y1 - y0);
 
         cols.forEach((cPct, cIdx) => {
-          const halfW = 0.0185;
+          const halfW = cfg.colHalfW;
           const x0 = Math.max(0, Math.round((cPct + dx - halfW) * W));
           const x1 = Math.min(W, Math.round((cPct + dx + halfW) * W));
           const sw = Math.max(10, x1 - x0);
@@ -3348,9 +3295,9 @@
               bB.push(fullData[p + 2]);
             }
           }
-          const bgR = percentileFloat(bR, 50);
-          const bgG = percentileFloat(bG, 50);
-          const bgB = percentileFloat(bB, 50);
+          const bgR = percentileFloat(bR, 45);
+          const bgG = percentileFloat(bG, 45);
+          const bgB = percentileFloat(bB, 45);
 
           const targetH = 58;
           const targetW = Math.max(20, Math.round(sw * (targetH / sh)));
@@ -3378,7 +3325,7 @@
             }
           }
 
-          const p98 = Math.max(26.0, percentileFloat(coreVals, 98));
+          const p98 = Math.max(24.0, percentileFloat(coreVals, 98));
           const colMax = new Float32Array(targetW);
           for (let px = 4; px < targetW - 4; px++) {
             let cm = 0;
@@ -3448,7 +3395,7 @@
     }
     const bgR = percentileFloat(rArr, 20);
     const bgG = percentileFloat(gArr, 20);
-    const bgB = percentileFloat(bArr, 20);
+    const bgB = percentileFloat(bB_safe(bArr), 20);
 
     const diffs = new Float32Array(sw * sh);
     for (let cy = 0; cy < sh; cy++) {
@@ -3484,6 +3431,7 @@
     uCtx.drawImage(c0, 0, 0, targetW, targetH);
     return up;
   }
+  function bB_safe(arr) { return arr; }
 
   function parseStatsFromTesseractResult(statsRes) {
     const cellW = 130;
@@ -3522,7 +3470,6 @@
       rowHasBboxWord[rIdx] = true;
     }
 
-    // Fallback по строкам, если в какой-то строке Tesseract не вернул word bbox
     const rawLines = String((statsRes && statsRes.data && statsRes.data.text) || '')
       .split('\n')
       .map(l => l.trim())
@@ -3533,7 +3480,6 @@
         if (rowHasBboxWord[r]) continue;
         let nums = (rawLines[r].match(/\d+/g) || []).map(n => parseInt(n, 10));
         if (nums.length === 4) {
-          // Если пропущен 0 в Помощи (П), вставляем 0 на вторую позицию
           nums = [nums[0], 0, nums[1], nums[2], nums[3]];
         }
         for (let c = 0; c < Math.min(5, nums.length); c++) {
@@ -3554,7 +3500,7 @@
     const statusBox = document.getElementById('ocrStatusBox');
     const statusText = document.getElementById('ocrStatusText');
     statusBox.style.display = 'flex';
-    statusText.innerText = "Шаг 1/3: Калибрую геометрию Таба, отсекаю звёзды ★ и значки ранга...";
+    statusText.innerText = "Шаг 1/3: Определяю формат Таба (Статистика / Внутриигровой TAB) и калибрую колонки...";
 
     try {
       const imgEl = new Image();
@@ -3570,11 +3516,11 @@
       srcCtx.drawImage(imgEl, 0, 0);
       const fullData = srcCtx.getImageData(0, 0, W, H).data;
 
-      const dx = detectScoreboardDividerDx(fullData, W, H);
+      const cfg = detectTabLayoutConfig(fullData, W, H);
+      const modeLabel = cfg.mode === 'ingame' ? 'Внутриигровой TAB (пропускаю Money $)' : 'Послематчевая СТАТИСТИКА';
 
-      // 1. Счёт команд (CT и T) и нижняя строка карты/сервера
-      const ctBox = buildBoxContrastDataUrl(srcCanvas, fullData, W, H, 0.462 + dx, 0.512 + dx, 0.125, 0.188, 72);
-      const tBox  = buildBoxContrastDataUrl(srcCanvas, fullData, W, H, 0.520 + dx, 0.572 + dx, 0.125, 0.188, 72);
+      const ctBox = buildBoxContrastDataUrl(srcCanvas, fullData, W, H, ...cfg.ctScoreBox, 72);
+      const tBox  = buildBoxContrastDataUrl(srcCanvas, fullData, W, H, ...cfg.tScoreBox, 72);
       const scoresCanv = document.createElement('canvas');
       scoresCanv.width = 340;
       scoresCanv.height = 100;
@@ -3585,38 +3531,44 @@
       scCtx.drawImage(tBox, 185, 14);
       const scoresDataUrl = scoresCanv.toDataURL('image/png');
 
-      const footerCanv = buildBoxContrastDataUrl(srcCanvas, fullData, W, H, 0.010, 0.360, 0.925, 0.988, 56);
+      const footerCanv = buildBoxContrastDataUrl(srcCanvas, fullData, W, H, ...cfg.footerBox, 56);
       const footerDataUrl = footerCanv.toDataURL('image/png');
 
-      // 2. Построчный холст из 10 ников (без звёзд и значков ранга) и поклеточная матрица 10×5 цифр
-      const namesDataUrl = buildNamesCompositeCanvas(srcCanvas, fullData, W, H, dx);
-      const statsDataUrl = buildStatsGridCanvas(srcCanvas, fullData, W, H, dx);
+      const namesDataUrl = buildNamesCompositeCanvas(srcCanvas, fullData, W, H, cfg);
+      const statsDataUrl = buildStatsGridCanvas(srcCanvas, fullData, W, H, cfg);
 
-      statusText.innerText = "Шаг 2/3: Распознаю 10 ников, клан-теги и сверяю с базой Ростера [C6E]...";
+      statusText.innerText = `Шаг 2/3 (${modeLabel}): Распознаю 10 ников, клан-теги и сверяю с Ростером [C6E]...`;
       const [scoresRes, footerRes, namesRes] = await Promise.all([
         Tesseract.recognize(scoresDataUrl, 'eng', { tessedit_char_whitelist: '0123456789 ' }),
         Tesseract.recognize(footerDataUrl, 'rus+eng'),
         Tesseract.recognize(namesDataUrl, 'eng+rus')
       ]);
 
-      statusText.innerText = "Шаг 3/3: Поклеточное чтение 50 ячеек (У / П / С / Счёт / Пинг)...";
+      statusText.innerText = `Шаг 3/3 (${modeLabel}): Поклеточное чтение 50 ячеек (K / A / D / Score / Ping)...`;
       const statsRes = await Tesseract.recognize(statsDataUrl, 'eng', {
         tessedit_char_whitelist: '0123456789 '
       });
 
-      // Разбор карты, режима и сервера
+      // Разбор карты, режима и сервера (RU + EN)
       const footerTxt = (footerRes.data.text || "").trim();
-      const maps = ['Dune', 'Sandstone', 'Rust', 'Province', 'Breeze', 'Zone 9', 'Hanami'];
+      const maps = ['Dune', 'Sandstone', 'Rust', 'Province', 'Breeze', 'Zone 9', 'Zone 7', 'Hanami', 'Sakura'];
       for (const m of maps) {
         if (footerTxt.toLowerCase().includes(m.toLowerCase())) {
-          document.getElementById('hMap').value = m;
+          const mapEl = document.getElementById('hMap');
+          if (mapEl) mapEl.value = m;
           break;
         }
       }
-      if (/соревн|copen|copes/i.test(footerTxt)) {
+      if (/соревн|copen|competit/i.test(footerTxt)) {
         document.getElementById('hTour').value = 'Соревновательный';
-      } else if (/турнир|typh|typu|typx/i.test(footerTxt)) {
+      } else if (/турнир|typh|typu|tourn/i.test(footerTxt)) {
         document.getElementById('hTour').value = 'Турнир';
+      }
+      const srvEl = document.getElementById('hServer');
+      if (srvEl) {
+        if (/moscow|москв/i.test(footerTxt)) srvEl.value = 'Россия, Москва';
+        else if (/frankfurt|франкфурт|eu/i.test(footerTxt)) srvEl.value = 'Европа, Франкфурт';
+        else if (/netherlands|нидерланд/i.test(footerTxt)) srvEl.value = 'Нидерланды';
       }
 
       // Разбор счета CT (левая) и T (правая)
@@ -3655,7 +3607,6 @@
       leftParsed = unifyTeamClanTags(leftParsed);
       rightParsed = unifyTeamClanTags(rightParsed);
 
-      // Если на стороне >= 3 бойцов [C6E], выравниваем тег [C6E] для всех узнанных бойцов ростера на этой стороне
       for (const side of [leftParsed, rightParsed]) {
         const c6eHits = side.filter(([t, n]) => {
           if (t === 'C6E') return true;
@@ -3668,14 +3619,12 @@
 
         if (c6eHits >= 3) {
           side.forEach(row => {
-            if (row[0] && row[0].toLowerCase() !== 'he') {
-              const sk = normHomoglyphSkeleton(row[1]);
-              const isRosterMember = knownRoster.some(kr => {
-                const krB = kr.replace(/^\[.*?\]\s*/, '');
-                return levenshteinDistance(sk, normHomoglyphSkeleton(krB)) <= 2;
-              });
-              if (isRosterMember) row[0] = 'C6E';
-            }
+            const sk = normHomoglyphSkeleton(row[1]);
+            const isRosterMember = knownRoster.some(kr => {
+              const krB = kr.replace(/^\[.*?\]\s*/, '');
+              return levenshteinDistance(sk, normHomoglyphSkeleton(krB)) <= 2;
+            });
+            if (isRosterMember) row[0] = 'C6E';
           });
         }
       }
@@ -3703,7 +3652,6 @@
         ping: statMat[i + 5][4]
       }));
 
-      // Определяем, на какой стороне (CT слева или T справа) играет наша команда [C6E]
       const countOurSideScore = (teamArr) => teamArr.reduce((acc, p) => {
         if (/\[C6E\]/i.test(p.nick)) return acc + 3;
         const sk = normHomoglyphSkeleton(p.nick.replace(/^\[.*?\]\s*/, ''));
@@ -3716,7 +3664,6 @@
 
       let ourPlayers, enemyPlayers;
       if (rightOurWeight > leftOurWeight) {
-        // Наша команда [C6E] справа (АТАКА T)
         document.getElementById('hOur').value = rightScore;
         document.getElementById('hTheir').value = leftScore;
         document.getElementById('hOurSide').value = 'АТАКА (Т)';
@@ -3724,7 +3671,6 @@
         ourPlayers = rightTeamObj;
         enemyPlayers = leftTeamObj;
       } else {
-        // Наша команда [C6E] слева (ОБОРОНА CT)
         document.getElementById('hOur').value = leftScore;
         document.getElementById('hTheir').value = rightScore;
         document.getElementById('hOurSide').value = 'ОБОРОНА (СТ)';
@@ -3735,8 +3681,17 @@
 
       renderTeamTable('ourPlayersTbody', ourPlayers);
       renderTeamTable('enemyPlayersTbody', enemyPlayers);
+      if (typeof recalcAllTabsKd === 'function') recalcAllTabsKd();
 
-      // Определяем основной клан-тег команды соперника для поля "Команда соперника"
+      // Авто-определение MVP среди наших бойцов (по Счёту, затем по Убийствам)
+      const bestOur = [...ourPlayers].sort((a, b) => (b.score - a.score) || (b.kills - a.kills))[0];
+      const mvpEl = document.getElementById('hMvp');
+      if (mvpEl && bestOur && bestOur.nick) {
+        const bKd = bestOur.deaths > 0 ? (bestOur.kills / bestOur.deaths).toFixed(2) : Number(bestOur.kills || 0).toFixed(2);
+        mvpEl.value = `${bestOur.nick} (${bestOur.kills}/${bestOur.deaths} • K/D ${bKd})`;
+      }
+
+      // Авто-определение клан-тега соперника
       const enemyTags = enemyPlayers
         .map(p => {
           const m = p.nick.match(/^(\[[^\]]+\])/);
@@ -3751,15 +3706,15 @@
           freq[t] = (freq[t] || 0) + 1;
           if (freq[t] > (freq[topTag] || 0)) topTag = t;
         });
-        document.getElementById('hEnemy').value = freq[topTag] >= 3 ? topTag : `${topTag} / Mix`;
+        document.getElementById('hEnemy').value = freq[topTag] >= 2 ? topTag : `${topTag} / Mix`;
       } else if (enemyPlayers[0] && enemyPlayers[0].nick) {
         document.getElementById('hEnemy').value = `${enemyPlayers[0].nick} Stack`;
       }
 
-      showToast("✅ Таб отсканирован на 100%! Все ники, теги и колонки У/П/С/Счёт/Пинг заполнены.");
+      showToast(`✅ Таб отсканирован (${modeLabel})! Ники, K/A/D, счёт и MVP заполнены.`);
     } catch (err) {
       console.warn("OCR error:", err);
-      showToast("Скрин прикреплен! Проверь таблицы игроков.");
+      showToast("Скрин прикреплён! Проверьте таблицы игроков.", true);
     } finally {
       statusBox.style.display = 'none';
     }
@@ -4681,7 +4636,7 @@
   async function buildKasReleaseBannerDataUrl(ver, featuresList) {
     try {
       const blob = await generateC6EUltraCardBlob({
-        badge: `OFFICIAL SITE UPDATE ${ver.toUpperCase()} // DEVELOPED BY KAS (@kas_0ff)`,
+        badge: `OFFICIAL SITE UPDATE ${ver.toUpperCase()} // DEVELOPED BY KAS (@kascheff)`,
         title: `ОБНОВЛЕНИЕ ПОРТАЛА CYBER 6 ESPORTS ${ver.toUpperCase()}`,
         subtitle: 'НОВЫЕ ВОЗМОЖНОСТИ ДЛЯ БОЙЦОВ СОСТАВА И ГОСТЕЙ САЙТА',
         lines: featuresList.slice(0, 5)
@@ -4816,7 +4771,7 @@
       <blockquote style="margin:16px 0 6px 0; padding:14px 18px; border-left:4px solid #ffb300; background:rgba(255,179,0,0.07); color:#e4e4e2; font-style:italic; border-radius:0 10px 10px 0; line-height:1.65;">
         «Я постоянно прокачиваю платформу <strong>CYBER 6 ESPORTS [C6E]</strong>, чтобы у нашего состава были лучшие технологии в Standoff 2. Следите за своим <code>LIVE K/D</code>, поддерживайте бойцов бустами на сайте и боритесь за <code>500</code>, <code>250</code> и <code>150 GOLD</code> каждую неделю!»
         <div style="margin-top:8px; font-style:normal; font-family:'Orbitron',sans-serif; font-size:10px; font-weight:800; color:#ffb300; letter-spacing:1px;">
-          — KAS (@kas_0ff) // ОСНОВАТЕЛЬ И ГЛАВНЫЙ РАЗРАБОТЧИК CYBER 6 ESPORTS [C6E]
+          — KAS (@kascheff) // ОСНОВАТЕЛЬ И ГЛАВНЫЙ РАЗРАБОТЧИК CYBER 6 ESPORTS [C6E]
         </div>
       </blockquote>
     `);
@@ -5267,14 +5222,19 @@
   });
 
   onSnapshot(doc(db, DB_COLLECTION, "security_logs"), (snap) => {
-    if (snap.exists() && Array.isArray(snap.data().c6e_profiles)) {
-      adminProfilesMirrorSec = snap.data().c6e_profiles;
+    if (!snap.exists()) return;
+    const d = snap.data();
+    if (Array.isArray(d.c6e_profiles)) {
+      adminProfilesMirrorSec = d.c6e_profiles;
       refreshMergedAdminProfiles();
     }
-    if (snap.exists() && Array.isArray(snap.data().c6e_chat)) {
-      adminChatSec = snap.data().c6e_chat;
+    if (Array.isArray(d.c6e_chat)) {
+      adminChatSec = d.c6e_chat;
       renderAdminChatPanelUI();
     }
+    cachedSecurityLogs = d.logs || [];
+    cachedBannedUsers = d.banned || [];
+    if (typeof renderFilteredSecurityLogs === 'function') renderFilteredSecurityLogs();
   });
 
   setTimeout(refreshMergedAdminProfiles, 300);
@@ -5296,6 +5256,8 @@
     if (tInp && !tInp.value && d.title) tInp.value = d.title;
     if (hInp && !hInp.value && d.hypeText) hInp.value = d.hypeText;
     if (wEl) wEl.innerText = String(Array.isArray(d.waitlist) ? d.waitlist.length : 0);
+    cachedShopProducts = Array.isArray(d.products) ? d.products : [];
+    if (typeof renderAdminShopProductsList === 'function') renderAdminShopProductsList();
   });
 
   window.generateKasUpdateIntoEditor = async () => {
@@ -5355,7 +5317,7 @@
         versionLabel: `${verInp.toUpperCase()} // PORTAL UPDATE`,
         date: dateVal,
         tag: 'ОБНОВЛЕНИЕ',
-        author: 'Kas (@kas_0ff)',
+        author: 'Kas (@kascheff)',
         title,
         text: formattedText
       });
@@ -5399,24 +5361,19 @@
     if (document.getElementById('tgAutoPostTimer').checked) {
       const d = new Date(date);
       const readable = d.toLocaleString('ru-RU', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
-      const htmlPost =
-        `🔥 <b>АНОНС МАТЧА // MATCH DAY [C6E]</b>\n` +
-        `────────────────────\n` +
-        `⚔️ <b>[C6E] CYBER 6 ESPORTS</b>  VS  <b>${enemy}</b>\n` +
-        `⏰ <b>Начало:</b> <code>${readable} (МСК)</code>\n` +
-        `────────────────────\n` +
-        `🔗 <a href="https://cyber6esports.github.io/schedule">Обратный отсчет в Матч-центре на сайте [C6E]</a>`;
-
-      await publishToTelegramChannel({
-        htmlText: htmlPost,
+      await sendCleanCardToTelegram({
+        target: 'channel',
+        linkLabel: `Анонс матча [C6E] vs ${enemy} — Обратный отсчёт на сайте`,
+        sectionPath: 'schedule',
         cardConfig: {
           badge: 'UPCOMING MATCH // STANDOFF 2',
           title: `[C6E]  VS  ${enemy.toUpperCase()}`,
           subtitle: `НАЧАЛО МАТЧА: ${readable.toUpperCase()} (МСК)`,
           lines: [
-            'Поддержите нашу команду Cyber 6 Esports [C6E]!',
-            'Таймер обратного отсчета уже запущен на официальном сайте.'
-          ]
+            'Официальный матч Cyber 6 Esports [C6E]!',
+            'Таймер обратного отсчёта уже запущен в Матч-центре на сайте.'
+          ],
+          accentColor: '#d4af37'
         }
       });
     }
@@ -5798,7 +5755,7 @@
       lines = [],
       weeklyKpis = null,
       screenshotSrc = null,
-      accentColor = '#f5b041'
+      accentColor = '#d4af37'
     } = cardConfig;
 
     const canvas = document.createElement('canvas');
@@ -5806,44 +5763,39 @@
     canvas.height = 720;
     const ctx = canvas.getContext('2d');
 
-    // 1. Глубокий обсидианово-золотой фон
+    // 1. Глубокий матовый обсидиан (дорогой минимализм без дешёвого шума и сетки)
     const bgGrad = ctx.createLinearGradient(0, 0, 1280, 720);
-    bgGrad.addColorStop(0, '#0d1018');
+    bgGrad.addColorStop(0, '#0a0b0f');
     bgGrad.addColorStop(0.55, '#07080b');
-    bgGrad.addColorStop(1, '#161209');
+    bgGrad.addColorStop(1, '#110f0a');
     ctx.fillStyle = bgGrad;
     ctx.fillRect(0, 0, 1280, 720);
 
-    // 2. Радиальное золотое свечение
-    const radGlow = ctx.createRadialGradient(1020, 340, 20, 1020, 340, 360);
-    radGlow.addColorStop(0, 'rgba(245, 176, 65, 0.24)');
-    radGlow.addColorStop(0.6, 'rgba(245, 176, 65, 0.06)');
+    // Мягкий благородный блик шампанского золота в правом верхнем углу
+    const radGlow = ctx.createRadialGradient(1080, 140, 10, 1080, 140, 440);
+    radGlow.addColorStop(0, 'rgba(212, 175, 55, 0.12)');
+    radGlow.addColorStop(0.6, 'rgba(212, 175, 55, 0.03)');
     radGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
     ctx.fillStyle = radGlow;
     ctx.fillRect(0, 0, 1280, 720);
 
-    // 3. Кибер-сетка
-    ctx.strokeStyle = 'rgba(245, 176, 65, 0.04)';
+    // 2. Тонкая ювелирная рамка
+    const accent = accentColor || '#d4af37';
+    ctx.strokeStyle = 'rgba(212, 175, 55, 0.34)';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(26, 26, 1228, 668);
+
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.06)';
     ctx.lineWidth = 1;
-    for (let x = 0; x < 1280; x += 48) {
-      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 720); ctx.stroke();
-    }
-    for (let y = 0; y < 720; y += 48) {
-      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(1280, y); ctx.stroke();
-    }
+    ctx.strokeRect(36, 36, 1208, 648);
 
-    // 4. Внешняя рамка и золотой акцент
-    ctx.strokeStyle = 'rgba(245, 176, 65, 0.38)';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(28, 28, 1224, 664);
-
-    const goldGrad = ctx.createLinearGradient(0, 0, 1280, 0);
-    goldGrad.addColorStop(0, accentColor || '#f5b041');
-    goldGrad.addColorStop(0.5, '#ffe89e');
-    goldGrad.addColorStop(1, '#9a6508');
+    // Верхняя золотая полоса
+    const goldGrad = ctx.createLinearGradient(26, 0, 1254, 0);
+    goldGrad.addColorStop(0, accent);
+    goldGrad.addColorStop(0.45, '#f2d98a');
+    goldGrad.addColorStop(1, '#7a5c18');
     ctx.fillStyle = goldGrad;
-    ctx.fillRect(28, 28, 1224, 5);
-    ctx.fillRect(28, 28, 5, 664);
+    ctx.fillRect(26, 26, 1228, 4);
 
     const cleanCanvasText = (str) => String(str || '')
       .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE00}-\u{FE0F}]/gu, '')
@@ -5879,138 +5831,213 @@
     };
 
     const hasWeeklyKpis = Boolean(weeklyKpis && Array.isArray(weeklyKpis) && weeklyKpis.length === 4);
-    let proofDrawn = false;
     let shotImg = null;
     if (!hasWeeklyKpis && screenshotSrc) {
       shotImg = await loadCanvasImage(screenshotSrc);
-      if (shotImg) proofDrawn = true;
     }
+    const proofDrawn = Boolean(shotImg && shotImg.naturalWidth > 0 && shotImg.naturalHeight > 0);
 
-    const headerMaxW = hasWeeklyKpis ? 1140 : (proofDrawn ? 635 : 815);
+    // РЕЖИМ C (ПОБЕДА / ОТЧЁТ О МАТЧЕ СО СКРИНОМ ТАБА):
+    // Широкий скрин Таба (~2.2:1) размещаем СВЕРХУ или СПРАВА с ЧЕСТНЫМ aspect-ratio contain — НИКОГДА НЕ ПЛЮЩИМ!
+    if (proofDrawn) {
+      const headerMaxW = 1148;
 
-    // Верхний бейдж (полный текст без обрезки!)
-    const badgeStr = cleanCanvasText(badge).toUpperCase() || 'CYBER 6 ESPORTS // OFFICIAL';
-    fitFont(badgeStr, '800', 15, 11, 'Orbitron, Montserrat, sans-serif', headerMaxW - 36);
-    const badgeBoxW = Math.min(headerMaxW, Math.max(380, Math.ceil(ctx.measureText(badgeStr).width) + 40));
-    ctx.fillStyle = 'rgba(245, 176, 65, 0.14)';
-    ctx.fillRect(64, 50, badgeBoxW, 36);
-    ctx.strokeStyle = accentColor || '#f5b041';
-    ctx.lineWidth = 1.5;
-    ctx.strokeRect(64, 50, badgeBoxW, 36);
+      // Верхний бейдж
+      const badgeStr = cleanCanvasText(badge).toUpperCase();
+      fitFont(badgeStr, '800', 13, 10, 'Orbitron, Montserrat, sans-serif', 540);
+      const badgeW = Math.min(580, Math.max(280, Math.ceil(ctx.measureText(badgeStr).width) + 34));
+      ctx.fillStyle = 'rgba(212, 175, 55, 0.12)';
+      ctx.fillRect(64, 48, badgeW, 32);
+      ctx.strokeStyle = accent;
+      ctx.lineWidth = 1;
+      ctx.strokeRect(64, 48, badgeW, 32);
+      ctx.fillStyle = accent;
+      ctx.fillText(badgeStr, 80, 69);
 
-    ctx.fillStyle = accentColor || '#f5b041';
-    ctx.fillText(badgeStr, 82, 74);
+      // Заголовок матча + подзаголовок
+      const titleStr = cleanCanvasText(title).toUpperCase();
+      fitFont(titleStr, '900', 34, 20, 'Orbitron, Montserrat, sans-serif', headerMaxW);
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText(titleStr, 64, 122);
 
-    // Заголовок (с поддержкой авто-масштабирования и переноса до 2 строк — без обрезки!)
-    const titleStr = cleanCanvasText(title).toUpperCase();
-    fitFont(titleStr, '900', hasWeeklyKpis ? 32 : 34, 19, 'Orbitron, Montserrat, sans-serif', headerMaxW);
-    const titleLines = wrapTextLines(titleStr, headerMaxW).slice(0, 2);
-    ctx.fillStyle = '#ffffff';
-    let curY = 124;
-    titleLines.forEach((tl) => {
-      fitFont(tl, '900', titleLines.length > 1 ? 25 : (hasWeeklyKpis ? 32 : 34), 17, 'Orbitron, Montserrat, sans-serif', headerMaxW);
-      ctx.fillText(tl, 64, curY);
-      curY += titleLines.length > 1 ? 30 : 36;
-    });
+      if (subtitle) {
+        const subStr = cleanCanvasText(subtitle);
+        fitFont(subStr, '700', 16, 12, 'Montserrat, sans-serif', headerMaxW);
+        ctx.fillStyle = accent;
+        ctx.fillText(subStr, 64, 150);
+      }
 
-    // Подзаголовок (полный текст без обрезки!)
-    if (subtitle) {
-      const subStr = cleanCanvasText(subtitle);
-      fitFont(subStr, '700', 18, 12.5, 'Montserrat, sans-serif', headerMaxW);
-      const subLines = wrapTextLines(subStr, headerMaxW).slice(0, 2);
-      ctx.fillStyle = accentColor || '#f5b041';
-      subLines.forEach((sl) => {
-        fitFont(sl, '700', subLines.length > 1 ? 15.5 : 18, 12, 'Montserrat, sans-serif', headerMaxW);
-        ctx.fillText(sl, 64, curY);
-        curY += 23;
-      });
-    }
+      // Левая колонка: чистые строки статистики (x=64..574, w=510)
+      // Правая колонка: Скрин Таба (x=598..1216, w=618, h=430) — строго CONTAIN, сохраняем 100% оригинальных пропорций!
+      const boxX = 598, boxY = 176, boxW = 618, boxH = 428;
+      ctx.save();
+      ctx.fillStyle = '#050608';
+      ctx.fillRect(boxX, boxY, boxW, boxH);
+      ctx.strokeStyle = 'rgba(212, 175, 55, 0.45)';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(boxX, boxY, boxW, boxH);
 
-    // РЕЖИМ A: ЕЖЕНЕДЕЛЬНЫЙ ОТЧЁТ КЛАНА И ИГРОКОВ (4 KPI БЛОКА + ТАБЛИЦА ИГРОКОВ)
-    if (hasWeeklyKpis) {
-      const boxW = 272;
-      const boxH = 82;
-      const kpiTopY = Math.max(188, curY + 6);
-      weeklyKpis.forEach((kpi, idx) => {
-        const bx = 64 + idx * (boxW + 18);
-        const by = kpiTopY;
-        ctx.fillStyle = 'rgba(245, 176, 65, 0.10)';
-        ctx.fillRect(bx, by, boxW, boxH);
-        ctx.strokeStyle = 'rgba(245, 176, 65, 0.45)';
-        ctx.lineWidth = 1.5;
-        ctx.strokeRect(bx, by, boxW, boxH);
+      const pad = 10;
+      const innerW = boxW - pad * 2;
+      const innerH = boxH - pad * 2 - 28; // место под плашку сверху
+      const scale = Math.min(innerW / shotImg.naturalWidth, innerH / shotImg.naturalHeight);
+      const drawW = Math.round(shotImg.naturalWidth * scale);
+      const drawH = Math.round(shotImg.naturalHeight * scale);
+      const drawX = boxX + Math.round((boxW - drawW) / 2);
+      const drawY = boxY + 34 + Math.round((innerH - drawH) / 2);
 
-        const lblTxt = cleanCanvasText(kpi.label).toUpperCase();
-        ctx.fillStyle = '#9e9689';
-        fitFont(lblTxt, '800', 12, 9.5, 'Orbitron, Montserrat, sans-serif', boxW - 24);
-        ctx.fillText(lblTxt, bx + 14, by + 26);
+      // Аккуратная верхняя подпись контейнера скрина
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.04)';
+      ctx.fillRect(boxX + 1, boxY + 1, boxW - 2, 30);
+      ctx.fillStyle = accent;
+      ctx.font = '800 11px Orbitron, Montserrat, sans-serif';
+      ctx.fillText('OFFICIAL STANDOFF 2 TAB PROOF', boxX + 14, boxY + 20);
 
-        const valTxt = cleanCanvasText(kpi.value);
-        ctx.fillStyle = kpi.color || '#ffffff';
-        fitFont(valTxt, '900', 22, 13, 'Orbitron, Montserrat, sans-serif', boxW - 24);
-        ctx.fillText(valTxt, bx + 14, by + 60);
-      });
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(shotImg, drawX, drawY, drawW, drawH);
+      ctx.restore();
 
-      let rowY = kpiTopY + boxH + 16;
-      const rowW = 1144;
+      // Левая таблица строк игроков
+      const lineW = 510;
+      let rowY = 176;
       const maxRows = lines.slice(0, 6);
-      const availH = 622 - rowY;
-      const gap = 6;
+      const availH = 604 - rowY;
+      const gap = 8;
 
       maxRows.forEach((rawLine, idx) => {
         const cleanLine = cleanCanvasText(rawLine);
-        ctx.font = '700 17px Montserrat, sans-serif';
-        let wrapped = wrapTextLines(cleanLine, rowW - 36);
+        ctx.font = '700 15.5px Montserrat, sans-serif';
+        let wrapped = wrapTextLines(cleanLine, lineW - 30);
         if (wrapped.length > 2) {
-          ctx.font = '700 14.5px Montserrat, sans-serif';
-          wrapped = wrapTextLines(cleanLine, rowW - 36).slice(0, 2);
+          ctx.font = '700 13.5px Montserrat, sans-serif';
+          wrapped = wrapTextLines(cleanLine, lineW - 30).slice(0, 2);
         }
         const lineH = wrapped.length > 1 ? 18 : 20;
-        const boxH = Math.max(38, Math.min(Math.floor(availH / Math.max(1, maxRows.length)) - gap, wrapped.length * lineH + 16));
+        const rowH = Math.max(46, Math.min(Math.floor(availH / Math.max(1, maxRows.length)) - gap, wrapped.length * lineH + 22));
 
-        ctx.fillStyle = idx === 0 ? 'rgba(245, 176, 65, 0.14)' : 'rgba(255, 255, 255, 0.04)';
-        ctx.fillRect(64, rowY, rowW, boxH);
-        ctx.strokeStyle = idx === 0 ? 'rgba(245, 176, 65, 0.55)' : 'rgba(255, 255, 255, 0.08)';
-        ctx.strokeRect(64, rowY, rowW, boxH);
+        ctx.fillStyle = idx === 0 ? 'rgba(212, 175, 55, 0.12)' : 'rgba(255, 255, 255, 0.035)';
+        ctx.fillRect(64, rowY, lineW, rowH);
+        ctx.strokeStyle = idx === 0 ? 'rgba(212, 175, 55, 0.45)' : 'rgba(255, 255, 255, 0.08)';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(64, rowY, lineW, rowH);
 
-        ctx.fillStyle = accentColor || '#f5b041';
-        ctx.fillRect(64, rowY, 5, boxH);
+        ctx.fillStyle = accent;
+        ctx.fillRect(64, rowY, 4, rowH);
 
-        ctx.fillStyle = '#ffffff';
+        ctx.fillStyle = '#f5f2eb';
         const totalTextH = wrapped.length * lineH;
-        let textY = rowY + Math.round((boxH - totalTextH) / 2) + lineH - 4;
+        let textY = rowY + Math.round((rowH - totalTextH) / 2) + lineH - 4;
         wrapped.forEach((wl) => {
-          fitFont(wl, '700', wrapped.length > 1 ? 15.5 : 17.5, 12, 'Montserrat, sans-serif', rowW - 36);
-          ctx.fillText(wl, 86, textY);
+          fitFont(wl, '700', wrapped.length > 1 ? 14 : 15.5, 11.5, 'Montserrat, sans-serif', lineW - 30);
+          ctx.fillText(wl, 82, textY);
           textY += lineH;
         });
-        rowY += boxH + gap;
+        rowY += rowH + gap;
       });
     } else {
-      // РЕЖИМ B: КАРТОЧКА СО СКРИНШОТОМ ТАБА СПРАВА (ПОБЕДА С ПРАКА) ИЛИ ЛОГОТИПОМ C6E СПРАВА
-      if (proofDrawn && shotImg) {
-        ctx.save();
-        ctx.fillStyle = '#050608';
-        ctx.fillRect(720, 185, 492, 420);
-        ctx.strokeStyle = accentColor || '#00e676';
-        ctx.lineWidth = 2.5;
-        ctx.strokeRect(720, 185, 492, 420);
-        ctx.drawImage(shotImg, 724, 189, 484, 412);
+      // РЕЖИМ A (ЕЖЕНЕДЕЛЬНЫЙ ОТЧЁТ) ИЛИ РЕЖИМ B (РОСТЕР / НОВОСТЬ / РАСПИСАНИЕ / APEX RANK)
+      const headerMaxW = hasWeeklyKpis ? 1148 : 835;
 
-        ctx.fillStyle = 'rgba(7, 8, 11, 0.88)';
-        ctx.fillRect(724, 189, 255, 30);
-        ctx.fillStyle = accentColor || '#00e676';
-        ctx.font = '900 12px Orbitron, sans-serif';
-        ctx.fillText('OFFICIAL STANDOFF 2 TAB PROOF', 736, 209);
-        ctx.restore();
+      const badgeStr = cleanCanvasText(badge).toUpperCase() || 'CYBER 6 ESPORTS // OFFICIAL';
+      fitFont(badgeStr, '800', 14, 10.5, 'Orbitron, Montserrat, sans-serif', headerMaxW - 36);
+      const badgeBoxW = Math.min(headerMaxW, Math.max(340, Math.ceil(ctx.measureText(badgeStr).width) + 38));
+      ctx.fillStyle = 'rgba(212, 175, 55, 0.12)';
+      ctx.fillRect(64, 52, badgeBoxW, 34);
+      ctx.strokeStyle = accent;
+      ctx.lineWidth = 1.2;
+      ctx.strokeRect(64, 52, badgeBoxW, 34);
+      ctx.fillStyle = accent;
+      ctx.fillText(badgeStr, 82, 74);
+
+      const titleStr = cleanCanvasText(title).toUpperCase();
+      fitFont(titleStr, '900', hasWeeklyKpis ? 33 : 35, 19, 'Orbitron, Montserrat, sans-serif', headerMaxW);
+      const titleLines = wrapTextLines(titleStr, headerMaxW).slice(0, 2);
+      ctx.fillStyle = '#ffffff';
+      let curY = 128;
+      titleLines.forEach((tl) => {
+        fitFont(tl, '900', titleLines.length > 1 ? 26 : (hasWeeklyKpis ? 33 : 35), 17, 'Orbitron, Montserrat, sans-serif', headerMaxW);
+        ctx.fillText(tl, 64, curY);
+        curY += titleLines.length > 1 ? 32 : 38;
+      });
+
+      if (subtitle) {
+        const subStr = cleanCanvasText(subtitle);
+        fitFont(subStr, '700', 17.5, 12.5, 'Montserrat, sans-serif', headerMaxW);
+        const subLines = wrapTextLines(subStr, headerMaxW).slice(0, 2);
+        ctx.fillStyle = accent;
+        subLines.forEach((sl) => {
+          fitFont(sl, '700', subLines.length > 1 ? 15 : 17.5, 12, 'Montserrat, sans-serif', headerMaxW);
+          ctx.fillText(sl, 64, curY);
+          curY += 23;
+        });
+      }
+
+      if (hasWeeklyKpis) {
+        const boxW = 272;
+        const boxH = 82;
+        const kpiTopY = Math.max(190, curY + 8);
+        weeklyKpis.forEach((kpi, idx) => {
+          const bx = 64 + idx * (boxW + 18);
+          ctx.fillStyle = 'rgba(212, 175, 55, 0.08)';
+          ctx.fillRect(bx, kpiTopY, boxW, boxH);
+          ctx.strokeStyle = 'rgba(212, 175, 55, 0.38)';
+          ctx.lineWidth = 1.2;
+          ctx.strokeRect(bx, kpiTopY, boxW, boxH);
+
+          const lblTxt = cleanCanvasText(kpi.label).toUpperCase();
+          ctx.fillStyle = '#9e9689';
+          fitFont(lblTxt, '800', 11.5, 9.5, 'Orbitron, Montserrat, sans-serif', boxW - 24);
+          ctx.fillText(lblTxt, bx + 14, kpiTopY + 26);
+
+          const valTxt = cleanCanvasText(kpi.value);
+          ctx.fillStyle = kpi.color || '#ffffff';
+          fitFont(valTxt, '900', 22, 13, 'Orbitron, Montserrat, sans-serif', boxW - 24);
+          ctx.fillText(valTxt, bx + 14, kpiTopY + 60);
+        });
+
+        let rowY = kpiTopY + boxH + 16;
+        const rowW = 1148;
+        const maxRows = lines.slice(0, 6);
+        const availH = 620 - rowY;
+        const gap = 6;
+
+        maxRows.forEach((rawLine, idx) => {
+          const cleanLine = cleanCanvasText(rawLine);
+          ctx.font = '700 16.5px Montserrat, sans-serif';
+          let wrapped = wrapTextLines(cleanLine, rowW - 36);
+          if (wrapped.length > 2) {
+            ctx.font = '700 14px Montserrat, sans-serif';
+            wrapped = wrapTextLines(cleanLine, rowW - 36).slice(0, 2);
+          }
+          const lineH = wrapped.length > 1 ? 18 : 20;
+          const rowH = Math.max(38, Math.min(Math.floor(availH / Math.max(1, maxRows.length)) - gap, wrapped.length * lineH + 16));
+
+          ctx.fillStyle = idx === 0 ? 'rgba(212, 175, 55, 0.13)' : 'rgba(255, 255, 255, 0.035)';
+          ctx.fillRect(64, rowY, rowW, rowH);
+          ctx.strokeStyle = idx === 0 ? 'rgba(212, 175, 55, 0.48)' : 'rgba(255, 255, 255, 0.08)';
+          ctx.strokeRect(64, rowY, rowW, rowH);
+
+          ctx.fillStyle = accent;
+          ctx.fillRect(64, rowY, 4, rowH);
+
+          ctx.fillStyle = '#f5f2eb';
+          const totalTextH = wrapped.length * lineH;
+          let textY = rowY + Math.round((rowH - totalTextH) / 2) + lineH - 4;
+          wrapped.forEach((wl) => {
+            fitFont(wl, '700', wrapped.length > 1 ? 15 : 17, 12, 'Montserrat, sans-serif', rowW - 36);
+            ctx.fillText(wl, 84, textY);
+            textY += lineH;
+          });
+          rowY += rowH + gap;
+        });
       } else {
+        // Логотип C6E справа в строгом премиальном медальоне без лишнего свечения
         ctx.save();
         ctx.beginPath();
-        ctx.arc(1055, 360, 138, 0, Math.PI * 2);
-        ctx.strokeStyle = accentColor || '#f5b041';
-        ctx.lineWidth = 3.5;
-        ctx.shadowColor = accentColor || '#f5b041';
-        ctx.shadowBlur = 26;
+        ctx.arc(1062, 355, 134, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(212, 175, 55, 0.55)';
+        ctx.lineWidth = 2;
         ctx.stroke();
         ctx.restore();
 
@@ -6018,63 +6045,67 @@
         if (logoImg && logoImg.complete && logoImg.naturalWidth > 0) {
           ctx.save();
           ctx.beginPath();
-          ctx.arc(1055, 360, 130, 0, Math.PI * 2);
+          ctx.arc(1062, 355, 126, 0, Math.PI * 2);
           ctx.clip();
-          ctx.drawImage(logoImg, 925, 230, 260, 260);
+          const sc = Math.min(252 / logoImg.naturalWidth, 252 / logoImg.naturalHeight);
+          const lw = logoImg.naturalWidth * sc;
+          const lh = logoImg.naturalHeight * sc;
+          ctx.fillStyle = '#08090c';
+          ctx.fillRect(936, 229, 252, 252);
+          ctx.drawImage(logoImg, 1062 - lw / 2, 355 - lh / 2, lw, lh);
           ctx.restore();
         }
-      }
 
-      const lineW = proofDrawn ? 635 : 815;
-      let rowY = Math.max(206, curY + 10);
-      const maxRows = lines.slice(0, 6);
-      const availH = 620 - rowY;
-      const gap = 8;
+        const lineW = 835;
+        let rowY = Math.max(206, curY + 12);
+        const maxRows = lines.slice(0, 6);
+        const availH = 618 - rowY;
+        const gap = 8;
 
-      maxRows.forEach((rawLine, idx) => {
-        const cleanLine = cleanCanvasText(rawLine);
-        ctx.font = '700 17px Montserrat, sans-serif';
-        let wrapped = wrapTextLines(cleanLine, lineW - 36);
-        if (wrapped.length > 2) {
-          ctx.font = '700 14.5px Montserrat, sans-serif';
-          wrapped = wrapTextLines(cleanLine, lineW - 36).slice(0, 3);
-        }
-        const lineH = wrapped.length >= 3 ? 17 : 20;
-        const boxH = Math.max(44, Math.min(Math.floor(availH / Math.max(1, maxRows.length)) - gap, wrapped.length * lineH + 18));
+        maxRows.forEach((rawLine, idx) => {
+          const cleanLine = cleanCanvasText(rawLine);
+          ctx.font = '700 16.5px Montserrat, sans-serif';
+          let wrapped = wrapTextLines(cleanLine, lineW - 36);
+          if (wrapped.length > 2) {
+            ctx.font = '700 14px Montserrat, sans-serif';
+            wrapped = wrapTextLines(cleanLine, lineW - 36).slice(0, 3);
+          }
+          const lineH = wrapped.length >= 3 ? 17 : 20;
+          const rowH = Math.max(44, Math.min(Math.floor(availH / Math.max(1, maxRows.length)) - gap, wrapped.length * lineH + 18));
 
-        ctx.fillStyle = idx === 0 ? 'rgba(245, 176, 65, 0.13)' : 'rgba(255, 255, 255, 0.04)';
-        ctx.fillRect(64, rowY, lineW, boxH);
-        ctx.strokeStyle = idx === 0 ? 'rgba(245, 176, 65, 0.55)' : 'rgba(255, 255, 255, 0.08)';
-        ctx.strokeRect(64, rowY, lineW, boxH);
+          ctx.fillStyle = idx === 0 ? 'rgba(212, 175, 55, 0.12)' : 'rgba(255, 255, 255, 0.035)';
+          ctx.fillRect(64, rowY, lineW, rowH);
+          ctx.strokeStyle = idx === 0 ? 'rgba(212, 175, 55, 0.45)' : 'rgba(255, 255, 255, 0.08)';
+          ctx.strokeRect(64, rowY, lineW, rowH);
 
-        ctx.fillStyle = accentColor || '#f5b041';
-        ctx.fillRect(64, rowY, 5, boxH);
+          ctx.fillStyle = accent;
+          ctx.fillRect(64, rowY, 4, rowH);
 
-        ctx.fillStyle = '#f7f4ef';
-        const totalTextH = wrapped.length * lineH;
-        let textY = rowY + Math.round((boxH - totalTextH) / 2) + lineH - 4;
-        wrapped.forEach((wl) => {
-          fitFont(wl, '700', wrapped.length > 1 ? 15.5 : 17.5, 12, 'Montserrat, sans-serif', lineW - 36);
-          ctx.fillText(wl, 86, textY);
-          textY += lineH;
+          ctx.fillStyle = '#f5f2eb';
+          const totalTextH = wrapped.length * lineH;
+          let textY = rowY + Math.round((rowH - totalTextH) / 2) + lineH - 4;
+          wrapped.forEach((wl) => {
+            fitFont(wl, '700', wrapped.length > 1 ? 15 : 17, 12, 'Montserrat, sans-serif', lineW - 36);
+            ctx.fillText(wl, 84, textY);
+            textY += lineH;
+          });
+          rowY += rowH + gap;
         });
-
-        rowY += boxH + gap;
-      });
+      }
     }
 
     // Нижний колонтитул
-    ctx.fillStyle = 'rgba(245, 176, 65, 0.25)';
-    ctx.fillRect(64, 634, 1148, 1);
+    ctx.fillStyle = 'rgba(212, 175, 55, 0.25)';
+    ctx.fillRect(64, 634, 1152, 1);
     ctx.fillStyle = '#9e9689';
-    ctx.font = '800 14px Orbitron, Montserrat, sans-serif';
+    ctx.font = '800 13.5px Orbitron, Montserrat, sans-serif';
     ctx.fillText('CYBER 6 ESPORTS [C6E]  •  OFFICIAL PORTAL: CYBER6ESPORTS.GITHUB.IO', 64, 664);
 
     const founderTag = (TG_CONFIG.founderUsername || '@kascheff').toUpperCase();
-    ctx.fillStyle = '#f5b041';
+    ctx.fillStyle = '#d4af37';
     ctx.fillText(`FOUNDER: ${founderTag}`, 980, 664);
 
-    return new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.93));
+    return new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.94));
   }
 
   const generateC6EBrandCardBlob = (cfg) => generateC6EUltraCardBlob(cfg);
@@ -6612,12 +6643,7 @@
         }).join('');
   }
 
-  onSnapshot(doc(db, DB_COLLECTION, "shop_config"), (snap) => {
-    if (!snap.exists()) return;
-    const d = snap.data();
-    cachedShopProducts = Array.isArray(d.products) ? d.products : [];
-    renderAdminShopProductsList();
-  });
+  // shop_config синхронизируется единым слушателем выше
 
   window.resetShopProductForm = () => {
     ['admProdEditId', 'admProdTitle', 'admProdBadge', 'admProdPrice', 'admProdImage', 'admProdDesc'].forEach(id => {
@@ -6735,13 +6761,7 @@
   setTimeout(() => {
     window.setAdminPanelRoleMode(currentAdminRoleMode);
     window.filterPanels('cat-matches', document.getElementById('adm-fbtn-matches'));
-    const subSnap = onSnapshot(doc(db, DB_COLLECTION, "security_logs"), (snap) => {
-      if (snap.exists()) {
-        cachedSecurityLogs = snap.data().logs || [];
-        cachedBannedUsers = snap.data().banned || [];
-        renderFilteredSecurityLogs();
-      }
-    });
+    // security_logs синхронизируется единым слушателем выше (без дубля)
   }, 200);
 
 
