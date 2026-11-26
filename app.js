@@ -303,21 +303,9 @@ c6eProStyles.innerHTML = `
   /* =========================================================
      СТИЛИ ОБНОВЛЕНИЯ v0.5.0: ТЕМЫ, ШАПКА ПРОФИЛЯ, РАМКИ [C6E], ЧАТ, МАГАЗИН
      ========================================================= */
-  html[data-theme="red"] {
-    --accent: #9e1b28; --accent-light: #d42638;
-    --accent-dim: rgba(158, 27, 40, 0.16); --accent-glow: rgba(212, 38, 56, 0.38);
-  }
-  html[data-theme="green"] {
-    --accent: #0b6e4f; --accent-light: #00c885;
-    --accent-dim: rgba(11, 110, 79, 0.18); --accent-glow: rgba(0, 200, 133, 0.38);
-  }
-  html[data-theme="gold"] {
-    --accent: #9a6b00; --accent-light: #ffb300;
-    --accent-dim: rgba(154, 107, 0, 0.18); --accent-glow: rgba(255, 179, 0, 0.38);
-  }
-  html[data-theme="blue"] {
-    --accent: #1446a0; --accent-light: #3b82f6;
-    --accent-dim: rgba(20, 70, 160, 0.18); --accent-glow: rgba(59, 130, 246, 0.38);
+  html, html[data-theme] {
+    --accent: #c81825; --accent-light: #e52836; --accent-rgb: 200, 24, 37;
+    --accent-dim: rgba(200, 24, 37, 0.14); --accent-glow: rgba(200, 24, 37, 0.38);
   }
 
   .c6e-modal-overlay {
@@ -2878,7 +2866,7 @@ function applySiteTheme(themeKey) {
 
 // Применяем сохраненную тему сразу при старте
 try {
-  const savedTheme = localStorage.getItem('c6e_theme_color') || 'gold';
+  const savedTheme = 'c6e';
   applySiteTheme(savedTheme);
 } catch (e) {}
 
@@ -5131,34 +5119,43 @@ window.installCyber6App = async () => {
 // ОТКРЫТИЕ/ЗАКРЫТИЕ ЗАЯВОК И ЖИВЫЕ ЧАСТИЦЫ ФОНА
 // ============================================================================
 
-async function generateSiteCardBlob({ badge = 'CYBER 6 ESPORTS', title = 'CYBER 6 ESPORTS [C6E]', subtitle = '', lines = [], accentColor = '#d4af37' }) {
+async function generateSiteCardBlob({ badge = 'CYBER 6 ESPORTS', title = 'CYBER 6 ESPORTS [C6E]', subtitle = '', lines = [], accentColor = '#c81825' }) {
   const canvas = document.createElement('canvas');
   canvas.width = 1280;
   canvas.height = 720;
   const ctx = canvas.getContext('2d');
 
   const bgGrad = ctx.createLinearGradient(0, 0, 1280, 720);
-  bgGrad.addColorStop(0, '#0d1018');
-  bgGrad.addColorStop(0.55, '#07080b');
-  bgGrad.addColorStop(1, '#16120a');
+  bgGrad.addColorStop(0, '#09090d');
+  bgGrad.addColorStop(0.55, '#050507');
+  bgGrad.addColorStop(1, '#14080a');
   ctx.fillStyle = bgGrad;
   ctx.fillRect(0, 0, 1280, 720);
 
-  const radGlow = ctx.createRadialGradient(1055, 355, 30, 1055, 355, 330);
-  radGlow.addColorStop(0, 'rgba(245, 176, 65, 0.25)');
-  radGlow.addColorStop(0.6, 'rgba(245, 176, 65, 0.06)');
+  // Мягкий карминный блик + водяной знак логотипа [C6E] на фоне карточки
+  const radGlow = ctx.createRadialGradient(1055, 355, 30, 1055, 355, 360);
+  radGlow.addColorStop(0, 'rgba(200, 24, 37, 0.22)');
+  radGlow.addColorStop(0.6, 'rgba(200, 24, 37, 0.05)');
   radGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
   ctx.fillStyle = radGlow;
   ctx.fillRect(0, 0, 1280, 720);
 
-  ctx.strokeStyle = 'rgba(245, 176, 65, 0.38)';
-  ctx.lineWidth = 2;
+  const wmLogoEl = document.getElementById('hero-main-avatar-img') || document.querySelector('.nav-brand img');
+  if (wmLogoEl && wmLogoEl.complete && wmLogoEl.naturalWidth > 0) {
+    ctx.save();
+    ctx.globalAlpha = 0.075;
+    ctx.drawImage(wmLogoEl, 260, 40, 640, 640);
+    ctx.restore();
+  }
+
+  ctx.strokeStyle = 'rgba(200, 24, 37, 0.42)';
+  ctx.lineWidth = 1.8;
   ctx.strokeRect(28, 28, 1224, 664);
 
   const goldGrad = ctx.createLinearGradient(0, 0, 1280, 0);
-  goldGrad.addColorStop(0, accentColor || '#f5b041');
-  goldGrad.addColorStop(0.5, '#ffe89e');
-  goldGrad.addColorStop(1, '#9a6508');
+  goldGrad.addColorStop(0, accentColor || '#c81825');
+  goldGrad.addColorStop(0.5, '#f5f3ee');
+  goldGrad.addColorStop(1, '#7a0e16');
   ctx.fillStyle = goldGrad;
   ctx.fillRect(28, 28, 1224, 5);
   ctx.fillRect(28, 28, 5, 664);
@@ -5713,7 +5710,7 @@ window.openThemeModal = () => {
 
 window.selectSiteTheme = (themeKey) => {
   triggerHaptic(15);
-  const validKey = C6E_THEMES_LIST.some(t => t.key === themeKey) ? themeKey : 'gold';
+  const validKey = 'c6e';
   document.documentElement.setAttribute('data-theme', validKey);
   try { localStorage.setItem('c6e_theme_color', validKey); } catch (e) {}
   const modal = document.getElementById('c6e-theme-modal');
