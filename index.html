@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="theme-color" content="#07080b">
+  <meta name="theme-color" content="#050507">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -84,12 +84,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
-  <link rel="stylesheet" href="style.css?v=90">
+  <link rel="stylesheet" href="style.css?v=95">
   <script>
     (function() {
       try {
-        var savedTheme = localStorage.getItem('c6e_theme_color') || 'gold';
-        document.documentElement.setAttribute('data-theme', savedTheme);
+        document.documentElement.setAttribute('data-theme', 'c6e');
         var rawProf = localStorage.getItem('c6e_user_profile_v5');
         var prof = rawProf ? JSON.parse(rawProf) : null;
         if (!prof || !prof.nick || prof.c6eStatus === 'rejected') {
@@ -156,9 +155,7 @@
   </div>
 
   <div class="nav-top-actions" style="display:flex; align-items:center; gap:7px; margin-left:auto;">
-    <button type="button" id="theme-switcher-btn" class="nav-icon-btn" onclick="if(window.openThemeModal) window.openThemeModal()" title="Тема оформления сайта">
-      <i class="fas fa-palette"></i>
-    </button>
+
 
     <button type="button" id="nav-music-btn" class="nav-icon-btn" onclick="toggleAmbient()" title="Фоновая кибер-атмосфера">
       <i class="fas fa-music" id="nav-music-icon"></i>
@@ -262,11 +259,11 @@
             </div>
             <div style="font-size:10px; font-weight:700; color:var(--silver);">Магазин G</div>
           </div>
-          <div style="cursor:pointer; text-align:center;" onclick="if(window.openThemeModal) window.openThemeModal()">
+          <div style="cursor:pointer; text-align:center;" onclick="selectTab('pantheon', document.getElementById('dock-btn-pantheon'))">
             <div style="width:42px; height:42px; border-radius:14px; margin:0 auto 6px auto; background:rgba(255,255,255,0.03); border:1px solid rgba(var(--accent-rgb),0.32); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:15px;">
-              <i class="fas fa-palette"></i>
+              <i class="fas fa-crown"></i>
             </div>
-            <div style="font-size:10px; font-weight:700; color:var(--silver);">Тема сайта</div>
+            <div style="font-size:10px; font-weight:700; color:var(--silver);">APEX Rank</div>
           </div>
         </div>
       </div>
@@ -522,16 +519,7 @@
         </a>
       </div>
       <div class="solar-menu-list">
-        <button type="button" class="solar-menu-row featured" onclick="if(window.openThemeModal) window.openThemeModal()">
-          <div class="solar-menu-left">
-            <span class="solar-menu-icon"><i class="fas fa-palette"></i></span>
-            <div>
-              <div class="solar-menu-title">Тема оформления сайта (4 стиля)</div>
-              <div class="solar-menu-sub">По умолчанию: Тёмно-Золотая (Obsidian Gold), Рубин, Сапфир, Изумруд</div>
-            </div>
-          </div>
-          <i class="fas fa-chevron-right solar-menu-arrow"></i>
-        </button>
+
         <button type="button" class="solar-menu-row featured" id="hub-install-app-row" onclick="window.installCyber6App()">
           <div class="solar-menu-left">
             <span class="solar-menu-icon"><i class="fas fa-mobile-alt"></i></span>
@@ -1340,6 +1328,6 @@
   </button>
 </nav>
 
-<script type="module" src="app.js?v=90_12"></script>
+<script type="module" src="app.js?v=95_12"></script>
 </body>
 </html>
