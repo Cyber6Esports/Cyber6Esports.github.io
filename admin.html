@@ -5802,37 +5802,46 @@
     canvas.height = 720;
     const ctx = canvas.getContext('2d');
 
-    // 1. Глубокий матовый обсидиан (дорогой минимализм без дешёвого шума и сетки)
+    // 1. Глубокий матовый обсидиан + кармин в стиле нового логотипа [C6E]
     const bgGrad = ctx.createLinearGradient(0, 0, 1280, 720);
-    bgGrad.addColorStop(0, '#0a0b0f');
-    bgGrad.addColorStop(0.55, '#07080b');
-    bgGrad.addColorStop(1, '#110f0a');
+    bgGrad.addColorStop(0, '#09090d');
+    bgGrad.addColorStop(0.55, '#050507');
+    bgGrad.addColorStop(1, '#14080a');
     ctx.fillStyle = bgGrad;
     ctx.fillRect(0, 0, 1280, 720);
 
-    // Мягкий благородный блик шампанского золота в правом верхнем углу
-    const radGlow = ctx.createRadialGradient(1080, 140, 10, 1080, 140, 440);
-    radGlow.addColorStop(0, 'rgba(212, 175, 55, 0.12)');
-    radGlow.addColorStop(0.6, 'rgba(212, 175, 55, 0.03)');
+    // Благородный карминный блик
+    const radGlow = ctx.createRadialGradient(1080, 160, 10, 1080, 160, 460);
+    radGlow.addColorStop(0, 'rgba(200, 24, 37, 0.16)');
+    radGlow.addColorStop(0.6, 'rgba(200, 24, 37, 0.04)');
     radGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
     ctx.fillStyle = radGlow;
     ctx.fillRect(0, 0, 1280, 720);
 
-    // 2. Тонкая ювелирная рамка
-    const accent = accentColor || '#d4af37';
-    ctx.strokeStyle = 'rgba(212, 175, 55, 0.34)';
-    ctx.lineWidth = 1.5;
+    // Элегантный водяной знак нового логотипа [C6E] на фоне КАЖДОЙ карточки
+    const bgBrandLogo = document.getElementById('hiddenBrandLogo');
+    if (bgBrandLogo && bgBrandLogo.complete && bgBrandLogo.naturalWidth > 0) {
+      ctx.save();
+      ctx.globalAlpha = 0.075;
+      ctx.drawImage(bgBrandLogo, 320, 40, 640, 640);
+      ctx.restore();
+    }
+
+    // 2. Тонкая карминно-белая ювелирная рамка
+    const accent = (accentColor && accentColor !== '#d4af37' && accentColor !== '#f5b041') ? accentColor : '#c81825';
+    ctx.strokeStyle = 'rgba(200, 24, 37, 0.42)';
+    ctx.lineWidth = 1.6;
     ctx.strokeRect(26, 26, 1228, 668);
 
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.06)';
+    ctx.strokeStyle = 'rgba(245, 243, 238, 0.08)';
     ctx.lineWidth = 1;
     ctx.strokeRect(36, 36, 1208, 648);
 
-    // Верхняя золотая полоса
+    // Верхняя фирменная полоса (кармин -> белый -> глубокий кармин)
     const goldGrad = ctx.createLinearGradient(26, 0, 1254, 0);
     goldGrad.addColorStop(0, accent);
-    goldGrad.addColorStop(0.45, '#f2d98a');
-    goldGrad.addColorStop(1, '#7a5c18');
+    goldGrad.addColorStop(0.5, '#f5f3ee');
+    goldGrad.addColorStop(1, '#7a0e16');
     ctx.fillStyle = goldGrad;
     ctx.fillRect(26, 26, 1228, 4);
 
@@ -5885,7 +5894,7 @@
       const badgeStr = cleanCanvasText(badge).toUpperCase();
       fitFont(badgeStr, '800', 13, 10, 'Orbitron, Montserrat, sans-serif', 540);
       const badgeW = Math.min(580, Math.max(280, Math.ceil(ctx.measureText(badgeStr).width) + 34));
-      ctx.fillStyle = 'rgba(212, 175, 55, 0.12)';
+      ctx.fillStyle = 'rgba(200, 24, 37, 0.14)';
       ctx.fillRect(64, 48, badgeW, 32);
       ctx.strokeStyle = accent;
       ctx.lineWidth = 1;
@@ -5912,7 +5921,7 @@
       ctx.save();
       ctx.fillStyle = '#050608';
       ctx.fillRect(boxX, boxY, boxW, boxH);
-      ctx.strokeStyle = 'rgba(212, 175, 55, 0.45)';
+      ctx.strokeStyle = 'rgba(200, 24, 37, 0.48)';
       ctx.lineWidth = 1.5;
       ctx.strokeRect(boxX, boxY, boxW, boxH);
 
@@ -5955,9 +5964,9 @@
         const lineH = wrapped.length > 1 ? 18 : 20;
         const rowH = Math.max(46, Math.min(Math.floor(availH / Math.max(1, maxRows.length)) - gap, wrapped.length * lineH + 22));
 
-        ctx.fillStyle = idx === 0 ? 'rgba(212, 175, 55, 0.12)' : 'rgba(255, 255, 255, 0.035)';
+        ctx.fillStyle = idx === 0 ? 'rgba(200, 24, 37, 0.14)' : 'rgba(255, 255, 255, 0.035)';
         ctx.fillRect(64, rowY, lineW, rowH);
-        ctx.strokeStyle = idx === 0 ? 'rgba(212, 175, 55, 0.45)' : 'rgba(255, 255, 255, 0.08)';
+        ctx.strokeStyle = idx === 0 ? 'rgba(200, 24, 37, 0.48)' : 'rgba(255, 255, 255, 0.08)';
         ctx.lineWidth = 1;
         ctx.strokeRect(64, rowY, lineW, rowH);
 
@@ -5981,7 +5990,7 @@
       const badgeStr = cleanCanvasText(badge).toUpperCase() || 'CYBER 6 ESPORTS // OFFICIAL';
       fitFont(badgeStr, '800', 14, 10.5, 'Orbitron, Montserrat, sans-serif', headerMaxW - 36);
       const badgeBoxW = Math.min(headerMaxW, Math.max(340, Math.ceil(ctx.measureText(badgeStr).width) + 38));
-      ctx.fillStyle = 'rgba(212, 175, 55, 0.12)';
+      ctx.fillStyle = 'rgba(200, 24, 37, 0.14)';
       ctx.fillRect(64, 52, badgeBoxW, 34);
       ctx.strokeStyle = accent;
       ctx.lineWidth = 1.2;
@@ -6020,7 +6029,7 @@
           const bx = 64 + idx * (boxW + 18);
           ctx.fillStyle = 'rgba(212, 175, 55, 0.08)';
           ctx.fillRect(bx, kpiTopY, boxW, boxH);
-          ctx.strokeStyle = 'rgba(212, 175, 55, 0.38)';
+          ctx.strokeStyle = 'rgba(200, 24, 37, 0.42)';
           ctx.lineWidth = 1.2;
           ctx.strokeRect(bx, kpiTopY, boxW, boxH);
 
@@ -6075,7 +6084,7 @@
         ctx.save();
         ctx.beginPath();
         ctx.arc(1062, 355, 134, 0, Math.PI * 2);
-        ctx.strokeStyle = 'rgba(212, 175, 55, 0.55)';
+        ctx.strokeStyle = 'rgba(200, 24, 37, 0.58)';
         ctx.lineWidth = 2;
         ctx.stroke();
         ctx.restore();
@@ -6112,9 +6121,9 @@
           const lineH = wrapped.length >= 3 ? 17 : 20;
           const rowH = Math.max(44, Math.min(Math.floor(availH / Math.max(1, maxRows.length)) - gap, wrapped.length * lineH + 18));
 
-          ctx.fillStyle = idx === 0 ? 'rgba(212, 175, 55, 0.12)' : 'rgba(255, 255, 255, 0.035)';
+          ctx.fillStyle = idx === 0 ? 'rgba(200, 24, 37, 0.14)' : 'rgba(255, 255, 255, 0.035)';
           ctx.fillRect(64, rowY, lineW, rowH);
-          ctx.strokeStyle = idx === 0 ? 'rgba(212, 175, 55, 0.45)' : 'rgba(255, 255, 255, 0.08)';
+          ctx.strokeStyle = idx === 0 ? 'rgba(200, 24, 37, 0.48)' : 'rgba(255, 255, 255, 0.08)';
           ctx.strokeRect(64, rowY, lineW, rowH);
 
           ctx.fillStyle = accent;
@@ -6141,7 +6150,7 @@
     ctx.fillText('CYBER 6 ESPORTS [C6E]  •  OFFICIAL PORTAL: CYBER6ESPORTS.GITHUB.IO', 64, 664);
 
     const founderTag = (TG_CONFIG.founderUsername || '@kascheff').toUpperCase();
-    ctx.fillStyle = '#d4af37';
+    ctx.fillStyle = '#e52836';
     ctx.fillText(`FOUNDER: ${founderTag}`, 980, 664);
 
     return new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.94));
