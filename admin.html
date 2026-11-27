@@ -1005,6 +1005,9 @@
         <button type="button" class="btn-tg-action" onclick="publishScheduleToTG()">
           <i class="fas fa-calendar-alt"></i> РАСПИСАНИЕ В ТГК
         </button>
+        <button type="button" class="btn-tg-action" style="background:linear-gradient(135deg, #c81825, #7d0d16); color:#ffffff; border:1px solid rgba(255,255,255,0.22);" onclick="window.triggerGroupMassAlert()">
+          <i class="fas fa-bell"></i> УВЕДОМИТЬ ВСЮ ГРУППУ
+        </button>
         <button type="button" class="btn-tg-action" style="background:linear-gradient(135deg, #f5b041, #b87b14); color:#07080b;" onclick="window.publishOpenPracsToTG()">
           <i class="fas fa-crosshairs"></i> АФИША ПРАКОВ В ТГК
         </button>
@@ -1052,6 +1055,56 @@
 
         <button type="button" class="btn-tg-action" onclick="saveSecretBotToken()" style="padding:9px 16px;">
           <i class="fas fa-save"></i> СОХРАНИТЬ ВСЕ НАСТРОЙКИ БОТА И ID ГРУПП
+        </button>
+      </div>
+
+      <!-- PRO СИСТЕМА МАССОВОГО ОПОВЕЩЕНИЯ ВСЕХ УЧАСТНИКОВ ГРУППЫ [C6E] -->
+      <div id="admGroupMassAlertBox" style="margin-top:8px; padding:14px; border-radius:12px; background:linear-gradient(155deg, rgba(200,24,37,0.12), rgba(8,8,12,0.95)); border:1px solid rgba(200,24,37,0.42);">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+          <div style="font-family:'Orbitron',sans-serif; font-size:12px; font-weight:800; color:#f7f6f2; letter-spacing:0.6px;">
+            <i class="fas fa-bullhorn" style="color:#e52836; margin-right:6px;"></i>
+            ОБЩИЙ СБОР // УВЕДОМИТЬ ВСЮ ГРУППУ СО ЗВУКОМ
+          </div>
+          <span id="admGroupAlertStatus" style="font-size:11px; color:#9a9691;">Готово к отправке в группу</span>
+        </div>
+
+        <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px;">
+          <button type="button" class="chip-btn" style="padding:6px 10px; font-size:11px; border-color:rgba(200,24,37,0.5); color:#f7f6f2;" onclick="window.setGroupAlertPreset('prac')">⚡ Сбор на прак</button>
+          <button type="button" class="chip-btn" style="padding:6px 10px; font-size:11px; border-color:rgba(200,24,37,0.5); color:#f7f6f2;" onclick="window.setGroupAlertPreset('kas')">📣 Важное от Каса</button>
+          <button type="button" class="chip-btn" style="padding:6px 10px; font-size:11px; border-color:rgba(200,24,37,0.5); color:#f7f6f2;" onclick="window.setGroupAlertPreset('voice')">🎙 Срочно в чат / войс</button>
+          <button type="button" class="chip-btn" style="padding:6px 10px; font-size:11px; border-color:rgba(200,24,37,0.5); color:#f7f6f2;" onclick="window.setGroupAlertPreset('site')">📊 Чекните сайт</button>
+        </div>
+
+        <textarea id="admGroupAlertText" rows="2" placeholder="Текст срочного оповещения для всей группы..." style="width:100%; margin:0 0 10px 0; padding:10px 12px; font-size:12.5px; border-radius:8px;">⚡ ОБЩИЙ СБОР [C6E]! Всем срочно зайти в чат — важное сообщение от Основателя!</textarea>
+
+        <div style="display:flex; flex-wrap:wrap; gap:14px; align-items:center; margin-bottom:10px; font-size:12px; color:#d8d6d0;">
+          <label style="display:inline-flex; align-items:center; gap:6px; cursor:pointer; margin:0; text-transform:none; letter-spacing:0;">
+            <input type="checkbox" id="admAlertPinSound" checked style="width:auto; margin:0;">
+            <span>📌 Закрепить со звуком (уведомит <b>100%</b> группы)</span>
+          </label>
+          <label style="display:inline-flex; align-items:center; gap:6px; cursor:pointer; margin:0; text-transform:none; letter-spacing:0;">
+            <input type="checkbox" id="admAlertPingMentions" checked style="width:auto; margin:0;">
+            <span>📢 Пинг-упоминания пачками по 5 (пробивает беззвучный режим)</span>
+          </label>
+        </div>
+
+        <div style="margin-bottom:10px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:5px;">
+            <label style="margin:0; font-size:10px; color:#e52836;">СПИСОК УЧАСТНИКОВ ДЛЯ ПИНГА (@username через пробел или запятую)</label>
+            <div style="display:flex; gap:6px;">
+              <button type="button" class="chip-btn" style="padding:4px 9px; font-size:10.5px; border-color:rgba(255,255,255,0.22); color:#f7f6f2;" onclick="window.syncGroupAdminsFromTG()">
+                <i class="fas fa-sync-alt"></i> Подтянуть админов из TG
+              </button>
+              <button type="button" class="chip-btn" style="padding:4px 9px; font-size:10.5px; border-color:rgba(0,230,118,0.45); color:#00e676;" onclick="window.saveGroupMentionsList()">
+                <i class="fas fa-save"></i> Сохранить список
+              </button>
+            </div>
+          </div>
+          <input type="text" id="admGroupMentionsInput" placeholder="@kascheff @player1 @player2 ..." style="margin:0; padding:8px 11px; font-size:12px;">
+        </div>
+
+        <button type="button" id="admGroupAlertSendBtn" class="btn-tg-action" onclick="window.triggerGroupMassAlert()" style="width:100%; justify-content:center; padding:12px 18px; font-size:13px; background:linear-gradient(135deg, #c81825, #7d0d16); color:#ffffff; border:1px solid rgba(255,255,255,0.2);">
+          <i class="fas fa-bell"></i> УВЕДОМИТЬ ВСЕХ УЧАСТНИКОВ ГРУППЫ СЕЙЧАС
         </button>
       </div>
     </div>
@@ -3996,6 +4049,8 @@
           TG_CONFIG.groupId = data.groupId;
           const grEl = document.getElementById('admTgGroupIdInput');
           if (grEl) grEl.value = data.groupId;
+          const mEl = document.getElementById('admGroupMentionsInput');
+          if (mEl && typeof data.groupMentions === 'string') mEl.value = data.groupMentions;
         }
         if (data.founderUsername) {
           TG_CONFIG.founderUsername = data.founderUsername;
@@ -6951,6 +7006,187 @@
     } catch (err) {
       console.error(err);
       showToast("Ошибка восстановления: " + err.message, true);
+    }
+  };
+
+
+  // =========================================================================
+  // 10. PRO СИСТЕМА МАССОВОГО ОПОВЕЩЕНИЯ ВСЕЙ ГРУППЫ TELEGRAM [C6E]
+  // Поддержка: Громкий закреп (pinChatMessage) + Пинг пачками по 5 + Авто-синхронизация админов
+  // =========================================================================
+  window.setGroupAlertPreset = (type) => {
+    const el = document.getElementById('admGroupAlertText');
+    if (!el) return;
+    const presets = {
+      prac:  '⚡ ОБЩИЙ СБОР НА ПРАК [C6E]! Всем срочно зайти в Standoff 2 и отписаться в чате!',
+      kas:   '📣 ВАЖНОЕ ОБЪЯВЛЕНИЕ ОТ ОСНОВАТЕЛЯ [C6E] (@kascheff)! Всем срочно прочитать чат и отреагировать!',
+      voice: '🎙 ВСЕМ СРОЧНО В ЧАТ / ГОЛОСОВОЙ! Есть важный вопрос по составу и планам команды.',
+      site:  '📊 ОБНОВЛЕНИЕ НА САЙТЕ CYBER 6 ESPORTS [C6E]! Всем зайти, проверить рейтинг APEX RANK и статистику: https://cyber6esports.github.io/'
+    };
+    el.value = presets[type] || presets.kas;
+    showToast("Шаблон оповещения подставлен!");
+  };
+
+  window.saveGroupMentionsList = async () => {
+    const raw = (document.getElementById('admGroupMentionsInput')?.value || '').trim();
+    try {
+      await setDoc(doc(db, DB_COLLECTION, "tg_settings"), { groupMentions: raw }, { merge: true });
+      showToast("✅ Список участников для пинга сохранён в облаке!");
+    } catch (e) {
+      showToast("Ошибка сохранения списка: " + e.message, true);
+    }
+  };
+
+  window.syncGroupAdminsFromTG = async () => {
+    const statusEl = document.getElementById('admGroupAlertStatus');
+    try {
+      const token = await ensureBotTokenLoaded();
+      if (!token) return showToast("Сначала сохраните токен бота!", true);
+      const chatId = (document.getElementById('admTgGroupIdInput')?.value || '').trim() || TG_CONFIG.groupId;
+      if (statusEl) statusEl.innerText = "Запрашиваю список админов группы из Telegram...";
+
+      const res = await fetch(`https://api.telegram.org/bot${token}/getChatAdministrators?chat_id=${encodeURIComponent(chatId)}`);
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.description || "Не удалось получить админов (бот должен быть в группе)");
+
+      const inp = document.getElementById('admGroupMentionsInput');
+      const existing = (inp?.value || '').split(/[\s,;]+/).map(s => s.trim()).filter(Boolean);
+      const set = new Set(existing.map(s => s.startsWith('@') ? s : '@' + s));
+
+      let added = 0;
+      (data.result || []).forEach(m => {
+        if (m.user && !m.user.is_bot && m.user.username) {
+          const handle = '@' + m.user.username;
+          if (!set.has(handle)) {
+            set.add(handle);
+            added++;
+          }
+        }
+      });
+
+      const merged = Array.from(set).join(' ');
+      if (inp) inp.value = merged;
+      await setDoc(doc(db, DB_COLLECTION, "tg_settings"), { groupMentions: merged }, { merge: true });
+      if (statusEl) statusEl.innerText = `Синхронизировано! Всего в списке: ${set.size}`;
+      showToast(`✅ Подтянуто из Telegram (+${added} новых, всего ${set.size})!`);
+    } catch (e) {
+      if (statusEl) statusEl.innerText = "Ошибка синхронизации";
+      showToast("Ошибка TG API: " + e.message, true);
+    }
+  };
+
+  window.triggerGroupMassAlert = async () => {
+    const btn = document.getElementById('admGroupAlertSendBtn');
+    const statusEl = document.getElementById('admGroupAlertStatus');
+    const rawMsg = (document.getElementById('admGroupAlertText')?.value || '').trim();
+    if (!rawMsg) return showToast("Введите текст оповещения!", true);
+
+    const doPin = Boolean(document.getElementById('admAlertPinSound')?.checked);
+    const doPing = Boolean(document.getElementById('admAlertPingMentions')?.checked);
+
+    try {
+      const token = await ensureBotTokenLoaded();
+      if (!token) return showToast("Сначала сохраните токен бота!", true);
+      const chatId = (document.getElementById('admTgGroupIdInput')?.value || '').trim() || TG_CONFIG.groupId;
+
+      if (btn) btn.disabled = true;
+      if (statusEl) statusEl.innerText = "1/3 Отправляю главное оповещение в группу...";
+
+      const safeText = rawMsg.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const founder = (TG_CONFIG.founderUsername || '@kascheff');
+      const mainHtml =
+        `🚨 <b>ОБЩИЙ СБОР // CYBER 6 ESPORTS [C6E]</b>\n` +
+        `────────────────────\n` +
+        `${safeText}\n` +
+        `────────────────────\n` +
+        `👑 <i>Оповещение от Основателя (${founder})</i>`;
+
+      const sendRes = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text: mainHtml,
+          parse_mode: 'HTML',
+          disable_notification: false,
+          disable_web_page_preview: true
+        })
+      });
+      const sendData = await sendRes.json();
+      if (!sendData.ok) throw new Error(sendData.description || "Не удалось отправить сообщение в группу");
+
+      const sentMsgId = sendData.result && sendData.result.message_id;
+      let pinOk = false;
+
+      // 2. Громкий закреп (уведомляет 100% ВСЕХ участников группы, даже кого нет в списке @username!)
+      if (doPin && sentMsgId) {
+        if (statusEl) statusEl.innerText = "2/3 Закрепляю со звуком для всей группы...";
+        try {
+          const pinRes = await fetch(`https://api.telegram.org/bot${token}/pinChatMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              chat_id: chatId,
+              message_id: sentMsgId,
+              disable_notification: false
+            })
+          });
+          const pinData = await pinRes.json();
+          pinOk = Boolean(pinData.ok);
+        } catch (pe) {
+          console.warn("Pin warning:", pe);
+        }
+      }
+
+      // 3. Пинг-упоминания пачками по 5 (Telegram гарантированно пушит уведомление до 5 тегов в одном сообщении)
+      let pingedCount = 0;
+      if (doPing) {
+        const rawHandles = (document.getElementById('admGroupMentionsInput')?.value || '')
+          .split(/[\s,;]+/)
+          .map(s => s.trim())
+          .filter(Boolean)
+          .map(s => s.startsWith('@') ? s : '@' + s);
+
+        const uniqueHandles = Array.from(new Set(rawHandles));
+        if (uniqueHandles.length > 0) {
+          const chunkSize = 5;
+          const totalChunks = Math.ceil(uniqueHandles.length / chunkSize);
+          for (let i = 0; i < uniqueHandles.length; i += chunkSize) {
+            const chunkIdx = Math.floor(i / chunkSize) + 1;
+            const chunk = uniqueHandles.slice(i, i + chunkSize);
+            if (statusEl) statusEl.innerText = `3/3 Пингую участников (пачка ${chunkIdx}/${totalChunks})...`;
+
+            await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                chat_id: chatId,
+                text: `🔔 <b>Вызов [C6E]:</b> ${chunk.join(' ')}`,
+                parse_mode: 'HTML',
+                disable_notification: false,
+                reply_to_message_id: sentMsgId || undefined
+              })
+            }).catch(() => {});
+
+            pingedCount += chunk.length;
+            if (i + chunkSize < uniqueHandles.length) {
+              await new Promise(r => setTimeout(r, 380));
+            }
+          }
+        }
+      }
+
+      const summary = `Готово! Закреп: ${pinOk ? 'Да (со звуком)' : (doPin ? 'Нет прав на закреп у бота' : 'Выкл')} • Пингов: ${pingedCount}`;
+      if (statusEl) statusEl.innerText = summary;
+      showToast(`🔔 Группа уведомлена! (${summary})`);
+      if (typeof logAdminAction === 'function') {
+        await logAdminAction("ОБЩИЙ СБОР В ГРУППЕ", `Отправил оповещение в TG-группу (Закреп: ${pinOk ? 'Да' : 'Нет'}, Пингов: ${pingedCount})`);
+      }
+    } catch (e) {
+      if (statusEl) statusEl.innerText = "Ошибка отправки";
+      showToast("Ошибка оповещения: " + e.message, true);
+    } finally {
+      if (btn) btn.disabled = false;
     }
   };
 
